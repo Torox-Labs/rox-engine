@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Assets">
+      <UniqueIdentifier>17b52f90-9b33-4188-8a0e-808582bbabbc</UniqueIdentifier>
+      <Extensions>ico;bmp;dlg;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;resw;resjson</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\tests\test_cube\test_cube.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="WMAppManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\tests\test_cube\AlignmentGrid.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="..\..\..\tests\test_cube\ApplicationIcon.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="..\..\..\tests\test_cube\tiles\FlipCycleTileLarge.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="..\..\..\tests\test_cube\tiles\FlipCycleTileMedium.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="..\..\..\tests\test_cube\tiles\FlipCycleTileSmall.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="..\..\..\tests\test_cube\tiles\IconicTileMediumLarge.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="..\..\..\tests\test_cube\tiles\IconicTileSmall.png">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="2450442300d.nsc" />
+    <Media Include="4103747690d.nsc" />
+  </ItemGroup>
+</Project>

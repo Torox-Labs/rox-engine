@@ -1,0 +1,4 @@
+@pass "default"
+shader="mmd_edge.nsh"
+blend="src_alpha:inv_src_alpha"
+cull=cw

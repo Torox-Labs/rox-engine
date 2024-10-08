@@ -1,0 +1,56 @@
+@if ssao
+  @target main
+    color=main_color
+    depth=main_depth
+    //samples=2
+    depth_format=depth32
+    width=screen_width
+    height=screen_height
+
+  @set_target main
+  @clear
+  @draw_scene default
+
+  @procedural_texture noise
+    width=128
+    height=128
+    format=color_rgb
+    function=normalize3(rand2(-1,1),rand2(-1,1),0)*0.5+vec3(0.5,0.5,0.5)
+
+  @target linear_depth
+    color=linear_depth
+    color_format=r32f
+    width=screen_width
+    height=screen_height
+
+  @set_target linear_depth
+  @set_texture depth=main_depth
+  @set_shader pp_linear_depth.nsh
+  @draw_quad
+
+  @target ssao
+    color=ssao
+    width=screen_width
+    height=screen_height
+
+  @set_target ssao
+  @set_texture depth=linear_depth
+  @set_texture random=noise
+  @set_shader pp_ssao.nsh
+  @draw_quad
+
+  @target ssao_blur
+    color=ssao_blur
+    width=screen_width
+    height=screen_height
+
+  @set_target
+  @clear
+  @set_texture ssao=ssao
+  @set_texture base=main_color
+  @set_shader pp_ssao_mix.nsh
+  @draw_quad
+@else
+  @clear
+  @draw_scene default
+@end

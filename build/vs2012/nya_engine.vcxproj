@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugDX11|Win32">
+      <Configuration>DebugDX11</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugWP8|Win32">
+      <Configuration>DebugWP8</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugWP8|ARM">
+      <Configuration>DebugWP8</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseDX11|Win32">
+      <Configuration>ReleaseDX11</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseWP8|Win32">
+      <Configuration>ReleaseWP8</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseWP8|ARM">
+      <Configuration>ReleaseWP8</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{35C1C4FC-C0E4-4DA2-B857-D23D6F7832D0}</ProjectGuid>
+    <RootNamespace>nya_engine</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDX11|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugWP8|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugWP8|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDX11|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWP8|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWP8|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugDX11|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugWP8|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugWP8|ARM'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDX11|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWP8|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWP8|ARM'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\..\bin\win_vs2012_debug\</OutDir>
+    <IntDir>..\..\obj\win_vs2012_debug\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDX11|Win32'">
+    <OutDir>..\..\bin\win_dx11_vs2012_debug\</OutDir>
+    <IntDir>..\..\obj\win_dx11_vs2012_debug\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugWP8|Win32'">
+    <OutDir>..\..\bin\win_wp8_x86_vs2012_debug\</OutDir>
+    <IntDir>..\..\obj\win_wp8_x86_vs2012_debug\</IntDir>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugWP8|ARM'">
+    <OutDir>..\..\bin\win_wp8_arm_vs2012_debug\</OutDir>
+    <IntDir>..\..\obj\win_wp8_arm_vs2012_debug\</IntDir>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\bin\win_vs2012_release\</OutDir>
+    <IntDir>..\..\obj\win_vs2012_release\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDX11|Win32'">
+    <OutDir>..\..\bin\win_dx11_vs2012_release\</OutDir>
+    <IntDir>..\..\obj\win_dx11_vs2012_release\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWP8|Win32'">
+    <OutDir>..\..\bin\win_wp8_x86_vs2012_release\</OutDir>
+    <IntDir>..\..\obj\win_wp8_x86_vs2012_release\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWP8|ARM'">
+    <OutDir>..\..\bin\win_wp8_arm_vs2012_release\</OutDir>
+    <IntDir>..\..\obj\win_wp8_arm_vs2012_release\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\</AdditionalIncludeDirectories>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugDX11|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE;NYA_DIRECTX11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\</AdditionalIncludeDirectories>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugWP8|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <SDLCheck>
+      </SDLCheck>
+      <MultiProcessorCompilation>
+      </MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugWP8|ARM'">
+    <ClCompile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <SDLCheck>
+      </SDLCheck>
+      <MultiProcessorCompilation>
+      </MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDX11|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE;NYA_DIRECTX11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWP8|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <PreprocessorDefinitions>NDEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAsWinRT>true</CompileAsWinRT>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWP8|ARM'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <PreprocessorDefinitions>NDEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAsWinRT>true</CompileAsWinRT>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\formats\dds.cpp" />
+    <ClCompile Include="..\..\formats\ktx.cpp" />
+    <ClCompile Include="..\..\formats\math_expr_parser.cpp" />
+    <ClCompile Include="..\..\formats\meta.cpp" />
+    <ClCompile Include="..\..\formats\nms.cpp" />
+    <ClCompile Include="..\..\formats\nan.cpp" />
+    <ClCompile Include="..\..\formats\string_convert.cpp" />
+    <ClCompile Include="..\..\formats\text_parser.cpp" />
+    <ClCompile Include="..\..\formats\tga.cpp" />
+    <ClCompile Include="..\..\log\log.cpp" />
+    <ClCompile Include="..\..\log\composite_log.cpp" />
+    <ClCompile Include="..\..\log\output_stream.cpp" />
+    <ClCompile Include="..\..\log\plain_file_log.cpp" />
+    <ClCompile Include="..\..\log\stdout_log.cpp" />
+    <ClCompile Include="..\..\log\warning.cpp" />
+    <ClCompile Include="..\..\log\windbg_log.cpp" />
+    <ClCompile Include="..\..\math\aabb.cpp" />
+    <ClCompile Include="..\..\math\bezier.cpp" />
+    <ClCompile Include="..\..\math\constants.cpp" />
+    <ClCompile Include="..\..\math\frustum.cpp" />
+    <ClCompile Include="..\..\math\matrix.cpp" />
+    <ClCompile Include="..\..\math\quadtree.cpp" />
+    <ClCompile Include="..\..\math\quaternion.cpp" />
+    <ClCompile Include="..\..\memory\memory.cpp" />
+    <ClCompile Include="..\..\memory\mutex.cpp" />
+    <ClCompile Include="..\..\memory\tmp_buffer.cpp" />
+    <ClCompile Include="..\..\render\animation.cpp" />
+    <ClCompile Include="..\..\render\bitmap.cpp" />
+    <ClCompile Include="..\..\render\fbo.cpp" />
+    <ClCompile Include="..\..\render\platform_specific_gl.cpp" />
+    <ClCompile Include="..\..\render\render.cpp" />
+    <ClCompile Include="..\..\render\shader.cpp" />
+    <ClCompile Include="..\..\render\shader_code_parser.cpp" />
+    <ClCompile Include="..\..\render\skeleton.cpp" />
+    <ClCompile Include="..\..\render\statistics.cpp" />
+    <ClCompile Include="..\..\render\texture.cpp" />
+    <ClCompile Include="..\..\render\transform.cpp" />
+    <ClCompile Include="..\..\render\vbo.cpp" />
+    <ClCompile Include="..\..\render\debug_draw.cpp" />
+    <ClCompile Include="..\..\resources\composite_resources_provider.cpp" />
+    <ClCompile Include="..\..\resources\file_resources_provider.cpp" />
+    <ClCompile Include="..\..\resources\memory_resources_provider.cpp" />
+    <ClCompile Include="..\..\resources\resources.cpp" />
+    <ClCompile Include="..\..\scene\animation.cpp">
+      <ObjectFileName>$(IntDir)scene\</ObjectFileName>
+      <XMLDocumentationFileName>$(IntDir)scene\</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\scene\camera.cpp" />
+    <ClCompile Include="..\..\scene\location.cpp" />
+    <ClCompile Include="..\..\scene\particles_group.cpp" />
+    <ClCompile Include="..\..\scene\particles.cpp" />
+    <ClCompile Include="..\..\scene\material.cpp" />
+    <ClCompile Include="..\..\scene\mesh.cpp" />
+    <ClCompile Include="..\..\scene\postprocess.cpp" />
+    <ClCompile Include="..\..\scene\scene.cpp" />
+    <ClCompile Include="..\..\scene\shader.cpp">
+      <ObjectFileName>$(IntDir)scene\</ObjectFileName>
+      <XMLDocumentationFileName>$(IntDir)scene\</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\scene\texture.cpp">
+      <ObjectFileName>$(IntDir)scene\</ObjectFileName>
+      <XMLDocumentationFileName>$(IntDir)scene\</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\scene\transform.cpp">
+      <ObjectFileName>$(IntDir)scene\</ObjectFileName>
+      <XMLDocumentationFileName>$(IntDir)scene\</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\system\app.cpp" />
+    <ClCompile Include="..\..\system\shaders_cache_provider.cpp" />
+    <ClCompile Include="..\..\system\system.cpp" />
+    <ClCompile Include="..\..\ui\list.cpp" />
+    <ClCompile Include="..\..\ui\panel.cpp" />
+    <ClCompile Include="..\..\ui\slider.cpp" />
+    <ClCompile Include="..\..\ui\ui.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\formats\dds.h" />
+    <ClInclude Include="..\..\formats\ktx.h" />
+    <ClInclude Include="..\..\formats\math_expr_parser.h" />
+    <ClInclude Include="..\..\formats\meta.h" />
+    <ClInclude Include="..\..\formats\nms.h" />
+    <ClInclude Include="..\..\formats\nan.h" />
+    <ClInclude Include="..\..\formats\string_convert.h" />
+    <ClInclude Include="..\..\formats\text_parser.h" />
+    <ClInclude Include="..\..\formats\tga.h" />
+    <ClInclude Include="..\..\log\log.h" />
+    <ClInclude Include="..\..\log\composite_log.h" />
+    <ClInclude Include="..\..\log\output_stream.h" />
+    <ClInclude Include="..\..\log\plain_file_log.h" />
+    <ClInclude Include="..\..\log\stdout_log.h" />
+    <ClInclude Include="..\..\log\warning.h" />
+    <ClInclude Include="..\..\log\windbg_log.h" />
+    <ClInclude Include="..\..\math\aabb.h" />
+    <ClInclude Include="..\..\math\angle.h" />
+    <ClInclude Include="..\..\math\bezier.h" />
+    <ClInclude Include="..\..\math\constants.h" />
+    <ClInclude Include="..\..\math\frustum.h" />
+    <ClInclude Include="..\..\math\matrix.h" />
+    <ClInclude Include="..\..\math\quadtree.h" />
+    <ClInclude Include="..\..\math\quaternion.h" />
+    <ClInclude Include="..\..\math\scalar.h" />
+    <ClInclude Include="..\..\math\simd.h" />
+    <ClInclude Include="..\..\math\vector.h" />
+    <ClInclude Include="..\..\memory\indexed_map.h" />
+    <ClInclude Include="..\..\memory\invalid_object.h" />
+    <ClInclude Include="..\..\memory\lru.h" />
+    <ClInclude Include="..\..\memory\memory.h" />
+    <ClInclude Include="..\..\memory\memory_reader.h" />
+    <ClInclude Include="..\..\memory\memory_writer.h" />
+    <ClInclude Include="..\..\memory\mutex.h" />
+    <ClInclude Include="..\..\memory\non_copyable.h" />
+    <ClInclude Include="..\..\memory\optional.h" />
+    <ClInclude Include="..\..\memory\pool.h" />
+    <ClInclude Include="..\..\memory\shared_ptr.h" />
+    <ClInclude Include="..\..\memory\tag_list.h" />
+    <ClInclude Include="..\..\memory\tmp_buffer.h" />
+    <ClInclude Include="..\..\render\animation.h" />
+    <ClInclude Include="..\..\render\bitmap.h" />
+    <ClInclude Include="..\..\render\fbo.h" />
+    <ClInclude Include="..\..\render\platform_specific_gl.h" />
+    <ClInclude Include="..\..\render\render.h" />
+    <ClInclude Include="..\..\render\render_objects.h" />
+    <ClInclude Include="..\..\render\shader.h" />
+    <ClInclude Include="..\..\render\shader_code_parser.h" />
+    <ClInclude Include="..\..\render\skeleton.h" />
+    <ClInclude Include="..\..\render\statistics.h" />
+    <ClInclude Include="..\..\render\texture.h" />
+    <ClInclude Include="..\..\render\transform.h" />
+    <ClInclude Include="..\..\render\vbo.h" />
+    <ClInclude Include="..\..\render\debug_draw.h" />
+    <ClInclude Include="..\..\resources\composite_resources_provider.h" />
+    <ClInclude Include="..\..\resources\file_resources_provider.h" />
+    <ClInclude Include="..\..\resources\memory_resources_provider.h" />
+    <ClInclude Include="..\..\resources\resources.h" />
+    <ClInclude Include="..\..\resources\shared_resources.h" />
+    <ClInclude Include="..\..\scene\animation.h" />
+    <ClInclude Include="..\..\scene\camera.h" />
+    <ClInclude Include="..\..\scene\location.h" />
+    <ClInclude Include="..\..\scene\particles_group.h" />
+    <ClInclude Include="..\..\scene\particles.h" />
+    <ClInclude Include="..\..\scene\material.h" />
+    <ClInclude Include="..\..\scene\mesh.h" />
+    <ClInclude Include="..\..\scene\postprocess.h" />
+    <ClInclude Include="..\..\scene\proxy.h" />
+    <ClInclude Include="..\..\scene\scene.h" />
+    <ClInclude Include="..\..\scene\shader.h" />
+    <ClInclude Include="..\..\scene\shared_resources.h" />
+    <ClInclude Include="..\..\scene\texture.h" />
+    <ClInclude Include="..\..\scene\tags.h" />
+    <ClInclude Include="..\..\scene\transform.h" />
+    <ClInclude Include="..\..\system\app.h" />
+    <ClInclude Include="..\..\system\app_internal.h" />
+    <ClInclude Include="..\..\system\button_codes.h" />
+    <ClInclude Include="..\..\system\shaders_cache_provider.h" />
+    <ClInclude Include="..\..\system\system.h" />
+    <ClInclude Include="..\..\ui\button.h" />
+    <ClInclude Include="..\..\ui\label.h" />
+    <ClInclude Include="..\..\ui\list.h" />
+    <ClInclude Include="..\..\ui\panel.h" />
+    <ClInclude Include="..\..\ui\slider.h" />
+    <ClInclude Include="..\..\ui\ui.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

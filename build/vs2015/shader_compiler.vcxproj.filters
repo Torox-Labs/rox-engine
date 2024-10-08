@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\nya">
+      <UniqueIdentifier>{76e0ca9a-d685-4b00-90ed-bf7151c88348}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\tools\shader_compiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\render\shader_code_parser.cpp">
+      <Filter>Source Files\nya</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\log\log.cpp">
+      <Filter>Source Files\nya</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\system\shaders_cache_provider.cpp">
+      <Filter>Source Files\nya</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\log\stdout_log.cpp">
+      <Filter>Source Files\nya</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\memory\mutex.cpp">
+      <Filter>Source Files\nya</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\text_parser.cpp">
+      <Filter>Source Files\nya</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\resources\file_resources_provider.cpp">
+      <Filter>Source Files\nya</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\resources\resources.cpp">
+      <Filter>Source Files\nya</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\log\output_stream.cpp">
+      <Filter>Source Files\nya</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\log\output_stream.h">
+      <Filter>Source Files\nya</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

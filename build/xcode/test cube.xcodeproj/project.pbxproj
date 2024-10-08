@@ -1,0 +1,473 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0EB17D831FFBC61A00F5328C /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EB17D821FFBC61A00F5328C /* Metal.framework */; };
+		0EB17D871FFBDE6E00F5328C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EB17D861FFBDE6E00F5328C /* QuartzCore.framework */; };
+		3D19B4461C89E39300261EB2 /* test_cube.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F51A29211A684014002472F2 /* test_cube.cpp */; };
+		3D19B4481C89E3A900261EB2 /* libnya_engine_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F51A29311A68443F002472F2 /* libnya_engine_ios.a */; };
+		3D19B4491C89E3D700261EB2 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D19B41C1C89E13C00261EB2 /* OpenGLES.framework */; };
+		3D19B44A1C89E3E500261EB2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D19B4251C89E1AB00261EB2 /* UIKit.framework */; };
+		3D19B44C1C89E42A00261EB2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D19B44B1C89E42A00261EB2 /* Foundation.framework */; };
+		3D19B4521C89E52A00261EB2 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D19B4511C89E52A00261EB2 /* QuartzCore.framework */; };
+		F51A29221A684014002472F2 /* test_cube.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F51A29211A684014002472F2 /* test_cube.cpp */; };
+		F51A29241A6840F8002472F2 /* test-cube-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F51A29231A6840F8002472F2 /* test-cube-Info.plist */; };
+		F51A29281A684137002472F2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F51A29271A684137002472F2 /* OpenGL.framework */; };
+		F51A29321A684446002472F2 /* libnya_engine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F51A292F1A68443F002472F2 /* libnya_engine.a */; };
+		F52FEB051A651C8100C09F52 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F52FEB041A651C8000C09F52 /* Cocoa.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F51A292E1A68443F002472F2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F51A29291A68443F002472F2 /* nya_engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F25931E215D857C40092C7D8;
+			remoteInfo = nya_engine;
+		};
+		F51A29301A68443F002472F2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F51A29291A68443F002472F2 /* nya_engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F23AB544168DBA16004B116E;
+			remoteInfo = nya_engine_ios;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0EB17D801FFBC60D00F5328C /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		0EB17D821FFBC61A00F5328C /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		0EB17D861FFBDE6E00F5328C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		3D19B41C1C89E13C00261EB2 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/OpenGLES.framework; sourceTree = DEVELOPER_DIR; };
+		3D19B4251C89E1AB00261EB2 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		3D19B42F1C89E2DB00261EB2 /* test-cube-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "test-cube-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D19B44B1C89E42A00261EB2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		3D19B4511C89E52A00261EB2 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
+		F51A29211A684014002472F2 /* test_cube.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = test_cube.cpp; path = ../../tests/test_cube/test_cube.cpp; sourceTree = "<group>"; };
+		F51A29231A6840F8002472F2 /* test-cube-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "test-cube-Info.plist"; path = "../../tests/test_cube/test-cube-Info.plist"; sourceTree = "<group>"; };
+		F51A29251A684120002472F2 /* libnya_engine.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnya_engine.a; path = ../../bin/mac_debug/libnya_engine.a; sourceTree = "<group>"; };
+		F51A29271A684137002472F2 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		F51A29291A68443F002472F2 /* nya_engine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = nya_engine.xcodeproj; sourceTree = "<group>"; };
+		F52FEB011A651C8000C09F52 /* test-cube.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "test-cube.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F52FEB041A651C8000C09F52 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		F52FEB071A651C8100C09F52 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		F52FEB081A651C8100C09F52 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		F52FEB091A651C8100C09F52 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3D19B42C1C89E2DB00261EB2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D19B4521C89E52A00261EB2 /* QuartzCore.framework in Frameworks */,
+				3D19B44C1C89E42A00261EB2 /* Foundation.framework in Frameworks */,
+				3D19B44A1C89E3E500261EB2 /* UIKit.framework in Frameworks */,
+				3D19B4491C89E3D700261EB2 /* OpenGLES.framework in Frameworks */,
+				3D19B4481C89E3A900261EB2 /* libnya_engine_ios.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F52FEAFE1A651C8000C09F52 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0EB17D871FFBDE6E00F5328C /* QuartzCore.framework in Frameworks */,
+				0EB17D831FFBC61A00F5328C /* Metal.framework in Frameworks */,
+				F51A29321A684446002472F2 /* libnya_engine.a in Frameworks */,
+				F51A29281A684137002472F2 /* OpenGL.framework in Frameworks */,
+				F52FEB051A651C8100C09F52 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F51A292A1A68443F002472F2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F51A292F1A68443F002472F2 /* libnya_engine.a */,
+				F51A29311A68443F002472F2 /* libnya_engine_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F52FEAF81A651C8000C09F52 = {
+			isa = PBXGroup;
+			children = (
+				F51A29291A68443F002472F2 /* nya_engine.xcodeproj */,
+				F51A29211A684014002472F2 /* test_cube.cpp */,
+				F51A29231A6840F8002472F2 /* test-cube-Info.plist */,
+				F52FEB031A651C8000C09F52 /* Frameworks */,
+				F52FEB021A651C8000C09F52 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F52FEB021A651C8000C09F52 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F52FEB011A651C8000C09F52 /* test-cube.app */,
+				3D19B42F1C89E2DB00261EB2 /* test-cube-ios.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F52FEB031A651C8000C09F52 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0EB17D861FFBDE6E00F5328C /* QuartzCore.framework */,
+				0EB17D821FFBC61A00F5328C /* Metal.framework */,
+				0EB17D801FFBC60D00F5328C /* MetalKit.framework */,
+				3D19B4511C89E52A00261EB2 /* QuartzCore.framework */,
+				3D19B44B1C89E42A00261EB2 /* Foundation.framework */,
+				3D19B4251C89E1AB00261EB2 /* UIKit.framework */,
+				3D19B41C1C89E13C00261EB2 /* OpenGLES.framework */,
+				F51A29271A684137002472F2 /* OpenGL.framework */,
+				F51A29251A684120002472F2 /* libnya_engine.a */,
+				F52FEB041A651C8000C09F52 /* Cocoa.framework */,
+				F52FEB061A651C8100C09F52 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F52FEB061A651C8100C09F52 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F52FEB071A651C8100C09F52 /* AppKit.framework */,
+				F52FEB081A651C8100C09F52 /* CoreData.framework */,
+				F52FEB091A651C8100C09F52 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3D19B42E1C89E2DB00261EB2 /* test-cube-ios */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D19B4431C89E2DB00261EB2 /* Build configuration list for PBXNativeTarget "test-cube-ios" */;
+			buildPhases = (
+				3D19B42B1C89E2DB00261EB2 /* Sources */,
+				3D19B42C1C89E2DB00261EB2 /* Frameworks */,
+				3D19B42D1C89E2DB00261EB2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "test-cube-ios";
+			productName = "test-cube-ios";
+			productReference = 3D19B42F1C89E2DB00261EB2 /* test-cube-ios.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F52FEB001A651C8000C09F52 /* test-cube */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F51A291F1A683FE5002472F2 /* Build configuration list for PBXNativeTarget "test-cube" */;
+			buildPhases = (
+				F52FEAFD1A651C8000C09F52 /* Sources */,
+				F52FEAFE1A651C8000C09F52 /* Frameworks */,
+				F52FEAFF1A651C8000C09F52 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "test-cube";
+			productName = "test-cube";
+			productReference = F52FEB011A651C8000C09F52 /* test-cube.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F52FEAF91A651C8000C09F52 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = nya;
+				TargetAttributes = {
+					3D19B42E1C89E2DB00261EB2 = {
+						CreatedOnToolsVersion = 7.2.1;
+					};
+				};
+			};
+			buildConfigurationList = F52FEAFC1A651C8000C09F52 /* Build configuration list for PBXProject "test cube" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F52FEAF81A651C8000C09F52;
+			productRefGroup = F52FEB021A651C8000C09F52 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F51A292A1A68443F002472F2 /* Products */;
+					ProjectRef = F51A29291A68443F002472F2 /* nya_engine.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				F52FEB001A651C8000C09F52 /* test-cube */,
+				3D19B42E1C89E2DB00261EB2 /* test-cube-ios */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		F51A292F1A68443F002472F2 /* libnya_engine.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnya_engine.a;
+			remoteRef = F51A292E1A68443F002472F2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F51A29311A68443F002472F2 /* libnya_engine_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnya_engine_ios.a;
+			remoteRef = F51A29301A68443F002472F2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3D19B42D1C89E2DB00261EB2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F52FEAFF1A651C8000C09F52 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F51A29241A6840F8002472F2 /* test-cube-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3D19B42B1C89E2DB00261EB2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D19B4461C89E39300261EB2 /* test_cube.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F52FEAFD1A651C8000C09F52 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F51A29221A684014002472F2 /* test_cube.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3D19B4441C89E2DB00261EB2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CONFIGURATION_BUILD_DIR = ../../bin/ios_debug;
+				CONFIGURATION_TEMP_DIR = ../../obj/ios_debug;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "../../tests/test_cube/test-cube-ios-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OBJROOT = ../../obj/;
+				PRODUCT_BUNDLE_IDENTIFIER = "nya.test-cube-ios";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SYMROOT = ../../bin/;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = ../../;
+			};
+			name = Debug;
+		};
+		3D19B4451C89E2DB00261EB2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CONFIGURATION_BUILD_DIR = ../../bin/ios_release;
+				CONFIGURATION_TEMP_DIR = ../../obj/ios_release;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "../../tests/test_cube/test-cube-ios-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OBJROOT = ../../obj/;
+				PRODUCT_BUNDLE_IDENTIFIER = "nya.test-cube-ios";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SYMROOT = ../../bin/;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = ../../;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F51A291D1A683FE5002472F2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = ../../bin/mac_debug;
+				CONFIGURATION_TEMP_DIR = ../../obj/mac_debug;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/vlad/Development/nya-engine/bin/mac_debug",
+				);
+				OBJROOT = ../../obj/;
+				PRODUCT_NAME = "test-cube";
+				SYMROOT = ../../bin/;
+				USER_HEADER_SEARCH_PATHS = ../../;
+			};
+			name = Debug;
+		};
+		F51A291E1A683FE5002472F2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = ../../bin/mac_release;
+				CONFIGURATION_TEMP_DIR = ../../obj/mac_release;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/vlad/Development/nya-engine/bin/mac_debug",
+				);
+				OBJROOT = ../../obj/;
+				PRODUCT_NAME = "test-cube";
+				SYMROOT = ../../bin/;
+				USER_HEADER_SEARCH_PATHS = ../../;
+			};
+			name = Release;
+		};
+		F52FEB301A651C8100C09F52 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		F52FEB311A651C8100C09F52 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3D19B4431C89E2DB00261EB2 /* Build configuration list for PBXNativeTarget "test-cube-ios" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D19B4441C89E2DB00261EB2 /* Debug */,
+				3D19B4451C89E2DB00261EB2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F51A291F1A683FE5002472F2 /* Build configuration list for PBXNativeTarget "test-cube" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F51A291D1A683FE5002472F2 /* Debug */,
+				F51A291E1A683FE5002472F2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F52FEAFC1A651C8000C09F52 /* Build configuration list for PBXProject "test cube" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F52FEB301A651C8100C09F52 /* Debug */,
+				F52FEB311A651C8100C09F52 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F52FEAF91A651C8000C09F52 /* Project object */;
+}

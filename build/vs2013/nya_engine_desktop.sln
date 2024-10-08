@@ -1,0 +1,34 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nya_engine_shared", "nya_engine.vcxitems", "{95DA0ACF-03E6-47EB-B369-3082DCDBBC84}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nya_engine_desktop_opengl", "nya_engine_desktop_opengl.vcxproj", "{35C1C4FC-C0E4-4DA2-B857-D23D6F7832D0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nya_engine_desktop_directx11", "nya_engine_desktop_directx11.vcxproj", "{CEB45D14-9F75-4217-BDF7-244D69026437}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		nya_engine.vcxitems*{95da0acf-03e6-47eb-b369-3082dcdbbc84}*SharedItemsImports = 9
+		nya_engine.vcxitems*{35c1c4fc-c0e4-4da2-b857-d23d6f7832d0}*SharedItemsImports = 4
+		nya_engine.vcxitems*{ceb45d14-9f75-4217-bdf7-244d69026437}*SharedItemsImports = 4
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{35C1C4FC-C0E4-4DA2-B857-D23D6F7832D0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{35C1C4FC-C0E4-4DA2-B857-D23D6F7832D0}.Debug|Win32.Build.0 = Debug|Win32
+		{35C1C4FC-C0E4-4DA2-B857-D23D6F7832D0}.Release|Win32.ActiveCfg = Release|Win32
+		{35C1C4FC-C0E4-4DA2-B857-D23D6F7832D0}.Release|Win32.Build.0 = Release|Win32
+		{CEB45D14-9F75-4217-BDF7-244D69026437}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CEB45D14-9F75-4217-BDF7-244D69026437}.Debug|Win32.Build.0 = Debug|Win32
+		{CEB45D14-9F75-4217-BDF7-244D69026437}.Release|Win32.ActiveCfg = Release|Win32
+		{CEB45D14-9F75-4217-BDF7-244D69026437}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{95da0acf-03e6-47eb-b369-3082dcdbbc84}</ItemsProjectGuid>
+    <ItemsRootNamespace>nya_engine</ItemsRootNamespace>
+    <ItemsProjectName>nya_engine (files)</ItemsProjectName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\formats\dds.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\formats\ktx.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\formats\math_expr_parser.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\formats\meta.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\formats\nms.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\formats\nan.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\formats\string_convert.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\formats\text_parser.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\formats\tga.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\log\log.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\log\composite_log.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\log\output_stream.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\log\plain_file_log.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\log\stdout_log.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\log\warning.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\log\windbg_log.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\math\aabb.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\math\bezier.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\math\constants.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\math\frustum.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\math\matrix.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\math\quadtree.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\math\quaternion.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\memory\memory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\memory\mutex.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\memory\tmp_buffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\animation.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\bitmap.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\fbo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\render.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\render_buffered.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\render_directx11.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\render_opengl.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\render_metal.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\shader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\shader_code_parser.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\skeleton.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\statistics.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\texture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\transform.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\vbo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\render\debug_draw.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\resources\composite_resources_provider.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\resources\file_resources_provider.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\resources\memory_resources_provider.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\resources\resources.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\scene\animation.cpp">
+      <ObjectFileName>$(IntDir)scene\</ObjectFileName>
+      <XMLDocumentationFileName>$(IntDir)scene\</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\scene\camera.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\scene\location.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\scene\particles_group.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\scene\particles.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\scene\material.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\scene\mesh.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\scene\postprocess.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\scene\scene.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\scene\shader.cpp">
+      <ObjectFileName>$(IntDir)scene\</ObjectFileName>
+      <XMLDocumentationFileName>$(IntDir)scene\</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\scene\texture.cpp">
+      <ObjectFileName>$(IntDir)scene\</ObjectFileName>
+      <XMLDocumentationFileName>$(IntDir)scene\</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\scene\transform.cpp">
+      <ObjectFileName>$(IntDir)scene\</ObjectFileName>
+      <XMLDocumentationFileName>$(IntDir)scene\</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\system\app.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\system\shaders_cache_provider.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\system\system.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\ui\list.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\ui\panel.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\ui\slider.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\ui\ui.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\formats\dds.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\formats\ktx.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\formats\math_expr_parser.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\formats\meta.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\formats\nms.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\formats\nan.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\formats\string_convert.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\formats\text_parser.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\formats\tga.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\log\log.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\log\output_stream.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\log\plain_file_log.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\log\stdout_log.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\log\warning.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\log\windbg_log.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\math\aabb.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\math\angle.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\math\bezier.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\math\constants.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\math\frustum.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\math\matrix.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\math\quadtree.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\math\quaternion.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\math\scalar.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\math\simd.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\math\vector.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\memory\indexed_map.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\memory\invalid_object.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\memory\lru.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\memory\memory.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\memory\memory_reader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\memory\memory_writer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\memory\mutex.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\memory\non_copyable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\memory\optional.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\memory\pool.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\memory\shared_ptr.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\memory\tag_list.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\memory\tmp_buffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\animation.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\bitmap.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\fbo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\render.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\render_api.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\render_buffered.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\render_directx11.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\render_opengl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\render_metal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\render_objects.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\render_opengl_ext.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\screen_quad.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\shader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\shader_code_parser.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\skeleton.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\statistics.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\texture.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\transform.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\vbo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\render\debug_draw.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\resources\composite_resources_provider.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\resources\file_resources_provider.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\resources\memory_resources_provider.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\resources\resources.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\resources\shared_resources.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\scene\animation.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\scene\camera.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\scene\location.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\scene\particles_group.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\scene\particles.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\scene\material.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\scene\mesh.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\scene\postprocess.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\scene\proxy.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\scene\scene.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\scene\shader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\scene\shared_resources.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\scene\tags.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\scene\texture.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\scene\transform.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\system\app.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\system\app_internal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\system\button_codes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\system\shaders_cache_provider.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\system\system.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\ui\button.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\ui\label.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\ui\list.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\ui\panel.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\ui\slider.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\ui\ui.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,6 @@
+Config shadow build path before building nya engine lib to avoid building in nya-engine/build directory.
+
+Include 'link_nya_engine.pri' file in custom qt project using nya-engine, this pri file links nya engine library to current project.
+Example:
+    NYA_ENGINE_DIR = /ext/sdk/nya-engine
+    include($${NYA_ENGINE_DIR}/build/qt5/link_nya_engine.pri)

@@ -1,0 +1,15 @@
+@pass "default"
+shader="xps.nsh"
+cull=ccw
+
+@pass "transparent_clip"
+shader="xps.nsh"
+cull=ccw
+"alpha test"=-1.0,0.9
+
+@pass "transparent_blend"
+shader="xps.nsh"
+cull=ccw
+blend="src_alpha:inv_src_alpha"
+"alpha test"=1.0,-0.9
+zwrite=false

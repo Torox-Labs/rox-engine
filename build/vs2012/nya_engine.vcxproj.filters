@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="log">
+      <UniqueIdentifier>{55dc3da7-a06f-4249-bfe2-461b80293baa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memory">
+      <UniqueIdentifier>{7182821f-b069-43d7-8b57-c00ea7144b80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{1ce537f3-eb0c-458f-9997-719fef0f29f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render">
+      <UniqueIdentifier>{0763405c-7514-4100-8c67-5f623272d01f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{c6d78e24-9f7a-44eb-b987-71ac4f0a75d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scene">
+      <UniqueIdentifier>{a2cc7077-9cf1-4fae-b322-dd8cef5ab079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{025d4330-b200-4544-94db-f8ce69961f14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system">
+      <UniqueIdentifier>{89c2673a-f0c9-420f-84d4-c9ccb2a2258e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="formats">
+      <UniqueIdentifier>{75230e9e-19f9-4c4f-b91f-679535dca4c3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\log\log.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\log\plain_file_log.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\log\composite_log.cpp">
+        <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\log\output_stream.cpp">
+        <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\log\stdout_log.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\log\windbg_log.cpp">
+        <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\memory\memory.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\memory\mutex.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\memory\tmp_buffer.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\resources\composite_resources_provider.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\resources\file_resources_provider.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\resources\memory_resources_provider.cpp">
+        <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\resources\resources.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\render\animation.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\render\bitmap.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\render\fbo.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\render\platform_specific_gl.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\render\render.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\render\shader.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\render\skeleton.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\render\texture.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\render\transform.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\render\vbo.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\render\debug_draw.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\bezier.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\constants.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\matrix.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\quadtree.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\quaternion.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\scene\camera.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\scene\location.cpp">
+        <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\scene\particles_group.cpp">
+        <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\scene\particles.cpp">
+        <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\scene\material.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\scene\mesh.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\scene\scene.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\scene\shader.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\scene\texture.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\scene\transform.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\system\app.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\system\system.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ui\list.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ui\panel.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ui\slider.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ui\ui.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\scene\animation.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\aabb.cpp">
+        <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\frustum.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\system\shaders_cache_provider.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\tga.cpp">
+      <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\dds.cpp">
+      <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\string_convert.cpp">
+      <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\text_parser.cpp">
+      <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\log\warning.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\meta.cpp">
+        <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\nms.cpp">
+      <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\nan.cpp">
+        <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\render\statistics.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\render\shader_code_parser.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\ktx.cpp">
+      <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\scene\postprocess.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\math_expr_parser.cpp">
+      <Filter>formats</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\log\log.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\log\plain_file_log.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\log\composite_log.h">
+        <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\log\stdout_log.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\log\windbg_log.h">
+        <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\memory\memory.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\memory\memory_reader.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\memory\memory_writer.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\memory\mutex.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\memory\non_copyable.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\memory\pool.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\memory\tmp_buffer.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\resources\composite_resources_provider.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\resources\file_resources_provider.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\resources\memory_resources_provider.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\resources\resources.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\resources\shared_resources.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\render\animation.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\render\bitmap.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\render\fbo.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\render\platform_specific_gl.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\render\render.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\render\shader.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\render\skeleton.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\render\texture.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\render\transform.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\render\vbo.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\render\debug_draw.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\angle.h">
+        <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\bezier.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\constants.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\matrix.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\quadtree.h">
+        <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\quaternion.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\vector.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\simd.h">
+        <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scene\camera.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scene\location.h">
+        <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scene\particles_group.h">
+        <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scene\particles.h">
+        <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scene\material.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scene\mesh.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scene\proxy.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scene\scene.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scene\shader.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scene\shared_resources.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scene\tags.h">
+        <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scene\texture.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scene\transform.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\system\app.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\system\button_codes.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\system\system.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\button.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\label.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\list.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\panel.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\slider.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\ui.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scene\animation.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\aabb.h">
+        <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\frustum.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\system\shaders_cache_provider.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\formats\tga.h">
+      <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\formats\dds.h">
+      <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\memory\shared_ptr.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\formats\string_convert.h">
+      <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\formats\text_parser.h">
+      <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\log\warning.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\formats\meta.h">
+        <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\formats\nms.h">
+      <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\formats\nan.h">
+        <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\memory\indexed_map.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\memory\invalid_object.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\memory\optional.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\render\statistics.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\render\shader_code_parser.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\formats\ktx.h">
+      <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\log\output_stream.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\scalar.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\memory\lru.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\memory\tag_list.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\render\render_objects.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\system\app_internal.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scene\postprocess.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\formats\math_expr_parser.h">
+      <Filter>formats</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

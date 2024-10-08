@@ -1,0 +1,65 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nya_engine (files)", "nya_engine.vcxitems", "{95DA0ACF-03E6-47EB-B369-3082DCDBBC84}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nya_engine_windowsphone81", "nya_engine_windowsphone81.vcxproj", "{98C70E52-1EAD-4985-A6EE-35FECE3EB645}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nya_engine_windowsphone80", "nya_engine_windowsphone80.vcxproj", "{05F97A18-0454-4545-981A-6618A020DEDC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nya_engine_windows_metro", "nya_engine_windows_metro.vcxproj", "{086F95C2-06D2-4674-9536-7527E97CE310}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		nya_engine.vcxitems*{95da0acf-03e6-47eb-b369-3082dcdbbc84}*SharedItemsImports = 9
+		nya_engine.vcxitems*{98c70e52-1ead-4985-a6ee-35fece3eb645}*SharedItemsImports = 4
+		nya_engine.vcxitems*{05f97a18-0454-4545-981a-6618a020dedc}*SharedItemsImports = 4
+		nya_engine.vcxitems*{086f95c2-06d2-4674-9536-7527e97ce310}*SharedItemsImports = 4
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|ARM = Release|ARM
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{98C70E52-1EAD-4985-A6EE-35FECE3EB645}.Debug|ARM.ActiveCfg = Debug|ARM
+		{98C70E52-1EAD-4985-A6EE-35FECE3EB645}.Debug|ARM.Build.0 = Debug|ARM
+		{98C70E52-1EAD-4985-A6EE-35FECE3EB645}.Debug|Win32.ActiveCfg = Debug|Win32
+		{98C70E52-1EAD-4985-A6EE-35FECE3EB645}.Debug|Win32.Build.0 = Debug|Win32
+		{98C70E52-1EAD-4985-A6EE-35FECE3EB645}.Debug|x64.ActiveCfg = Debug|Win32
+		{98C70E52-1EAD-4985-A6EE-35FECE3EB645}.Release|ARM.ActiveCfg = Release|ARM
+		{98C70E52-1EAD-4985-A6EE-35FECE3EB645}.Release|ARM.Build.0 = Release|ARM
+		{98C70E52-1EAD-4985-A6EE-35FECE3EB645}.Release|Win32.ActiveCfg = Release|Win32
+		{98C70E52-1EAD-4985-A6EE-35FECE3EB645}.Release|Win32.Build.0 = Release|Win32
+		{98C70E52-1EAD-4985-A6EE-35FECE3EB645}.Release|x64.ActiveCfg = Release|Win32
+		{05F97A18-0454-4545-981A-6618A020DEDC}.Debug|ARM.ActiveCfg = Debug|ARM
+		{05F97A18-0454-4545-981A-6618A020DEDC}.Debug|ARM.Build.0 = Debug|ARM
+		{05F97A18-0454-4545-981A-6618A020DEDC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{05F97A18-0454-4545-981A-6618A020DEDC}.Debug|Win32.Build.0 = Debug|Win32
+		{05F97A18-0454-4545-981A-6618A020DEDC}.Debug|x64.ActiveCfg = Debug|Win32
+		{05F97A18-0454-4545-981A-6618A020DEDC}.Release|ARM.ActiveCfg = Release|ARM
+		{05F97A18-0454-4545-981A-6618A020DEDC}.Release|ARM.Build.0 = Release|ARM
+		{05F97A18-0454-4545-981A-6618A020DEDC}.Release|Win32.ActiveCfg = Release|Win32
+		{05F97A18-0454-4545-981A-6618A020DEDC}.Release|Win32.Build.0 = Release|Win32
+		{05F97A18-0454-4545-981A-6618A020DEDC}.Release|x64.ActiveCfg = Release|Win32
+		{086F95C2-06D2-4674-9536-7527E97CE310}.Debug|ARM.ActiveCfg = Debug|ARM
+		{086F95C2-06D2-4674-9536-7527E97CE310}.Debug|ARM.Build.0 = Debug|ARM
+		{086F95C2-06D2-4674-9536-7527E97CE310}.Debug|Win32.ActiveCfg = Debug|Win32
+		{086F95C2-06D2-4674-9536-7527E97CE310}.Debug|Win32.Build.0 = Debug|Win32
+		{086F95C2-06D2-4674-9536-7527E97CE310}.Debug|x64.ActiveCfg = Debug|x64
+		{086F95C2-06D2-4674-9536-7527E97CE310}.Debug|x64.Build.0 = Debug|x64
+		{086F95C2-06D2-4674-9536-7527E97CE310}.Release|ARM.ActiveCfg = Release|ARM
+		{086F95C2-06D2-4674-9536-7527E97CE310}.Release|ARM.Build.0 = Release|ARM
+		{086F95C2-06D2-4674-9536-7527E97CE310}.Release|Win32.ActiveCfg = Release|Win32
+		{086F95C2-06D2-4674-9536-7527E97CE310}.Release|Win32.Build.0 = Release|Win32
+		{086F95C2-06D2-4674-9536-7527E97CE310}.Release|x64.ActiveCfg = Release|x64
+		{086F95C2-06D2-4674-9536-7527E97CE310}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
