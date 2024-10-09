@@ -5,16 +5,16 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
    set(ANDROID 1)
 endif()
 
-# if(WIN32)
-#     # Windows-specific settings
-#     message(STATUS "Configuring for Windows")
-# elseif(APPLE)
-#     # macOS-specific settings
-#     message(STATUS "Configuring for macOS")
-# elseif(UNIX)
-#     # Linux-specific settings
-#     message(STATUS "Configuring for Linux")
-# endif()
+if(WIN32)
+    # Windows-specific settings
+    message(STATUS "Configuring for Windows")
+elseif(APPLE)
+    # macOS-specific settings
+    message(STATUS "Configuring for macOS")
+elseif(UNIX)
+    # Linux-specific settings
+    message(STATUS "Configuring for Linux")
+endif()
 
 macro(define_source_files)
     set(temp_src_dir ${ARGN})

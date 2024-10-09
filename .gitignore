@@ -12,6 +12,18 @@ CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
 
+
+#CMake user build folder
+build/
+out/
+x64/
+Debug/
+.vs/
+androidBuild/
+iosBuild/
+
+.DS_Store
+
 # XCode
 obj/
 bin/
