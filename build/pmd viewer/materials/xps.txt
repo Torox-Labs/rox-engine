@@ -1,7 +1,0 @@
-@pass "default"
-shader="xps.nsh"
-cull=ccw
-
-@pass "opaque"
-shader="xps.nsh"
-cull=ccw

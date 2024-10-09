@@ -1,8 +1,20 @@
-cmake_minimum_required(VERSION 2.8.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.21)
+project(rox_engine VERSION 0.1 LANGUAGES CXX)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
    set(ANDROID 1)
 endif()
+
+# if(WIN32)
+#     # Windows-specific settings
+#     message(STATUS "Configuring for Windows")
+# elseif(APPLE)
+#     # macOS-specific settings
+#     message(STATUS "Configuring for macOS")
+# elseif(UNIX)
+#     # Linux-specific settings
+#     message(STATUS "Configuring for Linux")
+# endif()
 
 macro(define_source_files)
     set(temp_src_dir ${ARGN})
@@ -36,7 +48,7 @@ define_source_files(ui)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 if(EMSCRIPTEN)
-   add_library(nya_engine SHARED ${src_files})
+   add_library(${CMAKE_PROJECT_NAME} SHARED ${src_files})
 else()
-   add_library(nya_engine ${src_files})
+   add_library(${CMAKE_PROJECT_NAME} ${src_files})
 endif()

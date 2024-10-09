@@ -1,0 +1,525 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\Dev\rox-engine\formats\dds.cpp">
+      <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\formats\ktx.cpp">
+      <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\formats\math_expr_parser.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\formats\meta.cpp">
+      <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\formats\nan.cpp">
+      <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\formats\nms.cpp">
+      <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\formats\string_convert.cpp">
+      <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\formats\text_parser.cpp">
+      <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\formats\tga.cpp">
+      <Filter>formats</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\log\android_log.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\log\composite_log.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\log\log.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\log\output_stream.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\log\plain_file_log.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\log\stdout_log.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\log\warning.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\log\windbg_log.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\math\aabb.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\math\bezier.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\math\constants.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\math\frustum.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\math\matrix.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\math\quadtree.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\math\quaternion.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\memory\memory.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\memory\mutex.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\memory\tmp_buffer.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\animation.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\bitmap.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\debug_draw.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\fbo.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\render.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\render_buffered.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\render_directx11.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\render_metal.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\render_opengl.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\shader.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\shader_code_parser.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\skeleton.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\statistics.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\texture.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\transform.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\render\vbo.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\resources\apk_resources_provider.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\resources\composite_resources_provider.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\resources\file_resources_provider.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\resources\memory_resources_provider.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\resources\resources.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\scene\animation.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\scene\camera.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\scene\location.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\scene\material.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\scene\mesh.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\scene\particles.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\scene\particles_group.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\scene\postprocess.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\scene\scene.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\scene\shader.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\scene\texture.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\scene\transform.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\system\app.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\system\shaders_cache_provider.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\system\system.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\ui\list.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\ui\panel.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\ui\slider.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Dev\rox-engine\ui\ui.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\Dev\rox-engine\formats\dds.h">
+      <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\formats\ktx.h">
+      <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\formats\math_expr_parser.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\formats\meta.h">
+      <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\formats\nan.h">
+      <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\formats\nms.h">
+      <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\formats\string_convert.h">
+      <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\formats\text_parser.h">
+      <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\formats\tga.h">
+      <Filter>formats</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\log\android_log.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\log\composite_log.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\log\log.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\log\output_stream.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\log\plain_file_log.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\log\stdout_log.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\log\warning.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\log\windbg_log.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\math\aabb.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\math\angle.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\math\bezier.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\math\constants.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\math\frustum.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\math\matrix.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\math\quadtree.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\math\quaternion.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\math\scalar.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\math\simd.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\math\vector.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\memory\align_alloc.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\memory\indexed_map.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\memory\invalid_object.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\memory\lru.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\memory\memory.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\memory\memory_reader.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\memory\memory_writer.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\memory\mutex.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\memory\non_copyable.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\memory\optional.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\memory\pool.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\memory\shared_ptr.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\memory\tag_list.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\memory\tile_map.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\memory\tmp_buffer.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\animation.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\bitmap.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\debug_draw.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\fbo.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\render.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\render_api.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\render_buffered.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\render_directx11.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\render_metal.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\render_objects.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\render_opengl.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\render_opengl_ext.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\screen_quad.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\shader.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\shader_code_parser.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\skeleton.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\statistics.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\texture.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\transform.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\render\vbo.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\resources\apk_resources_provider.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\resources\composite_resources_provider.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\resources\file_resources_provider.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\resources\memory_resources_provider.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\resources\resources.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\resources\shared_resources.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\scene\animation.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\scene\camera.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\scene\location.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\scene\material.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\scene\mesh.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\scene\particles.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\scene\particles_group.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\scene\postprocess.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\scene\proxy.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\scene\scene.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\scene\shader.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\scene\shared_resources.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\scene\tags.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\scene\texture.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\scene\transform.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\system\app.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\system\app_internal.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\system\button_codes.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\system\shaders_cache_provider.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\system\system.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\ui\button.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\ui\label.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\ui\list.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\ui\panel.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\ui\slider.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Dev\rox-engine\ui\ui.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Dev\rox-engine\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="formats">
+      <UniqueIdentifier>{DC516D63-0B93-3E68-BB3A-4193579DADAD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="log">
+      <UniqueIdentifier>{9D47F914-C578-3BF9-8A3F-0D5B2DCEC813}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{0D2FCE64-C89A-3E58-9B73-17ABE6766AB1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memory">
+      <UniqueIdentifier>{B4D3E12D-E9B9-3813-9485-A58593A280D4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render">
+      <UniqueIdentifier>{57BF3CBB-0E15-32D2-B85E-A30623664743}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{1E04DA23-1CAE-3DB4-86A4-6E549E54155E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scene">
+      <UniqueIdentifier>{E63B29A0-A1CA-35EF-B8B6-CC1476C0BA15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system">
+      <UniqueIdentifier>{F4723AD0-7C2E-33D1-973E-54CBBD10D26C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{9658F791-C0C7-3833-AD60-E64B063ECA36}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
