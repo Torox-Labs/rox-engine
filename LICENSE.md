@@ -1,4 +1,4 @@
-Copyright © 2023 Torox Project
+Copyright © 2024 Torox Project
 
 **IMPORTANT**: By downloading, using, or distributing the Torox Engine (the "Software"), you agree to be bound by the terms of this License Agreement.
 
