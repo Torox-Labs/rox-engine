@@ -295,7 +295,7 @@ Please refer to our [Contributing Guidelines](CONTRIBUTING.md) for more informat
 
 ## License
 
-Rox-Engine is licensed under the [MIT License](LICENSE), allowing you flexibility in how you use the engine in your projects.
+Rox-Engine is licensed under the [MIT License](LICENSE.md), allowing you flexibility in how you use the engine in your projects.
 
 ---
 
