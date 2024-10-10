@@ -13,7 +13,7 @@ Rox-Engine is an innovative, decentralized game engine/framework written in **C+
 
 - [Rox-Engine](https://github.com/Torox-Lab/rox-engine)
 - [Torox-Math](https://github.com/Torox-Lab/torox-math)
-- [Torox-Token](https://github.com/Torox-Lab/torox-token)
+- [Orox-Token](https://github.com/Torox-Lab/orox-token)
 - [Torox-SDK](https://github.com/Torox-Lab/torox-sdk)
 
 Contributions from the community are highly encouraged!
