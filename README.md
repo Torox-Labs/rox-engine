@@ -124,7 +124,7 @@ Rox-Engine's architecture is modular and extensible, consisting of the following
   - **Boost Libraries:** [Installation Guide](https://www.boost.org/doc/libs/1_76_0/more/getting_started/index.html)
   - **OpenSSL:** For cryptographic functions. [Installation Guide](https://www.openssl.org/source/)
   - **[Torox-Math Library](https://github.com/Torox-Lab/torox-math):** For advanced mathematical functions.
-  - **[Torox-Token Library](https://github.com/Torox-Lab/torox-token):** For token and blockchain interactions.
+  - **[Orox-Token Library](https://github.com/Torox-Lab/orox-token):** For token and blockchain interactions.
 
 *Note:* Torox-Math, Torox-Token, SDL3 and Assimp are under consideration for future integration and are not required at this stage.
 
@@ -218,8 +218,8 @@ Our roadmap outlines the planned development stages of Rox-Engine:
 
 - [x] Set up project repository and development environment.
 - [x] Establish the foundational codebase for Rox-Engine.
-- [x] Develop core engine functionalities (rendering, physics, input handling) using OpenGL and GLFW.
-- [-] Implement basic P2P networking capabilities.
+[-] Develop core engine functionalities (rendering, physics, input handling) using OpenGL and GLFW.
+- [ ] Implement basic P2P networking capabilities.
 - [ ] Establish initial blockchain interaction layer.
 - [ ] Release Alpha version for internal testing.
 
