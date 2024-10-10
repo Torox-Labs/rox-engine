@@ -218,7 +218,7 @@ Our roadmap outlines the planned development stages of Rox-Engine:
 
 - [x] Set up project repository and development environment.
 - [x] Establish the foundational codebase for Rox-Engine.
-- [-] Develop core engine functionalities (rendering, physics, input handling) using OpenGL and GLFW.
+- [ - ] Develop core engine functionalities (rendering, physics, input handling) using OpenGL and GLFW.
 - [ ] Implement basic P2P networking capabilities.
 - [ ] Establish initial blockchain interaction layer.
 - [ ] Release Alpha version for internal testing.
