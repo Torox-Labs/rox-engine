@@ -1,7 +1,7 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
 #include "text_parser.h"
-#include "log/log.h"
+#include "logger/log.h"
 #include "memory/invalid_object.h"
 #include "string_convert.h"
 

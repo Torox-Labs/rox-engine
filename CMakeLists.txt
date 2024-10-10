@@ -36,7 +36,7 @@ if(EMSCRIPTEN)
 endif()
 
 define_source_files(formats)
-define_source_files(log)
+define_source_files(logger)
 define_source_files(math)
 define_source_files(memory)
 define_source_files(render)

@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "log/log.h"
-#include "log/warning.h"
+#include "logger/log.h"
+#include "logger/warning.h"
 
 namespace nya_scene
 {
