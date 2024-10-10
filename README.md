@@ -1,6 +1,6 @@
 # Rox-Engine
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 [![Contributors](https://img.shields.io/github/contributors/Torox-Lab/rox-engine.svg)](https://github.com/Torox-Lab/rox-engine/graphs/contributors)
 [![Stars](https://img.shields.io/github/stars/Torox-Lab/rox-engine.svg?style=social&label=Star)](https://github.com/Torox-Lab/rox-engine)
