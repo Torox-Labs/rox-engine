@@ -254,6 +254,10 @@ Our roadmap outlines the planned development stages of Rox-Engine:
 - [ ] Develop a marketplace for Web3 assets and plugins.
 
 ---
+- [x] Completed Task
+- In progress
+- [ ] Incomplete Task
+---
 
 ## Contributing
 
