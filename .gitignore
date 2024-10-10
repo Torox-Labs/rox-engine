@@ -14,6 +14,7 @@ CMakeUserPresets.json
 
 
 #CMake user build folder
+/build
 build/
 out/
 x64/
