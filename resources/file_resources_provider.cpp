@@ -231,7 +231,7 @@ void file_resources_provider::enumerate_folder(const char*folder_name)
     if(!dirp)
 #endif
     {
-        nya_log::log()<<"unable to enumerate folder "<<(m_path+folder_name_str).c_str()<<"\n";
+        rox_log::log()<<"unable to enumerate folder "<<(m_path+folder_name_str).c_str()<<"\n";
         return;
     }
 
@@ -257,7 +257,7 @@ void file_resources_provider::enumerate_folder(const char*folder_name)
         struct stat stat_buf;
         if(stat(full_path_str.c_str(),&stat_buf)<0)
         {
-            nya_log::log()<<"unable to read "<<full_path_str.c_str()<<"\n";
+            rox_log::log()<<"unable to read "<<full_path_str.c_str()<<"\n";
             continue;
         }
 

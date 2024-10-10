@@ -323,7 +323,7 @@ bool text_parser::load_from_data(const char *text,size_t text_size)
                     subsection_empty=false;
             }
             else if(!l.empty)
-                nya_log::log()<<"Text parser: subsection found before any section declaration at lines "<< l.line_number<<"-"<<l.next_line_number<<"\n";
+                rox_log::log()<<"Text parser: subsection found before any section declaration at lines "<< l.line_number<<"-"<<l.next_line_number<<"\n";
         }
     }
 
@@ -375,7 +375,7 @@ void text_parser::fill_section(section &s,const line &l)
         }
         else
         {
-            nya_log::log()<<"Text parser: unexpected token at lines "<<l.line_number<<"-"<<l.next_line_number<<"\n";
+            rox_log::log()<<"Text parser: unexpected token at lines "<<l.line_number<<"-"<<l.next_line_number<<"\n";
             break;
         }
 
@@ -491,7 +491,7 @@ size_t text_parser::skip_whitespaces_back(const char *text,size_t pos)
     return 0;
 }
 
-void text_parser::debug_print(nya_log::ostream_base &os) const
+void text_parser::debug_print(rox_log::ostream_base &os) const
 {
     for(size_t i=0;i<m_sections.size();++i)
     {

@@ -15,7 +15,7 @@ namespace nya_resources
 namespace
 {
     resources_provider *res_provider=0;
-    nya_log::log_base *resources_log=0;
+    rox_log::log_base *resources_log=0;
 
     file_resources_provider &default_provider()
     {
@@ -60,12 +60,12 @@ nya_memory::tmp_buffer_ref read_data(const char *name)
     return result;
 }
 
-void set_log(nya_log::log_base *l) { resources_log=l; }
+void set_log(rox_log::log_base *l) { resources_log=l; }
 
-nya_log::log_base &log()
+rox_log::log_base &log()
 {
     if(!resources_log)
-        return nya_log::log();
+        return rox_log::log();
 
     return *resources_log;
 }

@@ -42,7 +42,7 @@
 
 namespace
 {
-    nya_log::log_base *system_log=0;
+    rox_log::log_base *system_log=0;
 
 #ifdef __ANDROID__
     std::string android_user_path;
@@ -56,12 +56,12 @@ namespace nya_system
 void set_android_user_path(const char *path) { android_user_path.assign(path?path:""); }
 #endif
 
-void set_log(nya_log::log_base *l) { system_log=l; }
+void set_log(rox_log::log_base *l) { system_log=l; }
 
-nya_log::log_base &log()
+rox_log::log_base &log()
 {
     if(!system_log)
-        return nya_log::log();
+        return rox_log::log();
 
     return *system_log;
 }

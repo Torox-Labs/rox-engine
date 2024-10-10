@@ -15,7 +15,7 @@ namespace nya_render
 
 namespace
 {
-    nya_log::log_base *render_log=0;
+    rox_log::log_base *render_log=0;
     nya_render::render_api_interface::state current_state;
 
     render_api_interface *available_render_interface()
@@ -32,11 +32,11 @@ namespace
     render_api_interface *render_interface = available_render_interface();
 }
 
-void set_log(nya_log::log_base *l) { render_log=l; }
-nya_log::log_base &log()
+void set_log(rox_log::log_base *l) { render_log=l; }
+rox_log::log_base &log()
 {
     if(!render_log)
-        return nya_log::log();
+        return rox_log::log();
 
     return *render_log;
 }

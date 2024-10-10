@@ -50,8 +50,8 @@ resources_provider &get_resources_provider();
 
 nya_memory::tmp_buffer_ref read_data(const char *name);
 
-void set_log(nya_log::log_base *l);
-nya_log::log_base &log();
+void set_log(rox_log::log_base *l);
+rox_log::log_base &log();
 
 bool check_extension(const char *name,const char *ext);
 

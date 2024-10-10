@@ -1830,7 +1830,7 @@ namespace
             default:                             severity_str = "unknown"; break;
         }
 
-        nya_log::log("gl log [%s] %s %s %d: %s\n", severity_str, source_str, type_str, id, message);
+        rox_log::log("gl log [%s] %s %s %d: %s\n", severity_str, source_str, type_str, id, message);
         if(severity!=GL_DEBUG_SEVERITY_NOTIFICATION)
             severity_str=severity_str;
     }
@@ -1849,7 +1849,7 @@ void render_opengl::enable_debug(bool synchronous)
     init_extensions();
     if(!glDebugMessageCallback)
     {
-        nya_log::log("unable to set opengl log\n");
+        rox_log::log("unable to set opengl log\n");
         return;
     }
   #endif

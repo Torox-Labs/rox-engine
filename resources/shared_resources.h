@@ -270,7 +270,7 @@ private:
             if(m_ref_count>0)
                 --m_ref_count;
             else
-                nya_log::log()<<"resource system failure\n";
+                rox_log::log()<<"resource system failure\n";
 
             if(ref.m_res && m_base)
                 m_base->release_resource(*ref.m_res);
@@ -278,7 +278,7 @@ private:
             if(ref.m_res_holder->map_it!=m_res_map.end())
             {
                 if(!m_base)
-                    nya_log::log()<<"warning: unreleased resource "<<ref.m_res_holder->map_it->first.c_str()<<"\n";
+                    rox_log::log()<<"warning: unreleased resource "<<ref.m_res_holder->map_it->first.c_str()<<"\n";
 
                 m_res_map.erase(ref.m_res_holder->map_it);
             }
@@ -290,7 +290,7 @@ private:
                 if(!m_base)
                     delete this;
                 else
-                    nya_log::log()<<"resource system failure\n";
+                    rox_log::log()<<"resource system failure\n";
             }
         }
 

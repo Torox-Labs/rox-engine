@@ -7,7 +7,7 @@
 #include <vector>
 #include <list>
 
-namespace nya_log { class ostream_base; }
+namespace rox_log { class ostream_base; }
 
 namespace nya_formats
 {
@@ -39,7 +39,7 @@ public:
     nya_math::vec4 get_subsection_value_vec4(int section_idx,const char *type) const;
 
 public:
-    void debug_print(nya_log::ostream_base &os) const;
+    void debug_print(rox_log::ostream_base &os) const;
 
 public:
     text_parser() {}

@@ -353,7 +353,7 @@ void mesh_internal::draw_group(int idx, const char *pass_name) const
     int mat_idx=get_mat_idx(idx);
     if(mat_idx<0)
     {
-        nya_log::warning()<<"invalid material for group'"<<idx<<"in mesh"<<get_name()<<"\n";
+        rox_log::warning()<<"invalid material for group'"<<idx<<"in mesh"<<get_name()<<"\n";
         return;
     }
 

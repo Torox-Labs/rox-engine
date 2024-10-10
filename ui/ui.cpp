@@ -5,7 +5,7 @@
 #include <string>
 #include <string.h>
 
-namespace { nya_log::log_base *ui_log=0; }
+namespace { rox_log::log_base *ui_log=0; }
 
 namespace nya_ui
 {
@@ -351,12 +351,12 @@ void layer::send_event(const event &e)
 }
 
 
-void set_log(nya_log::log_base *l) { ui_log=l; }
+void set_log(rox_log::log_base *l) { ui_log=l; }
 
-nya_log::log_base &log()
+rox_log::log_base &log()
 {
     if(!ui_log)
-        return nya_log::log();
+        return rox_log::log();
 
     return *ui_log;
 }

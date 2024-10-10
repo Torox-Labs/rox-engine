@@ -293,13 +293,13 @@ void material_internal::set(const char *pass_name) const
         {
             if(!m_textures[texture_idx].proxy->internal().set(slot_idx))
             {
-                nya_log::warning()<<"invalid texture for semantics '"<<p.m_shader.internal().get_texture_semantics(slot_idx)<<"' in material '"<<m_name<<"\n";
+                rox_log::warning()<<"invalid texture for semantics '"<<p.m_shader.internal().get_texture_semantics(slot_idx)<<"' in material '"<<m_name<<"\n";
                 missing_texture(is_shader_sampler_cube(p.m_shader,slot_idx)).internal().set(slot_idx);
             }
         }
         else
         {
-            nya_log::warning()<<"invalid texture proxy for semantics '"<<p.m_shader.internal().get_texture_semantics(slot_idx)<<"' in material '"<<m_name<<"\n";
+            rox_log::warning()<<"invalid texture proxy for semantics '"<<p.m_shader.internal().get_texture_semantics(slot_idx)<<"' in material '"<<m_name<<"\n";
             missing_texture(is_shader_sampler_cube(p.m_shader,slot_idx)).internal().set(slot_idx);
         }
     }

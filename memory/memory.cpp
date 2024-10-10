@@ -2,17 +2,17 @@
 
 #include "memory.h"
 
-namespace { nya_log::log_base *memory_log=0; }
+namespace { rox_log::log_base *memory_log=0; }
 
 namespace nya_memory
 {
 
-void set_log(nya_log::log_base *l) { memory_log=l; }
+void set_log(rox_log::log_base *l) { memory_log=l; }
 
-nya_log::log_base &log()
+rox_log::log_base &log()
 {
     if(!memory_log)
-        return nya_log::log();
+        return rox_log::log();
 
     return *memory_log;
 }

@@ -8,7 +8,7 @@
 namespace nya_scene
 {
 
-void set_log(nya_log::log_base *l);
-nya_log::log_base &log();
+void set_log(rox_log::log_base *l);
+rox_log::log_base &log();
 
 }

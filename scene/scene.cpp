@@ -2,17 +2,17 @@
 
 #include "scene.h"
 
-namespace { nya_log::log_base *scene_log=0; }
+namespace { rox_log::log_base *scene_log=0; }
 
 namespace nya_scene
 {
 
-void set_log(nya_log::log_base *l) { scene_log=l; }
+void set_log(rox_log::log_base *l) { scene_log=l; }
 
-nya_log::log_base &log()
+rox_log::log_base &log()
 {
     if(!scene_log)
-        return nya_log::log();
+        return rox_log::log();
 
     return *scene_log;
 }
