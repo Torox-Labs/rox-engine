@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.21)
 project(rox_engine VERSION 0.1 LANGUAGES CXX)
 
-# ====== 1. Set C++ Standard ======
+# ====== Set C++ Standard ======
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# ====== 2. Detect Platforms ======
+# ====== Detect Platforms ======
 if(WIN32)
     # Windows-specific settings
     message(STATUS "Configuring for Windows")
@@ -23,7 +23,7 @@ elseif(ANDROID)
     set(ANDROID 1)
 endif()
 
-# ====== 4. Define Source Subdirectories ======
+# ====== Define Source Subdirectories ======
 # List all your source subdirectories here
 set(SOURCE_SUBDIRS
     formats
@@ -37,7 +37,7 @@ set(SOURCE_SUBDIRS
     ui
 )
 
-# ====== 5. Collect Source Files ======
+# ====== Collect Source Files ======
 set(SRC_FILES)
 
 foreach(subdir IN LISTS SOURCE_SUBDIRS)
@@ -67,11 +67,11 @@ foreach(subdir IN LISTS SOURCE_SUBDIRS)
     source_group(${relative_path} FILES ${headers} ${sources})
 endforeach()
 
-# ====== 6. Define the Library ======
+# ======Define the Library ======
 # Choose STATIC or SHARED based on your needs
 add_library(${PROJECT_NAME} STATIC ${SRC_FILES})
 
-# ====== 7. Include Directories ======
+# ======Include Directories ======
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         ${INCLUDE_DIR}
@@ -82,7 +82,7 @@ target_include_directories(${PROJECT_NAME}
         "D:/CLT/bullet3/build/src"
 )
 
-# ====== 8. Link Directories ======
+# ======Link Directories ======
 # Prefer using full paths or imported targets in modern CMake
 link_directories(
     "D:/CLT/assimp/lib"
@@ -90,14 +90,14 @@ link_directories(
     "D:/CLT/bullet3/build/lib/Release"
 )
 
-# ====== 10. Platform-Specific Configurations ======
+# ====== Platform-Specific Configurations ======
 if(EMSCRIPTEN)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse2")
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "--bind")
     set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".wasm")
 endif()
 
-# ====== 11. Handle Android Specifics ======
+# ====== Handle Android Specifics ======
 if(ANDROID)
     set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     set_property(TARGET ${PROJECT_NAME} PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR ${ANDROID_PACKAGE_SOURCE_DIR})
@@ -120,33 +120,30 @@ if(ANDROID)
     include(${android_openssl_SOURCE_DIR}/android_openssl.cmake)
 endif()
 
-# ====== 12. Handle macOS Specifics ======
+# ====== Handle macOS Specifics ======
 if(APPLE)
     set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE TRUE)
 endif()
 
-# ====== 13. Organize Sources in IDE ======
+# ====== Organize Sources in IDE ======
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SRC_FILES})
 
 # 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-# ====== 14. Set Output Directories ======
+# ====== Set Output Directories ======
 set_target_properties(${PROJECT_NAME} PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-# ====== 9. Link Libraries ======
+# ======Link Libraries ======
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
         rox_engine.lib
+
         glfw3.lib
-        opengl32.lib
-        user32.lib
-        gdi32.lib
-        shell32.lib
         assimp-vc143-mt.lib
         SDL3.lib
         SDL3_test.lib
@@ -156,3 +153,13 @@ target_link_libraries(${PROJECT_NAME}
         LinearMath.lib
         # Add other dependencies here
 )
+
+# Link System Libraries (Windows)
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        opengl32.lib
+        user32.lib
+        gdi32.lib
+        shell32.lib
+    )
+endif()
