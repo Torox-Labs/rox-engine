@@ -1,4 +1,4 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Copyright © 2024 Torox Project
 
 /*
     left-bottom alligned
@@ -17,7 +17,7 @@
     #define override
 #endif
 
-namespace nya_ui
+namespace rox_ui
 {
 
 void set_log(rox_log::log_base *l);
@@ -176,7 +176,7 @@ protected:
         if(!sender || !event)
             return;
 
-        nya_ui::event e;
+        rox_ui::event e;
         e.sender.assign(sender);
         e.type.assign(event);
         send_to_parent(e);
@@ -340,7 +340,7 @@ public:
         if(!sender_id || !event)
             return;
 
-        nya_ui::event e;
+        rox_ui::event e;
         e.sender.assign(sender_id);
         e.type.assign(event);
         send_event(e);

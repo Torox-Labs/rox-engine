@@ -1,4 +1,16 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Copyright © 2024 Torox Project
+// Portions Copyright © 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project. The namespace has been renamed from nya_ui to rox_iu.
+// 
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
+
 
 #include "ui/ui.h"
 
@@ -7,7 +19,7 @@
 
 namespace { rox_log::log_base *ui_log=0; }
 
-namespace nya_ui
+namespace rox_ui
 {
 
 uint clamp(int v,uint from,uint to)
