@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.21)
 project(rox_engine VERSION 0.1 LANGUAGES CXX)
 
-# Set C++ Standard
-set(CMAKE_CXX_STANDARD 11)
+# ====== 1. Set C++ Standard ======
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# ====== 2. Detect Platforms ======
 if(WIN32)
     # Windows-specific settings
     message(STATUS "Configuring for Windows")
@@ -22,37 +23,55 @@ elseif(ANDROID)
     set(ANDROID 1)
 endif()
 
-# Set Source and Include Directories
-# set(SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
-# set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
-set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/formats")
-set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/logger")
-set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/math")
-set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/memory")
-set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/render")
-set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/resources")
-set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/scene")
-set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/system")
-set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/ui")
-
-# Collect Source Files
-file(GLOB_RECURSE SRC_FILES
-    "${SOURCE_DIR}/*.cpp"
-    "${SOURCE_DIR}/*.h"
+# ====== 4. Define Source Subdirectories ======
+# List all your source subdirectories here
+set(SOURCE_SUBDIRS
+    formats
+    logger
+    math
+    memory
+    render
+    resources
+    scene
+    system
+    ui
 )
 
-# If on Apple, include .mm files
-if(APPLE)
-    file(GLOB_RECURSE SRC_FILES
-        ${SRC_FILES}
-        "${SOURCE_DIR}/*.mm"
-    )
-endif()
+# ====== 5. Collect Source Files ======
+set(SRC_FILES)
 
-# Define the Library
+foreach(subdir IN LISTS SOURCE_SUBDIRS)
+    # Define the relative path for source grouping
+    set(relative_path "${subdir}")
+
+    # Define the absolute path to the subdirectory
+    # set(dir_path "${SOURCE_DIR}/${subdir}")
+
+    # Add source group for IDE (e.g., Visual Studio)
+    source_group(${relative_path} FILES)
+
+    # Collect .h and .cpp files
+    file(GLOB_RECURSE headers "${subdir}/*.h")
+    file(GLOB_RECURSE sources "${subdir}/*.cpp")
+
+    # If on Apple, also collect .mm files
+    if(APPLE)
+        file(GLOB_RECURSE objc_sources "${subdir}/*.mm")
+        list(APPEND sources ${objc_sources})
+    endif()
+
+    # Append collected files to SRC_FILES
+    list(APPEND SRC_FILES ${headers} ${sources})
+
+    # Organize sources into groups
+    source_group(${relative_path} FILES ${headers} ${sources})
+endforeach()
+
+# ====== 6. Define the Library ======
+# Choose STATIC or SHARED based on your needs
 add_library(${PROJECT_NAME} STATIC ${SRC_FILES})
 
-# Include Directories
+# ====== 7. Include Directories ======
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         ${INCLUDE_DIR}
@@ -63,60 +82,77 @@ target_include_directories(${PROJECT_NAME}
         "D:/CLT/bullet3/build/src"
 )
 
-macro(define_source_files)
-    set(temp_src_dir ${ARGN})
-    source_group(${ARGN} ${ARGN})
+# ====== 8. Link Directories ======
+# Prefer using full paths or imported targets in modern CMake
+link_directories(
+    "D:/CLT/assimp/lib"
+    "D:/CLT/zlib/build/Release"
+    "D:/CLT/bullet3/build/lib/Release"
+)
 
-    list(APPEND src_types "${temp_src_dir}/*.h" "${temp_src_dir}/*.cpp")
-
-    if(APPLE)
-        list(APPEND src_types "${temp_src_dir}/*.mm")
-    endif()
-
-    file(GLOB temp_src_list RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${src_types})
-    list(APPEND src_files ${temp_src_list})
-    unset(temp_src_dir)
-    unset(temp_src_list)
-endmacro()
-
+# ====== 10. Platform-Specific Configurations ======
 if(EMSCRIPTEN)
-    set(CMAKE_CXX_STANDARD 11)
-    set(CMAKE_CXX_FLAGS -msse2)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse2")
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "--bind")
+    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".wasm")
 endif()
 
-define_source_files(formats)
-define_source_files(logger)
-define_source_files(math)
-define_source_files(memory)
-define_source_files(render)
-define_source_files(resources)
-define_source_files(scene)
-define_source_files(system)
-define_source_files(ui)
+# ====== 11. Handle Android Specifics ======
+if(ANDROID)
+    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
+    set_property(TARGET ${PROJECT_NAME} PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR ${ANDROID_PACKAGE_SOURCE_DIR})
+    add_custom_target(cmake_android_package
+        SOURCES
+            ${ANDROID_PACKAGE_SOURCE_DIR}/AndroidManifest.xml
+            ${ANDROID_PACKAGE_SOURCE_DIR}/build.gradle
+            ${ANDROID_PACKAGE_SOURCE_DIR}/grable.properties
+            ${ANDROID_PACKAGE_SOURCE_DIR}/res/values/libs.xml
+    )
 
+    # Include OpenSSL or other dependencies as needed
+    include(FetchContent)
+    FetchContent_Declare(
+        android_openssl
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        URL https://github.com/KDAB/android_openssl/archive/refs/heads/master.zip
+    )
+    FetchContent_MakeAvailable(android_openssl)
+    include(${android_openssl_SOURCE_DIR}/android_openssl.cmake)
+endif()
+
+# ====== 12. Handle macOS Specifics ======
+if(APPLE)
+    set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE TRUE)
+endif()
+
+# ====== 13. Organize Sources in IDE ======
+source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SRC_FILES})
+
+# 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-# if(EMSCRIPTEN)
-#     add_library(${PROJECT_NAME} SHARED ${src_files})
-# else()
-    # add_library(${PROJECT_NAME} ${src_files})
-# endif()
+# ====== 14. Set Output Directories ======
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
 
-# Link Libraries
-# target_link_libraries(${PROJECT_NAME}
-#     PRIVATE
-#         rox_engine.lib
-#         glfw3.lib
-#         opengl32.lib
-#         user32.lib
-#         gdi32.lib
-#         shell32.lib
-#         assimp-vc143-mt.lib
-#         SDL3.lib
-#         SDL3_test.lib
-#         Bullet3Collision.lib
-#         Bullet3Common.lib
-#         Bullet3Dynamics.lib
-#         LinearMath.lib
-#         # Add other dependencies here
-# )
+# ====== 9. Link Libraries ======
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
+        rox_engine.lib
+        glfw3.lib
+        opengl32.lib
+        user32.lib
+        gdi32.lib
+        shell32.lib
+        assimp-vc143-mt.lib
+        SDL3.lib
+        SDL3_test.lib
+        Bullet3Collision.lib
+        Bullet3Common.lib
+        Bullet3Dynamics.lib
+        LinearMath.lib
+        # Add other dependencies here
+)
