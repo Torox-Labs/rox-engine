@@ -7,10 +7,17 @@ add_library(render STATIC ${RENDER_SRC})
 # ====== Include Directories ======
 target_include_directories(render
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+# ======  ======
+if(APPLE)
+    set_source_files_properties(${RENDER_SRC} PROPERTIES
+        LANGUAGE OBJCXX
+    )
+endif()
 
+# ======  ======
 set_target_properties(render PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"

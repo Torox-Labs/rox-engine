@@ -12,6 +12,10 @@ if(WIN32)
 elseif(APPLE)
     # macOS-specific settings
     message(STATUS "Configuring for macOS")
+    # Set default configuration to Release for generated schemes
+    set(CMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH "NO")
+    set(CMAKE_XCODE_SCHEME_BUILD_CONFIGURATION "Release")
+    set(CMAKE_CONFIGURATION_TYPES "Release;Debug" CACHE STRING "Available configurations" FORCE)
 elseif(UNIX)
     # Linux-specific settings
     message(STATUS "Configuring for Linux")
@@ -50,10 +54,10 @@ if(ANDROID)
     set_property(TARGET ${PROJECT_NAME} PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR ${ANDROID_PACKAGE_SOURCE_DIR})
     add_custom_target(cmake_android_package
         SOURCES
-            ${ANDROID_PACKAGE_SOURCE_DIR}/AndroidManifest.xml
-            ${ANDROID_PACKAGE_SOURCE_DIR}/build.gradle
-            ${ANDROID_PACKAGE_SOURCE_DIR}/grable.properties
-            ${ANDROID_PACKAGE_SOURCE_DIR}/res/values/libs.xml
+        ${ANDROID_PACKAGE_SOURCE_DIR}/AndroidManifest.xml
+        ${ANDROID_PACKAGE_SOURCE_DIR}/build.gradle
+        ${ANDROID_PACKAGE_SOURCE_DIR}/grable.properties
+        ${ANDROID_PACKAGE_SOURCE_DIR}/res/values/libs.xml
     )
 
     # Include OpenSSL or other dependencies as needed
@@ -75,7 +79,7 @@ endif()
 # ====== Organize Sources in IDE ======
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SRC_FILES})
 
-# 
+#
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # ====== Set Output Directories ======
@@ -87,7 +91,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 # ====== Organize Folders in IDE ======
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
 
 # ====== Add Subdirectories (Scoped by Folder) ======
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

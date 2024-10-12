@@ -1,0 +1,31 @@
+{
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "files.associations": {
+        "*.embeddedhtml": "html",
+        "qjsonobject": "cpp",
+        "qnetworkaccessmanager": "cpp",
+        "qguiapplication": "cpp",
+        "array": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "vector": "cpp",
+        "qnetworkrequest": "cpp",
+        "qurlquery": "cpp",
+        "qjsonarray": "cpp",
+        "qscopedpointer": "cpp",
+        "qqmlcontext": "cpp",
+        "istream": "cpp",
+        "locale": "cpp",
+        "tuple": "cpp",
+        "iosfwd": "cpp",
+        "xlocbuf": "cpp"
+    },
+    "cmake.configureArgs": [
+        "-DCMAKE_BUILD_TYPE=Release"
+        // "-DCMAKE_BUILD_TYPE=Debug"
+    ],
+    "cmake.generator": "Xcode",
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "workbench.editor.showTabs": "multiple",
+    "cmake.sourceDirectory": "${workspaceFolder}",
+}
