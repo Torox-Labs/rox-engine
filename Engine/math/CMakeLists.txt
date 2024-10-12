@@ -1,8 +1,8 @@
 # ====== Define Sources ======
-file(GLOB_RECURSE FORMATS_SRC "*.cpp" "*.h")
+file(GLOB_RECURSE MATH_SRC "*.cpp" "*.h")
 
 # ====== Add Library ======
-add_library(math STATIC ${FORMATS_SRC})
+add_library(math STATIC ${MATH_SRC})
 
 # ====== Include Directories ======
 target_include_directories(math
@@ -11,4 +11,4 @@ target_include_directories(math
 )
 
 # ====== Organize Sources in IDE ======
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${FORMATS_SRC})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MATH_SRC})

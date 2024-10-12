@@ -3,7 +3,11 @@ set(SOURCE_SUBDIRS
     formats
     logger
     math
-    
+    memory
+    render
+    resources
+    scene
+    system
 )
 
 # ====== Collect Source Files ======
@@ -58,6 +62,13 @@ target_include_directories(${PROJECT_NAME}
         "D:/CLT/zlib"
         "D:/CLT/zlib/build"
         "D:/CLT/bullet3/build/src"
+        "D:/CLT/OpenGL/glfw_3.3.9/include/GLFW"
+)
+
+# ======Link Directories ======
+# Prefer using full paths or imported targets in modern CMake
+link_directories(
+    "D:/CLT/OpenGL/glfw_3.3.9/lib-vc2022"
 )
 
 # ====== Link Libraries ======
@@ -66,16 +77,13 @@ target_link_libraries(${PROJECT_NAME}
         formats
         logger
         math
+        memory
+        render
+        resources
+        scene
+        system
         # External Libraries
-        rox_engine.lib
         glfw3.lib
-        assimp-vc143-mt.lib
-        SDL3.lib
-        SDL3_test.lib
-        Bullet3Collision.lib
-        Bullet3Common.lib
-        Bullet3Dynamics.lib
-        LinearMath.lib
 )
 
 # ====== Link System Libraries (Windows) ======
