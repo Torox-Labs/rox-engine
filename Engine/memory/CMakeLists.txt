@@ -10,6 +10,12 @@ target_include_directories(memory
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/memory
 )
 
+set_target_properties(memory PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
 # ====== Set Folder Properties for Visual Studio ======
 # This nests 'memory' under 'Graphics' in the solution
 set_target_properties(memory PROPERTIES FOLDER "Graphics")

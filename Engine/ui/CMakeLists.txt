@@ -10,5 +10,15 @@ target_include_directories(ui
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/ui
 )
 
+set_target_properties(ui PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+# ====== Set Folder Properties for Visual Studio ======
+# This nests 'tools' under 'Graphics' in the solution
+set_target_properties(tools PROPERTIES FOLDER "Graphics")
+
 # ====== Organize Sources in IDE ======
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${UI_SRC})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${TOOLS_SRC})

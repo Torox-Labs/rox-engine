@@ -10,6 +10,12 @@ target_include_directories(math
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/math
 )
 
+set_target_properties(math PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
 # ====== Set Folder Properties for Visual Studio ======
 # This nests 'math' under 'Graphics' in the solution
 set_target_properties(math PROPERTIES FOLDER "Graphics")

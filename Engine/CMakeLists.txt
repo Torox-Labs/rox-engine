@@ -58,7 +58,6 @@ if(WIN32)
     )
 endif()
 
-
 # ====== Organize Sources in IDE ======
 # (Optional) You can remove or adjust this if not used
 source_group(TREE ${CMAKE_SOURCE_DIR} PREFIX "Graphics" FILES ${SRC_FILES})

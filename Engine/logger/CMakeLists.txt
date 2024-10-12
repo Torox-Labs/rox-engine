@@ -13,6 +13,12 @@ target_include_directories(logger
 # ====== Organize Sources in IDE ======
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${LOGGER_SRC})
 
+set_target_properties(logger PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
 # ====== Set Folder Properties for Visual Studio ======
 # This nests 'logger' under 'Graphics' in the solution
 set_target_properties(logger PROPERTIES FOLDER "Graphics")
