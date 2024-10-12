@@ -7,7 +7,7 @@ add_library(ui STATIC ${UI_SRC})
 # ====== Include Directories ======
 target_include_directories(ui
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include/ui
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 set_target_properties(ui PROPERTIES

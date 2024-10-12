@@ -7,7 +7,7 @@ add_library(logger STATIC ${LOGGER_SRC})
 # ====== Include Directories ======
 target_include_directories(logger
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include/logger
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 # ====== Organize Sources in IDE ======

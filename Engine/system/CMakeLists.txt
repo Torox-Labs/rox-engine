@@ -7,7 +7,7 @@ add_library(system STATIC ${SYSTEM_SRC})
 # ====== Include Directories ======
 target_include_directories(system
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include/system
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 set_target_properties(system PROPERTIES

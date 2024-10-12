@@ -7,7 +7,7 @@ add_library(tools STATIC ${TOOLS_SRC})
 # ====== Include Directories ======
 target_include_directories(tools
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include/tools
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 set_target_properties(tools PROPERTIES

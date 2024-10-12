@@ -25,7 +25,7 @@ add_library(${PROJECT_NAME} SHARED rox_engine.cpp)
 # ====== Include Directories ======
 target_include_directories(${PROJECT_NAME}
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include
+        ${CMAKE_CURRENT_SOURCE_DIR}
         "D:/CLT/assimp/include/assimp"
         "D:/CLT/zlib"
         "D:/CLT/zlib/build"

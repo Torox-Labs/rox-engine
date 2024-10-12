@@ -7,7 +7,7 @@ add_library(resources STATIC ${RESOURCES_SRC})
 # ====== Include Directories ======
 target_include_directories(resources
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include/resources
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 set_target_properties(resources PROPERTIES

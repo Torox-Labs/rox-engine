@@ -7,7 +7,7 @@ add_library(scene STATIC ${SCENE_SRC})
 # ====== Include Directories ======
 target_include_directories(scene
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include/scene
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 set_target_properties(scene PROPERTIES

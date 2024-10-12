@@ -7,7 +7,7 @@ add_library(render STATIC ${RENDER_SRC})
 # ====== Include Directories ======
 target_include_directories(render
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include/render
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 

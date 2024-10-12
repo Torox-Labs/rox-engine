@@ -7,7 +7,7 @@ add_library(formats STATIC ${FORMATS_SRC})
 # ====== Include Directories ======
 target_include_directories(formats
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include/formats
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 # ====== Organize Sources in IDE ======
