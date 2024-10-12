@@ -10,5 +10,9 @@ target_include_directories(math
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/math
 )
 
+# ====== Set Folder Properties for Visual Studio ======
+# This nests 'math' under 'Graphics' in the solution
+set_target_properties(math PROPERTIES FOLDER "Graphics")
+
 # ====== Organize Sources in IDE ======
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MATH_SRC})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${LOGGER_SRC})

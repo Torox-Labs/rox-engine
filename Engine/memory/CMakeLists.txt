@@ -10,5 +10,9 @@ target_include_directories(memory
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/memory
 )
 
+# ====== Set Folder Properties for Visual Studio ======
+# This nests 'memory' under 'Graphics' in the solution
+set_target_properties(memory PROPERTIES FOLDER "Graphics")
+
 # ====== Organize Sources in IDE ======
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MEMORY_SRC})

@@ -84,3 +84,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
+# ====== Organize Folders in IDE ======
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+
+# ====== Add Subdirectories (Scoped by Folder) ======
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)

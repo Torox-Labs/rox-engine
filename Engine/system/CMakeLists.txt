@@ -10,5 +10,9 @@ target_include_directories(system
         ${CMAKE_CURRENT_SOURCE_DIR}/../include/system
 )
 
+# ====== Set Folder Properties for Visual Studio ======
+# This nests 'system' under 'Graphics' in the solution
+set_target_properties(system PROPERTIES FOLDER "Graphics")
+
 # ====== Organize Sources in IDE ======
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SYSTEM_SRC})
