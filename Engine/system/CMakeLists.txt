@@ -1,5 +1,5 @@
 # ====== Define Sources ======
-file(GLOB_RECURSE SYSTEM_SRC "*.cpp" "*.h")
+file(GLOB_RECURSE SYSTEM_SRC "*.cpp" "*.mm" "*.h")
 
 # ====== Add Library ======
 add_library(system STATIC ${SYSTEM_SRC})

@@ -30,7 +30,7 @@ public:
 
         char text[1024];
 
-        sprintf(text,"varying float idx;"
+        printf(text,"varying float idx;"
                      "void main(){"
                      "idx=gl_MultiTexCoord0.x*%d.0;"
                      "gl_Position=gl_Vertex;}",array_size);
@@ -43,10 +43,10 @@ public:
                         "void main(){"
                         "gl_FragColor=vec4(data[int(idx)]%s);}";
 
-        sprintf(text,ps,3,array_size,",0.0");
+        printf(text,ps,3,array_size,",0.0");
         m_sh3.add_program(nya_render::shader::pixel,text);
 
-        sprintf(text,ps,4,array_size,"");
+        printf(text,ps,4,array_size,"");
         m_sh4.add_program(nya_render::shader::pixel,text);
 
         m_data_uniform=m_sh3.find_uniform("data");

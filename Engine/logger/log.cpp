@@ -1,5 +1,5 @@
-// Copyright © 2024 Torox Project
-// Portions Copyright © 2013 nyan.developer@gmail.com (nya-engine)
+// Copyright ï¿½ 2024 Torox Project
+// Portions Copyright ï¿½ 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project. The namespace has been renamed from nya_log to rox_log.
 // 
@@ -43,7 +43,7 @@ log_base &log(const char *fmt, ...)
 #endif
     std::string buf;
     buf.resize(len);
-    vsprintf(&buf[0],fmt,args_copy);
+    printf(&buf[0],fmt,args_copy);
     *current_log<<buf;
     return *current_log;
 }

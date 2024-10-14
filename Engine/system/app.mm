@@ -15,6 +15,7 @@
 
 #include <string>
 
+//MARK: IPHONE OS
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 #import <UIKit/UIKit.h>
 
@@ -724,6 +725,7 @@ static inline NSString *NSStringFromUIInterfaceOrientation(UIInterfaceOrientatio
 
 #else
 
+//MARK: MACOS
 #include <OpenGL/gl3.h>
 
 #ifndef GL_MULTISAMPLE
@@ -740,10 +742,12 @@ private:
     {
         if(m_window)
             return;
-
+        
         NSRect viewRect=fullscreen?[[NSScreen mainScreen] frame]:NSMakeRect(x,y,w,h);
-        m_window=[[NSWindow alloc] initWithContentRect:viewRect styleMask:NSTitledWindowMask|NSMiniaturizableWindowMask|NSResizableWindowMask|NSClosableWindowMask backing:NSBackingStoreBuffered defer:NO];
-
+        
+        NSUInteger style = NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskClosable | NSWindowStyleMaskFullScreen;
+        m_window = [[NSWindow alloc] initWithContentRect:viewRect styleMask:style backing:NSBackingStoreBuffered defer:NO];
+        
         NSString *title_str=[NSString stringWithCString:m_title.c_str() encoding:NSUTF8StringEncoding];
         [m_window setTitle:title_str];
         [m_window setOpaque:YES];
@@ -967,6 +971,10 @@ static CVReturn dispatchDraw(CVDisplayLinkRef displayLink,
 -(void)reshape 
 {
     m_need_reshape=false;
+    
+    CGFloat backingScaleFactor = [[self window] backingScaleFactor];
+    CGFloat widthInPixel = [self frame].size.width * backingScaleFactor;
+    CGFloat heightInPixel = [self frame].size.height * backingScaleFactor;
 
     if(nya_render::get_render_api()==nya_render::render_api_metal)
     {
@@ -1035,7 +1043,7 @@ static CVReturn dispatchDraw(CVDisplayLinkRef displayLink,
         [gl_context update];
     }
 
-    nya_render::set_viewport(0,0,[self frame].size.width,[self frame].size.height);
+    nya_render::set_viewport(0,0,widthInPixel,heightInPixel);
     if(m_app)
     m_app->on_resize([self frame].size.width,[self frame].size.height);
 

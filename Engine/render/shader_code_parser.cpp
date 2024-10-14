@@ -100,7 +100,7 @@ bool shader_code_parser::convert_to_hlsl()
         const char *types[]={"Texture2D","TextureCube"};
 
         char buf[512];
-        sprintf(buf,"%s %s: register(t%d); SamplerState %s_nya_st: register(s%d);\n",
+        printf(buf,"%s %s: register(t%d); SamplerState %s_nya_st: register(s%d);\n",
                 types[v.type-type_sampler2d],v.name.c_str(),samplers_count,v.name.c_str(),samplers_count);
         prefix.append(buf);
         ++samplers_count;
@@ -133,7 +133,7 @@ bool shader_code_parser::convert_to_hlsl()
             continue;
 
         char buf[255];
-        sprintf(buf,"%s %s:TEXCOORD%d;",type_names[v.type],m_varying[i].name.c_str(),idx);
+        printf(buf,"%s %s:TEXCOORD%d;",type_names[v.type],m_varying[i].name.c_str(),idx);
         prefix.append(buf);
         idx+=type_regsize(v.type);
     }
@@ -198,7 +198,7 @@ bool shader_code_parser::convert_to_hlsl()
                 else
                 {
                     char buf[255];
-                    sprintf(buf,"float4 %s:TEXCOORD%d;",a.name.c_str(),idx);
+                    printf(buf,"float4 %s:TEXCOORD%d;",a.name.c_str(),idx);
                     prefix.append(buf);
                     idx+=type_regsize(a.type);
                 }
@@ -262,7 +262,7 @@ bool shader_code_parser::convert_to_hlsl()
             if(v.array_size>1)
             {
                 char buf[255];
-                sprintf(buf,"[%d];",v.array_size);
+                printf(buf,"[%d];",v.array_size);
                 prefix.append(buf);
             }
             else
@@ -335,7 +335,7 @@ bool shader_code_parser::convert_to_metal()
             if(v.array_size>1)
             {
                 char buf[255];
-                sprintf(buf,"[%d];",v.array_size);
+                printf(buf,"[%d];",v.array_size);
                 prefix.append(buf);
             }
             else
@@ -406,9 +406,9 @@ bool shader_code_parser::convert_to_metal()
         const char *types[]={"texture2d<float>","texturecube<float>"};
 
         char buf[64];
-        sprintf(buf,"[[texture(%d)]]",samplers_count);
+        printf(buf,"[[texture(%d)]]",samplers_count);
         args.add(types[v.type-type_sampler2d],v.name,buf);
-        sprintf(buf,"[[sampler(%d)]]",samplers_count);
+        printf(buf,"[[sampler(%d)]]",samplers_count);
         args.add("sampler",v.name+m_replace_str+"st",buf);
 
         ++samplers_count;
@@ -470,7 +470,7 @@ bool shader_code_parser::convert_to_metal()
             else
             {
                 char buf[255];
-                sprintf(buf,"float4 %s[[attribute(%d)]];",a.name.c_str(),a.idx+3);
+                printf(buf,"float4 %s[[attribute(%d)]];",a.name.c_str(),a.idx+3);
                 prefix.append(buf);
             }
         }
@@ -789,7 +789,7 @@ bool shader_code_parser::fix_per_component_functions()
             prefix.append(t+(" "+m_replace_str)+f+"(");
             for(int k=0;k<functions_args[i];++k)
             {
-                sprintf(buf,"%s%s a%d",k==0?"":",",t,k);
+                printf(buf,"%s%s a%d",k==0?"":",",t,k);
                 prefix.append(buf);
             }
 
@@ -800,7 +800,7 @@ bool shader_code_parser::fix_per_component_functions()
                 prefix.append(std::string(k==0?"":",")+f+"(");
                 for(int l=0;l<functions_args[i];++l)
                 {
-                    sprintf(buf,"%sa%d%s",l==0?"":",",l,j==0?"":components[k]);
+                    printf(buf,"%sa%d%s",l==0?"":",",l,j==0?"":components[k]);
                     prefix.append(buf);
                 }
                 prefix.append(")");
@@ -969,7 +969,7 @@ bool shader_code_parser::parse_attributes(const char *info_replace_str,const cha
             m_code.replace(replace_start,3,code_replace_str); //strlen("gl_")
 
         char buf[255];
-        sprintf(buf,"%s%s%d",info_replace_str,tc_atr_name+3,idx);
+        printf(buf,"%s%s%d",info_replace_str,tc_atr_name+3,idx);
         push_unique_to_vec(m_attributes,variable(type_vec4,buf,idx));
     }
 

@@ -1,5 +1,5 @@
-// Copyright © 2024 Torox Project
-// Portions Copyright © 2013 nyan.developer@gmail.com (nya-engine)
+// Copyright ï¿½ 2024 Torox Project
+// Portions Copyright ï¿½ 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project. The namespace has been renamed from nya_log to rox_log.
 // 
@@ -19,18 +19,18 @@ namespace rox_log
 
 namespace { char buf[512]; }
 
-ostream_base &ostream_base::operator << (long int a) { sprintf(buf,"%ld", a); output(buf); return *this; }
-ostream_base &ostream_base::operator << (unsigned long int a) { sprintf(buf,"%lu", a); output(buf); return *this; }
-ostream_base &ostream_base::operator << (float a) { sprintf(buf,"%f", a); output(buf); return *this; }
-ostream_base &ostream_base::operator << (double a) { sprintf(buf,"%f", a); output(buf); return *this; }
+ostream_base &ostream_base::operator << (long int a) { printf(buf,"%ld", a); output(buf); return *this; }
+ostream_base &ostream_base::operator << (unsigned long int a) { printf(buf,"%lu", a); output(buf); return *this; }
+ostream_base &ostream_base::operator << (float a) { printf(buf,"%f", a); output(buf); return *this; }
+ostream_base &ostream_base::operator << (double a) { printf(buf,"%f", a); output(buf); return *this; }
 ostream_base &ostream_base::operator << (const char *a) { output(a?a:"NULL"); return *this; }
 
-ostream_base &ostream_base::operator << (int a) { sprintf(buf,"%d", a); output(buf); return *this; }
-ostream_base &ostream_base::operator << (unsigned int a) { sprintf(buf,"%u", a); output(buf); return *this; }
-ostream_base &ostream_base::operator << (short int a) { sprintf(buf,"%d", a); output(buf); return *this; }
-ostream_base &ostream_base::operator << (unsigned short int a) { sprintf(buf,"%u", a); output(buf); return *this; }
-ostream_base &ostream_base::operator << (long long int a) { sprintf(buf,"%lld", a); output(buf); return *this; }
-ostream_base &ostream_base::operator << (unsigned long long int a) { sprintf(buf,"%llu", a); output(buf); return *this; }
+ostream_base &ostream_base::operator << (int a) { printf(buf,"%d", a); output(buf); return *this; }
+ostream_base &ostream_base::operator << (unsigned int a) { printf(buf,"%u", a); output(buf); return *this; }
+ostream_base &ostream_base::operator << (short int a) { printf(buf,"%d", a); output(buf); return *this; }
+ostream_base &ostream_base::operator << (unsigned short int a) { printf(buf,"%u", a); output(buf); return *this; }
+ostream_base &ostream_base::operator << (long long int a) { printf(buf,"%lld", a); output(buf); return *this; }
+ostream_base &ostream_base::operator << (unsigned long long int a) { printf(buf,"%llu", a); output(buf); return *this; }
 ostream_base &ostream_base::operator << (const std::string &a) { output(a.c_str()); return *this; }
 
 }
