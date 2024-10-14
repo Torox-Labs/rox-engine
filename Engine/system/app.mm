@@ -12,11 +12,14 @@
   #import <QuartzCore/CAMetalLayer.h>
 #endif
 #import <Metal/Metal.h>
+#import <MetalKit/MetalKit.h>
 
+#include <iostream>
 #include <string>
 
 //MARK: IPHONE OS
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+{
 #import <UIKit/UIKit.h>
 
 namespace
@@ -722,7 +725,7 @@ static inline NSString *NSStringFromUIInterfaceOrientation(UIInterfaceOrientatio
 }
 
 @end
-
+}
 #else
 
 //MARK: MACOS
@@ -976,6 +979,9 @@ static CVReturn dispatchDraw(CVDisplayLinkRef displayLink,
     CGFloat widthInPixel = [self frame].size.width * backingScaleFactor;
     CGFloat heightInPixel = [self frame].size.height * backingScaleFactor;
 
+//    std::cout <<"Metal Render API: " << nya_render::render_api_metal << std::endl;
+//    std::cout <<"Render API: " << nya_render::get_render_api() << std::endl;
+
     if(nya_render::get_render_api()==nya_render::render_api_metal)
     {
         m_antialiasing=1;//ToDo
@@ -1049,6 +1055,12 @@ static CVReturn dispatchDraw(CVDisplayLinkRef displayLink,
 
     [self setNeedsDisplay:YES];
 }
+
+//- (void)updateAppearance{
+//    if(@available(macOS 10.14, *)){
+//        NSAppearance *appearence = self.effectiveAppearance;
+//    }
+//}
 
 - (void)update_mpos:(NSEvent *)event
 {

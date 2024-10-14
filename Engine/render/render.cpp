@@ -1,5 +1,5 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
-
+// Updated By the ROX_ENGINE
 #include "render_directx11.h"
 #include "render_opengl.h"
 #include "render_metal.h"
@@ -20,6 +20,10 @@ namespace
 
     render_api_interface *available_render_interface()
     {
+        // This code Just Added : ROX_ENGINE
+//        if(render_metal::get().is_available())
+//            return &render_metal::get();
+//            
         if (render_opengl::get().is_available())
             return &render_opengl::get();
 
