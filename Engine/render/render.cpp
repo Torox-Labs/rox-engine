@@ -1,7 +1,5 @@
-<<<<<<< HEAD
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 // Updated By the ROX_ENGINE
-=======
 // Copyright � 2024 Torox Project
 // Portions Copyright � 2013 nyan.developer@gmail.com (nya-engine)
 //
@@ -16,7 +14,6 @@
 // 2. Commercial License (for use on proprietary platforms)
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
->>>>>>> 77e7ba8 (Update The Core of the Engine)
 #include "render_directx11.h"
 #include "render_opengl.h"
 #include "render_metal.h"
@@ -37,17 +34,10 @@ namespace
 
     render_api_interface *available_render_interface()
     {
-<<<<<<< HEAD
-        // This code Just Added : ROX_ENGINE
-//        if(render_metal::get().is_available())
-//            return &render_metal::get();
-//            
-=======
         // Add to support the Metal Render ROX_ENGINE UPDATE
         if(render_metal::get().is_available())
             return &render_metal::get();
         
->>>>>>> 77e7ba8 (Update The Core of the Engine)
         if (render_opengl::get().is_available())
             return &render_opengl::get();
 
