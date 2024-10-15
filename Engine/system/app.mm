@@ -1,4 +1,17 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Copyright � 2024 Torox Project
+// Portions Copyright � 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+// Drop the Support of The OpenGL for the macOS Platform
+// Reconfigure the macOS Platform to run only on Metal
+//
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "app.h"
 #include "app_internal.h"
@@ -21,7 +34,7 @@
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 {
 #import <UIKit/UIKit.h>
-
+{
 namespace
 {
     class shared_app
@@ -729,12 +742,6 @@ static inline NSString *NSStringFromUIInterfaceOrientation(UIInterfaceOrientatio
 #else
 
 //MARK: MACOS
-#include <OpenGL/gl3.h>
-
-#ifndef GL_MULTISAMPLE
-    #define GL_MULTISAMPLE_ARB
-#endif
-
 namespace
 {
 
@@ -748,7 +755,7 @@ private:
         
         NSRect viewRect=fullscreen?[[NSScreen mainScreen] frame]:NSMakeRect(x,y,w,h);
         
-        NSUInteger style = NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskClosable | NSWindowStyleMaskFullScreen;
+        NSUInteger style = NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskClosable;
         m_window = [[NSWindow alloc] initWithContentRect:viewRect styleMask:style backing:NSBackingStoreBuffered defer:NO];
         
         NSString *title_str=[NSString stringWithCString:m_title.c_str() encoding:NSUTF8StringEncoding];
@@ -962,9 +969,6 @@ static CVReturn dispatchDraw(CVDisplayLinkRef displayLink,
         break;
     }
 
-    if(gl_context)
-        [gl_context flushBuffer];
-
     if(metal_layer)
         nya_render::render_metal::end_frame();
 }
@@ -1011,45 +1015,9 @@ static CVReturn dispatchDraw(CVDisplayLinkRef displayLink,
             metal_depth=[metal_layer.device newTextureWithDescriptor:desc];
         }
     }
-    else
-    {
-        if(!gl_context)
-        {
-            NSOpenGLPixelFormatAttribute attrs[] =
-            {
-                NSOpenGLPFADoubleBuffer,
-                NSOpenGLPFADepthSize, 32,
-                NSOpenGLPFAOpenGLProfile,NSOpenGLProfileVersion3_2Core,
-                0
-            };
 
-            NSOpenGLPixelFormatAttribute attrs_aniso[] =
-            {
-                NSOpenGLPFADoubleBuffer,
-                NSOpenGLPFADepthSize, 32,
-                NSOpenGLPFASampleBuffers,1,NSOpenGLPFASamples,0,
-                NSOpenGLPFAOpenGLProfile,NSOpenGLProfileVersion3_2Core,
-                0
-            };  attrs_aniso[6]=m_antialiasing;
-
-            NSOpenGLPixelFormat *format=0;
-
-            if(m_antialiasing>1)
-                format=[[NSOpenGLPixelFormat alloc] initWithAttributes:attrs_aniso];
-            else
-                format=[[NSOpenGLPixelFormat alloc] initWithAttributes:attrs];
-
-            gl_context=[[NSOpenGLContext alloc] initWithFormat:format shareContext:nil];
-            [gl_context makeCurrentContext];
-            [gl_context setView:self];
-
-            if(m_antialiasing>1)
-                glEnable(GL_MULTISAMPLE);
-        }
-        [gl_context update];
-    }
-
-    nya_render::set_viewport(0,0,widthInPixel,heightInPixel);
+//    nya_render::set_viewport(0,0,widthInPixel,heightInPixel);
+    nya_render::set_viewport(0,0,[self frame].size.width,[self frame].size.height);
     if(m_app)
     m_app->on_resize([self frame].size.width,[self frame].size.height);
 

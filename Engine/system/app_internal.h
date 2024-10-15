@@ -51,7 +51,6 @@
 
 @interface app_view : NSView<NSWindowDelegate>
 {
-    NSOpenGLContext *gl_context;
     CAMetalLayer *metal_layer;
     id <MTLTexture>  metal_depth;
     id <MTLTexture>  metal_stencil;

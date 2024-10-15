@@ -1,5 +1,9 @@
 # ====== Define Sources ======
+if(WIN32)
+file(GLOB_RECURSE SYSTEM_SRC "*.cpp" "*.h")
+elseif(APPLE)
 file(GLOB_RECURSE SYSTEM_SRC "*.cpp" "*.mm" "*.h")
+endif()
 
 # ====== Add Library ======
 add_library(system STATIC ${SYSTEM_SRC})

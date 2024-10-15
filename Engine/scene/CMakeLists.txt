@@ -1,5 +1,5 @@
 # ====== Define Sources ======
-file(GLOB_RECURSE SCENE_SRC "*.cpp" "*.h")
+file(GLOB_RECURSE SCENE_SRC "*.cpp" "*.mm" "*.h")
 
 # ====== Add Library ======
 add_library(scene STATIC ${SCENE_SRC})
