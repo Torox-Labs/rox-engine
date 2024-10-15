@@ -30,6 +30,7 @@
 #include <wrl/client.h>
 #include <ppl.h>
 #include <d3d11_1.h>
+#include <dxgi.h>
 
 #include <winrt/Windows.UI.Xaml.Controls.h>
 
@@ -53,8 +54,10 @@ namespace
             m_height = h;
             init_window(x,
                         y);
+            //nya_system::log() << "This is just a test";
+            //return;
             init_direct3d();
-            run();
+        	run();
         }
         
         void start_fullscreen(unsigned int w,
@@ -134,7 +137,7 @@ namespace
 #if defined(_DEBUG)
             creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
-            
+
             D3D_FEATURE_LEVEL featureLevels[] = {
                 D3D_FEATURE_LEVEL_12_1,
                 D3D_FEATURE_LEVEL_12_0,
@@ -143,41 +146,73 @@ namespace
                 D3D_FEATURE_LEVEL_10_1,
                 D3D_FEATURE_LEVEL_10_0,
             };
-            
+
+			if (m_featureLevel >= D3D_FEATURE_LEVEL_10_1)
+			{
+				// Log error or set breakpoint
+                OutputDebugStringA("Warning Direct3D Feature Level 10.0 is not supported.\n");
+				return;
+			}
+
             com_ptr<ID3D11Device> device;
             com_ptr<ID3D11DeviceContext> context;
-            D3D11CreateDevice(nullptr,
-                              D3D_DRIVER_TYPE_HARDWARE,
-                              nullptr,
-                              creationFlags,
-                              featureLevels,
-                              ARRAYSIZE(featureLevels),
-                              D3D11_SDK_VERSION,
-                              device
-                              .put(),
-                              &m_featureLevel,
-                              context
-                              .put());
-            
-            device
-                .as(m_device);
-            context
-                .as(m_context);
-            
-            com_ptr<IDXGIDevice> dxgiDevice;
-            m_device
-                .as(dxgiDevice);
-            
-            com_ptr <IDXGIAdapter > adapter;
-            dxgiDevice->GetAdapter(adapter.put());
-            
-            com_ptr<IDXGIFactory2 > factory;
-            adapter->GetParent(__uuidof(IDXGIFactory),
-                               factory
-                               .put_void());
-            
-            DXGI_SWAP_CHAIN_DESC sd = {
-            };
+
+            HRESULT hr = D3D11CreateDevice(
+                nullptr,
+                D3D_DRIVER_TYPE_HARDWARE,
+                nullptr,
+                creationFlags,
+                featureLevels,
+                _countof(featureLevels),
+                D3D11_SDK_VERSION,
+                device.put(),
+                &m_featureLevel,
+                context.put());
+
+            if (FAILED(hr))
+            {
+                // Log the error code
+                char errorMsg[256];
+                sprintf_s(errorMsg, "D3D11CreateDevice failed with HRESULT 0x%08X\n", hr);
+                OutputDebugStringA(errorMsg);
+                return;
+            }
+
+            m_device = device;
+            m_context = context;
+
+            if (!m_context)
+            {
+                // Log error or set breakpoint
+                nya_system::log() << "m_context is nullptr after initialization.\n";
+                return;
+            }
+
+            // Obtain IDXGIDevice from m_device
+            com_ptr<IDXGIDevice> dxgiDevice = m_device.as<IDXGIDevice>();
+            if (!dxgiDevice)
+            {
+                // Handle error
+                return;
+            }
+
+            com_ptr<IDXGIAdapter> adapter;
+            hr = dxgiDevice->GetAdapter(adapter.put());
+            if (FAILED(hr))
+            {
+                // Handle error
+                return;
+            }
+
+            com_ptr<IDXGIFactory> factory;
+            hr = adapter->GetParent(__uuidof(IDXGIFactory), factory.put_void());
+            if (FAILED(hr))
+            {
+                // Handle error
+                return;
+            }
+
+            DXGI_SWAP_CHAIN_DESC sd = {};
             sd.BufferCount = 1;
             sd.BufferDesc.Width = m_width;
             sd.BufferDesc.Height = m_height;
@@ -185,43 +220,74 @@ namespace
             sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
             sd.OutputWindow = m_hwnd;
             sd.SampleDesc.Count = 1;
+            sd.SampleDesc.Quality = 0;
             sd.Windowed = TRUE;
-            
-            factory->CreateSwapChain(m_device.get(),
-                                     &sd,
-                                     m_swapChain
-                                     .put());
+            sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+            sd.Flags = 0;
+
+            hr = factory->CreateSwapChain(m_device.get(), &sd, m_swapChain.put());
+            if (FAILED(hr))
+            {
+                // Handle error
+                return;
+            }
+
             create_render_target();
         }
-        
+
         void create_render_target()
         {
             com_ptr<ID3D11Texture2D> backBuffer;
-            m_swapChain->GetBuffer(0,
-                                   __uuidof(ID3D11Texture2D),
-                                   backBuffer
-                                   .put_void());
-            m_device->CreateRenderTargetView(backBuffer.get(),
-                                             nullptr,
-                                             m_renderTargetView
-                                             .put());
-            m_context->OMSetRenderTargets(1,
-                                          m_renderTargetView
-                                          .put(),
-                                          nullptr);
+            HRESULT hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), backBuffer.put_void());
+            if (FAILED(hr))
+            {
+                // Handle error
+                return;
+            }
+
+            hr = m_device->CreateRenderTargetView(backBuffer.get(), nullptr, m_renderTargetView.put());
+            if (FAILED(hr))
+            {
+                // Handle error
+                return;
+            }
+
+            // Set the render target
+            ID3D11RenderTargetView* rtViews[] = { m_renderTargetView.get() };
+            m_context->OMSetRenderTargets(1, rtViews, nullptr);
+
+            // Set the viewport
+            D3D11_VIEWPORT viewport = {};
+            viewport.TopLeftX = 0;
+            viewport.TopLeftY = 0;
+            viewport.Width = static_cast<FLOAT>(m_width);
+            viewport.Height = static_cast<FLOAT>(m_height);
+            viewport.MinDepth = 0.0f;
+            viewport.MaxDepth = 1.0f;
+            m_context->RSSetViewports(1, &viewport);
         }
         
         void run()
         {
-            MSG msg = {
-            };
-            while(WM_QUIT != msg.message)
+
+            if (!m_context)
             {
-                if(PeekMessage(&msg,
-                               nullptr,
-                               0,
-                               0,
-                               PM_REMOVE))
+                OutputDebugStringA("Initialization failed. Exiting run loop.\n");
+                nya_system::log() << "The Context or Device Empty\n";
+                return;
+            }
+
+            if (!m_context)
+            {
+                OutputDebugStringA("Initialization failed. Exiting run loop.\n");
+                nya_system::log() << "The Context or Device Empty\n";
+                return;
+            }
+
+            MSG msg = {};
+            while (WM_QUIT != msg.message)
+            {
+                if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
                 {
                     TranslateMessage(&msg);
                     DispatchMessage(&msg);
@@ -232,13 +298,14 @@ namespace
                 }
             }
         }
+
         
         void render()
         {
             const float clearColor[4] = {
-                0.0f,
-                0.2f,
-                0.4f,
+                0.5f,
+                0.5f,
+                0.5f,
                 1.0f
             };
             m_context->ClearRenderTargetView(m_renderTargetView.get(),
