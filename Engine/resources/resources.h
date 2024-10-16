@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "logger/log.h"
+#include "logger/logger.h"
 #include "memory/mutex.h"
 #include "memory/tmp_buffer.h"
 #include <cstddef>

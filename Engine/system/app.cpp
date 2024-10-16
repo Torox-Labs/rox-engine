@@ -19,7 +19,7 @@
 #include "winapifamily.h"
 
 #if defined(WINAPI_PARTITION_DESKTOP) && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
-#define WINDOWS_FLUENT
+//#define WINDOWS_FLUENT //TODO: Will be implemented in the future
 #endif
 
 #endif
@@ -57,6 +57,11 @@ namespace
                             int antialiasing,
                             nya_system::app& app)
         {
+            m_app = &app;
+            m_width = w;
+            m_height = h;
+            init_window(x, y);
+            init_direct3d();
             run();
         }
         
@@ -91,6 +96,7 @@ namespace
 		//TODO: Implement this function
         std::string get_title()
         {
+            return "_";
         }
         
         void set_virtual_keyboard(int type)
@@ -1020,6 +1026,12 @@ public:
             SetWindowTextA(m_hwnd,
                            title);
     }
+
+	std::string get_title()
+	{
+		return m_title;
+	}
+
     void set_virtual_keyboard(int type) {
     }
     
@@ -2497,9 +2509,9 @@ void app::set_title(const char* title)
         .set_title(title);
 }
 
-void app::get_title()
+std::string app::get_title()
 {
-    shared_app::get_app()
+    return shared_app::get_app()
         .get_title();
 }
 

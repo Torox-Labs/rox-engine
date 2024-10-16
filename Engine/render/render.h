@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "logger/log.h"
+#include "logger/logger.h"
 #include "math/matrix.h"
 
 namespace nya_render

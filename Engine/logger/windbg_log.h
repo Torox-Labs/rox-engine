@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "log.h"
+#include "logger.h"
 
 namespace rox_log
 {
