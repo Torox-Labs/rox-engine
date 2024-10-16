@@ -30,7 +30,6 @@
 #include <wrl/client.h>
 #include <ppl.h>
 #include <d3d11_1.h>
-#include <dxgi.h>
 
 #include <winrt/Windows.UI.Xaml.Controls.h>
 
@@ -43,6 +42,14 @@ namespace
     class shared_app
     {
     public:
+        shared_app() : m_app(nullptr), m_time(0), m_width(0), m_height(0) {}
+
+        static shared_app& get_app()
+        {
+            static shared_app app;
+            return app;
+        }
+    public:
         void start_windowed(int x,
                             int y,
                             unsigned int w,
@@ -50,14 +57,7 @@ namespace
                             int antialiasing,
                             nya_system::app& app)
         {
-            m_width = w;
-            m_height = h;
-            init_window(x,
-                        y);
-            //nya_system::log() << "This is just a test";
-            //return;
-            init_direct3d();
-        	run();
+            run();
         }
         
         void start_fullscreen(unsigned int w,
@@ -87,17 +87,15 @@ namespace
             SetWindowText(m_hwnd,
                           title);
         }
+
+		//TODO: Implement this function
+        std::string get_title()
+        {
+        }
         
         void set_virtual_keyboard(int type)
         {
             // Set virtual keyboard based on Fluent requirements (optional implementation)
-        }
-        
-    public:
-        static shared_app& get_app()
-        {
-            static shared_app app;
-            return app;
         }
         
     private:
@@ -315,8 +313,10 @@ namespace
         }
         
     private:
+        nya_system::app* m_app;
         unsigned int m_width;
         unsigned int m_height;
+        unsigned long m_time;
         HWND m_hwnd;
         com_ptr<ID3D11Device> m_device;
         com_ptr<ID3D11DeviceContext> m_context;
@@ -2495,6 +2495,12 @@ void app::set_title(const char* title)
 {
     shared_app::get_app()
         .set_title(title);
+}
+
+void app::get_title()
+{
+    shared_app::get_app()
+        .get_title();
 }
 
 void app::set_virtual_keyboard(virtual_keyboard_type type)

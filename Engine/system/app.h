@@ -3,6 +3,7 @@
 #pragma once
 
 #include "button_codes.h"
+#include <string>
 
 namespace nya_system
 {
@@ -55,6 +56,7 @@ public:
     void start_windowed(int x,int y,unsigned int w,unsigned int h,int antialiasing);
     void start_fullscreen(unsigned int w,unsigned int h,int antialiasing);
     void set_title(const char *title);
+    std::string get_title();
     void set_virtual_keyboard(virtual_keyboard_type type);
     void set_mouse_pos(int x,int y);
     void finish();
