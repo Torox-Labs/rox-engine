@@ -42,11 +42,11 @@
 
 @interface shared_app_delegate : NSObject <NSApplicationDelegate>
 {
-    nya_system::app *m_app;
+    rox_system::app *m_app;
     int m_antialiasing;
 }
 
--(id)init_with_responder:(nya_system::app*)responder antialiasing:(int)aa;
+-(id)init_with_responder:(rox_system::app*)responder antialiasing:(int)aa;
 @end
 
 @interface app_view : NSView<NSWindowDelegate>
@@ -59,7 +59,7 @@
     CVDisplayLinkRef _displayLink;
     dispatch_source_t _displaySource;
 
-    nya_system::app *m_app;
+    rox_system::app *m_app;
     unsigned long m_time;
     int m_antialiasing;
 

@@ -7,7 +7,7 @@
 
 namespace nya_render{ class compiled_shader; }
 
-namespace nya_system
+namespace rox_system
 {
     class compiled_shaders_provider: public nya_render::compiled_shaders_provider
     {

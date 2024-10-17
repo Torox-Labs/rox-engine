@@ -8,7 +8,7 @@
 
 //ToDo: hash collisions
 
-namespace nya_system
+namespace rox_system
 {
 
 bool compiled_shaders_provider::get(const char *text,nya_render::compiled_shader &shader)

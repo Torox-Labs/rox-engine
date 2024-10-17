@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace nya_system
+namespace rox_system
 {
 
 enum button_code

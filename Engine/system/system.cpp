@@ -1,4 +1,19 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Updated By the ROX_ENGINE
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+// Drop support for METRO, FLUENT style.
+// Update the code to be compatible with the latest version of the engine.
+// Optimasation and code cleaning for a better performance.
+// 
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "system.h"
 
@@ -14,17 +29,12 @@
     #include <windows.h>
     #include <string.h>
 
-    #if defined(_MSC_VER) && _MSC_VER >= 1700
-      #if _WIN32_WINNT >= _WIN32_WINNT_WIN8 && !_USING_V110_SDK71_
-          #include "winapifamily.h"
-          #if defined(WINAPI_PARTITION_DESKTOP) && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
-          #elif defined(WINAPI_PARTITION_PHONE) && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_PHONE)
-              #define WINDOWS_PHONE8
-              #define WINDOWS_METRO
-          #elif defined(WINAPI_PARTITION_APP) && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
-              #define WINDOWS_METRO
-          #endif
-      #endif
+    #if defined(_MSC_VER) && _MSC_VER >= 1900
+		#if _WIN32_WINNT >= _WIN32_WINNT_WIN10
+
+			#include "winapifamily.h"
+
+		#endif
     #endif
 #endif
 
@@ -51,7 +61,7 @@ namespace
 #endif
 }
 
-namespace nya_system
+namespace rox_system
 {
 
 #ifdef __ANDROID__
@@ -100,24 +110,7 @@ const char *get_app_path()
         else
             path[0]='\0';
 #elif defined _WIN32
-#ifdef WINDOWS_METRO
-        auto current=Windows::ApplicationModel::Package::Current;
-        if(!current)
-            return 0;
-        
-        auto local=current->InstalledLocation;
-        if(!local)
-            return 0;
-        
-        Platform::String^ ilp=local->Path;
-        const wchar_t *wp=ilp->Data();
-        const char *p=path;
-        for(size_t i=0;i<local->Path->Length();++i) //ToDo
-            path[i]=(char)wp[i];
-        
-        path[local->Path->Length()]='/';
-        path[local->Path->Length()+1]=0;
-#else
+
         GetModuleFileNameA(0,
                            path,
                            max_path);
@@ -126,12 +119,13 @@ const char *get_app_path()
                                  '\\');
         if(last_slash)
             *(last_slash+1) = 0;
-#endif
+
         for(size_t i=0;i<max_path;++i)
         {
             if(path[i]=='\\')
                 path[i]='/';
         }
+
 #elif EMSCRIPTEN
         strcpy(path,
                "/");
@@ -164,24 +158,7 @@ const char *get_user_path()
     if(!has_path)
     {
 #ifdef _WIN32
-#ifdef WINDOWS_METRO
-        auto current=Windows::Storage::ApplicationData::Current;
-        if(!current)
-            return 0;
-        
-        auto local=current->LocalFolder;
-        if(!local)
-            return 0;
-        
-        Platform::String^ ilp=local->Path;
-        const wchar_t *wp=ilp->Data();
-        const char *p=path;
-        for(size_t i=0;i<local->Path->Length();++i) //ToDo
-            path[i]=(char)wp[i];
-        
-        path[local->Path->Length()]='/';
-        path[local->Path->Length()+1]=0;
-#else
+
         const char *p=getenv("APPDATA");
         if(!p)
             return 0;
@@ -190,7 +167,7 @@ const char *get_user_path()
                p);
         strcat(path,
                "/");
-#endif
+
         for(size_t i=0;i<max_path;++i)
         {
             if(path[i]=='\\')
@@ -221,23 +198,7 @@ const char *get_user_path()
 }
 
 #ifdef _WIN32
-#ifdef WINDOWS_METRO
-unsigned long get_time()
-{
-    static LARGE_INTEGER freq;
-    static bool initialised=false;
-    if(!initialised)
-    {
-        QueryPerformanceFrequency(&freq);
-        initialised=true;
-    }
-    
-    LARGE_INTEGER time;
-    QueryPerformanceCounter(&time);
-    
-    return unsigned long(time.QuadPart*1000/freq.QuadPart);
-}
-#else
+
 #include "time.h"
 
 #pragma comment ( lib, "WINMM.LIB"  )
@@ -246,7 +207,7 @@ unsigned long get_time()
 {
     return timeGetTime();
 }
-#endif
+
 #else
 
 #include <sys/time.h>

@@ -1,7 +1,6 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 // Updated By the ROX_ENGINE
-// Copyright � 2024 Torox Project
-// Portions Copyright � 2013 nyan.developer@gmail.com (nya-engine)
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
 // Update the render api intefrace to check Metal 1th.

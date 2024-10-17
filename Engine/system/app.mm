@@ -1,5 +1,5 @@
-// Copyright � 2024 Torox Project
-// Portions Copyright � 2013 nyan.developer@gmail.com (nya-engine)
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C)) 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
 // Drop the Support of The OpenGL for the macOS Platform

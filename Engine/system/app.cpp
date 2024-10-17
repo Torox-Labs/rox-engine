@@ -1,4 +1,19 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Updated By the ROX_ENGINE
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+// Drop support for METRO, FLUENT style.
+// Update the code to be compatible with the latest version of the engine.
+// Optimasation and code cleaning for a better performance.
+// 
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "app.h"
 #include "system.h"
@@ -8,7 +23,6 @@
 
 //MARK: Windows
 #ifdef _WIN32
-#define _WIN32_WINDOWS 0x0A00
 
 #include <windows.h>
 
@@ -16,11 +30,8 @@
 #if defined(_MSC_VER) && _MSC_VER >= 1900 // VS2015
 // This Macro (_WIN32_WINNT) is defined by the Windows SDK.
 #if _WIN32_WINNT >= _WIN32_WINNT_WIN10
-#include "winapifamily.h"
 
-#if defined(WINAPI_PARTITION_DESKTOP) && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
-//#define WINDOWS_FLUENT //TODO: Will be implemented in the future
-#endif
+#include "winapifamily.h"
 
 #endif
 #endif
@@ -45,7 +56,7 @@ public:
                         unsigned int w,
                         unsigned int h,
                         int antialiasing,
-                        nya_system::app& app)
+                        rox_system::app& app)
     {
         m_instance = GetModuleHandle(NULL);
         if (!m_instance)
@@ -198,7 +209,7 @@ public:
             if (!nya_render::render_opengl::has_extension("GL_ARB_multisample"))
             {
                 //antialiasing=0;
-                nya_system::log() << "GL_ARB_multisample not found\n";
+                rox_system::log() << "GL_ARB_multisample not found\n";
             }
         }
         
@@ -210,7 +221,7 @@ public:
             if (!wglChoosePixelFormatARB)
             {
                 antialiasing = 0;
-                nya_system::log() << "wglChoosePixelFormatARB not found\n";
+                rox_system::log() << "wglChoosePixelFormatARB not found\n";
             }
         }
         
@@ -244,7 +255,7 @@ public:
                 0
             };
             
-            nya_system::log() << "antialiasing init\n";
+            rox_system::log() << "antialiasing init\n";
             
             if (!wglChoosePixelFormatARB(m_hdc,
                                          iAttributes,
@@ -253,7 +264,7 @@ public:
                                          &aa_pf,
                                          &num_aa_formats))
             {
-                nya_system::log() << "wglChoosePixelFormatARB failed\n";
+                rox_system::log() << "wglChoosePixelFormatARB failed\n";
                 antialiasing = 0;
             }
         }
@@ -288,12 +299,12 @@ public:
                                                       aa_pf,
                                                       &pfd))
             {
-                nya_system::log() << "antialiasiing is set\n";
+                rox_system::log() << "antialiasiing is set\n";
             }
             else
             {
                 antialiasing = 0;
-                nya_system::log() << "unable to set antialiasiing " << aa_pf << " " << num_aa_formats << "\n";
+                rox_system::log() << "unable to set antialiasiing " << aa_pf << " " << num_aa_formats << "\n";
                 
                 int pf = ChoosePixelFormat(m_hdc,
                                            &pfd);
@@ -332,7 +343,7 @@ public:
         app
             .on_resize(w,
                        h);
-        m_time = nya_system::get_time();
+        m_time = rox_system::get_time();
         
         if (app.on_splash())
         {
@@ -347,7 +358,7 @@ public:
         app
             .on_init();
         
-        m_time = nya_system::get_time();
+        m_time = rox_system::get_time();
         
         MSG msg;
         while (m_hwnd)
@@ -366,7 +377,7 @@ public:
             }
             else
             {
-                unsigned long time = nya_system::get_time();
+                unsigned long time = rox_system::get_time();
                 unsigned int dt = (unsigned)(time - m_time);
                 m_time = time;
                 
@@ -388,7 +399,7 @@ public:
     void start_fullscreen(unsigned int w,
                           unsigned int h,
                           int antialiasing,
-                          nya_system::app& app)
+                          rox_system::app& app)
     {
         //ToDo
         
@@ -400,7 +411,7 @@ public:
                        app);
     }
     
-    void finish(nya_system::app& app)
+    void finish(rox_system::app& app)
     {
         if (!m_hwnd)
             return;
@@ -526,43 +537,43 @@ private:
     static unsigned int get_x11_key(unsigned int key)
     {
         if (key >= 'A' && key <= 'Z')
-            return nya_system::key_a + key - 'A';
+            return rox_system::key_a + key - 'A';
         
         if (key >= '0' && key <= '9')
-            return nya_system::key_0 + key - '0';
+            return rox_system::key_0 + key - '0';
         
         if (key >= VK_F1 && key <= VK_F12)
-            return nya_system::key_f1 + key - VK_F1;
+            return rox_system::key_f1 + key - VK_F1;
         
         switch (key)
         {
-            case VK_SHIFT: return nya_system::key_shift;
-            case VK_CONTROL: return nya_system::key_control;
-            case VK_MENU: return nya_system::key_alt;
+            case VK_SHIFT: return rox_system::key_shift;
+            case VK_CONTROL: return rox_system::key_control;
+            case VK_MENU: return rox_system::key_alt;
                 
-            case VK_CAPITAL: return nya_system::key_capital;
-            case VK_ESCAPE: return nya_system::key_escape;
-            case VK_SPACE: return nya_system::key_space;
-            case VK_RETURN: return nya_system::key_return;
-            case VK_TAB: return nya_system::key_tab;
+            case VK_CAPITAL: return rox_system::key_capital;
+            case VK_ESCAPE: return rox_system::key_escape;
+            case VK_SPACE: return rox_system::key_space;
+            case VK_RETURN: return rox_system::key_return;
+            case VK_TAB: return rox_system::key_tab;
                 
-            case VK_PRIOR: return nya_system::key_page_up;
-            case VK_NEXT: return nya_system::key_page_down;
-            case VK_END: return nya_system::key_end;
-            case VK_HOME: return nya_system::key_home;
-            case VK_INSERT: return nya_system::key_insert;
-            case VK_DELETE: return nya_system::key_delete;
-            case VK_BACK: return nya_system::key_backspace;
+            case VK_PRIOR: return rox_system::key_page_up;
+            case VK_NEXT: return rox_system::key_page_down;
+            case VK_END: return rox_system::key_end;
+            case VK_HOME: return rox_system::key_home;
+            case VK_INSERT: return rox_system::key_insert;
+            case VK_DELETE: return rox_system::key_delete;
+            case VK_BACK: return rox_system::key_backspace;
                 
-            case VK_UP: return nya_system::key_up;
-            case VK_DOWN: return nya_system::key_down;
-            case VK_LEFT: return nya_system::key_left;
-            case VK_RIGHT: return nya_system::key_right;
+            case VK_UP: return rox_system::key_up;
+            case VK_DOWN: return rox_system::key_down;
+            case VK_LEFT: return rox_system::key_left;
+            case VK_RIGHT: return rox_system::key_right;
                 
-            case VK_OEM_4: return nya_system::key_bracket_left;
-            case VK_OEM_6: return nya_system::key_bracket_right;
-            case VK_OEM_COMMA: return nya_system::key_comma;
-            case VK_OEM_PERIOD: return nya_system::key_period;
+            case VK_OEM_4: return rox_system::key_bracket_left;
+            case VK_OEM_6: return rox_system::key_bracket_right;
+            case VK_OEM_COMMA: return rox_system::key_comma;
+            case VK_OEM_PERIOD: return rox_system::key_period;
         }
         
         return 0;
@@ -573,7 +584,7 @@ private:
                                      WPARAM wparam,
                                      LPARAM lparam)
     {
-        nya_system::app* app = (nya_system::app*)GetWindowLongPtr(hwnd,
+        rox_system::app* app = (rox_system::app*)GetWindowLongPtr(hwnd,
                                                                   GWLP_USERDATA);
         if (!app)
             return DefWindowProc(hwnd,
@@ -633,17 +644,17 @@ private:
             }
                 break;
                 
-            case WM_LBUTTONDOWN: app->on_mouse_button(nya_system::mouse_left,
+            case WM_LBUTTONDOWN: app->on_mouse_button(rox_system::mouse_left,
                                                       true); break;
-            case WM_LBUTTONUP: app->on_mouse_button(nya_system::mouse_left,
+            case WM_LBUTTONUP: app->on_mouse_button(rox_system::mouse_left,
                                                     false); break;
-            case WM_MBUTTONDOWN: app->on_mouse_button(nya_system::mouse_middle,
+            case WM_MBUTTONDOWN: app->on_mouse_button(rox_system::mouse_middle,
                                                       true); break;
-            case WM_MBUTTONUP: app->on_mouse_button(nya_system::mouse_middle,
+            case WM_MBUTTONUP: app->on_mouse_button(rox_system::mouse_middle,
                                                     false); break;
-            case WM_RBUTTONDOWN: app->on_mouse_button(nya_system::mouse_right,
+            case WM_RBUTTONDOWN: app->on_mouse_button(rox_system::mouse_right,
                                                       true); break;
-            case WM_RBUTTONUP: app->on_mouse_button(nya_system::mouse_right,
+            case WM_RBUTTONUP: app->on_mouse_button(rox_system::mouse_right,
                                                     false); break;
                 
             case WM_KEYDOWN:
@@ -865,44 +876,44 @@ std::vector<input_key> input_keys;
 static unsigned int get_x11_key(int key)
 {
     if(key>=AKEYCODE_A  && key<=AKEYCODE_Z)
-        return nya_system::key_a+key-AKEYCODE_A;
+        return rox_system::key_a+key-AKEYCODE_A;
     
     if(key>=7 && key<=16)
-        return nya_system::key_0+key-7;
+        return rox_system::key_0+key-7;
     if(key>=AKEYCODE_0 && key<= AKEYCODE_9)
-        return nya_system::key_0+key-AKEYCODE_0;
+        return rox_system::key_0+key-AKEYCODE_0;
     
     if(key>=131 && key<=142)
-        return nya_system::key_f1+key-131;
+        return rox_system::key_f1+key-131;
     if(key>=AKEYCODE_F1 && key<=AKEYCODE_F12)
-        return nya_system::key_f1+key-AKEYCODE_F1;
+        return rox_system::key_f1+key-AKEYCODE_F1;
     
     switch(key)
     {
-        case AKEYCODE_BACK: return nya_system::key_back;
+        case AKEYCODE_BACK: return rox_system::key_back;
             
-        case AKEYCODE_DPAD_UP: return nya_system::key_up;
-        case AKEYCODE_DPAD_DOWN: return nya_system::key_down;
-        case AKEYCODE_DPAD_LEFT: return nya_system::key_left;
-        case AKEYCODE_DPAD_RIGHT: return nya_system::key_right;
-        case AKEYCODE_DPAD_CENTER: return nya_system::key_return; //dpad center
+        case AKEYCODE_DPAD_UP: return rox_system::key_up;
+        case AKEYCODE_DPAD_DOWN: return rox_system::key_down;
+        case AKEYCODE_DPAD_LEFT: return rox_system::key_left;
+        case AKEYCODE_DPAD_RIGHT: return rox_system::key_right;
+        case AKEYCODE_DPAD_CENTER: return rox_system::key_return; //dpad center
             
-        case AKEYCODE_TAB: return nya_system::key_tab;
-        case AKEYCODE_SPACE: return nya_system::key_space;
-        case AKEYCODE_ENTER: return nya_system::key_return;
-        case AKEYCODE_DEL: return nya_system::key_backspace;
-        case AKEYCODE_ESCAPE: return nya_system::key_escape;
-        case AKEYCODE_FORWARD_DEL: return nya_system::key_delete;
+        case AKEYCODE_TAB: return rox_system::key_tab;
+        case AKEYCODE_SPACE: return rox_system::key_space;
+        case AKEYCODE_ENTER: return rox_system::key_return;
+        case AKEYCODE_DEL: return rox_system::key_backspace;
+        case AKEYCODE_ESCAPE: return rox_system::key_escape;
+        case AKEYCODE_FORWARD_DEL: return rox_system::key_delete;
             
-        case AKEYCODE_MOVE_HOME: return nya_system::key_home;
-        case AKEYCODE_MOVE_END: return nya_system::key_end;
-        case AKEYCODE_INSERT: return nya_system::key_insert;
+        case AKEYCODE_MOVE_HOME: return rox_system::key_home;
+        case AKEYCODE_MOVE_END: return rox_system::key_end;
+        case AKEYCODE_INSERT: return rox_system::key_insert;
     }
     
     return 0;
 }
 
-namespace nya_system {
+namespace rox_system {
 void set_android_user_path(const char *path);
 }
 
@@ -1067,7 +1078,7 @@ JNIEXPORT void JNICALL Java_nya_native_1activity_native_1set_1user_1path(JNIEnv 
 {
     const char *s=env->GetStringUTFChars(path,
                                          JNI_FALSE);
-    nya_system::set_android_user_path(s);
+    rox_system::set_android_user_path(s);
     env->ReleaseStringUTFChars(path,
                                s);
 }
@@ -1137,7 +1148,7 @@ public:
                                 1,
                                 &num_configs) || !num_configs)
             {
-                nya_system::log()<<"ERROR: unable to choose egl config\n";
+                rox_system::log()<<"ERROR: unable to choose egl config\n";
                 return false;
             }
         }
@@ -1148,7 +1159,7 @@ public:
                                EGL_NATIVE_VISUAL_ID,
                                &format))
         {
-            nya_system::log()<<"ERROR: unable to get egl config attributes\n";
+            rox_system::log()<<"ERROR: unable to get egl config attributes\n";
             return false;
         }
         
@@ -1157,7 +1168,7 @@ public:
                                             0,
                                             format)!=0)
         {
-            nya_system::log()<<"ERROR: unable to set egl buffers geometry\n";
+            rox_system::log()<<"ERROR: unable to set egl buffers geometry\n";
             return false;
         }
         
@@ -1167,7 +1178,7 @@ public:
                                          NULL);
         if(m_surface==EGL_NO_SURFACE)
         {
-            nya_system::log()<<"ERROR: unable to create egl surface\n";
+            rox_system::log()<<"ERROR: unable to create egl surface\n";
             return false;
         }
         
@@ -1184,7 +1195,7 @@ public:
                                        context_attribs);
             if(m_context==EGL_NO_CONTEXT)
             {
-                nya_system::log()<<"ERROR: unable to create egl context\n";
+                rox_system::log()<<"ERROR: unable to create egl context\n";
                 return false;
             }
         }
@@ -1196,7 +1207,7 @@ public:
                            m_surface,
                            m_context))
         {
-            nya_system::log()<<"ERROR: unable to make egl context current\n";
+            rox_system::log()<<"ERROR: unable to make egl context current\n";
             return false;
         }
         
@@ -1223,7 +1234,7 @@ public:
                             EGL_WIDTH,
                             &m_width))
         {
-            nya_system::log()<<"ERROR: unable to querry egl surface width\n";
+            rox_system::log()<<"ERROR: unable to querry egl surface width\n";
             return false;
         }
         
@@ -1232,7 +1243,7 @@ public:
                             EGL_HEIGHT,
                             &m_height))
         {
-            nya_system::log()<<"ERROR: unable to querry egl surface height\n";
+            rox_system::log()<<"ERROR: unable to querry egl surface height\n";
             return false;
         }
         
@@ -1328,7 +1339,7 @@ public:
                         unsigned int w,
                         unsigned int h,
                         int antialiasing,
-                        nya_system::app &app)
+                        rox_system::app &app)
     {
         bool initialised=false;
         bool paused=false;
@@ -1358,7 +1369,7 @@ public:
                         nya_render::apply_state(true);
                         app
                             .on_restore();
-                        m_time=nya_system::get_time();
+                        m_time=rox_system::get_time();
                         need_restore=false;
                         last_window=window;
                     }
@@ -1404,7 +1415,7 @@ public:
                 
                 app
                     .on_init();
-                m_time=nya_system::get_time();
+                m_time=rox_system::get_time();
                 initialised=true;
                 last_window=window;
             }
@@ -1456,7 +1467,7 @@ public:
                                    y);
                 if(e.btn)
                     app
-                    .on_mouse_button(nya_system::mouse_left,
+                    .on_mouse_button(rox_system::mouse_left,
                                      e.pressed);
             }
             input_events
@@ -1479,7 +1490,7 @@ public:
                 continue;
             }
             
-            const unsigned long time=nya_system::get_time();
+            const unsigned long time=rox_system::get_time();
             const unsigned int dt=(unsigned int)(time-m_time);
             m_time=time;
             
@@ -1501,7 +1512,7 @@ public:
     void start_fullscreen(unsigned int w,
                           unsigned int h,
                           int aa,
-                          nya_system::app &app)
+                          rox_system::app &app)
     {
         start_windowed(0,
                        0,
@@ -1511,7 +1522,7 @@ public:
                        app);
     }
     
-    void finish(nya_system::app &app)
+    void finish(rox_system::app &app)
     {
         should_exit=true;
     }
@@ -1576,7 +1587,7 @@ public:
                         unsigned int w,
                         unsigned int h,
                         int antialiasing,
-                        nya_system::app &app)
+                        rox_system::app &app)
     {
         if(m_window)
             return;
@@ -1611,7 +1622,7 @@ public:
     void start_fullscreen(unsigned int w,
                           unsigned int h,
                           int aa,
-                          nya_system::app &app)
+                          rox_system::app &app)
     {
         start_windowed(0,
                        0,
@@ -1621,7 +1632,7 @@ public:
                        app);
     }
     
-    void finish(nya_system::app &app) {
+    void finish(rox_system::app &app) {
     }
     void set_title(const char *title) {
     }
@@ -1661,7 +1672,7 @@ private:
                              m_height);
             m_app->on_splash();
             m_app->on_init();
-            m_time=nya_system::get_time();
+            m_time=rox_system::get_time();
             
             m_need_init=false;
         }
@@ -1684,7 +1695,7 @@ private:
             m_height=height;
         }
         
-        const unsigned long time=nya_system::get_time();
+        const unsigned long time=rox_system::get_time();
         const unsigned int dt=(unsigned int)(time-m_time);
         m_time=time;
         m_app->on_frame(dt);
@@ -1705,7 +1716,7 @@ private:
                                       int mods)
     {
         get_app().m_app->on_mouse_button(button==GLFW_MOUSE_BUTTON_RIGHT?
-                                         nya_system::mouse_right:nya_system::mouse_left,
+                                         rox_system::mouse_right:rox_system::mouse_left,
                                          action==GLFW_PRESS);
     }
     
@@ -1730,37 +1741,37 @@ private:
     static unsigned int get_x11_key(unsigned int key)
     {
         if(key>=GLFW_KEY_A && key<=GLFW_KEY_Z)
-            return nya_system::key_a+key-GLFW_KEY_A;
+            return rox_system::key_a+key-GLFW_KEY_A;
         
         if(key>=GLFW_KEY_0 && key<=GLFW_KEY_9)
-            return nya_system::key_0+key-GLFW_KEY_0;
+            return rox_system::key_0+key-GLFW_KEY_0;
         
         if(key>=GLFW_KEY_F1 && key<=GLFW_KEY_F12)
-            return nya_system::key_f1+key-GLFW_KEY_F1;
+            return rox_system::key_f1+key-GLFW_KEY_F1;
         
         switch(key)
         {
-            case GLFW_KEY_LEFT_SHIFT: return nya_system::key_shift;
-            case GLFW_KEY_RIGHT_SHIFT: return nya_system::key_shift;
-            case GLFW_KEY_LEFT_CONTROL: return nya_system::key_control;
-            case GLFW_KEY_RIGHT_CONTROL: return nya_system::key_control;
-            case GLFW_KEY_LEFT_ALT: return nya_system::key_alt;
-            case GLFW_KEY_RIGHT_ALT: return nya_system::key_alt;
+            case GLFW_KEY_LEFT_SHIFT: return rox_system::key_shift;
+            case GLFW_KEY_RIGHT_SHIFT: return rox_system::key_shift;
+            case GLFW_KEY_LEFT_CONTROL: return rox_system::key_control;
+            case GLFW_KEY_RIGHT_CONTROL: return rox_system::key_control;
+            case GLFW_KEY_LEFT_ALT: return rox_system::key_alt;
+            case GLFW_KEY_RIGHT_ALT: return rox_system::key_alt;
                 
-            case GLFW_KEY_ESCAPE: return nya_system::key_escape;
-            case GLFW_KEY_SPACE: return nya_system::key_space;
-            case GLFW_KEY_ENTER: return nya_system::key_return;
-            case GLFW_KEY_TAB: return nya_system::key_tab;
+            case GLFW_KEY_ESCAPE: return rox_system::key_escape;
+            case GLFW_KEY_SPACE: return rox_system::key_space;
+            case GLFW_KEY_ENTER: return rox_system::key_return;
+            case GLFW_KEY_TAB: return rox_system::key_tab;
                 
-            case GLFW_KEY_END: return nya_system::key_end;
-            case GLFW_KEY_HOME: return nya_system::key_home;
-            case GLFW_KEY_INSERT: return nya_system::key_insert;
-            case GLFW_KEY_DELETE: return nya_system::key_delete;
+            case GLFW_KEY_END: return rox_system::key_end;
+            case GLFW_KEY_HOME: return rox_system::key_home;
+            case GLFW_KEY_INSERT: return rox_system::key_insert;
+            case GLFW_KEY_DELETE: return rox_system::key_delete;
                 
-            case GLFW_KEY_UP: return nya_system::key_up;
-            case GLFW_KEY_DOWN: return nya_system::key_down;
-            case GLFW_KEY_LEFT: return nya_system::key_left;
-            case GLFW_KEY_RIGHT: return nya_system::key_right;
+            case GLFW_KEY_UP: return rox_system::key_up;
+            case GLFW_KEY_DOWN: return rox_system::key_down;
+            case GLFW_KEY_LEFT: return rox_system::key_left;
+            case GLFW_KEY_RIGHT: return rox_system::key_right;
         }
         
         return 0;
@@ -1779,7 +1790,7 @@ public:
 private:
     GLFWwindow *m_window;
     unsigned long m_time;
-    nya_system::app *m_app;
+    rox_system::app *m_app;
     bool m_need_init;
     int m_width,m_height;
 };
@@ -1808,7 +1819,7 @@ public:
                         unsigned int w,
                         unsigned int h,
                         int antialiasing,
-                        nya_system::app &app)
+                        rox_system::app &app)
     {
         if(m_dpy)
             return;
@@ -1816,7 +1827,7 @@ public:
         m_dpy=XOpenDisplay(NULL);
         if(!m_dpy)
         {
-            nya_system::log()<<"unable to open x display\n";
+            rox_system::log()<<"unable to open x display\n";
             return;
         }
         
@@ -1825,7 +1836,7 @@ public:
                               &dummy,
                               &dummy))
         {
-            nya_system::log()<<"unable to querry glx extension\n";
+            rox_system::log()<<"unable to querry glx extension\n";
             return;
         }
         
@@ -1857,7 +1868,7 @@ public:
                                dbl_buf_aniso);
             if(!vi)
             {
-                nya_system::log()<<"unable to set antialising\n";
+                rox_system::log()<<"unable to set antialising\n";
                 antialiasing=0;
             }
         }
@@ -1869,13 +1880,13 @@ public:
         
         if(!vi)
         {
-            nya_system::log()<<"unable to choose glx visual\n";
+            rox_system::log()<<"unable to choose glx visual\n";
             return;
         }
         
         if(vi->c_class!=TrueColor)
         {
-            nya_system::log()<<"device does not support TrueColor\n";
+            rox_system::log()<<"device does not support TrueColor\n";
             return;
         }
         
@@ -1885,7 +1896,7 @@ public:
                               GL_TRUE);
         if(!m_cx)
         {
-            nya_system::log()<<"unable to ceate glx context\n";
+            rox_system::log()<<"unable to ceate glx context\n";
             return;
         }
         
@@ -1941,7 +1952,7 @@ public:
         app
             .on_resize(w,
                        h);
-        m_time=nya_system::get_time();
+        m_time=rox_system::get_time();
         
         if(app.on_splash())
             glXSwapBuffers(m_dpy,
@@ -1950,7 +1961,7 @@ public:
         app
             .on_init();
         
-        m_time=nya_system::get_time();
+        m_time=rox_system::get_time();
         
         XEvent event;
         while(true)
@@ -1992,19 +2003,19 @@ public:
                         {
                             case 1:
                                 app
-                                    .on_mouse_button(nya_system::mouse_left,
+                                    .on_mouse_button(rox_system::mouse_left,
                                                      true);
                                 break;
                                 
                             case 2:
                                 app
-                                    .on_mouse_button(nya_system::mouse_middle,
+                                    .on_mouse_button(rox_system::mouse_middle,
                                                      true);
                                 break;
                                 
                             case 3:
                                 app
-                                    .on_mouse_button(nya_system::mouse_right,
+                                    .on_mouse_button(rox_system::mouse_right,
                                                      true);
                                 break;
                                 
@@ -2040,19 +2051,19 @@ public:
                         {
                             case 1:
                                 app
-                                    .on_mouse_button(nya_system::mouse_left,
+                                    .on_mouse_button(rox_system::mouse_left,
                                                      false);
                                 break;
                                 
                             case 2:
                                 app
-                                    .on_mouse_button(nya_system::mouse_middle,
+                                    .on_mouse_button(rox_system::mouse_middle,
                                                      false);
                                 break;
                                 
                             case 3:
                                 app
-                                    .on_mouse_button(nya_system::mouse_right,
+                                    .on_mouse_button(rox_system::mouse_right,
                                                      false);
                                 break;
                         }
@@ -2060,7 +2071,7 @@ public:
                 };
             }
             
-            const unsigned long time=nya_system::get_time();
+            const unsigned long time=rox_system::get_time();
             const unsigned int dt=(unsigned int)(time-m_time);
             m_time=time;
             
@@ -2077,7 +2088,7 @@ public:
     void start_fullscreen(unsigned int w,
                           unsigned int h,
                           int aa,
-                          nya_system::app &app)
+                          rox_system::app &app)
     {
         //ToDo
         
@@ -2089,7 +2100,7 @@ public:
                        app);
     }
     
-    void finish(nya_system::app &app)
+    void finish(rox_system::app &app)
     {
         if(!m_dpy || !m_cx)
             return;
@@ -2101,7 +2112,7 @@ public:
                            None,
                            NULL))
         {
-            nya_system::log()<<"Could not release drawing context.\n";
+            rox_system::log()<<"Could not release drawing context.\n";
             return;
         }
         
@@ -2165,7 +2176,7 @@ private:
 
 #ifndef __APPLE__ //implemented in app.mm
 
-namespace nya_system
+namespace rox_system
 {
 void app::start_windowed(int x,
                          int y,
