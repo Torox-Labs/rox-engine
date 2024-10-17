@@ -1,5 +1,16 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
-
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C)) 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+// Drop iOS Platform support on the Rox-Engine
+//
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 // could be extended externally at runtime via method_exchangeImplementations
 // to implement necessary behavior
 
@@ -7,35 +18,6 @@
 
 #if defined __APPLE__
 #include "TargetConditionals.h"
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-
-#import <UIKit/UIKit.h>
-#import <OpenGLES/EAGL.h>
-#import <OpenGLES/ES2/gl.h>
-#import <OpenGLES/ES2/glext.h>
-#import <QuartzCore/QuartzCore.h>
-
-@interface view_controller : UIViewController<UIAccelerometerDelegate>
-{
-    CFTimeInterval m_time;
-
-    EAGLContext *context;
-    BOOL animating;
-    BOOL is_background;
-    float scale;
-    CADisplayLink * __weak displayLink;
-}
-
-@property (readonly, nonatomic, getter=isAnimating) BOOL animating;
-@property (readonly, nonatomic, getter=getScale) float scale;
-@end
-
-@interface shared_app_delegate : UIResponder <UIApplicationDelegate>
-@property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) view_controller *viewController;
-@end
-
-#else
 
 #include <Cocoa/Cocoa.h>
 #import <QuartzCore/CAMetalLayer.h>
@@ -77,5 +59,4 @@
 }
 @end
 
-#endif
 #endif

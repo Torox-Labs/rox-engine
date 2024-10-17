@@ -4,6 +4,7 @@
 //
 // This file was modified by the Torox Project.
 // Drop support for METRO, FLUENT style.
+// Drop Support for Android, iOS
 // Update the code to be compatible with the latest version of the engine.
 // Optimasation and code cleaning for a better performance.
 // 
@@ -22,9 +23,6 @@
     #include "TargetConditionals.h"
     #include <string>
 
-    #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-        bool get_ios_user_path(char *path);
-    #endif
 #elif defined _WIN32
     #include <windows.h>
     #include <string.h>
@@ -97,13 +95,8 @@ const char *get_app_path()
         std::string path_str(path);
         size_t p=path_str.rfind(".app");
         
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-        size_t p2=path_str.find("/",
-                                p);
-#else
         size_t p2=path_str.rfind("/",
                                  p);
-#endif
         
         if(p2!=std::string::npos)
             path[p2+1]='\0';
@@ -176,9 +169,6 @@ const char *get_user_path()
 #elif EMSCRIPTEN
         strcpy(path,
                "/.nya/");
-#elif TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-        if(!get_ios_user_path(path))
-            return 0;
 #else
         const char *p=getenv("HOME");
         if (!p)
