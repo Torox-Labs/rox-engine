@@ -28,7 +28,4 @@ const char *get_app_path();
 const char *get_user_path();
 unsigned long get_time();
 
-void emscripten_sync_fs();
-bool emscripten_sync_fs_finished();
-
 }

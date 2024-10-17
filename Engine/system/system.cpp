@@ -46,28 +46,13 @@
     #include <string.h>
 #endif
 
-#ifdef EMSCRIPTEN
-    #include <emscripten/emscripten.h>
-#endif
-
 namespace
 {
     rox_log::log_base *system_log=0;
-
-#ifdef __ANDROID__
-    std::string android_user_path;
-#endif
 }
 
 namespace rox_system
 {
-
-#ifdef __ANDROID__
-void set_android_user_path(const char *path) {
-    android_user_path.assign(path?path:"");
-}
-#endif
-
 void set_log(rox_log::log_base *l) {
     system_log=l;
 }
@@ -140,11 +125,6 @@ const char *get_app_path()
 
 const char *get_user_path()
 {
-#ifdef __ANDROID__
-    return android_user_path
-        .c_str();
-#endif
-    
     const size_t max_path=4096;
     static char path[max_path]="";
     static bool has_path=false;
@@ -166,9 +146,16 @@ const char *get_user_path()
             if(path[i]=='\\')
                 path[i]='/';
         }
+<<<<<<< HEAD
 #elif EMSCRIPTEN
         strcpy(path,
                "/.nya/");
+=======
+
+#elif TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+        if(!get_ios_user_path(path))
+            return 0;
+>>>>>>> a0a30fc (Updating the code base to drop support for Android, iOS, and Emscripten)
 #else
         const char *p=getenv("HOME");
         if (!p)
@@ -212,32 +199,6 @@ unsigned long get_time()
 }
 
 #endif
-
-namespace {
-bool is_fs_ready=true;
-}
-
-#ifdef EMSCRIPTEN
-extern "C" __attribute__((used)) void emscripten_on_sync_fs_finished() {
-    is_fs_ready=true;
-}
-#endif
-
-void emscripten_sync_fs()
-{
-#ifdef EMSCRIPTEN
-    is_fs_ready=false;
-    EM_ASM(FS.syncfs(false,
-                     function(err){
-        ccall('emscripten_on_sync_fs_finished',
-              'v');
-    }););
-#endif
-}
-
-bool emscripten_sync_fs_finished() {
-    return is_fs_ready;
-}
 
 }
 
