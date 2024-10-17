@@ -902,7 +902,7 @@ private:
     m_need_reshape=YES;
 }
 
--(void)set_responder:(rox_system::::app*)responder
+-(void)set_responder:(rox_system::app*)responder
 {
     m_app=responder;
 }
