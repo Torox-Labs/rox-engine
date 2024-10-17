@@ -783,9 +783,7 @@ bool shared_app::m_suspended = false;
 
 //MARK: Apple
 #elif defined __APPLE__ //implemented in app.mm
-
 #endif
-
 
 #ifndef __APPLE__ //implemented in app.mm
 

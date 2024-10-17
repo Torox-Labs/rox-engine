@@ -18,6 +18,8 @@
 
 #include "system.h"
 
+#include <iomanip>
+
 #if defined __APPLE__
     #include <mach-o/dyld.h>
     #include "TargetConditionals.h"
@@ -25,7 +27,7 @@
 
 #elif defined _WIN32
     #include <windows.h>
-    #include <string.h>
+    #include <cstring>
 
     #if defined(_MSC_VER) && _MSC_VER >= 1900
 		#if _WIN32_WINNT >= _WIN32_WINNT_WIN10
@@ -175,14 +177,13 @@ const char *get_user_path()
 }
 
 #ifdef _WIN32
+#include <ctime>
 
-#include "time.h"
-
-#pragma comment ( lib, "WINMM.LIB"  )
+#pragma comment ( lib, "WINMM.LIB" )
 
 unsigned long get_time()
 {
-    return timeGetTime();
+    return ::std::time(nullptr);
 }
 
 #else
