@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "logger/log.h"
+#include "logger/logger.h"
 #include "logger/warning.h"
 
 namespace nya_scene

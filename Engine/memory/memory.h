@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "logger/log.h"
+#include "logger/logger.h"
 
 namespace nya_memory
 {
