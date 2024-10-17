@@ -40,12 +40,12 @@ namespace
     class shared_app
     {
     public:
-        void start_windowed(int x,int y,unsigned int w,unsigned int h,int antialiasing,nya_system::app &app)
+        void start_windowed(int x,int y,unsigned int w,unsigned int h,int antialiasing,rox_system::app &app)
         {
             start_fullscreen(w,h,antialiasing,app);
         }
 
-        void start_fullscreen(unsigned int w,unsigned int h,int antialiasing,nya_system::app &app)
+        void start_fullscreen(unsigned int w,unsigned int h,int antialiasing,rox_system::app &app)
         {
             if(m_responder)
                 return;
@@ -59,7 +59,7 @@ namespace
             }
         }
 
-        void finish(nya_system::app &app)
+        void finish(rox_system::app &app)
         {
             app.on_free();
             exit(0);
@@ -122,7 +122,7 @@ namespace
             //ToDo: navigationItem.title
         }
 
-        void set_virtual_keyboard(nya_system::virtual_keyboard_type type)
+        void set_virtual_keyboard(rox_system::virtual_keyboard_type type)
         {
             if(type==m_keyboard)
                 return;
@@ -133,16 +133,16 @@ namespace
             id<UITextInputTraits> traits=(id<UITextInputTraits>)UIApplication.sharedApplication.keyWindow.rootViewController.view;
             switch(type)
             {
-                case nya_system::keyboard_hidden: return;
+                case rox_system::keyboard_hidden: return;
 
-                case nya_system::keyboard_numeric: traits.keyboardType=UIKeyboardTypeDecimalPad; break;
-                case nya_system::keyboard_decimal: traits.keyboardType=UIKeyboardTypeNumbersAndPunctuation; break;
-                case nya_system::keyboard_phone: traits.keyboardType=UIKeyboardTypePhonePad; break;
-                case nya_system::keyboard_text: traits.keyboardType=UIKeyboardTypeDefault; break;
-                case nya_system::keyboard_pin: traits.keyboardType=UIKeyboardTypeNumberPad; break;
-                case nya_system::keyboard_email: traits.keyboardType=UIKeyboardTypeEmailAddress; break;
-                case nya_system::keyboard_password: traits.keyboardType=UIKeyboardTypeDefault; break;
-                case nya_system::keyboard_url: traits.keyboardType=UIKeyboardTypeURL; break;
+                case rox_system::keyboard_numeric: traits.keyboardType=UIKeyboardTypeDecimalPad; break;
+                case rox_system::keyboard_decimal: traits.keyboardType=UIKeyboardTypeNumbersAndPunctuation; break;
+                case rox_system::keyboard_phone: traits.keyboardType=UIKeyboardTypePhonePad; break;
+                case rox_system::keyboard_text: traits.keyboardType=UIKeyboardTypeDefault; break;
+                case rox_system::keyboard_pin: traits.keyboardType=UIKeyboardTypeNumberPad; break;
+                case rox_system::keyboard_email: traits.keyboardType=UIKeyboardTypeEmailAddress; break;
+                case rox_system::keyboard_password: traits.keyboardType=UIKeyboardTypeDefault; break;
+                case rox_system::keyboard_url: traits.keyboardType=UIKeyboardTypeURL; break;
             }
             [[UIApplication sharedApplication].keyWindow.rootViewController.view becomeFirstResponder];
         }
@@ -151,18 +151,18 @@ namespace
 
     public:
         static shared_app &get_app() { static shared_app app; return app; }
-        nya_system::app *get_responder() { return m_responder; }
+        rox_system::app *get_responder() { return m_responder; }
         int get_antialiasing() { return m_antialiasing; }
 
     public:
-        shared_app():m_responder(0),m_antialiasing(0),m_title("Nya engine"),m_keyboard(nya_system::keyboard_hidden) {}
+        shared_app():m_responder(0),m_antialiasing(0),m_title("Nya engine"),m_keyboard(rox_system::keyboard_hidden) {}
 
     private:
-        nya_system::app *m_responder;
+        rox_system::app *m_responder;
         int m_antialiasing;
         std::vector<uintptr_t> m_touches;
         std::string m_title;
-        nya_system::virtual_keyboard_type m_keyboard;
+        rox_system::virtual_keyboard_type m_keyboard;
     };
 }
 
@@ -215,7 +215,7 @@ namespace
 
 -(void)touch:(NSSet *)touches withEvent:(UIEvent *)event pressed:(BOOL)pressed button:(BOOL)button
 {
-    nya_system::app *responder=shared_app::get_app().get_responder();
+    rox_system::app *responder=shared_app::get_app().get_responder();
     if(!responder)
         return;
 
@@ -254,7 +254,7 @@ namespace
 
         responder->on_mouse_move(x,y);
         if(button)
-            responder->on_mouse_button(nya_system::mouse_left,pressed);
+            responder->on_mouse_button(rox_system::mouse_left,pressed);
     }
 }
 
@@ -355,7 +355,7 @@ static inline NSString *NSStringFromUIInterfaceOrientation(UIInterfaceOrientatio
     [(EAGLView *)self.view setContext:context];
     [(EAGLView *)self.view setFramebuffer];
 
-    nya_system::app *responder=shared_app::get_app().get_responder();
+    rox_system::app *responder=shared_app::get_app().get_responder();
     if(responder)
     {
         [(EAGLView *)self.view setFramebuffer];
@@ -370,14 +370,14 @@ static inline NSString *NSStringFromUIInterfaceOrientation(UIInterfaceOrientatio
 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration
 {
-    nya_system::app *responder=shared_app::get_app().get_responder();
+    rox_system::app *responder=shared_app::get_app().get_responder();
     if(responder)
         responder->on_acceleration(acceleration.x,acceleration.y,acceleration.z);
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
-    nya_system::app *responder=shared_app::get_app().get_responder();
+    rox_system::app *responder=shared_app::get_app().get_responder();
     if(responder)
         responder->on_suspend();
 
@@ -394,7 +394,7 @@ static inline NSString *NSStringFromUIInterfaceOrientation(UIInterfaceOrientatio
     static bool ignore_first=true;
     if(!ignore_first)
     {
-        nya_system::app *responder=shared_app::get_app().get_responder();
+        rox_system::app *responder=shared_app::get_app().get_responder();
         if(responder)
             responder->on_restore();
     }
@@ -418,7 +418,7 @@ static inline NSString *NSStringFromUIInterfaceOrientation(UIInterfaceOrientatio
     // Tear down context.
     if([EAGLContext currentContext] == context)
     {
-        nya_system::app *responder=shared_app::get_app().get_responder();
+        rox_system::app *responder=shared_app::get_app().get_responder();
         if(responder)
             responder->on_free();
 
@@ -504,7 +504,7 @@ static inline NSString *NSStringFromUIInterfaceOrientation(UIInterfaceOrientatio
         m_time=time;
     }
 
-    nya_system::app *responder=shared_app::get_app().get_responder();
+    rox_system::app *responder=shared_app::get_app().get_responder();
     if(responder)
         responder->on_frame(dt);
 
@@ -550,7 +550,7 @@ static inline NSString *NSStringFromUIInterfaceOrientation(UIInterfaceOrientatio
 
 - (void)insertText:(NSString *)text
 {
-    nya_system::app *responder=shared_app::get_app().get_responder();
+    rox_system::app *responder=shared_app::get_app().get_responder();
 
     for(int i=0;i<text.length;++i)
     {
@@ -561,8 +561,8 @@ static inline NSString *NSStringFromUIInterfaceOrientation(UIInterfaceOrientatio
 
 - (void)deleteBackward
 {
-    nya_system::app *responder=shared_app::get_app().get_responder();
-    responder->on_charcode(nya_system::key_backspace,true,false);
+    rox_system::app *responder=shared_app::get_app().get_responder();
+    responder->on_charcode(rox_system::key_backspace,true,false);
 }
 
 - (BOOL)hasText { return YES; }
@@ -691,7 +691,7 @@ static inline NSString *NSStringFromUIInterfaceOrientation(UIInterfaceOrientatio
         if(!defaultFramebuffer)
         {
             [self createFramebuffer];
-            nya_system::app *responder=shared_app::get_app().get_responder();
+            rox_system::app *responder=shared_app::get_app().get_responder();
             if(responder)
                 responder->on_resize(framebufferWidth,framebufferHeight);
         }
@@ -748,7 +748,7 @@ namespace
 class shared_app
 {
 private:
-    void start(int x,int y,unsigned int w,unsigned int h,int antialiasing,bool fullscreen,nya_system::app &app)
+    void start(int x,int y,unsigned int w,unsigned int h,int antialiasing,bool fullscreen,rox_system::app &app)
     {
         if(m_window)
             return;
@@ -774,17 +774,17 @@ private:
     }
 
 public:
-    void start_windowed(int x,int y,unsigned int w,unsigned int h,int antialiasing,nya_system::app &app)
+    void start_windowed(int x,int y,unsigned int w,unsigned int h,int antialiasing,rox_system::app &app)
     {
         start(x,y,w,h,antialiasing,false,app);
     }
 
-    void start_fullscreen(unsigned int w,unsigned int h,int antialiasing,nya_system::app &app)
+    void start_fullscreen(unsigned int w,unsigned int h,int antialiasing,rox_system::app &app)
     {
         start(0,0,w,h,antialiasing,true,app);
     }
 
-    void finish(nya_system::app &app)
+    void finish(rox_system::app &app)
     {
         if(!m_window)
             return;
@@ -792,7 +792,7 @@ public:
         [m_window close];
     }
 
-    void on_window_close(nya_system::app &app)
+    void on_window_close(rox_system::app &app)
     {
         if(!m_window)
             return;
@@ -816,7 +816,7 @@ public:
         [m_window setTitle:title_str];
     }
 
-    void set_virtual_keyboard(nya_system::virtual_keyboard_type type) {}
+    void set_virtual_keyboard(rox_system::virtual_keyboard_type type) {}
 
     void set_mouse_pos(int x,int y)
     {
@@ -902,7 +902,7 @@ private:
     m_need_reshape=YES;
 }
 
--(void)set_responder:(nya_system::app*)responder
+-(void)set_responder:(rox_system::::app*)responder
 {
     m_app=responder;
 }
@@ -954,7 +954,7 @@ static CVReturn dispatchDraw(CVDisplayLinkRef displayLink,
         {
             const bool had_splash=m_app->on_splash();
             m_app->on_init();
-            m_time=nya_system::get_time();
+            m_time=rox_system::get_time();
             m_state=state_draw;
             if(had_splash)
                 break;
@@ -962,7 +962,7 @@ static CVReturn dispatchDraw(CVDisplayLinkRef displayLink,
 
         case state_draw:
         {
-            const unsigned long time=nya_system::get_time();
+            const unsigned long time=rox_system::get_time();
             m_app->on_frame((unsigned int)(time-m_time));
             m_time=time;
         }
@@ -1056,23 +1056,23 @@ static CVReturn dispatchDraw(CVDisplayLinkRef displayLink,
 - (void)mouseDown:(NSEvent *)event
 {
     [self update_mpos:event];
-    m_app->on_mouse_button(nya_system::mouse_left,true);
+    m_app->on_mouse_button(rox_system::mouse_left,true);
 }
 
 - (void)mouseUp:(NSEvent *)event
 {
-    m_app->on_mouse_button(nya_system::mouse_left,false);
+    m_app->on_mouse_button(rox_system::mouse_left,false);
 }
 
 - (void)rightMouseDown:(NSEvent *)event
 {
     [self update_mpos:event];
-    m_app->on_mouse_button(nya_system::mouse_right,true);
+    m_app->on_mouse_button(rox_system::mouse_right,true);
 }
 
 - (void)rightMouseUp:(NSEvent *)event
 {
-    m_app->on_mouse_button(nya_system::mouse_right,false);
+    m_app->on_mouse_button(rox_system::mouse_right,false);
 }
 
 - (void)scrollWheel:(NSEvent*)event
@@ -1083,43 +1083,43 @@ static CVReturn dispatchDraw(CVDisplayLinkRef displayLink,
 -(unsigned int)cocoaKeyToX11Keycode:(unichar)key_char
 {
     if(key_char>='A' && key_char<='Z')
-        return nya_system::key_a+key_char-'A';
+        return rox_system::key_a+key_char-'A';
 
     if(key_char>='a' && key_char<='z')
-        return nya_system::key_a+key_char-'a';
+        return rox_system::key_a+key_char-'a';
 
     if(key_char>='1' && key_char<='9')
-        return nya_system::key_1+key_char-'1';
+        return rox_system::key_1+key_char-'1';
 
     if(key_char>=NSF1FunctionKey && key_char<=NSF35FunctionKey)
-        return nya_system::key_f1+key_char-NSF1FunctionKey;
+        return rox_system::key_f1+key_char-NSF1FunctionKey;
 
     switch(key_char)
     {
-        case NSLeftArrowFunctionKey: return nya_system::key_left;
-        case NSRightArrowFunctionKey: return nya_system::key_right;
-        case NSUpArrowFunctionKey: return nya_system::key_up;
-        case NSDownArrowFunctionKey: return nya_system::key_down;
+        case NSLeftArrowFunctionKey: return rox_system::key_left;
+        case NSRightArrowFunctionKey: return rox_system::key_right;
+        case NSUpArrowFunctionKey: return rox_system::key_up;
+        case NSDownArrowFunctionKey: return rox_system::key_down;
 
-        case ' ': return nya_system::key_space;
-        case '\r': return nya_system::key_return;
-        case '\t': return nya_system::key_tab;
-        case '0': return nya_system::key_0;
+        case ' ': return rox_system::key_space;
+        case '\r': return rox_system::key_return;
+        case '\t': return rox_system::key_tab;
+        case '0': return rox_system::key_0;
             
-        case '[': return nya_system::key_bracket_left;
-        case ']': return nya_system::key_bracket_right;
-        case ',': return nya_system::key_comma;
-        case '.': return nya_system::key_period;
+        case '[': return rox_system::key_bracket_left;
+        case ']': return rox_system::key_bracket_right;
+        case ',': return rox_system::key_comma;
+        case '.': return rox_system::key_period;
 
-        case 0x1b: return nya_system::key_escape;
-        case 0x7f: return nya_system::key_backspace;
+        case 0x1b: return rox_system::key_escape;
+        case 0x7f: return rox_system::key_backspace;
 
-        case NSPageUpFunctionKey: return nya_system::key_page_up;
-        case NSPageDownFunctionKey: return nya_system::key_page_down;
-        case NSEndFunctionKey: return nya_system::key_end;
-        case NSHomeFunctionKey: return nya_system::key_home;
-        case NSInsertFunctionKey: return nya_system::key_insert;
-        case NSDeleteFunctionKey: return nya_system::key_delete;
+        case NSPageUpFunctionKey: return rox_system::key_page_up;
+        case NSPageDownFunctionKey: return rox_system::key_page_down;
+        case NSEndFunctionKey: return rox_system::key_end;
+        case NSHomeFunctionKey: return rox_system::key_home;
+        case NSInsertFunctionKey: return rox_system::key_insert;
+        case NSDeleteFunctionKey: return rox_system::key_delete;
 
         default: break;
     };
@@ -1187,22 +1187,22 @@ static CVReturn dispatchDraw(CVDisplayLinkRef displayLink,
 
     const bool shift_pressed = ([event modifierFlags] & NSShiftKeyMask) == NSShiftKeyMask;
     if(shift_pressed!=m_shift_pressed)
-        m_app->on_keyboard(nya_system::key_shift,shift_pressed), m_shift_pressed=shift_pressed;
+        m_app->on_keyboard(rox_system::key_shift,shift_pressed), m_shift_pressed=shift_pressed;
 
     const bool ctrl_pressed = ([event modifierFlags] & NSControlKeyMask) == NSControlKeyMask;
     if(ctrl_pressed!=m_ctrl_pressed)
-        m_app->on_keyboard(nya_system::key_control,ctrl_pressed), m_ctrl_pressed=ctrl_pressed;
+        m_app->on_keyboard(rox_system::key_control,ctrl_pressed), m_ctrl_pressed=ctrl_pressed;
 
     const bool alt_pressed = ([event modifierFlags] & NSAlternateKeyMask) == NSAlternateKeyMask;
     if(alt_pressed!=m_alt_pressed)
-        m_app->on_keyboard(nya_system::key_alt,alt_pressed), m_alt_pressed=alt_pressed;
+        m_app->on_keyboard(rox_system::key_alt,alt_pressed), m_alt_pressed=alt_pressed;
 }
 
 @end
 
 @implementation shared_app_delegate
 
--(id)init_with_responder:(nya_system::app*)responder  antialiasing:(int)aa
+-(id)init_with_responder:(rox_system::app*)responder  antialiasing:(int)aa
 {
     self=[super init];
     if(!self)
