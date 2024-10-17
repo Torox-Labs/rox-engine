@@ -1233,7 +1233,7 @@ static CVReturn dispatchDraw(CVDisplayLinkRef displayLink,
 
 #endif
 
-namespace nya_system
+namespace rox_system
 {
 
 void app::start_windowed(int x,int y,unsigned int w,unsigned int h,int antialiasing)
