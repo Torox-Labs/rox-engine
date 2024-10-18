@@ -1,13 +1,13 @@
 # ====== Define Source Subdirectories ======
 set(SOURCE_SUBDIRS
-    formats
-    logger
-    math
-    memory
-    render
-    resources
-    scene
-    system
+    RoxFormats
+    RoxLogger
+    RoxMath
+    RoxMemory
+    RoxRender
+    RoxResources
+    RoxScene
+    RoxSystem
 )
 
 # ====== Collect Source Files ======
@@ -36,14 +36,14 @@ target_include_directories(${PROJECT_NAME}
 # ====== Link Libraries ======
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
-    formats
-    logger
-    math
-    memory
-    render
-    resources
-    scene
-    system
+    RoxFormats
+    RoxLogger
+    RoxMath
+    RoxMemory
+    RoxRender
+    RoxResources
+    RoxScene
+    RoxSystem
 
     # External Libraries
 )
