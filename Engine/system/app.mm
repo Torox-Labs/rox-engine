@@ -4,6 +4,7 @@
 // This file was modified by the Torox Project.
 // Drop the Support of The OpenGL for the macOS Platform
 // Reconfigure the macOS Platform to run only on Metal
+// Drop the Support of iOS
 //
 // This file incorporates code from the nya-engine project, which is licensed under the MIT License.
 // See the LICENSE-MIT file in the root directory for more information.
