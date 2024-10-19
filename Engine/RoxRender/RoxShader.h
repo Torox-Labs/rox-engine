@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace nya_render
+namespace RoxRender
 {
 
 class shader
@@ -32,14 +32,14 @@ public:
 public:
     enum uniform_type
     {
-        uniform_not_found = shader_code_parser::type_invalid,
-        uniform_float = shader_code_parser::type_float,
-        uniform_vec2 = shader_code_parser::type_vec2,
-        uniform_vec3 = shader_code_parser::type_vec3,
-        uniform_vec4 = shader_code_parser::type_vec4,
-        uniform_mat4 = shader_code_parser::type_mat4,
-        uniform_sampler2d = shader_code_parser::type_sampler2d,
-        uniform_sampler_cube = shader_code_parser::type_sampler_cube
+        uniform_not_found = nya_render::shader_code_parser::type_invalid,
+        uniform_float = nya_render::shader_code_parser::type_float,
+        uniform_vec2 = nya_render::shader_code_parser::type_vec2,
+        uniform_vec3 = nya_render::shader_code_parser::type_vec3,
+        uniform_vec4 = nya_render::shader_code_parser::type_vec4,
+        uniform_mat4 = nya_render::shader_code_parser::type_mat4,
+        uniform_sampler2d = nya_render::shader_code_parser::type_sampler2d,
+        uniform_sampler_cube = nya_render::shader_code_parser::type_sampler_cube
     };
 
     struct uniform
@@ -91,13 +91,13 @@ private:
     std::vector<char> m_data;
 };
 
-class compiled_shaders_provider
+class RoxCompiledShadersProvider
 {
 public:
     virtual bool get(const char *text,compiled_shader &shader) { return 0; }
     virtual bool set(const char *text,const compiled_shader &shader) { return false; }
 };
 
-void set_compiled_shaders_provider(compiled_shaders_provider *provider);
+void set_compiled_shaders_provider(RoxCompiledShadersProvider *provider);
 
 }

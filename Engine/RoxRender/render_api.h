@@ -20,8 +20,8 @@ public:
 
     struct viewport_state
     {
-        rect viewport;
-        rect scissor;
+	    RoxRender::rect viewport;
+	    RoxRender::rect scissor;
         bool scissor_enabled;
         float clear_color[4];
         float clear_depth;
@@ -57,7 +57,7 @@ public:
         }
     };
 
-    struct state: public viewport_state,render_state,nya_render::state {};
+    struct state: public viewport_state,render_state,RoxRender::state {};
 
     struct tf_state: public render_state
     {
@@ -69,7 +69,7 @@ public:
 public:
     virtual int create_shader(const char *vertex,const char *fragment) { return -1; }
     virtual uint get_uniforms_count(int shader) { return 0; }
-    virtual shader::uniform get_uniform(int shader,int idx) { return shader::uniform(); }
+    virtual RoxRender::shader::uniform get_uniform(int shader,int idx) { return RoxRender::shader::uniform(); }
     virtual void remove_shader(int shader) {}
 
     virtual int create_uniform_buffer(int shader) { return -1; }

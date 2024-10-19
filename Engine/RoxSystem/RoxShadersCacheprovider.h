@@ -23,8 +23,8 @@ namespace RoxSystem
         }
 
     public:
-        bool get(const char *text,nya_render::compiled_shader &shader);
-        bool set(const char *text,const nya_render::compiled_shader &shader);
+        bool get(const char *text,RoxRender::compiled_shader &shader);
+        bool set(const char *text,const RoxRender::compiled_shader &shader);
 
     private:
         std::string crc(const char *text);

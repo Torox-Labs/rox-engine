@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "logger/logger.h"
-#include "memory/mutex.h"
-#include "memory/tmp_buffer.h"
+#include "RoxLogger/RoxLogger.h"
+#include "RoxMemory/mutex.h"
+#include "RoxMemory/tmp_buffer.h"
 #include <cstddef>
 
-namespace nya_resources
+namespace RoxResources
 {
 
 class resource_data
@@ -50,8 +50,8 @@ resources_provider &get_resources_provider();
 
 nya_memory::tmp_buffer_ref read_data(const char *name);
 
-void set_log(rox_log::log_base *l);
-rox_log::log_base &log();
+void set_log(RoxLogger::RoxLoggerBase *l);
+RoxLogger::RoxLoggerBase &log();
 
 bool check_extension(const char *name,const char *ext);
 

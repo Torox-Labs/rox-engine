@@ -336,7 +336,7 @@ public:
                          GWLP_USERDATA,
                          (LONG_PTR)&app);
         
-        nya_render::set_viewport(0,
+        RoxRender::set_viewport(0,
                                  0,
                                  w,
                                  h);

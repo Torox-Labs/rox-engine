@@ -19,7 +19,7 @@ public:
 public:
     int create_shader(const char *vertex,const char *fragment) override;
     uint get_uniforms_count(int shader) override;
-    shader::uniform get_uniform(int shader,int idx) override;
+    RoxRender::shader::uniform get_uniform(int shader,int idx) override;
     void remove_shader(int shader) override;
 
     int create_uniform_buffer(int shader) override;

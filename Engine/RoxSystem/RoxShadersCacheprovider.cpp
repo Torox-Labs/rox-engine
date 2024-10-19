@@ -11,31 +11,32 @@
 namespace RoxSystem
 {
 
-bool RoxCompiledShadersProvider::get(const char *text, RoxRender::CompiledShader &shader)
-{
-    shader=RoxRender::CompiledShader();
+    bool RoxCompiledShadersProvider::get(const char* text, RoxRender::compiled_shader& shader)
+ {
+    //shader = RoxRender::CompiledShader();
+    shader = RoxRender::compiled_shader();
 
     if(!text)
         return false;
 
-    RoxResources::RoxResourceData *data=
-    RoxResources::getResourcesProvider().access((m_load_path+crc(text)+".nsc").c_str());
+    RoxResources::resource_data*data=
+    RoxResources::get_resources_provider().access((m_load_path+crc(text)+".nsc").c_str());
     if(!data)
         return false;
 
-    shader=RoxRender::CompiledShader(data->getSize());
-    data->readAll(shader.getData());
+    shader=RoxRender::compiled_shader(data->get_size());
+    data->read_all(shader.get_data());
     data->release();
 
     return true;
 }
 
-bool RoxCompiledShadersProvider::set(const char *text,const RoxRender::CompiledShader &shader)
+bool RoxCompiledShadersProvider::set(const char *text,const RoxRender::compiled_shader &shader)
 {
     if(!text)
         return false;
 
-    const void *data=shader.getData();
+    const void *data=shader.get_data();
     if(!data)
         return false;
 
@@ -43,7 +44,7 @@ bool RoxCompiledShadersProvider::set(const char *text,const RoxRender::CompiledS
     if(!f)
         return false;
 
-    fwrite(data,shader.getSize(),1,f);
+    fwrite(data,shader.get_size(),1,f);
     fclose(f);
 
     return true;
