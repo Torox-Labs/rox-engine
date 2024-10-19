@@ -61,7 +61,7 @@ namespace RoxRender
 			}
 		};
 
-		struct state : public ViewportState, RenderState, RoxRender::state
+		struct State : public ViewportState, RenderState, RoxRender::state
 		{
 		};
 
@@ -98,7 +98,7 @@ namespace RoxRender
 		virtual int createVertexBuffer(const void* data, uint stride, uint count,
 		                                 RoxVbo::UsageHint usage = RoxVbo::STATIC_DRAW) { return -1; }
 
-		virtual void setVertexLayout(int idx, RoxVbo::layout layout)
+		virtual void setVertexLayout(int idx, RoxVbo::Layout layout)
 		{
 		}
 
@@ -106,7 +106,7 @@ namespace RoxRender
 		{
 		}
 
-		virtual bool get_vertex_data(int idx, void* data) { return false; }
+		virtual bool getVertexData(int idx, void* data) { return false; }
 
 		virtual void removeVertexBuffer(int idx)
 		{
@@ -186,17 +186,17 @@ namespace RoxRender
 		{
 		}
 
-		virtual void transform_feedback(const TfState& s)
+		virtual void transformFeedback(const TfState& s)
 		{
 		}
 
-		virtual bool is_transform_feedback_supported() { return false; }
+		virtual bool isTransformFeedbackSupported() { return false; }
 
-		virtual void invalidate_cached_state()
+		virtual void invalidateCachedState()
 		{
 		}
 
-		virtual void apply_state(const state& s)
+		virtual void applyState(const state& s)
 		{
 		}
 	};
@@ -211,9 +211,9 @@ namespace RoxRender
 		RENDER_API_CUSTOM
 	};
 
-	RrenderApi get_render_api();
-	bool set_render_api(RrenderApi api);
-	bool set_render_api(RoxRenderApiInterface* api);
-	RoxRenderApiInterface& get_api_interface();
-	RoxRenderApiInterface::state& get_api_state();
+	RrenderApi getRenderApi();
+	bool setRenderApi(RrenderApi api);
+	bool setRenderApi(RoxRenderApiInterface* api);
+	RoxRenderApiInterface& getApiInterface();
+	RoxRenderApiInterface::State& getApiState();
 }

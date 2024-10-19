@@ -43,13 +43,13 @@ public:
 
     const static uint max_tex_coord=13;
 
-    struct layout
+    struct Layout
     {
         struct attribute { unsigned char offset,dimension; VertexAtribType type; attribute():offset(0),dimension(0),type(FLOAT_32){} };
         attribute pos,normal,color;
         attribute tc[max_tex_coord];
 
-        layout() { pos.dimension=3; }
+        Layout() { pos.dimension=3; }
     };
 
 public:
@@ -60,7 +60,7 @@ public:
     void setNormals(uint offset,VertexAtribType=FLOAT_32);
     void setTc(uint tc_idx,uint offset,uint dimension,VertexAtribType=FLOAT_32);
     void setColors(uint offset,uint dimension,VertexAtribType=FLOAT_32);
-    void setLayout(const layout &l);
+    void setLayout(const Layout&l);
 
 public:
     bool getVertexData(nya_memory::tmp_buffer_ref &data) const;
@@ -77,7 +77,7 @@ public:
     uint getColorsDimension() const;
     uint getIndicesCount() const;
     IndexSize getIndexSize() const;
-    const layout &getLayout() const;
+    const Layout&getLayout() const;
 
 public:
     void bind() const { bindVerts(); bindIndices(); }
@@ -116,7 +116,7 @@ private:
     int m_indices;
     int m_vert_count;
     int m_ind_count;
-    layout m_layout;
+    Layout m_layout;
     int m_stride;
     IndexSize m_ind_size;
     ElementType m_ElementType;
