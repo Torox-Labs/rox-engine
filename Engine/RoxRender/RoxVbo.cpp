@@ -1,41 +1,41 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
-#include "vbo.h"
+#include "RoxVbo.h"
 #include "render_api.h"
 #include "statistics.h"
-#include "memory/tmp_buffer.h"
+#include "RoxMemory/tmp_buffer.h"
 
 typedef unsigned int uint;
 
-namespace nya_render
+namespace RoxRender
 {
 
 namespace
 {
     uint active_vert_count=0;
     uint active_ind_count=0;
-    vbo::element_type active_element_type=vbo::triangles;
+    RoxVbo::ElementType active_element_type=RoxVbo::TRIANGLES;
 }
 
-void vbo::bind_verts() const
+void RoxVbo::bindVerts() const
 {
-    get_api_state().vertex_buffer=m_verts;
-    active_element_type=m_element_type;
-    active_vert_count=m_vert_count;
+    get_api_state().vertex_buffer= m_verts;
+    active_element_type= m_element_type;
+    active_vert_count= m_vert_count;
 }
 
-void vbo::bind_indices() const
+void RoxVbo::bindIndices() const
 {
     get_api_state().index_buffer=m_indices;
     active_ind_count=m_ind_count;
 }
 
-void vbo::unbind() { get_api_state().vertex_buffer=get_api_state().index_buffer= -1; }
+void RoxVbo::unbind() { get_api_state().vertex_buffer=get_api_state().index_buffer= -1; }
 
-void vbo::draw() { draw(0,get_api_state().index_buffer<0?active_vert_count:active_ind_count,active_element_type); }
-void vbo::draw(uint count) { draw(0,count,active_element_type); }
+void RoxVbo::draw() { draw(0,get_api_state().index_buffer<0?active_vert_count:active_ind_count,active_element_type); }
+void RoxVbo::draw(uint count) { draw(0,count,active_element_type); }
 
-void vbo::draw(uint offset,uint count,element_type el_type,uint instances)
+void RoxVbo::draw(uint offset,uint count, ElementType el_type,uint instances)
 {
     render_api_interface::state &s=get_api_state();
 
@@ -54,7 +54,7 @@ void vbo::draw(uint offset,uint count,element_type el_type,uint instances)
         ++statistics::get().draw_count;
         statistics::get().verts_count+=count*instances;
 
-        const uint tri_count=(el_type==vbo::triangles?count/3:(el_type==vbo::triangle_strip?count-2:0))*instances;
+        const uint tri_count=(el_type==RoxVbo::triangles?count/3:(el_type==RoxVbo::triangle_strip?count-2:0))*instances;
         if(get_state().blend)
             statistics::get().transparent_poly_count+=tri_count;
         else
@@ -62,7 +62,7 @@ void vbo::draw(uint offset,uint count,element_type el_type,uint instances)
     }
 }
 
-void vbo::transform_feedback(vbo &target)
+void RoxVbo::transform_feedback(RoxVbo &target)
 {
     render_api_interface::tf_state s;
     (render_api_interface::render_state&)s=(render_api_interface::render_state&)get_api_state();
@@ -74,7 +74,7 @@ void vbo::transform_feedback(vbo &target)
     get_api_interface().transform_feedback(s);
 }
 
-void vbo::transform_feedback(vbo &target,uint src_offset,uint dst_offset,uint count,element_type type)
+void RoxVbo::transform_feedback(RoxVbo &target,uint src_offset,uint dst_offset,uint count,element_type type)
 {
     render_api_interface::tf_state s;
 
@@ -91,7 +91,7 @@ void vbo::transform_feedback(vbo &target,uint src_offset,uint dst_offset,uint co
     get_api_interface().transform_feedback(s);
 }
 
-bool vbo::set_vertex_data(const void*data,uint vert_stride,uint vert_count,usage_hint usage)
+bool RoxVbo::set_vertex_data(const void*data,uint vert_stride,uint vert_count,usage_hint usage)
 {
     render_api_interface &api=get_api_interface();
 
@@ -119,7 +119,7 @@ bool vbo::set_vertex_data(const void*data,uint vert_stride,uint vert_count,usage
     return true;
 }
 
-bool vbo::set_index_data(const void*data,index_size size,uint indices_count,usage_hint usage)
+bool RoxVbo::set_index_data(const void*data,index_size size,uint indices_count,usage_hint usage)
 {
     render_api_interface &api=get_api_interface();
 
@@ -135,7 +135,7 @@ bool vbo::set_index_data(const void*data,index_size size,uint indices_count,usag
     return true;
 }
 
-void vbo::set_vertices(uint offset,uint dimension,vertex_atrib_type type)
+void RoxVbo::set_vertices(uint offset,uint dimension,vertex_atrib_type type)
 {
     if(dimension>4)
         return;
@@ -146,7 +146,7 @@ void vbo::set_vertices(uint offset,uint dimension,vertex_atrib_type type)
     set_layout(m_layout);
 }
 
-void vbo::set_normals(uint offset,vertex_atrib_type type)
+void RoxVbo::set_normals(uint offset,vertex_atrib_type type)
 {
     m_layout.normal.offset=offset;
     m_layout.normal.dimension=3;
@@ -154,7 +154,7 @@ void vbo::set_normals(uint offset,vertex_atrib_type type)
     set_layout(m_layout);
 }
 
-void vbo::set_tc(uint tc_idx,uint offset,uint dimension,vertex_atrib_type type)
+void RoxVbo::set_tc(uint tc_idx,uint offset,uint dimension,vertex_atrib_type type)
 {
     if(tc_idx>=max_tex_coord || dimension>4)
         return;
@@ -165,7 +165,7 @@ void vbo::set_tc(uint tc_idx,uint offset,uint dimension,vertex_atrib_type type)
     set_layout(m_layout);
 }
 
-void vbo::set_colors(uint offset,uint dimension,vertex_atrib_type type)
+void RoxVbo::set_colors(uint offset,uint dimension,vertex_atrib_type type)
 {
     if(dimension>4)
         return;
@@ -176,21 +176,21 @@ void vbo::set_colors(uint offset,uint dimension,vertex_atrib_type type)
     set_layout(m_layout);
 }
 
-void vbo::set_layout(const layout &l)
+void RoxVbo::set_layout(const layout &l)
 {
     m_layout=l;
     if(m_verts>=0)
         get_api_interface().set_vertex_layout(m_verts,m_layout);
 }
 
-void vbo::set_element_type(element_type type)
+void RoxVbo::set_element_type(element_type type)
 {
     if(m_verts>=0 && get_api_state().vertex_buffer==m_verts)
         active_element_type=type;
     m_element_type=type;
 }
 
-bool vbo::get_vertex_data(nya_memory::tmp_buffer_ref &data) const
+bool RoxVbo::get_vertex_data(nya_memory::tmp_buffer_ref &data) const
 {
     if(m_verts<0)
     {
@@ -208,7 +208,7 @@ bool vbo::get_vertex_data(nya_memory::tmp_buffer_ref &data) const
     return true;
 }
 
-bool vbo::get_index_data(nya_memory::tmp_buffer_ref &data) const
+bool RoxVbo::get_index_data(nya_memory::tmp_buffer_ref &data) const
 {
     if(m_indices<0)
     {
@@ -226,35 +226,35 @@ bool vbo::get_index_data(nya_memory::tmp_buffer_ref &data) const
     return true;
 }
 
-const vbo::layout &vbo::get_layout() const { return m_layout; }
-vbo::index_size vbo::get_index_size() const { return m_ind_size; }
-vbo::element_type vbo::get_element_type() const { return m_element_type; }
-uint vbo::get_vert_stride() const{ return m_stride; }
-uint vbo::get_vert_offset() const { return m_layout.pos.offset; }
-uint vbo::get_vert_dimension() const { return m_layout.pos.dimension; }
-uint vbo::get_normals_offset() const { return m_layout.normal.offset; }
-uint vbo::get_tc_offset(uint idx) const { return idx<max_tex_coord?m_layout.tc[idx].offset:0; }
-uint vbo::get_tc_dimension(uint idx) const { return idx<max_tex_coord?m_layout.tc[idx].dimension:0; }
-uint vbo::get_colors_offset() const { return m_layout.color.offset; }
-uint vbo::get_colors_dimension() const { return m_layout.color.dimension; }
-uint vbo::get_verts_count() const { return m_vert_count; }
-uint vbo::get_indices_count() const { return m_ind_count; }
+const RoxVbo::layout &RoxVbo::get_layout() const { return m_layout; }
+RoxVbo::index_size RoxVbo::get_index_size() const { return m_ind_size; }
+RoxVbo::element_type RoxVbo::get_element_type() const { return m_element_type; }
+uint RoxVbo::get_vert_stride() const{ return m_stride; }
+uint RoxVbo::get_vert_offset() const { return m_layout.pos.offset; }
+uint RoxVbo::get_vert_dimension() const { return m_layout.pos.dimension; }
+uint RoxVbo::get_normals_offset() const { return m_layout.normal.offset; }
+uint RoxVbo::get_tc_offset(uint idx) const { return idx<max_tex_coord?m_layout.tc[idx].offset:0; }
+uint RoxVbo::get_tc_dimension(uint idx) const { return idx<max_tex_coord?m_layout.tc[idx].dimension:0; }
+uint RoxVbo::get_colors_offset() const { return m_layout.color.offset; }
+uint RoxVbo::get_colors_dimension() const { return m_layout.color.dimension; }
+uint RoxVbo::get_verts_count() const { return m_vert_count; }
+uint RoxVbo::get_indices_count() const { return m_ind_count; }
 
-uint vbo::get_used_vmem_size()
+uint RoxVbo::get_used_vmem_size()
 {
      //ToDo
 
     return 0;
 }
 
-void vbo::release()
+void RoxVbo::release()
 {
     release_verts();
     release_indices();
     m_layout=layout();
 }
 
-void vbo::release_verts()
+void RoxVbo::release_verts()
 {
     if(m_verts<0)
         return;
@@ -268,7 +268,7 @@ void vbo::release_verts()
     m_stride=0;
 }
 
-void vbo::release_indices()
+void RoxVbo::release_indices()
 {
     if(m_indices<0)
         return;
@@ -282,5 +282,5 @@ void vbo::release_indices()
     m_ind_count=0;
 }
 
-bool vbo::is_transform_feedback_supported() { return get_api_interface().is_transform_feedback_supported(); }
+bool RoxVbo::is_transform_feedback_supported() { return get_api_interface().is_transform_feedback_supported(); }
 }

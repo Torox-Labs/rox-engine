@@ -58,7 +58,7 @@ public:
     uint get_max_target_msaa() override;
 
 public:
-    void set_camera(const nya_math::mat4 &modelview,const nya_math::mat4 &projection) override;
+    void set_camera(const RoxMath::Mat4 &modelview,const RoxMath::Mat4 &projection) override;
     void clear(const viewport_state &s,bool color,bool depth,bool stencil) override;
     void draw(const state &s) override;
     void transform_feedback(const tf_state &s) override;

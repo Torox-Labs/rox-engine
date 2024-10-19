@@ -88,11 +88,20 @@
         "xutility": "cpp"
     },
     "cmake.configureArgs": [
-        "-DCMAKE_BUILD_TYPE=Release"
-        // "-DCMAKE_BUILD_TYPE=Debug"
+        // "-DCMAKE_BUILD_TYPE=Release"
+        "-DCMAKE_BUILD_TYPE=Debug"
     ],
-    "cmake.generator": "Xcode",
-    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "windows":{
+        "cmake.configureArgs": [
+            "-A",
+            "x64"
+        ],
+        "cmake.generator": "Visual Studio 1 2022",
+    },
+    "macos":{
+        "cmake.generator": "Xcode",
+    },
+    "cmake.buildDirectory": "${workspaceFolder}/../rox-engine-build",
     "workbench.editor.showTabs": "multiple",
     "cmake.sourceDirectory": "${workspaceFolder}",
 }

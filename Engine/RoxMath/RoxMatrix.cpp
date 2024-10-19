@@ -1,16 +1,25 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Updated By the ROX_ENGINE
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+// 
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 
-#include "matrix.h"
-#include "vector.h"
-#include "quaternion.h"
-#include "constants.h"
+#include "RoxMatrix.h"
+#include "RoxVector.h"
+#include "RoxQuaternion.h"
 
-#include <math.h>
-
-namespace nya_math
+namespace RoxMath
 {
 
-mat4 &mat4::identity()
+Matrix4 &Matrix4::identity()
 {
     for(int i=0;i<4;++i)
     for(int j=0;j<4;++j)
@@ -21,7 +30,7 @@ mat4 &mat4::identity()
     return *this;
 }
 
-mat4 &mat4::translate(float x,float y,float z)
+Matrix4 &Matrix4::translate(float x,float y,float z)
 {
     for(int i=0;i<4;++i)
         m[3][i]+=m[0][i]*x+m[1][i]*y+m[2][i]*z;
@@ -29,7 +38,7 @@ mat4 &mat4::translate(float x,float y,float z)
     return *this;
 }
 
-mat4 &mat4::translate(const vec3 &v)
+Matrix4 &Matrix4::translate(const Vector3 &v)
 {
     for(int i=0;i<4;++i)
         m[3][i]+=m[0][i]*v.x+m[1][i]*v.y+m[2][i]*v.z;
@@ -37,7 +46,7 @@ mat4 &mat4::translate(const vec3 &v)
     return *this;
 }
 
-mat4 &mat4::rotate(angle_deg angle,float x,float y,float z)
+Matrix4 &Matrix4::rotate(AngleDeg angle,float x,float y,float z)
 {
     const float mag=sqrtf(x*x+y*y+z*z);
     const float sin_a=-sin(angle);
@@ -55,7 +64,7 @@ mat4 &mat4::rotate(angle_deg angle,float x,float y,float z)
     xy=x*y; yz=y*z; zx=z*x;
     xs=x*sin_a; ys=y*sin_a; zs=z*sin_a;
 
-    mat4 rot;
+    Matrix4 rot;
 
     rot[0][0]=one_minus_cos*xx+cos_a;
     rot[0][1]=one_minus_cos*xy-zs;
@@ -80,17 +89,17 @@ mat4 &mat4::rotate(angle_deg angle,float x,float y,float z)
     return *this=rot*(*this);
 }
 
-mat4 &mat4::rotate(angle_deg angle,const vec3 &v)
+Matrix4 &Matrix4::rotate(AngleDeg angle,const Vector3 &v)
 {
     return rotate(angle,v.x,v.y,v.z);
 }
 
-mat4 &mat4::rotate(const quat &q)
+Matrix4 &Matrix4::rotate(const Quaternion &q)
 {
-    return *this=mat4(q)*(*this);
+    return *this=Matrix4(q)*(*this);
 }
 
-mat4 &mat4::perspective(angle_deg fov,float aspect,float near,float far)
+Matrix4 &Matrix4::perspective(AngleDeg fov,float aspect,float near,float far)
 {
 	const float h=tan(fov*0.5f)*near;
     const float w=h*aspect;
@@ -98,7 +107,7 @@ mat4 &mat4::perspective(angle_deg fov,float aspect,float near,float far)
     return frustrum(-w,w,-h,h,near,far);
 }
 
-mat4 &mat4::frustrum(float left,float right,float bottom,float top,float near,float far)
+Matrix4 &Matrix4::frustrum(float left,float right,float bottom,float top,float near,float far)
 {
     if(near<=0 || far<=0)
         return identity();
@@ -110,7 +119,7 @@ mat4 &mat4::frustrum(float left,float right,float bottom,float top,float near,fl
     if(dx<=0 || dy<=0 || dz<=0)
         return identity();
 
-    mat4 frust;
+    Matrix4 frust;
 
     frust[0][0]=2.0f*near/dx;
     frust[1][1]=2.0f*near/dy;
@@ -126,7 +135,7 @@ mat4 &mat4::frustrum(float left,float right,float bottom,float top,float near,fl
     return *this=frust*(*this);
 }
 
-mat4 &mat4::ortho(float left,float right,float bottom,float top,float near,float far)
+Matrix4 &Matrix4::ortho(float left,float right,float bottom,float top,float near,float far)
 {
     const float dx=right-left;
     const float dy=top-bottom;
@@ -136,7 +145,7 @@ mat4 &mat4::ortho(float left,float right,float bottom,float top,float near,float
     if(fabsf(dx)<eps || fabsf(dy)<eps || fabsf(dz)<eps)
         return identity();
 
-    mat4 ortho;
+    Matrix4 ortho;
 
     ortho[0][0]=2.0f/dx;
     ortho[1][1]=2.0f/dy;
@@ -154,7 +163,7 @@ inline float get_cofactor(float m0,float m1,float m2,float m3,float m4,float m5,
     return m0*(m4*m8 - m5*m7) - m1*(m3*m8 - m5*m6) + m2*(m3*m7 - m4*m6);
 }
 
-mat4 &mat4::invert()
+Matrix4 &Matrix4::invert()
 {
     const float c00=get_cofactor(m[1][1],m[1][2],m[1][3],m[2][1],m[2][2],m[2][3],m[3][1],m[3][2],m[3][3]);
     const float c10=get_cofactor(m[1][0],m[1][2],m[1][3],m[2][0],m[2][2],m[2][3],m[3][0],m[3][2],m[3][3]);
@@ -189,7 +198,7 @@ mat4 &mat4::invert()
     return *this;
 }
 
-mat4 &mat4::transpose()
+Matrix4 &Matrix4::transpose()
 {
     float temp;
     for(int i=0;i<4;++i)
@@ -199,9 +208,9 @@ mat4 &mat4::transpose()
     return *this;
 }
 
-quat mat4::get_rot() const
+Quaternion Matrix4::get_rot() const
 {
-    quat q;
+    Quaternion q;
 
     const float tr=m[0][0]+m[1][1]+m[2][2];
     if(tr>0.0f)
@@ -240,14 +249,14 @@ quat mat4::get_rot() const
     return q;
 }
 
-vec3 mat4::get_pos() const
+Vector3 Matrix4::get_pos() const
 {
-    return vec3(m[3]);
+    return Vector3(m[3]);
 }
 
-mat4 mat4::operator*(const mat4 &mat) const
+Matrix4 Matrix4::operator*(const Matrix4 &mat) const
 {
-    mat4 out;
+    Matrix4 out;
     for(int i=0;i<4;++i)
     {
         for(int j=0;j<4;++j)
@@ -256,7 +265,7 @@ mat4 mat4::operator*(const mat4 &mat) const
     return out;
 }
 
-mat4 &mat4::scale(float sx,float sy,float sz)
+Matrix4 &Matrix4::scale(float sx,float sy,float sz)
 {
     for(int i=0;i<4;++i)
         m[0][i]*=sx,m[1][i]*=sy,m[2][i]*=sz;
@@ -264,42 +273,42 @@ mat4 &mat4::scale(float sx,float sy,float sz)
     return *this;
 }
 
-mat4 &mat4::scale(const vec3 &v)
+Matrix4 &Matrix4::scale(const Vector3 &v)
 {
     return scale(v.x,v.y,v.z);
 }
 
-vec3 operator * (const vec3 &v,const mat4 &m)
+Vector3 operator * (const Vector3 &v,const Matrix4 &m)
 {
-	return vec3(m[0][0]*v.x+m[0][1]*v.y+m[0][2]*v.z+m[0][3],
+	return Vector3(m[0][0]*v.x+m[0][1]*v.y+m[0][2]*v.z+m[0][3],
 				m[1][0]*v.x+m[1][1]*v.y+m[1][2]*v.z+m[1][3],
 				m[2][0]*v.x+m[2][1]*v.y+m[2][2]*v.z+m[2][3]);
 }
 
-vec3 operator * (const mat4 &m,const vec3 &v)
+Vector3 operator * (const Matrix4 &m,const Vector3 &v)
 {
-	return vec3(m[0][0]*v.x+m[1][0]*v.y+m[2][0]*v.z+m[3][0],
+	return Vector3(m[0][0]*v.x+m[1][0]*v.y+m[2][0]*v.z+m[3][0],
 				m[0][1]*v.x+m[1][1]*v.y+m[2][1]*v.z+m[3][1],
 				m[0][2]*v.x+m[1][2]*v.y+m[2][2]*v.z+m[3][2]);
 }
 
-vec4 operator * (const vec4 &v,const mat4 &m)
+Vector4 operator * (const Vector4 &v,const Matrix4 &m)
 {
-    return vec4(m[0][0]*v.x+m[0][1]*v.y+m[0][2]*v.z+m[0][3]*v.w,
+    return Vector4(m[0][0]*v.x+m[0][1]*v.y+m[0][2]*v.z+m[0][3]*v.w,
                 m[1][0]*v.x+m[1][1]*v.y+m[1][2]*v.z+m[1][3]*v.w,
                 m[2][0]*v.x+m[2][1]*v.y+m[2][2]*v.z+m[2][3]*v.w,
                 m[3][0]*v.x+m[3][1]*v.y+m[3][2]*v.z+m[3][3]*v.w);
 }
 
-vec4 operator * (const mat4 &m,const vec4 &v)
+Vector4 operator * (const Matrix4 &m,const Vector4 &v)
 {
-    return vec4(m[0][0]*v.x+m[1][0]*v.y+m[2][0]*v.z+m[3][0]*v.w,
+    return Vector4(m[0][0]*v.x+m[1][0]*v.y+m[2][0]*v.z+m[3][0]*v.w,
 				m[0][1]*v.x+m[1][1]*v.y+m[2][1]*v.z+m[3][1]*v.w,
 				m[0][2]*v.x+m[1][2]*v.y+m[2][2]*v.z+m[3][2]*v.w,
                 m[0][3]*v.x+m[1][3]*v.y+m[2][3]*v.z+m[3][3]*v.w);
 }
 
-mat4::mat4(const float (&m)[4][4],bool transpose)
+Matrix4::Matrix4(const float (&m)[4][4],bool transpose)
 {
     if (transpose)
     {
@@ -315,7 +324,7 @@ mat4::mat4(const float (&m)[4][4],bool transpose)
     }
 }
 
-mat4::mat4(const float (&m)[4][3])
+Matrix4::Matrix4(const float (&m)[4][3])
 {
     for(int i=0;i<4;++i)
         for(int j=0;j<3;++j)
@@ -323,7 +332,7 @@ mat4::mat4(const float (&m)[4][3])
     this->m[0][3]=this->m[1][3]=this->m[2][3]=0.0f,this->m[3][3]=1.0f;
 }
 
-mat4::mat4(const float (&m)[3][4])
+Matrix4::Matrix4(const float (&m)[3][4])
 {
     for(int i=0;i<4;++i)
         for(int j=0;j<3;++j)
@@ -331,7 +340,7 @@ mat4::mat4(const float (&m)[3][4])
     this->m[0][3]=this->m[1][3]=this->m[2][3]=0.0f,this->m[3][3]=1.0f;
 }
 
-mat4::mat4(const quat &q)
+Matrix4::Matrix4(const Quaternion &q)
 {
     const float xx=q.v.x*q.v.x;
     const float yy=q.v.y*q.v.y;
@@ -353,14 +362,14 @@ mat4::mat4(const quat &q)
     m[3][3]=1.0f;
 }
 
-mat4 &mat4::set(const vec3 &p,const quat &r)
+Matrix4 &Matrix4::set(const Vector3 &p,const Quaternion &r)
 {
     identity();
     translate(p);
     return rotate(r);
 }
 
-mat4 &mat4::set(const vec3 &p,const quat &r,const vec3 &s)
+Matrix4 &Matrix4::set(const Vector3 &p,const Quaternion &r,const Vector3 &s)
 {
     identity();
     translate(p);

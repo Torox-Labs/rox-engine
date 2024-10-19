@@ -1,14 +1,25 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Updated By the ROX_ENGINE
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+// 
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 
-#include "quaternion.h"
-#include "matrix.h"
-#include "constants.h"
-#include <math.h>
+#include "RoxQuaternion.h"
+#include "RoxMatrix.h"
+#include "RoxConstants.h"
 
-namespace nya_math
+namespace RoxMath
 {
 
-quat quat::slerp(const quat &q1,const quat &q2,float t)
+Quaternion Quaternion::slerp(const Quaternion&q1,const Quaternion &q2,float t)
 {
     const float eps=0.001f;
     float scale0,scale1;
@@ -45,25 +56,25 @@ quat quat::slerp(const quat &q1,const quat &q2,float t)
         }
     }
 
-    return quat(scale0*q1.v.x+scale1*q2.v.x,
+    return Quaternion(scale0*q1.v.x+scale1*q2.v.x,
                 scale0*q1.v.y+scale1*q2.v.y,
                 scale0*q1.v.z+scale1*q2.v.z,
                 scale0*q1.w+scale1*q2.w);
 }
 
-quat quat::nlerp(const quat &q1,const quat &q2,float t)
+Quaternion Quaternion::nlerp(const Quaternion &q1,const Quaternion &q2,float t)
 {
     const float t2=1.0f-t;
     if(q1.v.dot(q2.v)+q1.w*q2.w<0)
         t=-t;
 
-    return quat(t2*q1.v.x+t*q2.v.x,
+    return Quaternion(t2*q1.v.x+t*q2.v.x,
          t2*q1.v.y+t*q2.v.y,
          t2*q1.v.z+t*q2.v.z,
          t2*q1.w+t*q2.w).normalize();
 }
 
-vec3 quat::get_euler() const
+Vector3 Quaternion::get_euler() const
 {
     const float x2=v.x+v.x;
     const float y2=v.y+v.y;
@@ -84,23 +95,23 @@ vec3 quat::get_euler() const
     const float zz2=v.z*z2;
     const float wz2=w*z2;
     
-    if(pitch>=constants::pi_2)
-        return vec3(pitch,atan2f(xy2-wz2,1.0f-yy2-zz2),0.0f);
+    if(pitch>=Constants::pi_2)
+        return Vector3(pitch,atan2f(xy2-wz2,1.0f-yy2-zz2),0.0f);
     
-    if(pitch> -constants::pi_2)
+    if(pitch> -Constants::pi_2)
     {
         const float xz2=v.x*z2;
         const float wy2=w*y2;
         const float xx2=v.x*x2;
         
-        return vec3(pitch,atan2f(xz2+wy2,1.0f-yy2-xx2),
+        return Vector3(pitch,atan2f(xz2+wy2,1.0f-yy2-xx2),
                     atan2f(xy2+wz2,1.0f-xx2-zz2));
     }
     
-    return vec3(pitch,-atan2f(xy2-wz2,1.0f-yy2-zz2),0.0f);
+    return Vector3(pitch,-atan2f(xy2-wz2,1.0f-yy2-zz2),0.0f);
 }
 
-quat::quat(angle_rad pitch,angle_rad yaw,angle_rad roll)
+Quaternion::Quaternion(AngleRad pitch, AngleRad yaw, AngleRad roll)
 {
     pitch*=0.5f; yaw*=0.5f; roll*=0.5f;
 
@@ -119,7 +130,7 @@ quat::quat(angle_rad pitch,angle_rad yaw,angle_rad roll)
     w  =cos_x*cos_y*cos_z + sin_x*sin_y*sin_z;
 }
 
-quat::quat(const mat4 &m)
+Quaternion::Quaternion(const Matrix4 &m)
 {
     const float t=m[0][0]+m[1][1]+m[2][2];
     if(t>0)
@@ -162,7 +173,7 @@ quat::quat(const mat4 &m)
     }
 }
 
-quat::quat(const vec3 &axis,angle_rad angle)
+Quaternion::Quaternion(const Vector3 &axis, AngleRad angle)
 {
     angle*=0.5f;
 
@@ -170,9 +181,9 @@ quat::quat(const vec3 &axis,angle_rad angle)
     w=cos(angle);
 }
 
-quat::quat(const vec3 &from,const vec3 &to)
+Quaternion::Quaternion(const Vector3 &from,const Vector3 &to)
 {
-    float len=sqrtf(from.length_sq() * to.length_sq());
+    float len=sqrtf(from.lengthSq() * to.lengthSq());
     if(len<0.0001f)
     {
         w=1.0f;
@@ -180,12 +191,12 @@ quat::quat(const vec3 &from,const vec3 &to)
     }
 
     w=sqrtf(0.5f*(1.0f + from.dot(to)/len));
-    v=vec3::cross(from,to)/(len*2.0f*w);
+    v=Vector3::cross(from,to)/(len*2.0f*w);
 }
 
-quat &quat::normalize()
+Quaternion &Quaternion::normalize()
 {
-    const float len=sqrtf(v.length_sq()+w*w);
+    const float len=sqrtf(v.lengthSq()+w*w);
     if(len>0.00001f)
     {
         const float len_inv=1.0f/len;
@@ -196,7 +207,7 @@ quat &quat::normalize()
     return *this;
 }
 
-quat &quat::apply_weight(float weight)
+Quaternion &Quaternion::apply_weight(float weight)
 {
     v*=weight;
     w*=weight;
@@ -205,22 +216,22 @@ quat &quat::apply_weight(float weight)
     return *this;
 }
 
-quat quat::operator * (const quat &q) const
+Quaternion Quaternion::operator * (const Quaternion&q) const
 {
-    return quat(w*q.v.x + v.x*q.w   + v.y*q.v.z - v.z*q.v.y,
+    return Quaternion(w*q.v.x + v.x*q.w   + v.y*q.v.z - v.z*q.v.y,
                 w*q.v.y - v.x*q.v.z + v.y*q.w   + v.z*q.v.x,
                 w*q.v.z + v.x*q.v.y - v.y*q.v.x + v.z*q.w,
                 w*q.w   - v.x*q.v.x - v.y*q.v.y - v.z*q.v.z);
 }
 
-vec3 quat::rotate(const vec3 &vec) const
+Vector3 Quaternion::rotate(const Vector3 &vec) const
 {
-    return vec+vec3::cross(v,vec3::cross(v,vec)+vec*w)*2.0f;
+    return vec+Vector3::cross(v,Vector3::cross(v,vec)+vec*w)*2.0f;
 }
 
-vec3 quat::rotate_inv(const vec3 &vec) const
+Vector3 Quaternion::rotateInv(const Vector3 &vec) const
 {
-    return vec+vec3::cross(vec3::cross(vec,v)+vec*w,v)*2.0f;
+    return vec+Vector3::cross(Vector3::cross(vec,v)+vec*w,v)*2.0f;
 }
 
 }
