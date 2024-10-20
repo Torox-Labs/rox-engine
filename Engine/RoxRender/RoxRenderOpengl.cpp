@@ -1,26 +1,26 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
-#include "render_opengl.h"
-#include "render_opengl_ext.h"
-#include "memory/tmp_buffer.h"
-#include "render_objects.h"
+#include "RoxRenderOpengl.h"
+#include "RoxRenderOpenglExt.h"
+#include "RoxMemory/tmp_buffer.h"
+#include "RoxRenderObjects.h"
 #include "bitmap.h"
-#include "fbo.h"
+#include "RoxFbo.h"
 
-namespace nya_render
+namespace RoxRender
 {
 
-bool render_opengl::is_available() const
+bool RoxRenderOpengl::isAvailable() const
 {
     return true; //ToDo
 }
 
 namespace
 {
-    render_api_interface::state applied_state;
+    RoxRenderApiInterface::State applied_state;
     bool ignore_cache = true;
 	bool ignore_cache_vp = true;
-    vbo::layout applied_layout;
+    RoxVbo::Layout applied_layout;
     bool was_fbo_without_color=false;
     int default_fbo_idx=-1;
 
@@ -37,22 +37,22 @@ namespace
     {
         switch(side)
         {
-            case fbo::cube_positive_x: return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-            case fbo::cube_negative_x: return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
-            case fbo::cube_positive_y: return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
-            case fbo::cube_negative_y: return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
-            case fbo::cube_positive_z: return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
-            case fbo::cube_negative_z: return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+            case RoxFbo::CUBE_POSITIVE_X: return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+            case RoxFbo::CUBE_NEGATIVE_X: return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+            case RoxFbo::CUBE_POSITIVE_Y: return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+            case RoxFbo::CUBE_NEGATIVE_Y: return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+            case RoxFbo::CUBE_POSITIVE_Z: return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+            case RoxFbo::CUBE_NEGATIVE_Z: return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
         }
         return GL_TEXTURE_2D;
     }
 
     void set_shader(int idx);
 
-    struct shader_obj
+    struct ShaderObj
     {
     public:
-        shader_obj(): program(0)
+        ShaderObj(): program(0)
         {
             memset(objects,0,sizeof(objects));
             mat_mvp=mat_mv=mat_p= -1;
@@ -79,10 +79,10 @@ namespace
             if( program )
                 glDeleteShader(program);
 
-            *this=shader_obj();
+            *this= ShaderObj();
         }
     };
-    render_objects<shader_obj> shaders;
+    RoxRenderObjects<ShaderObj> shaders;
 
     void set_shader(int idx)
     {
@@ -96,7 +96,7 @@ namespace
             return;
         }
 
-        shader_obj &shdr=shaders.get(idx);
+        ShaderObj &shdr=shaders.get(idx);
         glUseProgram(shdr.program);
         if(!shdr.program)
             applied_state.shader= -1;
@@ -114,7 +114,7 @@ namespace
     }
 }
 
-GLuint compile_shader(nya_render::shader::program_type type,const char *src)
+GLuint compile_shader(RoxRender::shader::program_type type,const char *src)
 {
     int gl_type;
     switch(type)
@@ -152,7 +152,7 @@ int render_opengl::create_shader(const char *vertex,const char *fragment)
     init_extensions();
 
     const int idx=shaders.add();
-    shader_obj &shdr=shaders.get(idx);
+    ShaderObj &shdr=shaders.get(idx);
 
     shdr.program=glCreateProgram();
     if(!shdr.program)
@@ -221,7 +221,7 @@ int render_opengl::create_shader(const char *vertex,const char *fragment)
         for(int j=0;j<parser.get_uniforms_count();++j)
         {
             const shader_code_parser::variable from=parser.get_uniform(j);
-            shader_obj::uniform to;
+            ShaderObj::uniform to;
             to.name=from.name;
             to.type=(shader::uniform_type)from.type;
             to.array_size=from.array_size;
@@ -282,7 +282,7 @@ int render_opengl::create_shader(const char *vertex,const char *fragment)
 
     for(size_t i=0,layer=0;i<shdr.uniforms.size();++i)
     {
-        const shader_obj::uniform &u=shdr.uniforms[i];
+        const ShaderObj::uniform &u=shdr.uniforms[i];
         if(u.type!=shader::uniform_sampler2d && u.type!=shader::uniform_sampler_cube)
             continue;
 
@@ -316,7 +316,7 @@ int render_opengl::create_shader(const char *vertex,const char *fragment)
     int cache_size=0;
     for(int i=0;i<(int)shdr.uniforms.size();++i)
     {
-        shader_obj::uniform &u=shdr.uniforms[i];
+        ShaderObj::uniform &u=shdr.uniforms[i];
         if(u.type==shader::uniform_sampler2d || u.type==shader::uniform_sampler_cube)
             continue;
         u.cache_idx=cache_size;
@@ -351,7 +351,7 @@ int render_opengl::create_uniform_buffer(int shader) { return shader; }
 
 void render_opengl::set_uniform(int shader,int idx,const float *buf,uint count)
 {
-    shader_obj &s=shaders.get(shader);
+    ShaderObj &s=shaders.get(shader);
 
     float *cache=&s.uniform_cache[s.uniforms[idx].cache_idx];
     if(memcmp(cache,buf,count*sizeof(float))==0)
@@ -378,40 +378,40 @@ namespace
 {
     int active_transform_feedback=0;
 
-    int get_gl_element_type(vbo::element_type type)
+    int get_gl_element_type(RoxFbo::element_type type)
     {
         switch(type)
         {
-            case vbo::triangles: return GL_TRIANGLES;;
-            case vbo::triangle_strip: return GL_TRIANGLE_STRIP;
-            case vbo::points: return GL_POINTS;
-            case vbo::lines: return GL_LINES;
-            case vbo::line_strip: return GL_LINE_STRIP;
+            case RoxFbo::triangles: return GL_TRIANGLES;;
+            case RoxFbo::triangle_strip: return GL_TRIANGLE_STRIP;
+            case RoxFbo::points: return GL_POINTS;
+            case RoxFbo::lines: return GL_LINES;
+            case RoxFbo::line_strip: return GL_LINE_STRIP;
             default: return -1;
         }
 
         return -1;
     }
 
-    int get_gl_element_type(vbo::vertex_atrib_type type)
+    int get_gl_element_type(RoxFbo::vertex_atrib_type type)
     {
         switch(type)
         {
-            case vbo::float16: return GL_HALF_FLOAT;
-            case vbo::float32: return GL_FLOAT;
-            case vbo::uint8: return GL_UNSIGNED_BYTE;
+            case RoxFbo::float16: return GL_HALF_FLOAT;
+            case RoxFbo::float32: return GL_FLOAT;
+            case RoxFbo::uint8: return GL_UNSIGNED_BYTE;
         }
 
         return GL_FLOAT;
     }
 
-    int gl_usage(vbo::usage_hint usage)
+    int gl_usage(RoxFbo::usage_hint usage)
     {
         switch(usage)
         {
-            case vbo::static_draw: return GL_STATIC_DRAW;
-            case vbo::dynamic_draw: return GL_DYNAMIC_DRAW;
-            case vbo::stream_draw: return GL_STREAM_DRAW;
+            case RoxFbo::static_draw: return GL_STATIC_DRAW;
+            case RoxFbo::dynamic_draw: return GL_DYNAMIC_DRAW;
+            case RoxFbo::stream_draw: return GL_STREAM_DRAW;
         }
 
         return GL_DYNAMIC_DRAW;
@@ -425,10 +425,10 @@ namespace
         unsigned int vertex_array_object;
         unsigned int active_vao_ibuf;
 #endif
-        vbo::layout layout;
+        RoxFbo::layout layout;
         unsigned int stride;
         unsigned int count;
-        vbo::usage_hint usage;
+        RoxFbo::usage_hint usage;
 
     public:
         void release()
@@ -448,9 +448,9 @@ namespace
     struct ind_buf
     {
         unsigned int id;
-        vbo::index_size type;
+        RoxFbo::index_size type;
         unsigned int count;
-        vbo::usage_hint usage;
+        RoxFbo::usage_hint usage;
 
     public:
         void release()
@@ -463,7 +463,7 @@ namespace
     render_objects<ind_buf> ind_bufs;
 }
 
-int render_opengl::create_vertex_buffer(const void *data,uint stride,uint count,vbo::usage_hint usage)
+int render_opengl::create_vertex_buffer(const void *data,uint stride,uint count,RoxFbo::usage_hint usage)
 {
     init_extensions();
 
@@ -482,7 +482,7 @@ int render_opengl::create_vertex_buffer(const void *data,uint stride,uint count,
     return idx;
 }
 
-void render_opengl::set_vertex_layout(int idx,vbo::layout layout)
+void render_opengl::set_vertex_layout(int idx,RoxFbo::layout layout)
 {
     vert_buf &v=vert_bufs.get(idx);
     v.layout=layout;
@@ -572,7 +572,7 @@ void render_opengl::remove_vertex_buffer(int idx)
     vert_bufs.remove(idx);
 }
 
-int render_opengl::create_index_buffer(const void *data,vbo::index_size size,uint indices_count,vbo::usage_hint usage)
+int render_opengl::create_index_buffer(const void *data,RoxFbo::index_size size,uint indices_count,RoxFbo::usage_hint usage)
 {
     init_extensions();
 
@@ -1113,7 +1113,7 @@ namespace
 {
     struct ms_buffer
     {
-        unsigned int fbo,buf;
+        unsigned int RoxFbo,buf;
         unsigned int width,height,samples,format;
 
         void create(unsigned int w,unsigned int h,unsigned int f,unsigned int s)
@@ -1138,7 +1138,7 @@ namespace
             glBindRenderbuffer(GL_RENDERBUFFER,buf);
             glRenderbufferStorageMultisample(GL_RENDERBUFFER,s,f,w,h);
             glBindRenderbuffer(GL_RENDERBUFFER,0);
-            glGenFramebuffers(1,&fbo);
+            glGenFramebuffers(1,&RoxFbo);
 
             width=w,height=h,samples=s,format=f;
         }
@@ -1148,11 +1148,11 @@ namespace
         void release()
         {
             if(buf) glDeleteRenderbuffers(1,&buf);
-            if(fbo) glDeleteFramebuffers(1,&fbo);
+            if(RoxFbo) glDeleteFramebuffers(1,&RoxFbo);
             *this=ms_buffer();
         }
 
-        ms_buffer(): buf(0),width(0),height(0),samples(0),fbo(0) {}
+        ms_buffer(): buf(0),width(0),height(0),samples(0),RoxFbo(0) {}
     };
 
     struct fbo_obj
@@ -1189,7 +1189,7 @@ namespace
             return;
 
         const int gl_type=cubemap_side<0?tex.gl_type:gl_cube_type(cubemap_side);
-        glBindFramebuffer(GL_FRAMEBUFFER,fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER,RoxFbo);
         glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,gl_type,tex.tex_id,0);
         glBindFramebuffer(GL_FRAMEBUFFER,default_fbo_idx);
 
@@ -1198,7 +1198,7 @@ namespace
             return;
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER_APPLE,from);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER_APPLE,fbo);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER_APPLE,RoxFbo);
         glResolveMultisampleFramebufferAPPLE();
         glBindFramebuffer(GL_READ_FRAMEBUFFER_APPLE,default_fbo_idx);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER_APPLE,default_fbo_idx);
@@ -1208,7 +1208,7 @@ namespace
     #endif
         {
             glBindFramebuffer(GL_READ_FRAMEBUFFER,from);
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER,fbo);
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER,RoxFbo);
             glReadBuffer(GL_COLOR_ATTACHMENT0+attachment_idx);
             glBlitFramebuffer(0,0,width,height,0,0,width,height,GL_COLOR_BUFFER_BIT,GL_NEAREST);
             glReadBuffer(GL_COLOR_ATTACHMENT0);
@@ -1461,7 +1461,7 @@ void render_opengl::invalidate_cached_state()
     }
 
 #ifndef USE_VAO
-    applied_layout=vbo::layout();
+    applied_layout=RoxFbo::layout();
     //ToDo: disable layout client states
 #endif
 }
@@ -1566,7 +1566,7 @@ template<bool transform_feedback>void draw_(const nya_render::render_api_interfa
 
     set_shader(s.shader);
 
-    shader_obj &shdr=shaders.get(s.shader);
+    ShaderObj &shdr=shaders.get(s.shader);
     if(shdr.mat_mvp>=0)
     {
         const nya_math::mat4 mvp=modelview*projection;
@@ -1591,7 +1591,7 @@ template<bool transform_feedback>void draw_(const nya_render::render_api_interfa
             glGenVertexArrays(1,&v.vertex_array_object);
             glBindVertexArray(v.vertex_array_object);
 
-            applied_layout=vbo::layout();
+            applied_layout=RoxFbo::layout();
             v.active_vao_ibuf=0;
 #endif
             glBindBuffer(GL_ARRAY_BUFFER,v.id);
@@ -1599,9 +1599,9 @@ template<bool transform_feedback>void draw_(const nya_render::render_api_interfa
             glEnableVertexAttribArray(vertex_attribute);
             glVertexAttribPointer(vertex_attribute,v.layout.pos.dimension,get_gl_element_type(v.layout.pos.type),true,
                                   v.stride,(void*)(ptrdiff_t)(v.layout.pos.offset));
-            for(unsigned int i=0;i<vbo::max_tex_coord;++i)
+            for(unsigned int i=0;i<RoxFbo::max_tex_coord;++i)
             {
-                const vbo::layout::attribute &tc=v.layout.tc[i];
+                const RoxFbo::layout::attribute &tc=v.layout.tc[i];
                 if(tc.dimension>0)
                 {
                     //if(vobj.vertex_stride!=active_attributes.vertex_stride || !tc.compare(active_attributes.tcs[i]))
@@ -1666,7 +1666,7 @@ template<bool transform_feedback>void draw_(const nya_render::render_api_interfa
             applied_state.index_buffer=s.index_buffer;
         }
 #endif
-        const unsigned int gl_elem_type=(i.type==vbo::index4b?GL_UNSIGNED_INT:GL_UNSIGNED_SHORT);
+        const unsigned int gl_elem_type=(i.type==RoxFbo::index4b?GL_UNSIGNED_INT:GL_UNSIGNED_SHORT);
 #ifdef USE_INSTANCING
         if(s.instances_count>1 && glDrawElementsInstancedARB)
             glDrawElementsInstancedARB(gl_elem,s.index_count,gl_elem_type,(void*)(ptrdiff_t)(s.index_offset*i.type),s.instances_count);

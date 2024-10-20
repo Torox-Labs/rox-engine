@@ -1,12 +1,24 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Updated By the ROX_ENGINE
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+// 
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #pragma once
 
 #include "RoxRender.h"
 #include "RoxShader.h"
-#include "texture.h"
+#include "RoxTexture.h"
 #include "RoxVbo.h"
-#include <string.h>
+#include <cstring>
 
 namespace RoxRender
 {
@@ -78,7 +90,7 @@ namespace RoxRender
 	public:
 		virtual int createShader(const char* vertex, const char* fragment) { return -1; }
 		virtual uint getUniformsCount(int shader) { return 0; }
-		virtual RoxRender::shader::uniform getUniform(int shader, int idx) { return RoxRender::shader::uniform(); }
+		virtual RoxShader::uniform getUniform(int shader, int idx) { return RoxRender::shader::uniform(); }
 
 		virtual void removeShader(int shader)
 		{
@@ -126,10 +138,10 @@ namespace RoxRender
 		}
 
 	public:
-		virtual int createTexture(const void* data, uint width, uint height, nya_render::texture::color_format& format,
+		virtual int createTexture(const void* data, uint width, uint height, RoxRender::RoxTexture::COLOR_FORMAT & format,
 		                           int mip_count) { return -1; }
 
-		virtual int createCubemap(const void* data[6], uint width, nya_render::texture::color_format& format,
+		virtual int createCubemap(const void* data[6], uint width, RoxRender::RoxTexture::COLOR_FORMAT & format,
 		                           int mip_count)
 		{
 			return -1;
@@ -139,24 +151,24 @@ namespace RoxRender
 		{
 		}
 
-		virtual void setTextureWrap(int idx, nya_render::texture::wrap s, nya_render::texture::wrap t)
+		virtual void setTextureWrap(int idx, RoxRender::RoxTexture::wrap s, RoxRender::RoxTexture::wrap t)
 		{
 		}
 
-		virtual void setTextureFilter(int idx, nya_render::texture::filter minification,
-		                                nya_render::texture::filter magnification,
-		                                nya_render::texture::filter mipmap, uint aniso)
+		virtual void setTextureFilter(int idx, RoxRender::RoxTexture::filter minification,
+		                                RoxRender::RoxTexture::filter magnification,
+		                                RoxRender::RoxTexture::filter mipmap, uint aniso)
 		{
 		}
 
-		virtual bool getTextureData(int texture, uint x, uint y, uint w, uint h, void* data) { return false; }
+		virtual bool getTextureData(int RoxTexture, uint x, uint y, uint w, uint h, void* data) { return false; }
 
-		virtual void removeTexture(int texture)
+		virtual void removeTexture(int RoxTexture)
 		{
 		}
 
 		virtual uint getMaxTextureDimention() { return 0; }
-		virtual bool isTextureFormatSupported(nya_render::texture::color_format format) { return false; }
+		virtual bool isTextureFormatSupported(RoxRender::RoxTexture::COLOR_FORMAT format) { return false; }
 
 	public:
 		virtual int createTarget(uint width, uint height, uint samples, const int* attachment_textures,

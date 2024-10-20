@@ -14,28 +14,29 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "render_directx11.h"
-#include "render_opengl.h"
+#include "RoxLogger/RoxLogger.h"
+#include "RoxRenderOpengl.h"
 #include "render_metal.h"
 
-#include "texture.h"
+#include "RoxTexture.h"
 #include "transform.h"
-#include "math/vector.h"
+#include "RoxMath/RoxVector.h"
 
 #include <map>
 
-namespace nya_render
+namespace RoxRender
 {
 
 namespace
 {
-    rox_log::log_base *render_log=0;
+    RoxLogger::RoxLoggerBase *render_log=0;
     nya_render::render_api_interface::state current_state;
 
     render_api_interface *available_render_interface()
     {
         // Add to support the Metal Render ROX_ENGINE UPDATE
-        if(render_metal::get().is_available())
-            return &render_metal::get();
+        if(nya_render::render_metal::get().is_available())
+            return &nya_render::render_metal::get();
         
         if (render_opengl::get().is_available())
             return &render_opengl::get();

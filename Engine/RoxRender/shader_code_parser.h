@@ -1,4 +1,17 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Updated By the ROX_ENGINE
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+// Update the render api intefrace to check Metal 1th.
+//
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #pragma once
 
@@ -6,80 +19,80 @@
 #include <vector>
 #include <map>
 
-namespace nya_render
+namespace RoxRender
 {
 
-class shader_code_parser
+class RoxShaderCodeParser
 {
 public:
-    const char *get_code() const { return m_code.c_str(); }
-    const char *get_error() const { return m_error.c_str(); }
+    const char *getCode() const { return m_code.c_str(); }
+    const char *getError() const { return m_error.c_str(); }
 
 public:
-    bool convert_to_hlsl();
-    bool convert_to_glsl();
-    bool convert_to_glsl_es2(const char *precision="mediump");
-    bool convert_to_glsl3();
-    bool convert_to_metal();
+    bool convertToHlsl();
+    bool convertToGlsl();
+    bool convertToGlsl_es2(const char *precision="mediump");
+    bool convertToGlsl3();
+    bool convertToMetal();
 
 public:
-    enum variable_type
-    {
-        type_invalid=-1,
-        type_float,
-        type_vec2,
-        type_vec3,
-        type_vec4,
-        type_mat2,
-        type_mat3,
-        type_mat4,
-        type_sampler2d,
-        type_sampler_cube
-    };
+	enum VARIABLE_TYPE
+	{
+		TYPE_INVALID = -1,
+		TYPE_FLOAT,
+		TYPE_VECTOR2,
+        TYPE_VECTOR3,
+        TYPE_VECTOR4,
+		TYPE_MATRIX2,
+        TYPE_MATRIX3,
+        TYPE_MATRIX4,
+		TYPE_SAMPLER2D,
+		TYPE_SAMPLER_CUBE
+	};
 
     struct variable
     {
-        variable_type type;
+        VARIABLE_TYPE type;
         std::string name;
         union { unsigned int array_size,idx; };
 
-        variable():type(type_invalid),array_size(0){}
-        variable(variable_type type,const char *name,unsigned int array_size):
+        variable():type(TYPE_INVALID),array_size(0){}
+        variable(VARIABLE_TYPE type,const char *name,unsigned int array_size):
                  type(type),name(name?name:""),array_size(array_size) {}
         bool operator < (const variable &v) const { return name<v.name; }
     };
 
-    int get_uniforms_count();
-    variable get_uniform(int idx) const;
+    int getUniformsCount();
+    variable getUniform(int idx) const;
 
-    int get_attributes_count();
-    variable get_attribute(int idx) const;
+    int getAttributesCount();
+    variable getAttribute(int idx) const;
 
-    int get_out_count();
-    variable get_out(int idx) const;
-
-public:
-    bool fix_per_component_functions();
+    int getOutCount();
+    variable getOut(int idx) const;
 
 public:
-    shader_code_parser(const char *text,const char *replace_prefix_str="_nya_",const char *flip_y_uniform=0):
+    bool fixPerComponentFunctions();
+
+public:
+    RoxShaderCodeParser(const char *text,const char *replace_prefix_str="_nya_",const char *flip_y_uniform=0):
                        m_code(text?text:""),m_replace_str(replace_prefix_str?replace_prefix_str:""),
-                       m_flip_y_uniform(flip_y_uniform?flip_y_uniform:"") { remove_comments(); }
+                       m_flip_y_uniform(flip_y_uniform?flip_y_uniform:"") { removeComments(); }
 private:
-    void remove_comments();
+    void removeComments();
 
-    bool parse_uniforms(bool remove);
-    bool parse_predefined_uniforms(const char *replace_prefix_str,bool replace);
-    bool parse_attributes(const char *info_replace_str,const char *code_replace_str);
-    bool parse_varying(bool remove);
-    bool parse_out(bool remove);
+    bool parseUniforms(bool remove);
+    bool parsePredefined_uniforms(const char *replace_prefix_str,bool replace);
+    bool parseAttributes(const char *info_replace_str,const char *code_replace_str);
+    bool parseVarying(bool remove);
+    bool parseOut(bool remove);
 
-    bool replace_main_function_header(const char *replace_str);
-    bool replace_vec_from_float(const char *func_name);
-    bool replace_hlsl_types();
-    bool replace_hlsl_mul(const char *func_name);
-    bool replace_variable(const char *from,const char *to,size_t start_pos=0);
-    bool find_variable(const char *str,size_t start_pos=0);
+    bool replaceMainFunctionHeader(const char *replace_str);
+    bool replaceVecFromFloat(const char *func_name);
+    bool replaceHlslTypes();
+    bool replaceHlslMul(const char *func_name);
+    bool replaceVariable(const char *from,const char *to,size_t start_pos=0);
+    bool findVariable(const char *str,size_t start_pos=0);
 
 private:
     std::string m_code,m_replace_str,m_flip_y_uniform,m_error;

@@ -1,15 +1,27 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Updated By the ROX_ENGINE
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+// 
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #pragma once
 
 #include <vector>
 #include <list>
 
-namespace nya_render
+namespace RoxRender
 {
 
 template<typename t>
-class render_objects
+class RoxRenderObjects
 {
 public:
     t &get(int idx) { return m_objects[idx].data; }
@@ -43,10 +55,10 @@ public:
         return idx;
     }
 
-    int get_count() { return int(m_objects.size())-int(m_free.size()); }
+    int getCount() { return int(m_objects.size())-int(m_free.size()); }
 
     template<typename ta>
-    int apply_to_all(ta &applier)
+    int applyToAll(ta &applier)
     {
         int count=0;
         for(int i=0;i<(int)m_objects.size();++i)
@@ -59,7 +71,7 @@ public:
         return count;
     }
 
-    int release_all()
+    int releaseAll()
     {
         int count=0;
         for(int i=0;i<(int)m_objects.size();++i)
@@ -73,7 +85,7 @@ public:
         return count;
     }
 
-    int invalidate_all()
+    int invalidateAll()
     {
         int count=0;
         for(int i=0;i<(int)m_objects.size();++i)
@@ -87,13 +99,13 @@ public:
     }
 
 private:
-    struct object
+    struct Object
     {
         bool free;
         t data;
     };
 
-    std::vector<object> m_objects;
+    std::vector<Object> m_objects;
     std::list<int> m_free;
 };
 

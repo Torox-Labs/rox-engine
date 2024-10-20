@@ -9,52 +9,52 @@
 namespace RoxRender
 {
 
-class shader
+class RoxShader
 {
 public:
-    enum program_type
-    {
-        vertex,
-        pixel,
-        geometry,
-        program_types_count
-    };
+	enum PROGRAM_TYPE
+	{
+		VERTEX,
+		PIXEL,
+		GEOMETRY,
+		PROGRAM_TYPES_COUNT
+	};
 
-    bool add_program(program_type type,const char*code);
+    bool addProgram(PROGRAM_TYPE type,const char*code);
 
 public:
     void bind() const;
     static void unbind();
 
 public:
-    int get_sampler_layer(const char *name) const;
+    int getSamplerLayer(const char *name) const;
 
 public:
-    enum uniform_type
-    {
-        uniform_not_found = nya_render::shader_code_parser::type_invalid,
-        uniform_float = nya_render::shader_code_parser::type_float,
-        uniform_vec2 = nya_render::shader_code_parser::type_vec2,
-        uniform_vec3 = nya_render::shader_code_parser::type_vec3,
-        uniform_vec4 = nya_render::shader_code_parser::type_vec4,
-        uniform_mat4 = nya_render::shader_code_parser::type_mat4,
-        uniform_sampler2d = nya_render::shader_code_parser::type_sampler2d,
-        uniform_sampler_cube = nya_render::shader_code_parser::type_sampler_cube
-    };
+	enum UNIFORM_TYPE
+	{
+		UNIFORM_NOT_FOUND = RoxShaderCodeParser::TYPE_INVALID,
+		UNIFORM_FLOAT = RoxShaderCodeParser::TYPE_FLOAT,
+		UNIFORM_VEC2 = RoxShaderCodeParser::TYPE_VECTOR2,
+		UNIFORM_VEC3 = RoxShaderCodeParser::TYPE_VECTOR3,
+		UNIFORM_VEC4 = RoxShaderCodeParser::TYPE_VECTOR4,
+		UNIFORM_MAT4 = RoxShaderCodeParser::TYPE_MATRIX4,
+		UNIFORM_SAMPLER2D = RoxShaderCodeParser::TYPE_SAMPLER2D,
+		UNIFORM_SAMPLER_CUBE = RoxShaderCodeParser::TYPE_SAMPLER_CUBE
+	};
 
     struct uniform
     {
         std::string name;
-        uniform_type type;
+        UNIFORM_TYPE type;
         unsigned int array_size;
 
-        uniform(): type(uniform_not_found),array_size(0) {}
+        uniform(): type(UNIFORM_NOT_FOUND),array_size(0) {}
     };
 
     int get_uniforms_count() const;
     const char *get_uniform_name(int idx) const;
     int find_uniform(const char *name) const;
-    uniform_type get_uniform_type(int idx) const;
+    UNIFORM_TYPE get_uniform_type(int idx) const;
     unsigned int get_uniform_array_size(int idx) const;
 
 public:
@@ -67,13 +67,13 @@ public:
     void release();
 
 public:
-    shader(): m_shdr(-1),m_buf(-1) {}
+    RoxShader(): m_shdr(-1),m_buf(-1) {}
 
 private:
     int m_shdr;
     int m_buf;
     std::vector<uniform> m_uniforms;
-    std::string m_code[program_types_count];
+    std::string m_code[PROGRAM_TYPES_COUNT];
 };
 
 class compiled_shader
