@@ -1,6 +1,6 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
-#include "skeleton.h"
+#include "RoxSkeleton.h"
 
 namespace nya_render
 {
