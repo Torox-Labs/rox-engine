@@ -22,7 +22,7 @@
 #include <map>
 #include <string>
 
-namespace nya_render
+namespace RoxRender
 {
 
 class RoxAnimation

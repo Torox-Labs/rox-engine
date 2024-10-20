@@ -1,7 +1,19 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Updated By the ROX_ENGINE
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+// 
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 
-#include "animation.h"
-#include "memory/invalid_object.h"
+#include "RoxAnimation.h"
+#include "RoxMemory/invalid_object.h"
 
 namespace
 {
@@ -66,42 +78,42 @@ template<typename t_value,typename t_data,typename t_frame> t_value get_value(
 
 }
 
-namespace nya_render
+namespace RoxRender
 {
 
-int animation::get_bone_idx(const char *name) const { return get_idx(name,m_bones_map); }
+int RoxAnimation::getBoneIdx(const char *name) const { return get_idx(name,m_bones_map); }
 
-nya_math::vec3 animation::get_bone_pos(int idx,unsigned int time,bool looped) const
-{
-    if(idx<0 || idx>=(int)m_bones.size())
-        return nya_math::vec3();
-
-    return get_value<nya_math::vec3,pos_sequence,pos_frame>(time,looped,m_bones[idx].pos,m_duration);
-}
-
-nya_math::quat animation::get_bone_rot(int idx,unsigned int time,bool looped) const
+RoxMath::Vector3 RoxAnimation::getBonePos(int idx,unsigned int time,bool looped) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
-        return nya_math::quat();
+        return RoxMath::Vector3();
 
-    return get_value<nya_math::quat,rot_sequence,rot_frame>(time,looped,m_bones[idx].rot,m_duration);
+    return get_value<RoxMath::Vector3,pos_sequence,pos_frame>(time,looped,m_bones[idx].pos,m_duration);
 }
 
-nya_math::vec3 animation::pos_frame::interpolate(const pos_frame &prev,float k) const
+RoxMath::Quaternion RoxAnimation::getBoneRot(int idx,unsigned int time,bool looped) const
 {
-    return prev.value+nya_math::vec3(inter.x.get(k)*(value.x-prev.value.x),
+    if(idx<0 || idx>=(int)m_bones.size())
+        return RoxMath::Quaternion();
+
+    return get_value<RoxMath::Quaternion,rot_sequence,rot_frame>(time,looped,m_bones[idx].rot,m_duration);
+}
+
+RoxMath::Vector3 RoxAnimation::pos_frame::interpolate(const pos_frame &prev,float k) const
+{
+    return prev.value+RoxMath::Vector3(inter.x.get(k)*(value.x-prev.value.x),
                                      inter.y.get(k)*(value.y-prev.value.y),
                                      inter.z.get(k)*(value.z-prev.value.z));
 }
 
-nya_math::quat animation::rot_frame::interpolate(const rot_frame &prev,float k) const
+RoxMath::Quaternion RoxAnimation::rot_frame::interpolate(const rot_frame &prev,float k) const
 {
-    return nya_math::quat::slerp(prev.value,value,inter.get(k));
+    return RoxMath::Quaternion::slerp(prev.value,value,inter.get(k));
 }
 
-float animation::curve_frame::interpolate(const curve_frame &prev,float k) const { return prev.value+k*(value-prev.value); }
+float RoxAnimation::curve_frame::interpolate(const curve_frame &prev,float k) const { return prev.value+k*(value-prev.value); }
 
-const char *animation::get_bone_name(int idx) const
+const char *RoxAnimation::getBoneName(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
         return 0;
@@ -109,9 +121,9 @@ const char *animation::get_bone_name(int idx) const
     return m_bones[idx].name.c_str();
 }
 
-int animation::get_curve_idx(const char *name) const { return get_idx(name,m_curves_map); }
+int RoxAnimation::getCurveIdx(const char *name) const { return get_idx(name,m_curves_map); }
 
-float animation::get_curve(int idx,unsigned int time,bool looped) const
+float RoxAnimation::getCurve(int idx,unsigned int time,bool looped) const
 {
     if(idx<0 || idx>=(int)m_curves.size())
         return 0.0f;
@@ -119,7 +131,7 @@ float animation::get_curve(int idx,unsigned int time,bool looped) const
     return get_value<float,curve_sequence,curve_frame>(time,looped,m_curves[idx].value,m_duration);
 }
 
-const char *animation::get_curve_name(int idx) const
+const char *RoxAnimation::getCurveName(int idx) const
 {
     if(idx<0 || idx>=(int)m_curves.size())
         return 0;
@@ -127,7 +139,7 @@ const char *animation::get_curve_name(int idx) const
     return m_curves[idx].name.c_str();
 }
 
-int animation::add_bone(const char *name)
+int RoxAnimation::addBone(const char *name)
 {
     if(!name || !name[0])
         return -1;
@@ -141,7 +153,7 @@ int animation::add_bone(const char *name)
     return idx;
 }
 
-void animation::add_bone_pos_frame(int bone_idx,unsigned int time,const nya_math::vec3 &pos,const pos_interpolation &interpolation)
+void RoxAnimation::addBonePosFrame(int bone_idx,unsigned int time,const RoxMath::Vector3 &pos,const pos_interpolation &interpolation)
 {
     if(bone_idx<0 || bone_idx>=(int)m_bones.size())
         return;
@@ -152,7 +164,7 @@ void animation::add_bone_pos_frame(int bone_idx,unsigned int time,const nya_math
     add_frame(m_bones[bone_idx].pos,pf,time,m_duration);
 }
 
-void animation::add_bone_rot_frame(int bone_idx,unsigned int time,const nya_math::quat &rot,const nya_math::bezier &interpolation)
+void RoxAnimation::addBoneRotFrame(int bone_idx,unsigned int time,const RoxMath::Quaternion &rot,const RoxMath::RoxBezier &interpolation)
 {
     if(bone_idx<0 || bone_idx>=(int)m_bones.size())
         return;
@@ -163,7 +175,7 @@ void animation::add_bone_rot_frame(int bone_idx,unsigned int time,const nya_math
     add_frame(m_bones[bone_idx].rot,rf,time,m_duration);
 }
 
-int animation::add_curve(const char *name)
+int RoxAnimation::addCurve(const char *name)
 {
     if(!name || !name[0])
         return -1;
@@ -176,7 +188,7 @@ int animation::add_curve(const char *name)
     return idx;
 }
 
-void animation::add_curve_frame(int idx,unsigned int time,float value)
+void RoxAnimation::addCurveFrame(int idx,unsigned int time,float value)
 {
     if(idx<0 || idx>=(int)m_curves.size())
         return;
@@ -186,7 +198,7 @@ void animation::add_curve_frame(int idx,unsigned int time,float value)
     add_frame(m_curves[idx].value,f,time,m_duration);
 }
 
-const animation::pos_sequence &animation::get_pos_frames(int idx) const
+const RoxAnimation::pos_sequence &RoxAnimation::getPosFrames(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
         return nya_memory::invalid_object<pos_sequence>();
@@ -194,7 +206,7 @@ const animation::pos_sequence &animation::get_pos_frames(int idx) const
     return *m_bones[idx].pos.operator->();
 }
 
-const animation::rot_sequence &animation::get_rot_frames(int idx) const
+const RoxAnimation::rot_sequence &RoxAnimation::getRotFrames(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
         return nya_memory::invalid_object<rot_sequence>();
@@ -202,7 +214,7 @@ const animation::rot_sequence &animation::get_rot_frames(int idx) const
     return *m_bones[idx].rot.operator->();
 }
 
-const animation::curve_sequence &animation::get_curve_frames(int idx) const
+const RoxAnimation::curve_sequence &RoxAnimation::getCurveFrames(int idx) const
 {
     if(idx<0 || idx>=(int)m_curves.size())
         return nya_memory::invalid_object<curve_sequence>();
