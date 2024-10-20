@@ -1,11 +1,24 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Updated By the ROX_ENGINE
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+// Update the render api intefrace to check Metal 1th.
+//
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 
-#include "render_metal.h"
-#include "render_objects.h"
+#include "RoxRenderMetal.h"
+#include "RoxRenderObjects.h"
 #include "shader_code_parser.h"
-#include "memory/mutex.h"
-#include "memory/tmp_buffer.h"
-#include "render/bitmap.h"
+#include "RoxMemory/mutex.h"
+#include "RoxMemory/tmp_buffer.h"
+#include "RoxRender/RoxBitmap.h"
 #include <queue>
 #include <list>
 
@@ -18,10 +31,10 @@
   #include <atomic>
 #endif
 
-namespace nya_render
+namespace RoxRender
 {
 
-bool render_metal::is_available() const
+bool RoxRenderMetal::isAvailable() const
 {
 #ifdef __APPLE__
     return true; //ToDo
@@ -1168,6 +1181,6 @@ void render_metal::apply_state(const state &s)
 }
 #endif
 
-render_metal &render_metal::get() { static render_metal *api = new render_metal(); return *api; }
+RoxRenderMetal &RoxRenderMetal::get() { static RoxRenderMetal *api = new RoxRenderMetal(); return *api; }
 
 }

@@ -2,35 +2,35 @@
 
 #pragma once
 
-#include "render_api.h"
+#include "RoxRenderApi.h"
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct ID3D11RenderTargetView;
 struct ID3D11DepthStencilView;
 
-namespace nya_render
+namespace RoxRender
 {
 
-class render_directx11: public render_api_interface
+class RoxRenderDirectx11: public RoxRenderApiInterface
 {
 public:
-    bool is_available() const override;
+    bool isAvailable() const override;
 
 public:
-    void set_camera(const nya_math::mat4 &mv,const nya_math::mat4 &p) override;
-    void clear(const viewport_state &s,bool color,bool depth,bool stencil) override;
+    void setCamera(const RoxMath::Matrix4 &mv,const RoxMath::Matrix4 &p) override;
+    void clear(const ViewportState &s,bool color,bool depth,bool stencil) override;
     void draw(const state &s) override {}
 
 public:
-    void invalidate_cached_state() override;
-    void apply_state(const state &s) override;
+    void invalidateCachedState() override;
+    void applyState(const state &s) override;
 
 public:
-    static render_directx11 &get();
+    static RoxRenderDirectx11 &get();
 
 private:
-    render_directx11() {}
+    RoxRenderDirectx11() {}
     
 private:
     ID3D11Device *get_device();

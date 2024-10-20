@@ -1,38 +1,38 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
-#include "render_buffered.h"
+#include "RoxRenderBuffered.h"
 
-namespace nya_render
+namespace RoxRender
 {
 
-bool render_buffered::get_vertex_data(int idx,void *data)
+bool RoxRenderBuffered::get_vertex_data(int idx,void *data)
 {
-    log()<<"get_vertex_data is not supported in render_buffered\n";
+    log()<<"get_vertex_data is not supported in RoxRenderBuffered\n";
     return false;
 }
 
-bool render_buffered::get_index_data(int idx,void *data)
+bool RoxRenderBuffered::get_index_data(int idx,void *data)
 {
-    log()<<"get_index_data is not supported in render_buffered\n";
+    log()<<"get_index_data is not supported in RoxRenderBuffered\n";
     return false;
 }
 
-bool render_buffered::get_texture_data(int texture,uint x,uint y,uint w,uint h,void *data)
+bool RoxRenderBuffered::get_texture_data(int texture,uint x,uint y,uint w,uint h,void *data)
 {
-    log()<<"get_texture_data is not supported in render_buffered\n";
+    log()<<"get_texture_data is not supported in RoxRenderBuffered\n";
     return false;
 }
 
 //----------------------------------------------------------------
 
-void render_buffered::set_uniform(int uniform_buffer,int idx,const float *buf,uint count)
+void RoxRenderBuffered::set_uniform(int uniform_buffer,int idx,const float *buf,uint count)
 {
     uniform_data d;
     d.buf_idx=uniform_buffer,d.idx=idx,d.count=count;
     m_current.write(cmd_uniform,d,count,buf);
 }
 
-void render_buffered::set_camera(const nya_math::mat4 &modelview,const nya_math::mat4 &projection)
+void RoxRenderBuffered::set_camera(const nya_math::mat4 &modelview,const nya_math::mat4 &projection)
 {
     camera_data d;
     d.mv=modelview;
@@ -40,18 +40,18 @@ void render_buffered::set_camera(const nya_math::mat4 &modelview,const nya_math:
     m_current.write(cmd_camera,d);
 }
 
-void render_buffered::clear(const viewport_state &s,bool color,bool depth,bool stencil)
+void RoxRenderBuffered::clear(const viewport_state &s,bool color,bool depth,bool stencil)
 {
     clear_data d;
     d.vp=s,d.color=color,d.depth=depth,d.stencil=stencil;
     m_current.write(cmd_clear,d);
 }
 
-void render_buffered::draw(const state &s) { m_current.write(cmd_draw,s); }
-void render_buffered::apply_state(const state &s) { m_current.write(cmd_apply,s); }
-void render_buffered::resolve_target(int idx) { m_current.write(cmd_resolve,idx); }
+void RoxRenderBuffered::draw(const state &s) { m_current.write(cmd_draw,s); }
+void RoxRenderBuffered::apply_state(const state &s) { m_current.write(cmd_apply,s); }
+void RoxRenderBuffered::resolve_target(int idx) { m_current.write(cmd_resolve,idx); }
 
-int render_buffered::create_shader(const char *vertex,const char *fragment)
+int RoxRenderBuffered::create_shader(const char *vertex,const char *fragment)
 {
     //ToDo
     std::vector<shader::uniform> uniforms;
@@ -98,11 +98,11 @@ int render_buffered::create_shader(const char *vertex,const char *fragment)
     return d.idx;
 }
 
-render_buffered::uint render_buffered::get_uniforms_count(int shader) { return (int)m_uniform_info[shader].size(); }
-shader::uniform render_buffered::get_uniform(int shader,int idx) { return m_uniform_info[shader][idx]; }
-void render_buffered::remove_shader(int shader) { m_current.write(cmd_shdr_remove,shader); }
+RoxRenderBuffered::uint RoxRenderBuffered::get_uniforms_count(int shader) { return (int)m_uniform_info[shader].size(); }
+shader::uniform RoxRenderBuffered::get_uniform(int shader,int idx) { return m_uniform_info[shader][idx]; }
+void RoxRenderBuffered::remove_shader(int shader) { m_current.write(cmd_shdr_remove,shader); }
 
-int render_buffered::create_uniform_buffer(int shader)
+int RoxRenderBuffered::create_uniform_buffer(int shader)
 {
     ubuf_create_data d;
     d.idx=new_idx();
@@ -111,9 +111,9 @@ int render_buffered::create_uniform_buffer(int shader)
     return d.idx;
 }
 
-void render_buffered::remove_uniform_buffer(int uniform_buffer) { m_current.write(cmd_ubuf_remove,uniform_buffer); }
+void RoxRenderBuffered::remove_uniform_buffer(int uniform_buffer) { m_current.write(cmd_ubuf_remove,uniform_buffer); }
 
-int render_buffered::create_vertex_buffer(const void *data,uint stride,uint count,vbo::usage_hint usage)
+int RoxRenderBuffered::create_vertex_buffer(const void *data,uint stride,uint count,vbo::usage_hint usage)
 {
     vbuf_create_data d;
     d.idx=new_idx();
@@ -126,7 +126,7 @@ int render_buffered::create_vertex_buffer(const void *data,uint stride,uint coun
     return d.idx;
 }
 
-void render_buffered::set_vertex_layout(int idx,vbo::layout layout)
+void RoxRenderBuffered::set_vertex_layout(int idx,vbo::layout layout)
 {
     vbuf_layout d;
     d.idx=idx;
@@ -134,7 +134,7 @@ void render_buffered::set_vertex_layout(int idx,vbo::layout layout)
     m_current.write(cmd_vbuf_layout,d);
 }
 
-void render_buffered::update_vertex_buffer(int idx,const void *data)
+void RoxRenderBuffered::update_vertex_buffer(int idx,const void *data)
 {
     buf_update d;
     d.idx=idx;
@@ -143,9 +143,9 @@ void render_buffered::update_vertex_buffer(int idx,const void *data)
     m_current.write(d.size,data);
 }
 
-void render_buffered::remove_vertex_buffer(int idx) { m_current.write(cmd_vbuf_remove,idx); }
+void RoxRenderBuffered::remove_vertex_buffer(int idx) { m_current.write(cmd_vbuf_remove,idx); }
 
-int render_buffered::create_index_buffer(const void *data,vbo::index_size type,uint count,vbo::usage_hint usage)
+int RoxRenderBuffered::create_index_buffer(const void *data,vbo::index_size type,uint count,vbo::usage_hint usage)
 {
     ibuf_create_data d;
     d.idx=new_idx();
@@ -157,7 +157,7 @@ int render_buffered::create_index_buffer(const void *data,vbo::index_size type,u
     return d.idx;
 }
 
-void render_buffered::update_index_buffer(int idx,const void *data)
+void RoxRenderBuffered::update_index_buffer(int idx,const void *data)
 {
     buf_update d;
     d.idx=idx;
@@ -166,7 +166,7 @@ void render_buffered::update_index_buffer(int idx,const void *data)
     m_current.write(d.size,data);
 }
 
-void render_buffered::remove_index_buffer(int idx) { m_current.write(cmd_ibuf_remove,idx); }
+void RoxRenderBuffered::remove_index_buffer(int idx) { m_current.write(cmd_ibuf_remove,idx); }
 
 const int texture_size(unsigned int width,unsigned int height,texture::color_format &format,int mip_count)
 {
@@ -201,7 +201,7 @@ const int texture_size(unsigned int width,unsigned int height,texture::color_for
     return size;
 }
 
-int render_buffered::create_texture(const void *data,uint width,uint height,texture::color_format &format,int mip_count)
+int RoxRenderBuffered::create_texture(const void *data,uint width,uint height,texture::color_format &format,int mip_count)
 {
     //ToDo: backend may modify format
 
@@ -221,7 +221,7 @@ int render_buffered::create_texture(const void *data,uint width,uint height,text
     return d.idx;
 }
 
-int render_buffered::create_cubemap(const void *data[6],uint width,texture::color_format &format,int mip_count)
+int RoxRenderBuffered::create_cubemap(const void *data[6],uint width,texture::color_format &format,int mip_count)
 {
     //ToDo: backend may modify format
 
@@ -244,7 +244,7 @@ int render_buffered::create_cubemap(const void *data[6],uint width,texture::colo
     return d.idx;
 }
 
-void render_buffered::update_texture(int idx,const void *data,uint x,uint y,uint width,uint height,int mip)
+void RoxRenderBuffered::update_texture(int idx,const void *data,uint x,uint y,uint width,uint height,int mip)
 {
     tex_update d;
     d.idx=idx;
@@ -258,7 +258,7 @@ void render_buffered::update_texture(int idx,const void *data,uint x,uint y,uint
     m_current.write(d.size,data);
 }
 
-void render_buffered::set_texture_wrap(int idx,texture::wrap s,texture::wrap t)
+void RoxRenderBuffered::set_texture_wrap(int idx,texture::wrap s,texture::wrap t)
 {
     tex_wrap d;
     d.idx=idx;
@@ -266,7 +266,7 @@ void render_buffered::set_texture_wrap(int idx,texture::wrap s,texture::wrap t)
     m_current.write(cmd_tex_wrap,d);
 }
 
-void render_buffered::set_texture_filter(int idx,texture::filter minification,texture::filter magnification,texture::filter mipmap,uint aniso)
+void RoxRenderBuffered::set_texture_filter(int idx,texture::filter minification,texture::filter magnification,texture::filter mipmap,uint aniso)
 {
     tex_filter d;
     d.idx=idx;
@@ -277,10 +277,10 @@ void render_buffered::set_texture_filter(int idx,texture::filter minification,te
     m_current.write(cmd_tex_filter,d);
 }
 
-void render_buffered::remove_texture(int texture) { m_current.write(cmd_tex_remove,texture); }
-bool render_buffered::is_texture_format_supported(texture::color_format format) { return m_tex_formats[format]; }
+void RoxRenderBuffered::remove_texture(int texture) { m_current.write(cmd_tex_remove,texture); }
+bool RoxRenderBuffered::is_texture_format_supported(texture::color_format format) { return m_tex_formats[format]; }
 
-int render_buffered::create_target(uint width,uint height,uint samples,const int *attachment_textures,
+int RoxRenderBuffered::create_target(uint width,uint height,uint samples,const int *attachment_textures,
                                    const int *attachment_sides,uint attachment_count,int depth_texture)
 {
     target_create d;
@@ -299,8 +299,8 @@ int render_buffered::create_target(uint width,uint height,uint samples,const int
     return d.idx;
 }
 
-void render_buffered::remove_target(int idx) { m_current.write(cmd_target_remove,idx); }
-void render_buffered::invalidate_cached_state() { m_current.write(cmd_invalidate); }
+void RoxRenderBuffered::remove_target(int idx) { m_current.write(cmd_target_remove,idx); }
+void RoxRenderBuffered::invalidate_cached_state() { m_current.write(cmd_invalidate); }
 
 //----------------------------------------------------------------
 
@@ -308,7 +308,7 @@ static const int invalid_idx= -1;
 
 //----------------------------------------------------------------
 
-int render_buffered::new_idx()
+int RoxRenderBuffered::new_idx()
 {
     if(!m_current.remap_free.empty())
     {
@@ -323,7 +323,7 @@ int render_buffered::new_idx()
     return idx;
 }
 
-void render_buffered::commit()
+void RoxRenderBuffered::commit()
 {
     m_current.buffer.swap(m_pending.buffer);
 
@@ -347,7 +347,7 @@ void render_buffered::commit()
     }
 }
 
-void render_buffered::push()
+void RoxRenderBuffered::push()
 {
     m_pending.buffer.swap(m_processing.buffer);
 
@@ -372,9 +372,9 @@ void render_buffered::push()
     m_pending.update_remap=pending_changed;
 }
 
-void render_buffered::remap_idx(int &idx) const { if(idx>=0) { idx=m_processing.remap[idx]; } }
+void RoxRenderBuffered::remap_idx(int &idx) const { if(idx>=0) { idx=m_processing.remap[idx]; } }
 
-void render_buffered::remap_state(state &s) const
+void RoxRenderBuffered::remap_state(state &s) const
 {
     remap_idx(s.target);
     remap_idx(s.vertex_buffer);
@@ -387,7 +387,7 @@ void render_buffered::remap_state(state &s) const
 
 //----------------------------------------------------------------
 
-void render_buffered::execute()
+void RoxRenderBuffered::execute()
 {
     m_processing.read_offset = 0;
     while(m_processing.read_offset<m_processing.buffer.size())

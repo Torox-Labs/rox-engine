@@ -2,10 +2,10 @@
 
 #include "RoxSkeleton.h"
 
-namespace nya_render
+namespace RoxRender
 {
 
-int skeleton::add_bone(const char *name,const nya_math::vec3 &pos,const nya_math::quat &rot,int parent,bool allow_doublicate)
+int RoxSkeleton::addBone(const char *name,const RoxMath::Vector3 &pos,const RoxMath::Quaternion &rot,int parent,bool allow_doublicate)
 {
     if(!name)
         return -1;
@@ -24,7 +24,7 @@ int skeleton::add_bone(const char *name,const nya_math::vec3 &pos,const nya_math
     m_pos_tr.resize(bone_idx+1);
     m_rot_tr.resize(bone_idx+1);
 
-    if(!m_rot_org.empty() || rot.v.length_sq()>0.001f)
+    if(!m_rot_org.empty() || rot.v.lengthSq()>0.001f)
         m_rot_org.resize(m_bones.size());
 
     bone &b=m_bones[bone_idx];
@@ -46,7 +46,7 @@ int skeleton::add_bone(const char *name,const nya_math::vec3 &pos,const nya_math
         m_rot_org[bone_idx].rot_org=rot;
         if(parent>=0)
         {
-            const nya_math::quat pq=nya_math::quat::invert(m_rot_org[parent].rot_org);
+            const RoxMath::Quaternion pq=RoxMath::Quaternion::invert(m_rot_org[parent].rot_org);
             m_rot_org[bone_idx].offset=pq*m_rot_org[bone_idx].rot_org;
             b.offset=pq.rotate(b.offset);
         }
@@ -58,7 +58,7 @@ int skeleton::add_bone(const char *name,const nya_math::vec3 &pos,const nya_math
     return bone_idx;
 }
 
-void skeleton::base_update_bone(int idx)
+void RoxSkeleton::base_update_bone(int idx)
 {
     const bone &b=m_bones[idx];
     if(b.parent>=0)
@@ -80,15 +80,15 @@ void skeleton::base_update_bone(int idx)
     }
 }
 
-void skeleton::update_bone(int idx)
+void RoxSkeleton::update_bone(int idx)
 {
     bone &b=m_bones[idx];
     if(b.bound_idx>=0)
     {
         const bound &bnd=m_bounds[b.bound_idx];
 
-        const nya_math::vec3 prev_pos=b.pos;
-        const nya_math::quat prev_rot=b.rot;
+        const RoxMath::Vector3 prev_pos=b.pos;
+        const RoxMath::Quaternion prev_rot=b.rot;
 
         const bone &src=m_bones[bnd.src];
 
@@ -97,7 +97,7 @@ void skeleton::update_bone(int idx)
 
         if(bnd.rot)
         {
-            nya_math::quat tmp=src.rot;
+            RoxMath::Quaternion tmp=src.rot;
             tmp.apply_weight(bnd.k);
             b.rot=(b.rot*tmp).normalize();
         }
@@ -109,10 +109,10 @@ void skeleton::update_bone(int idx)
         base_update_bone(idx);
 
     if(b.ik_idx>=0)
-        update_ik(b.ik_idx);
+        updateIk(b.ik_idx);
 }
 
-int skeleton::get_bone_idx(const char *name) const
+int RoxSkeleton::get_bone_idx(const char *name) const
 {
     if(!name)
         return -1;
@@ -124,7 +124,7 @@ int skeleton::get_bone_idx(const char *name) const
     return (int)it->second;
 }
 
-int skeleton::get_bone_parent_idx(int idx) const
+int RoxSkeleton::get_bone_parent_idx(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
         return -1;
@@ -132,7 +132,7 @@ int skeleton::get_bone_parent_idx(int idx) const
     return m_bones[idx].parent;
 }
 
-const char *skeleton::get_bone_name(int idx) const
+const char *RoxSkeleton::get_bone_name(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
         return 0;
@@ -140,55 +140,55 @@ const char *skeleton::get_bone_name(int idx) const
     return m_bones[idx].name.c_str();
 }
 
-nya_math::vec3 skeleton::get_bone_pos(int idx) const
+RoxMath::Vector3 RoxSkeleton::get_bone_pos(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
-        return nya_math::vec3();
+        return RoxMath::Vector3();
 
     return m_pos_tr[idx];
 }
 
-nya_math::quat skeleton::get_bone_rot(int idx) const
+RoxMath::Quaternion RoxSkeleton::get_bone_rot(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
-        return nya_math::quat();
+        return RoxMath::Quaternion();
 
     return m_rot_tr[idx];
 }
 
-nya_math::vec3 skeleton::get_bone_local_pos(int idx) const
+RoxMath::Vector3 RoxSkeleton::get_bone_local_pos(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
-        return nya_math::vec3();
+        return RoxMath::Vector3();
 
     return m_bones[idx].pos;
 }
 
-nya_math::quat skeleton::get_bone_local_rot(int idx) const
+RoxMath::Quaternion RoxSkeleton::get_bone_local_rot(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
-        return nya_math::quat();
+        return RoxMath::Quaternion();
 
     return m_bones[idx].rot;
 }
 
-nya_math::vec3 skeleton::get_bone_original_pos(int idx) const
+RoxMath::Vector3 RoxSkeleton::get_bone_original_pos(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
-        return nya_math::vec3();
+        return RoxMath::Vector3();
 
     return m_bones[idx].pos_org;
 }
 
-nya_math::quat skeleton::get_bone_original_rot(int idx) const
+RoxMath::Quaternion RoxSkeleton::get_bone_original_rot(int idx) const
 {
     if(idx<0 || idx>=(int)m_rot_org.size())
-        return nya_math::quat();
+        return RoxMath::Quaternion();
 
     return m_rot_org[idx].rot_org;
 }
 
-int skeleton::add_ik(int target_bone_idx,int effect_bone_idx,int count,float fact,bool allow_invalid)
+int RoxSkeleton::add_ik(int target_bone_idx,int effect_bone_idx,int count,float fact,bool allow_invalid)
 {
     if(target_bone_idx<0 || (!allow_invalid && target_bone_idx>=(int)m_bones.size()))
         return -1;
@@ -210,7 +210,7 @@ int skeleton::add_ik(int target_bone_idx,int effect_bone_idx,int count,float fac
     return ik_idx;
 }
 
-bool skeleton::add_ik_link(int ik_idx,int bone_idx,bool allow_invalid)
+bool RoxSkeleton::add_ik_link(int ik_idx,int bone_idx,bool allow_invalid)
 {
     if(ik_idx<0 || ik_idx>=(int)m_iks.size())
         return false;
@@ -226,7 +226,7 @@ bool skeleton::add_ik_link(int ik_idx,int bone_idx,bool allow_invalid)
     return true;
 }
 
-bool skeleton::add_ik_link(int ik_idx,int bone_idx,nya_math::vec3 limit_from,nya_math::vec3 limit_to,bool allow_invalid)
+bool RoxSkeleton::add_ik_link(int ik_idx,int bone_idx,RoxMath::Vector3 limit_from,RoxMath::Vector3 limit_to,bool allow_invalid)
 {
     if(ik_idx<0 || ik_idx>=(int)m_iks.size())
         return false;
@@ -240,7 +240,7 @@ bool skeleton::add_ik_link(int ik_idx,int bone_idx,nya_math::vec3 limit_from,nya
     k.links.back().limit_from=limit_from;
     k.links.back().limit_to=limit_to;
 
-    const nya_math::vec3 limit=limit_from.abs()+limit_to.abs();
+    const RoxMath::Vector3 limit=limit_from.abs()+limit_to.abs();
     const float eps=0.01f;
     if(limit.x>eps && limit.y<eps && limit.z<eps)
         k.links.back().limit=limit_x;
@@ -252,7 +252,7 @@ bool skeleton::add_ik_link(int ik_idx,int bone_idx,nya_math::vec3 limit_from,nya
     return true;
 }
 
-bool skeleton::add_bound(int bone_idx,int src_bone_idx,float k,bool pos,bool rot,bool allow_invalid)
+bool RoxSkeleton::add_bound(int bone_idx,int src_bone_idx,float k,bool pos,bool rot,bool allow_invalid)
 {
     if(bone_idx<0 || (!allow_invalid && bone_idx>=(int)m_bones.size()))
         return false;
@@ -274,7 +274,7 @@ bool skeleton::add_bound(int bone_idx,int src_bone_idx,float k,bool pos,bool rot
     return true;
 }
 
-void skeleton::set_bone_transform(int bone_idx,const nya_math::vec3 &pos,const nya_math::quat &rot)
+void RoxSkeleton::set_bone_transform(int bone_idx,const RoxMath::Vector3 &pos,const RoxMath::Quaternion &rot)
 {
     if(bone_idx<0 || bone_idx>=(int)m_bones.size())
         return;
@@ -298,10 +298,10 @@ inline void restrict_angle(float &a,float from,float to)
     }
 }
 
-void skeleton::update_ik(int idx)
+void RoxSkeleton::update_ik(int idx)
 {
     const ik &k=m_iks[idx];
-    const nya_math::vec3 target_pos=m_pos_tr[k.target];
+    const RoxMath::Vector3 target_pos=m_pos_tr[k.target];
 
     for(int i=0;i<k.count;++i)
     {
@@ -310,9 +310,9 @@ void skeleton::update_ik(int idx)
             const int lnk_idx=k.links[j].idx;
             bone &lnk=m_bones[lnk_idx];
 
-            const nya_math::vec3 target_dir=(target_pos-m_pos_tr[lnk_idx]).normalize();
-            const nya_math::vec3 eff_dir=(m_pos_tr[k.eff]-m_pos_tr[lnk_idx]).normalize();
-            if((eff_dir-target_dir).length_sq()<1.0e-7f)
+            const RoxMath::Vector3 target_dir=(target_pos-m_pos_tr[lnk_idx]).normalize();
+            const RoxMath::Vector3 eff_dir=(m_pos_tr[k.eff]-m_pos_tr[lnk_idx]).normalize();
+            if((eff_dir-target_dir).lengthSq()<1.0e-7f)
             {
                 i=k.count;
                 break;
@@ -322,9 +322,9 @@ void skeleton::update_ik(int idx)
             {
                 const ik_link &l0=k.links[0];
 
-                const float target_lsq=(target_pos-m_pos_tr[k.links[1].idx]).length_sq();
-                const float l0_lsq=(m_pos_tr[k.eff]-m_pos_tr[l0.idx]).length_sq();
-                const float l1_lsq=(m_pos_tr[l0.idx]-m_pos_tr[k.links[1].idx]).length_sq();
+                const float target_lsq=(target_pos-m_pos_tr[k.links[1].idx]).lengthSq();
+                const float l0_lsq=(m_pos_tr[k.eff]-m_pos_tr[l0.idx]).lengthSq();
+                const float l1_lsq=(m_pos_tr[l0.idx]-m_pos_tr[k.links[1].idx]).lengthSq();
 
                 const float l0l1=sqrtf(l0_lsq)+sqrtf(l1_lsq);
                 if(l0l1*l0l1>target_lsq)
@@ -336,35 +336,35 @@ void skeleton::update_ik(int idx)
                     if(k<small_k)
                     {
                         const float t=l0l1*(1.0f-small_k);
-                        float small_pitch=nya_math::constants::pi-acosf((l0_lsq+l1_lsq-t*t)/d);
+                        float small_pitch=RoxMath::Constants::pi-acosf((l0_lsq+l1_lsq-t*t)/d);
                         pitch=small_pitch*k/small_k;
                     }
                     else
-                        pitch=nya_math::constants::pi-acosf((l0_lsq+l1_lsq-target_lsq)/d);
+                        pitch=RoxMath::Constants::pi-acosf((l0_lsq+l1_lsq-target_lsq)/d);
                     restrict_angle(pitch,l0.limit_from.x,l0.limit_to.x);
-                    lnk.rot=nya_math::quat(pitch,0.0f,0.0f);
+                    lnk.rot=RoxMath::Quaternion(pitch,0.0f,0.0f);
                 }
                 else
-                    lnk.rot=nya_math::quat();
+                    lnk.rot=RoxMath::Quaternion();
             }
             else
             {
-                const nya_math::vec3 axis=m_rot_tr[lnk_idx].rotate_inv(nya_math::vec3::cross(eff_dir,target_dir)).normalize();
-                const float d=nya_math::clamp(eff_dir.dot(target_dir),-1.0f,1.0f);
-                const nya_math::angle_rad ang=nya_math::min(acosf(d),k.fact*(i+1)*2.0f);
-                lnk.rot*=nya_math::quat(axis,ang);
+                const RoxMath::Vector3 axis=m_rot_tr[lnk_idx].rotateInv(RoxMath::Vector3::cross(eff_dir,target_dir)).normalize();
+                const float d=RoxMath::clamp(eff_dir.dot(target_dir),-1.0f,1.0f);
+                const RoxMath::AngleRad ang=RoxMath::min(acosf(d),k.fact*(i+1)*2.0f);
+                lnk.rot*=RoxMath::Quaternion(axis,ang);
 
                 if(k.links[j].limit==limit_xyz)
                 {
-                    const nya_math::quat &q=lnk.rot;
-                    nya_math::vec3 euler(atan2(2.0f*(q.v.y*q.v.z+q.w*q.v.x), 1.0f-2.0f*(q.v.x*q.v.x+q.v.y*q.v.y)),
+                    const RoxMath::Quaternion &q=lnk.rot;
+                    RoxMath::Vector3 euler(atan2(2.0f*(q.v.y*q.v.z+q.w*q.v.x), 1.0f-2.0f*(q.v.x*q.v.x+q.v.y*q.v.y)),
                                         -asinf(2.0f*(q.v.x*q.v.z-q.w*q.v.y)),
                                          atan2(2.0f*(q.v.x*q.v.y+q.w*q.v.z), 1.0f-2.0f*(q.v.y*q.v.y+q.v.z*q.v.z)));
 
                     restrict_angle(euler.x,k.links[j].limit_from.x,k.links[j].limit_to.x);
                     restrict_angle(euler.y,k.links[j].limit_from.y,k.links[j].limit_to.y);
                     restrict_angle(euler.z,k.links[j].limit_from.z,k.links[j].limit_to.z);
-                    lnk.rot=nya_math::quat(euler.x,euler.y,euler.z);
+                    lnk.rot=RoxMath::Quaternion(euler.x,euler.y,euler.z);
                 }
             }
 
@@ -376,7 +376,7 @@ void skeleton::update_ik(int idx)
     }
 }
 
-void skeleton::update()
+void RoxSkeleton::update()
 {
     if(m_iks.empty() && m_bounds.empty())
     {
@@ -390,7 +390,7 @@ void skeleton::update()
     }
 }
 
-nya_math::vec3 skeleton::transform(int bone_idx,const nya_math::vec3 &point) const
+RoxMath::Vector3 RoxSkeleton::transform(int bone_idx,const RoxMath::Vector3 &point) const
 {
     if(bone_idx<0 || bone_idx>=(int)m_bones.size())
         return point;
@@ -398,7 +398,7 @@ nya_math::vec3 skeleton::transform(int bone_idx,const nya_math::vec3 &point) con
     return m_pos_tr[bone_idx]+m_rot_tr[bone_idx].rotate(point);
 }
 
-const float *skeleton::get_pos_buffer() const
+const float *RoxSkeleton::get_pos_buffer() const
 {
     if(m_pos_tr.empty())
         return 0;
@@ -406,7 +406,7 @@ const float *skeleton::get_pos_buffer() const
     return &m_pos_tr[0].x;
 }
 
-const float *skeleton::get_rot_buffer() const
+const float *RoxSkeleton::get_rot_buffer() const
 {
     if(m_rot_tr.empty())
         return 0;
