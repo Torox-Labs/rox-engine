@@ -1,4 +1,16 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Updated By the ROX_ENGINE
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+//
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxSkeleton.h"
 
@@ -54,11 +66,11 @@ int RoxSkeleton::addBone(const char *name,const RoxMath::Vector3 &pos,const RoxM
             m_rot_org[bone_idx].offset=m_rot_org[bone_idx].rot_org;
     }
 
-    update_bone(bone_idx);
+    updateBone(bone_idx);
     return bone_idx;
 }
 
-void RoxSkeleton::base_update_bone(int idx)
+void RoxSkeleton::baseUpdateBone(int idx)
 {
     const bone &b=m_bones[idx];
     if(b.parent>=0)
@@ -80,7 +92,7 @@ void RoxSkeleton::base_update_bone(int idx)
     }
 }
 
-void RoxSkeleton::update_bone(int idx)
+void RoxSkeleton::updateBone(int idx)
 {
     bone &b=m_bones[idx];
     if(b.bound_idx>=0)
@@ -101,18 +113,18 @@ void RoxSkeleton::update_bone(int idx)
             tmp.apply_weight(bnd.k);
             b.rot=(b.rot*tmp).normalize();
         }
-        base_update_bone(idx);
+        baseUpdateBone(idx);
         b.pos=prev_pos;
         b.rot=prev_rot;
     }
     else
-        base_update_bone(idx);
+        baseUpdateBone(idx);
 
     if(b.ik_idx>=0)
         updateIk(b.ik_idx);
 }
 
-int RoxSkeleton::get_bone_idx(const char *name) const
+int RoxSkeleton::getBoneIdx(const char *name) const
 {
     if(!name)
         return -1;
@@ -124,7 +136,7 @@ int RoxSkeleton::get_bone_idx(const char *name) const
     return (int)it->second;
 }
 
-int RoxSkeleton::get_bone_parent_idx(int idx) const
+int RoxSkeleton::getBoneParentIdx(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
         return -1;
@@ -132,7 +144,7 @@ int RoxSkeleton::get_bone_parent_idx(int idx) const
     return m_bones[idx].parent;
 }
 
-const char *RoxSkeleton::get_bone_name(int idx) const
+const char *RoxSkeleton::getBoneName(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
         return 0;
@@ -140,7 +152,7 @@ const char *RoxSkeleton::get_bone_name(int idx) const
     return m_bones[idx].name.c_str();
 }
 
-RoxMath::Vector3 RoxSkeleton::get_bone_pos(int idx) const
+RoxMath::Vector3 RoxSkeleton::getBonePos(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
         return RoxMath::Vector3();
@@ -148,7 +160,7 @@ RoxMath::Vector3 RoxSkeleton::get_bone_pos(int idx) const
     return m_pos_tr[idx];
 }
 
-RoxMath::Quaternion RoxSkeleton::get_bone_rot(int idx) const
+RoxMath::Quaternion RoxSkeleton::getBoneRot(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
         return RoxMath::Quaternion();
@@ -156,7 +168,7 @@ RoxMath::Quaternion RoxSkeleton::get_bone_rot(int idx) const
     return m_rot_tr[idx];
 }
 
-RoxMath::Vector3 RoxSkeleton::get_bone_local_pos(int idx) const
+RoxMath::Vector3 RoxSkeleton::getBoneLocalPos(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
         return RoxMath::Vector3();
@@ -164,7 +176,7 @@ RoxMath::Vector3 RoxSkeleton::get_bone_local_pos(int idx) const
     return m_bones[idx].pos;
 }
 
-RoxMath::Quaternion RoxSkeleton::get_bone_local_rot(int idx) const
+RoxMath::Quaternion RoxSkeleton::getBoneLocalRot(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
         return RoxMath::Quaternion();
@@ -172,7 +184,7 @@ RoxMath::Quaternion RoxSkeleton::get_bone_local_rot(int idx) const
     return m_bones[idx].rot;
 }
 
-RoxMath::Vector3 RoxSkeleton::get_bone_original_pos(int idx) const
+RoxMath::Vector3 RoxSkeleton::getBoneOriginalPos(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
         return RoxMath::Vector3();
@@ -180,7 +192,7 @@ RoxMath::Vector3 RoxSkeleton::get_bone_original_pos(int idx) const
     return m_bones[idx].pos_org;
 }
 
-RoxMath::Quaternion RoxSkeleton::get_bone_original_rot(int idx) const
+RoxMath::Quaternion RoxSkeleton::getBoneOriginalRot(int idx) const
 {
     if(idx<0 || idx>=(int)m_rot_org.size())
         return RoxMath::Quaternion();
@@ -188,7 +200,7 @@ RoxMath::Quaternion RoxSkeleton::get_bone_original_rot(int idx) const
     return m_rot_org[idx].rot_org;
 }
 
-int RoxSkeleton::add_ik(int target_bone_idx,int effect_bone_idx,int count,float fact,bool allow_invalid)
+int RoxSkeleton::addIk(int target_bone_idx,int effect_bone_idx,int count,float fact,bool allow_invalid)
 {
     if(target_bone_idx<0 || (!allow_invalid && target_bone_idx>=(int)m_bones.size()))
         return -1;
@@ -210,7 +222,7 @@ int RoxSkeleton::add_ik(int target_bone_idx,int effect_bone_idx,int count,float 
     return ik_idx;
 }
 
-bool RoxSkeleton::add_ik_link(int ik_idx,int bone_idx,bool allow_invalid)
+bool RoxSkeleton::addIkLink(int ik_idx,int bone_idx,bool allow_invalid)
 {
     if(ik_idx<0 || ik_idx>=(int)m_iks.size())
         return false;
@@ -226,7 +238,7 @@ bool RoxSkeleton::add_ik_link(int ik_idx,int bone_idx,bool allow_invalid)
     return true;
 }
 
-bool RoxSkeleton::add_ik_link(int ik_idx,int bone_idx,RoxMath::Vector3 limit_from,RoxMath::Vector3 limit_to,bool allow_invalid)
+bool RoxSkeleton::addIkLink(int ik_idx,int bone_idx,RoxMath::Vector3 limit_from,RoxMath::Vector3 limit_to,bool allow_invalid)
 {
     if(ik_idx<0 || ik_idx>=(int)m_iks.size())
         return false;
@@ -252,7 +264,7 @@ bool RoxSkeleton::add_ik_link(int ik_idx,int bone_idx,RoxMath::Vector3 limit_fro
     return true;
 }
 
-bool RoxSkeleton::add_bound(int bone_idx,int src_bone_idx,float k,bool pos,bool rot,bool allow_invalid)
+bool RoxSkeleton::addBound(int bone_idx,int src_bone_idx,float k,bool pos,bool rot,bool allow_invalid)
 {
     if(bone_idx<0 || (!allow_invalid && bone_idx>=(int)m_bones.size()))
         return false;
@@ -274,7 +286,7 @@ bool RoxSkeleton::add_bound(int bone_idx,int src_bone_idx,float k,bool pos,bool 
     return true;
 }
 
-void RoxSkeleton::set_bone_transform(int bone_idx,const RoxMath::Vector3 &pos,const RoxMath::Quaternion &rot)
+void RoxSkeleton::setBoneTransform(int bone_idx,const RoxMath::Vector3 &pos,const RoxMath::Quaternion &rot)
 {
     if(bone_idx<0 || bone_idx>=(int)m_bones.size())
         return;
@@ -298,7 +310,7 @@ inline void restrict_angle(float &a,float from,float to)
     }
 }
 
-void RoxSkeleton::update_ik(int idx)
+void RoxSkeleton::updateIk(int idx)
 {
     const ik &k=m_iks[idx];
     const RoxMath::Vector3 target_pos=m_pos_tr[k.target];
@@ -369,9 +381,9 @@ void RoxSkeleton::update_ik(int idx)
             }
 
             for(int m=j;m>=0;--m)
-                base_update_bone(k.links[m].idx);
+                baseUpdateBone(k.links[m].idx);
 
-            base_update_bone(k.eff);
+            baseUpdateBone(k.eff);
         }
     }
 }
@@ -381,12 +393,12 @@ void RoxSkeleton::update()
     if(m_iks.empty() && m_bounds.empty())
     {
         for(int i=0,count=(int)m_bones.size();i<count;++i)
-            base_update_bone(i);
+            baseUpdateBone(i);
     }
     else
     {
         for(int i=0,count=(int)m_bones.size();i<count;++i)
-            update_bone(i);
+            updateBone(i);
     }
 }
 
@@ -398,7 +410,7 @@ RoxMath::Vector3 RoxSkeleton::transform(int bone_idx,const RoxMath::Vector3 &poi
     return m_pos_tr[bone_idx]+m_rot_tr[bone_idx].rotate(point);
 }
 
-const float *RoxSkeleton::get_pos_buffer() const
+const float *RoxSkeleton::getPosBuffer() const
 {
     if(m_pos_tr.empty())
         return 0;
@@ -406,7 +418,7 @@ const float *RoxSkeleton::get_pos_buffer() const
     return &m_pos_tr[0].x;
 }
 
-const float *RoxSkeleton::get_rot_buffer() const
+const float *RoxSkeleton::getRotBuffer() const
 {
     if(m_rot_tr.empty())
         return 0;

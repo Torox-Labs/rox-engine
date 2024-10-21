@@ -84,7 +84,7 @@ public:
     static bool hasExtension(const char *name);
     static void *getExtension(const char *name);
 
-    uint get_glTexture_id(int idx);
+    uint getGlTextureId(int idx);
 
     //for external textures
     static void glBindTexture(uint gl_type,uint gl_idx,uint layer=0);
