@@ -32,7 +32,7 @@ public:
 public:
     int createShader(const char *vertex,const char *fragment) override;
     uint getUniformsCount(int shader) override;
-    RoxShader::uniform getUniform(int shader,int idx) override;
+    RoxShader::Uniform getUniform(int shader,int idx) override;
     void removeShader(int shader) override;
 
     int createUniformBuffer(int shader) override;

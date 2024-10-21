@@ -90,7 +90,7 @@ namespace RoxRender
 	public:
 		virtual int createShader(const char* vertex, const char* fragment) { return -1; }
 		virtual uint getUniformsCount(int shader) { return 0; }
-		virtual RoxShader::uniform getUniform(int shader, int idx) { return RoxRender::RoxShader::uniform(); }
+		virtual RoxShader::Uniform getUniform(int shader, int idx) { return RoxRender::RoxShader::Uniform(); }
 
 		virtual void removeShader(int shader)
 		{

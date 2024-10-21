@@ -1,12 +1,12 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
-#include "shader_code_parser.h"
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include "RoxShaderCodeParser.h"
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
 #include <algorithm>
 
-namespace nya_render
+namespace RoxRender
 {
 
 template<typename t> static void push_unique_to_vec(std::vector<t> &v,const t &e)
@@ -23,17 +23,17 @@ template<typename t> static void push_unique_to_vec(std::vector<t> &v,const t &e
     v.push_back(e);
 }
 
-inline int type_regsize(shader_code_parser::variable_type type)
+inline int type_regsize(RoxShaderCodeParser::VARIABLE_TYPE type)
 {
-    if(type==shader_code_parser::type_mat2) return 2;
-    if(type==shader_code_parser::type_mat3) return 3;
-    if(type==shader_code_parser::type_mat4) return 4;
+    if(type==RoxShaderCodeParser::TYPE_MATRIX2) return 2;
+    if(type==RoxShaderCodeParser::TYPE_MATRIX3) return 3;
+    if(type==RoxShaderCodeParser::TYPE_MATRIX4) return 4;
     return 1;
 }
 
 static bool is_name_char(char c) { return isalnum(c) || c=='_'; }
 
-bool shader_code_parser::convert_to_hlsl()
+bool RoxShaderCodeParser::convert_to_hlsl()
 {
     m_uniforms.clear();
     m_attributes.clear();
@@ -295,7 +295,7 @@ inline bool has_args(std::string &code,size_t pos)
     return false;
 }
 
-bool shader_code_parser::convert_to_metal()
+bool RoxShaderCodeParser::convert_to_metal()
 {
     m_uniforms.clear();
     m_attributes.clear();
@@ -609,7 +609,7 @@ bool shader_code_parser::convert_to_metal()
     return true;
 }
 
-bool shader_code_parser::convert_to_glsl()
+bool RoxShaderCodeParser::convert_to_glsl()
 {
     if(replace_variable("gl_InstanceID","gl_InstanceIDARB"))
         m_code.insert(0,"#extension GL_ARB_draw_instanced:enable\n");
@@ -618,7 +618,7 @@ bool shader_code_parser::convert_to_glsl()
     return true;
 }
 
-bool shader_code_parser::convert_to_glsl_es2(const char *precision)
+bool RoxShaderCodeParser::convert_to_glsl_es2(const char *precision)
 {
     m_uniforms.clear();
     m_attributes.clear();
@@ -660,7 +660,7 @@ bool shader_code_parser::convert_to_glsl_es2(const char *precision)
     return true;
 }
 
-bool shader_code_parser::convert_to_glsl3()
+bool RoxShaderCodeParser::convert_to_glsl3()
 {
     m_uniforms.clear();
     m_attributes.clear();
@@ -718,7 +718,7 @@ bool shader_code_parser::convert_to_glsl3()
     return true;
 }
 
-int shader_code_parser::get_uniforms_count()
+int RoxShaderCodeParser::get_uniforms_count()
 {
     if(m_uniforms.empty())
     {
@@ -729,15 +729,15 @@ int shader_code_parser::get_uniforms_count()
     return (int)m_uniforms.size();
 }
 
-shader_code_parser::variable shader_code_parser::get_uniform(int idx) const
+RoxShaderCodeParser::variable RoxShaderCodeParser::get_uniform(int idx) const
 {
     if(idx<0 || idx>=(int)m_uniforms.size())
-        return shader_code_parser::variable();
+        return RoxShaderCodeParser::variable();
 
     return m_uniforms[idx];
 }
 
-int shader_code_parser::get_attributes_count()
+int RoxShaderCodeParser::get_attributes_count()
 {
     if(m_attributes.empty())
         parse_attributes(m_replace_str.c_str(),0);
@@ -745,15 +745,15 @@ int shader_code_parser::get_attributes_count()
     return (int)m_attributes.size();
 }
 
-shader_code_parser::variable shader_code_parser::get_attribute(int idx) const
+RoxShaderCodeParser::variable RoxShaderCodeParser::get_attribute(int idx) const
 {
     if(idx<0 || idx>=(int)m_attributes.size())
-        return shader_code_parser::variable();
+        return RoxShaderCodeParser::variable();
 
     return m_attributes[idx];
 }
 
-int shader_code_parser::get_out_count()
+int RoxShaderCodeParser::get_out_count()
 {
     if(m_out.empty())
         parse_out(false);
@@ -761,15 +761,15 @@ int shader_code_parser::get_out_count()
     return (int)m_out.size();
 }
 
-shader_code_parser::variable shader_code_parser::get_out(int idx) const
+RoxShaderCodeParser::variable RoxShaderCodeParser::get_out(int idx) const
 {
     if(idx<0 || idx>=(int)m_out.size())
-        return shader_code_parser::variable();
+        return RoxShaderCodeParser::variable();
 
     return m_out[idx];
 }
 
-bool shader_code_parser::fix_per_component_functions()
+bool RoxShaderCodeParser::fix_per_component_functions()
 {
     const char *functions[]={"pow","sqrt"}; //ToDo
     int functions_args[]={2,1};
@@ -813,7 +813,7 @@ bool shader_code_parser::fix_per_component_functions()
     return true;
 }
 
-void shader_code_parser::remove_comments()
+void RoxShaderCodeParser::remove_comments()
 {
     while(m_code.find("//")!=std::string::npos)
     {
@@ -868,9 +868,9 @@ template<typename t> static bool parse_vars(std::string &code,std::string &error
             char dim=(type_name.length()==4)?type_name[3]:'\0';
             switch(dim)
             {
-                case '2': vars.push_back(shader_code_parser::variable(shader_code_parser::type_vec2,name.c_str(),count)); break;
-                case '3': vars.push_back(shader_code_parser::variable(shader_code_parser::type_vec3,name.c_str(),count)); break;
-                case '4': vars.push_back(shader_code_parser::variable(shader_code_parser::type_vec4,name.c_str(),count)); break;
+                case '2': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_vec2,name.c_str(),count)); break;
+                case '3': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_vec3,name.c_str(),count)); break;
+                case '4': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_vec4,name.c_str(),count)); break;
                 default: return false;
             };
         }
@@ -879,18 +879,18 @@ template<typename t> static bool parse_vars(std::string &code,std::string &error
             char dim=(type_name.length()==4)?type_name[3]:'\0';
             switch(dim)
             {
-                case '2': vars.push_back(shader_code_parser::variable(shader_code_parser::type_mat2,name.c_str(),count)); break;
-                case '3': vars.push_back(shader_code_parser::variable(shader_code_parser::type_mat3,name.c_str(),count)); break;
-                case '4': vars.push_back(shader_code_parser::variable(shader_code_parser::type_mat4,name.c_str(),count)); break;
+                case '2': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_mat2,name.c_str(),count)); break;
+                case '3': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_mat3,name.c_str(),count)); break;
+                case '4': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_mat4,name.c_str(),count)); break;
                 default: return false;
             };
         }
         else if(type_name=="float")
-            vars.push_back(shader_code_parser::variable(shader_code_parser::type_float,name.c_str(),count));
+            vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_float,name.c_str(),count));
         else if(type_name=="sampler2D")
-            vars.push_back(shader_code_parser::variable(shader_code_parser::type_sampler2d,name.c_str(),count));
+            vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_sampler2d,name.c_str(),count));
         else if(type_name=="samplerCube")
-            vars.push_back(shader_code_parser::variable(shader_code_parser::type_sampler_cube,name.c_str(),count));
+            vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_sampler_cube,name.c_str(),count));
         else
             return false;
 
@@ -903,11 +903,11 @@ template<typename t> static bool parse_vars(std::string &code,std::string &error
     return true;
 }
 
-bool shader_code_parser::parse_uniforms(bool remove) { return parse_vars(m_code,m_error,m_uniforms,"uniform",remove); }
-bool shader_code_parser::parse_varying(bool remove) { return parse_vars(m_code,m_error,m_varying,"varying",remove); }
-bool shader_code_parser::parse_out(bool remove) { return parse_vars(m_code,m_error,m_out,"out",remove); }
+bool RoxShaderCodeParser::parse_uniforms(bool remove) { return parse_vars(m_code,m_error,m_uniforms,"uniform",remove); }
+bool RoxShaderCodeParser::parse_varying(bool remove) { return parse_vars(m_code,m_error,m_varying,"varying",remove); }
+bool RoxShaderCodeParser::parse_out(bool remove) { return parse_vars(m_code,m_error,m_out,"out",remove); }
 
-bool shader_code_parser::parse_predefined_uniforms(const char *replace_prefix_str,bool replace)
+bool RoxShaderCodeParser::parse_predefined_uniforms(const char *replace_prefix_str,bool replace)
 {
     if(!replace_prefix_str)
         return false;
@@ -932,7 +932,7 @@ bool shader_code_parser::parse_predefined_uniforms(const char *replace_prefix_st
     return true;
 }
 
-bool shader_code_parser::parse_attributes(const char *info_replace_str,const char *code_replace_str)
+bool RoxShaderCodeParser::parse_attributes(const char *info_replace_str,const char *code_replace_str)
 {
     if(!info_replace_str)
         return false;
@@ -976,7 +976,7 @@ bool shader_code_parser::parse_attributes(const char *info_replace_str,const cha
     return true;
 }
 
-bool shader_code_parser::replace_hlsl_types()
+bool RoxShaderCodeParser::replace_hlsl_types()
 {
     replace_variable("vec2","float2");
     replace_variable("vec3","float3");
@@ -1045,7 +1045,7 @@ static void remove_var_spaces(std::string &s)
     s=s.substr(f,t);
 }
 
-bool shader_code_parser::replace_hlsl_mul(const char *func_name)
+bool RoxShaderCodeParser::replace_hlsl_mul(const char *func_name)
 {
     if(!func_name)
         return false;
@@ -1139,7 +1139,7 @@ bool shader_code_parser::replace_hlsl_mul(const char *func_name)
     return result;
 }
 
-bool shader_code_parser::replace_vec_from_float(const char *func_name)
+bool RoxShaderCodeParser::replace_vec_from_float(const char *func_name)
 {
     if(!func_name)
         return false;
@@ -1214,7 +1214,7 @@ bool shader_code_parser::replace_vec_from_float(const char *func_name)
     return result;
 }
 
-bool shader_code_parser::replace_main_function_header(const char *replace_str)
+bool RoxShaderCodeParser::replace_main_function_header(const char *replace_str)
 {
     if(!replace_str)
         return false;
@@ -1256,7 +1256,7 @@ bool shader_code_parser::replace_main_function_header(const char *replace_str)
     return false;
 }
 
-bool shader_code_parser::replace_variable(const char *from,const char *to,size_t start_pos)
+bool RoxShaderCodeParser::replace_variable(const char *from,const char *to,size_t start_pos)
 {
     if(!from || !from[0] || !to)
         return false;
@@ -1280,7 +1280,7 @@ bool shader_code_parser::replace_variable(const char *from,const char *to,size_t
     return result;
 }
 
-bool shader_code_parser::find_variable(const char *str,size_t start_pos)
+bool RoxShaderCodeParser::find_variable(const char *str,size_t start_pos)
 {
     if(!str)
         return false;

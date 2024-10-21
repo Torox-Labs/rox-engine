@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "RoxRender/shader_code_parser.h"
+#include "RoxShaderCodeParser.h"
 #include <string>
 #include <vector>
 
@@ -42,13 +42,13 @@ public:
 		UNIFORM_SAMPLER_CUBE = RoxShaderCodeParser::TYPE_SAMPLER_CUBE
 	};
 
-    struct uniform
+    struct Uniform
     {
         std::string name;
         UNIFORM_TYPE type;
         unsigned int array_size;
 
-        uniform(): type(UNIFORM_NOT_FOUND),array_size(0) {}
+        Uniform(): type(UNIFORM_NOT_FOUND),array_size(0) {}
     };
 
     int get_uniforms_count() const;
@@ -72,7 +72,7 @@ public:
 private:
     int m_shdr;
     int m_buf;
-    std::vector<uniform> m_uniforms;
+    std::vector<Uniform> m_uniforms;
     std::string m_code[PROGRAM_TYPES_COUNT];
 };
 
