@@ -4,7 +4,7 @@
 #include "RoxRenderOpenglExt.h"
 #include "RoxMemory/tmp_buffer.h"
 #include "RoxRenderObjects.h"
-#include "bitmap.h"
+#include "RoxBitmap.h"
 #include "RoxFbo.h"
 
 namespace RoxRender
@@ -58,16 +58,16 @@ namespace
             mat_mvp=mat_mv=mat_p= -1;
         }
 
-        GLuint program,objects[shader::program_types_count];
+        GLuint program,objects[RoxShader::PROGRAM_TYPES_COUNT];
 
-        struct uniform: public shader::uniform { int handler,cache_idx; };
+        struct uniform: public RoxShader::uniform { int handler,cache_idx; };
         std::vector<uniform> uniforms;
         std::vector<float> uniform_cache;
         int mat_mvp,mat_mv,mat_p;
 
         void release()
         {
-            for(int i=0;i<shader::program_types_count;++i)
+            for(int i=0;i< RoxShader::PROGRAM_TYPES_COUNT;++i)
             {
                 if(!objects[i])
                     continue;
@@ -92,16 +92,16 @@ namespace
         if(idx<0)
         {
             glUseProgram(0);
-            applied_state.shader= -1;
+            applied_state.shader = -1;
             return;
         }
 
         ShaderObj &shdr=shaders.get(idx);
         glUseProgram(shdr.program);
         if(!shdr.program)
-            applied_state.shader= -1;
+            applied_state.shader = -1;
         else
-            applied_state.shader=idx;
+            applied_state.shader =idx;
     }
 
     int active_layer=-1;
@@ -114,40 +114,40 @@ namespace
     }
 }
 
-GLuint compile_shader(RoxRender::shader::program_type type,const char *src)
+GLuint compile_shader(RoxRender::RoxShader::PROGRAM_TYPE type,const char *src)
 {
     int gl_type;
     switch(type)
     {
-        case nya_render::shader::vertex:   gl_type=GL_VERTEX_SHADER; break;
-        case nya_render::shader::pixel:    gl_type=GL_FRAGMENT_SHADER; break;
-        case nya_render::shader::geometry: gl_type=GL_GEOMETRY_SHADER; break;
+        case RoxRender::RoxShader::VERTEX:   gl_type=GL_VERTEX_SHADER; break;
+        case RoxRender::RoxShader::PIXEL:    gl_type=GL_FRAGMENT_SHADER; break;
+        case RoxRender::RoxShader::GEOMETRY: gl_type=GL_GEOMETRY_SHADER; break;
         default: return 0;
     }
 
-    GLuint shader=glCreateShader(gl_type);
-    glShaderSource(shader,1,&src,0);
-    glCompileShader(shader);
+    GLuint RoxShader=glCreateShader(gl_type);
+    glShaderSource(RoxShader,1,&src,0);
+    glCompileShader(RoxShader);
     GLint compiled=1;
-    glGetShaderiv(shader,GL_COMPILE_STATUS,&compiled);
+    glGetShaderiv(RoxShader,GL_COMPILE_STATUS,&compiled);
     if(!compiled)
     {
         GLint log_len=0;
-        const static char type_str[][12]={"vertex","pixel","geometry","tesselation"};
-        log()<<"Can't compile "<<type_str[type]<<" shader: \n";
-        glGetShaderiv(shader,GL_INFO_LOG_LENGTH,&log_len);
+        const static char type_str[][12]={"VERTEX","PIXEL","geometry","tesselation"};
+        log()<<"Can't compile "<<type_str[type]<<" RoxShader: \n";
+        glGetShaderiv(RoxShader,GL_INFO_LOG_LENGTH,&log_len);
         if(log_len>0)
         {
             std::string log_text(log_len,0);
-            glGetShaderInfoLog(shader,log_len,&log_len,&log_text[0]);
+            glGetShaderInfoLog(RoxShader,log_len,&log_len,&log_text[0]);
             log()<<log_text.c_str()<<"\n";
         }
         return 0;
     }
-    return shader;
+    return RoxShader;
 }
 
-int render_opengl::create_shader(const char *vertex,const char *fragment)
+int RoxRenderOpengl::createShader(const char *VERTEX,const char *fragment)
 {
     init_extensions();
 
@@ -157,7 +157,7 @@ int render_opengl::create_shader(const char *vertex,const char *fragment)
     shdr.program=glCreateProgram();
     if(!shdr.program)
     {
-        log()<<"Unable to create shader program object\n";
+        log()<<"Unable to create RoxShader program object\n";
         shaders.remove(idx);
         return -1;
     }
@@ -166,13 +166,13 @@ int render_opengl::create_shader(const char *vertex,const char *fragment)
 
     for(int i=0;i<2;++i)
     {
-        shader_code_parser parser(i==0?vertex:fragment);
-        shader::program_type type=i==0?shader::vertex:shader::pixel;
+        RoxShaderCodeParser parser(i==0?VERTEX:fragment);
+        RoxShader::PROGRAM_TYPE type=i==0?RoxShader::VERTEX:RoxShader::PIXEL;
 
-        if(i==0 && strstr(vertex,"gl_Position")==0)
+        if(i==0 && strstr(VERTEX,"gl_Position")==0)
         {
-            for(int i=0;i<parser.get_out_count();++i)
-                ft_vars.push_back(parser.get_out(i).name);
+            for(int i=0;i<parser.getOutCount();++i)
+                ft_vars.push_back(parser.getOut(i).name);
         }
 
   #ifdef OPENGL_ES
@@ -182,21 +182,21 @@ int render_opengl::create_shader(const char *vertex,const char *fragment)
 
         if(!parser.convert_to_glsl_es2())
         {
-            log()<<"Unable to add shader program: cannot convert shader code to glsl for es2\n";
-            log()<<parser.get_error()<<"\n";
+            log()<<"Unable to add RoxShader program: cannot convert RoxShader code to glsl for es2\n";
+            log()<<parser.getError()<<"\n";
             shaders.remove(idx);
             return -1;
         }
   #else
-        if(!parser.convert_to_glsl3())
+        if(!parser.convertToGlsl3())
         {
-            log()<<"Unable to add shader program: cannot convert shader code to glsl3\n";
-            log()<<parser.get_error()<<"\n";
+            log()<<"Unable to add RoxShader program: cannot convert RoxShader code to glsl3\n";
+            log()<<parser.getError()<<"\n";
             shaders.remove(idx);
             return -1;
         }
   #endif
-        GLuint object=compile_shader(type,parser.get_code());
+        GLuint object=compile_shader(type,parser.getCode());
         if(!object)
         {
             shaders.remove(idx);
@@ -208,9 +208,9 @@ int render_opengl::create_shader(const char *vertex,const char *fragment)
 
         if(i==0)
         {
-            for(int i=0;i<parser.get_attributes_count();++i)
+            for(int i=0;i<parser.getAttributesCount();++i)
             {
-                const shader_code_parser::variable a=parser.get_attribute(i);
+                const RoxShaderCodeParser::variable a=parser.getAttribute(i);
                 if(a.name=="_nya_Vertex") glBindAttribLocation(shdr.program,vertex_attribute,a.name.c_str());
                 else if(a.name=="_nya_Normal") glBindAttribLocation(shdr.program,normal_attribute,a.name.c_str());
                 else if(a.name=="_nya_Color") glBindAttribLocation(shdr.program,color_attribute,a.name.c_str());
@@ -218,15 +218,15 @@ int render_opengl::create_shader(const char *vertex,const char *fragment)
             }
         }
 
-        for(int j=0;j<parser.get_uniforms_count();++j)
+        for(int j=0;j<parser.getUniformsCount();++j)
         {
-            const shader_code_parser::variable from=parser.get_uniform(j);
+            const RoxShaderCodeParser::variable from=parser.get_uniform(j);
             ShaderObj::uniform to;
             to.name=from.name;
-            to.type=(shader::uniform_type)from.type;
+            to.type=(RoxShader::uniform_type)from.type;
             to.array_size=from.array_size;
 
-            if(to.type==shader::uniform_mat4)
+            if(to.type==RoxShader::uniform_mat4)
             {
                 if(to.name=="_nya_ModelViewProjectionMatrix")
                 {
@@ -264,7 +264,7 @@ int render_opengl::create_shader(const char *vertex,const char *fragment)
     glGetProgramiv(shdr.program,GL_LINK_STATUS,&result);
     if(!result)
     {
-        log()<<"Can't link shader\n";
+        log()<<"Can't link RoxShader\n";
         GLint log_len=0;
         glGetProgramiv(shdr.program,GL_INFO_LOG_LENGTH,&log_len);
         if(log_len>0)
@@ -283,14 +283,14 @@ int render_opengl::create_shader(const char *vertex,const char *fragment)
     for(size_t i=0,layer=0;i<shdr.uniforms.size();++i)
     {
         const ShaderObj::uniform &u=shdr.uniforms[i];
-        if(u.type!=shader::uniform_sampler2d && u.type!=shader::uniform_sampler_cube)
+        if(u.type!=RoxShader::uniform_sampler2d && u.type!=RoxShader::uniform_sampler_cube)
             continue;
 
         int handler=glGetUniformLocation(shdr.program,u.name.c_str());
         if(handler>=0)
             glUniform1i(handler,(int)layer);
         else
-            log()<<"Unable to set shader sampler \'"<<u.name.c_str()<<"\': probably not found\n";
+            log()<<"Unable to set RoxShader sampler \'"<<u.name.c_str()<<"\': probably not found\n";
 
         ++layer;
     }
@@ -317,13 +317,13 @@ int render_opengl::create_shader(const char *vertex,const char *fragment)
     for(int i=0;i<(int)shdr.uniforms.size();++i)
     {
         ShaderObj::uniform &u=shdr.uniforms[i];
-        if(u.type==shader::uniform_sampler2d || u.type==shader::uniform_sampler_cube)
+        if(u.type==RoxShader::uniform_sampler2d || u.type==RoxShader::uniform_sampler_cube)
             continue;
         u.cache_idx=cache_size;
-        cache_size+=u.array_size*(u.type==shader::uniform_mat4?16:4);
+        cache_size+=u.array_size*(u.type==RoxShader::uniform_mat4?16:4);
 
         if(u.handler<0)
-            u.type=shader::uniform_not_found;
+            u.type=RoxShader::uniform_not_found;
     }
     shdr.uniform_cache.resize(cache_size);
 
@@ -332,47 +332,47 @@ int render_opengl::create_shader(const char *vertex,const char *fragment)
     return idx;
 }
 
-render_opengl::uint render_opengl::get_uniforms_count(int shader) { return (int)shaders.get(shader).uniforms.size(); }
-shader::uniform render_opengl::get_uniform(int shader,int idx) { return shaders.get(shader).uniforms[idx]; }
+RoxRenderOpengl::uint RoxRenderOpengl::getUniformsCount(int RoxShader) { return (int)shaders.get(RoxShader).uniforms.size(); }
+RoxShader::uniform RoxRenderOpengl::get_uniform(int RoxShader,int idx) { return shaders.get(RoxShader).uniforms[idx]; }
 
-void render_opengl::remove_shader(int shader)
+void RoxRenderOpengl::remove_shader(int RoxShader)
 {
-    if(applied_state.shader==shader)
+    if(applied_state.RoxShader==RoxShader)
     {
         glUseProgram(0);
-        applied_state.shader=-1;
+        applied_state.RoxShader=-1;
     }
-    shaders.remove(shader);
+    shaders.remove(RoxShader);
 }
 
 //ToDo: uniform buffers
 
-int render_opengl::create_uniform_buffer(int shader) { return shader; }
+int RoxRenderOpengl::create_uniform_buffer(int RoxShader) { return RoxShader; }
 
-void render_opengl::set_uniform(int shader,int idx,const float *buf,uint count)
+void RoxRenderOpengl::set_uniform(int RoxShader,int idx,const float *buf,uint count)
 {
-    ShaderObj &s=shaders.get(shader);
+    ShaderObj &s=shaders.get(RoxShader);
 
     float *cache=&s.uniform_cache[s.uniforms[idx].cache_idx];
     if(memcmp(cache,buf,count*sizeof(float))==0)
         return;
     memcpy(cache,buf,count*sizeof(float));
 
-    set_shader(shader);
+    set_shader(RoxShader);
 
     const int handler=s.uniforms[idx].handler;
     switch(s.uniforms[idx].type)
     {
-        case shader::uniform_mat4: glUniformMatrix4fv(handler,count/16,false,buf); break;
-        case shader::uniform_vec4: glUniform4fv(handler,count/4,buf); break;
-        case shader::uniform_vec3: glUniform3fv(handler,count/3,buf); break;
-        case shader::uniform_vec2: glUniform2fv(handler,count/2,buf); break;
-        case shader::uniform_float: glUniform1fv(handler,count,buf); break;
+        case RoxShader::uniform_mat4: glUniformMatrix4fv(handler,count/16,false,buf); break;
+        case RoxShader::uniform_vec4: glUniform4fv(handler,count/4,buf); break;
+        case RoxShader::uniform_vec3: glUniform3fv(handler,count/3,buf); break;
+        case RoxShader::uniform_vec2: glUniform2fv(handler,count/2,buf); break;
+        case RoxShader::uniform_float: glUniform1fv(handler,count,buf); break;
         default: break;
     }
 }
 
-void render_opengl::remove_uniform_buffer(int uniform_buffer) {}
+void RoxRenderOpengl::remove_uniform_buffer(int uniform_buffer) {}
 
 namespace
 {
@@ -463,7 +463,7 @@ namespace
     render_objects<ind_buf> ind_bufs;
 }
 
-int render_opengl::create_vertex_buffer(const void *data,uint stride,uint count,RoxFbo::usage_hint usage)
+int RoxRenderOpengl::create_vertex_buffer(const void *data,uint stride,uint count,RoxFbo::usage_hint usage)
 {
     init_extensions();
 
@@ -482,7 +482,7 @@ int render_opengl::create_vertex_buffer(const void *data,uint stride,uint count,
     return idx;
 }
 
-void render_opengl::set_vertex_layout(int idx,RoxFbo::layout layout)
+void RoxRenderOpengl::set_vertex_layout(int idx,RoxFbo::layout layout)
 {
     vert_buf &v=vert_bufs.get(idx);
     v.layout=layout;
@@ -496,7 +496,7 @@ void render_opengl::set_vertex_layout(int idx,RoxFbo::layout layout)
 #endif
 }
 
-void render_opengl::update_vertex_buffer(int idx,const void *data)
+void RoxRenderOpengl::update_vertex_buffer(int idx,const void *data)
 {
     vert_buf &v=vert_bufs.get(idx);
     //if(applied_state.vertex_buffer!=idx)
@@ -516,7 +516,7 @@ void render_opengl::update_vertex_buffer(int idx,const void *data)
 #endif
 }
 
-bool render_opengl::get_vertex_data(int idx,void *data)
+bool RoxRenderOpengl::get_vertex_data(int idx,void *data)
 {
     const vert_buf &v=vert_bufs.get(idx);
     //if(applied_state.vertex_buffer!=idx)
@@ -553,7 +553,7 @@ bool render_opengl::get_vertex_data(int idx,void *data)
     return true;
 }
 
-void render_opengl::remove_vertex_buffer(int idx)
+void RoxRenderOpengl::remove_vertex_buffer(int idx)
 {
     if(active_transform_feedback==idx)
     {
@@ -572,7 +572,7 @@ void render_opengl::remove_vertex_buffer(int idx)
     vert_bufs.remove(idx);
 }
 
-int render_opengl::create_index_buffer(const void *data,RoxFbo::index_size size,uint indices_count,RoxFbo::usage_hint usage)
+int RoxRenderOpengl::create_index_buffer(const void *data,RoxFbo::index_size size,uint indices_count,RoxFbo::usage_hint usage)
 {
     init_extensions();
 
@@ -599,7 +599,7 @@ int render_opengl::create_index_buffer(const void *data,RoxFbo::index_size size,
     return idx;
 }
 
-void render_opengl::update_index_buffer(int idx,const void *data)
+void RoxRenderOpengl::update_index_buffer(int idx,const void *data)
 {
     const ind_buf &i=ind_bufs.get(idx);
 
@@ -618,7 +618,7 @@ void render_opengl::update_index_buffer(int idx,const void *data)
 #endif
 }
 
-bool render_opengl::get_index_data(int idx,void *data)
+bool RoxRenderOpengl::get_index_data(int idx,void *data)
 {
     const ind_buf &i=ind_bufs.get(idx);
 
@@ -655,7 +655,7 @@ bool render_opengl::get_index_data(int idx,void *data)
     return true;
 }
 
-void render_opengl::remove_index_buffer(int idx)
+void RoxRenderOpengl::remove_index_buffer(int idx)
 {
     if(applied_state.index_buffer==idx)
     {
@@ -671,29 +671,29 @@ namespace
                                      GL_TEXTURE_CUBE_MAP_POSITIVE_Y,GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
                                      GL_TEXTURE_CUBE_MAP_POSITIVE_Z,GL_TEXTURE_CUBE_MAP_NEGATIVE_Z};
 
-    void gl_setup_filtration(int target,bool has_mips,texture::filter minif,texture::filter magnif,texture::filter mip)
+    void gl_setup_filtration(int target,bool has_mips,RoxTexture::filter minif,RoxTexture::filter magnif,RoxTexture::filter mip)
     {
-        glTexParameteri(target,GL_TEXTURE_MAG_FILTER,magnif==texture::filter_nearest?GL_NEAREST:GL_LINEAR);
+        glTexParameteri(target,GL_TEXTURE_MAG_FILTER,magnif==RoxTexture::filter_nearest?GL_NEAREST:GL_LINEAR);
 
         GLint filter;
         if(has_mips)
         {
-            if(minif==texture::filter_nearest)
+            if(minif==RoxTexture::filter_nearest)
             {
-                if(mip==texture::filter_nearest)
+                if(mip==RoxTexture::filter_nearest)
                     filter=GL_NEAREST_MIPMAP_NEAREST;
                 else
                     filter=GL_NEAREST_MIPMAP_LINEAR;
             }
             else
             {
-                if(mip==texture::filter_nearest)
+                if(mip==RoxTexture::filter_nearest)
                     filter=GL_LINEAR_MIPMAP_NEAREST;
                 else
                     filter=GL_LINEAR_MIPMAP_LINEAR;
             }
         }
-        else if(minif==texture::filter_nearest)
+        else if(minif==RoxTexture::filter_nearest)
             filter=GL_NEAREST;
         else
             filter=GL_LINEAR;
@@ -717,51 +717,51 @@ namespace
 #endif
     }
 
-    bool gl_get_format(texture::color_format format,unsigned int &source_format,unsigned int &gl_format,unsigned int &precision)
+    bool gl_get_format(RoxTexture::COLOR_FORMAT format,unsigned int &source_format,unsigned int &gl_format,unsigned int &precision)
     {
         precision=GL_UNSIGNED_BYTE;
         switch(format)
         {
-            case texture::color_rgb: source_format=gl_format=GL_RGB; break; //in es stored internally as rgba
-            case texture::color_rgba: source_format=gl_format=GL_RGBA; break;
+            case RoxTexture::color_rgb: source_format=gl_format=GL_RGB; break; //in es stored internally as rgba
+            case RoxTexture::color_rgba: source_format=gl_format=GL_RGBA; break;
 #ifdef USE_BGRA
-            case texture::color_bgra: source_format=GL_RGBA; gl_format=GL_BGRA; break;
+            case RoxTexture::color_bgra: source_format=GL_RGBA; gl_format=GL_BGRA; break;
 #endif
-            case texture::greyscale: source_format=gl_format=GL_LUMINANCE; break;
+            case RoxTexture::greyscale: source_format=gl_format=GL_LUMINANCE; break;
 #ifdef OPENGL_ES
-            case texture::color_r32f: source_format=GL_RED_EXT; gl_format=GL_RED_EXT; precision=GL_FLOAT; break;
-            case texture::color_rgb32f: source_format=GL_RGB; gl_format=GL_RGB; precision=GL_FLOAT; break;
-            case texture::color_rgba32f: source_format=GL_RGBA; gl_format=GL_RGBA; precision=GL_FLOAT; break;
+            case RoxTexture::color_r32f: source_format=GL_RED_EXT; gl_format=GL_RED_EXT; precision=GL_FLOAT; break;
+            case RoxTexture::color_rgb32f: source_format=GL_RGB; gl_format=GL_RGB; precision=GL_FLOAT; break;
+            case RoxTexture::color_rgba32f: source_format=GL_RGBA; gl_format=GL_RGBA; precision=GL_FLOAT; break;
 
-            case texture::depth16: source_format=gl_format=GL_DEPTH_COMPONENT; precision=GL_UNSIGNED_SHORT; break;
-            case texture::depth32: source_format=gl_format=GL_DEPTH_COMPONENT; precision=GL_UNSIGNED_INT; break;
+            case RoxTexture::depth16: source_format=gl_format=GL_DEPTH_COMPONENT; precision=GL_UNSIGNED_SHORT; break;
+            case RoxTexture::depth32: source_format=gl_format=GL_DEPTH_COMPONENT; precision=GL_UNSIGNED_INT; break;
 
-            case texture::etc1: source_format=gl_format=GL_ETC1_RGB8_OES; break;
-            case texture::etc2: source_format=gl_format=GL_COMPRESSED_RGB8_ETC2; break;
-            case texture::etc2_a1: source_format=gl_format=GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2; break;
-            case texture::etc2_eac: source_format=gl_format=GL_COMPRESSED_RGBA8_ETC2_EAC; break;
+            case RoxTexture::etc1: source_format=gl_format=GL_ETC1_RGB8_OES; break;
+            case RoxTexture::etc2: source_format=gl_format=GL_COMPRESSED_RGB8_ETC2; break;
+            case RoxTexture::etc2_a1: source_format=gl_format=GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2; break;
+            case RoxTexture::etc2_eac: source_format=gl_format=GL_COMPRESSED_RGBA8_ETC2_EAC; break;
 
-            case texture::pvr_rgb2b: source_format=gl_format=GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG; break;
-            case texture::pvr_rgb4b: source_format=gl_format=GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG; break;
-            case texture::pvr_rgba2b: source_format=gl_format=GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG; break;
-            case texture::pvr_rgba4b: source_format=gl_format=GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG; break;
+            case RoxTexture::pvr_rgb2b: source_format=gl_format=GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG; break;
+            case RoxTexture::pvr_rgb4b: source_format=gl_format=GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG; break;
+            case RoxTexture::pvr_rgba2b: source_format=gl_format=GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG; break;
+            case RoxTexture::pvr_rgba4b: source_format=gl_format=GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG; break;
 #else
     #ifdef OPENGL3
-            case texture::color_r32f: source_format=GL_R32F; gl_format=GL_RED; precision=GL_FLOAT; break;
-            case texture::color_rgb32f: source_format=GL_RGB32F; gl_format=GL_RGB; precision=GL_FLOAT; break;
-            case texture::color_rgba32f: source_format=GL_RGBA32F; gl_format=GL_RGBA; precision=GL_FLOAT; break;
+            case RoxTexture::color_r32f: source_format=GL_R32F; gl_format=GL_RED; precision=GL_FLOAT; break;
+            case RoxTexture::color_rgb32f: source_format=GL_RGB32F; gl_format=GL_RGB; precision=GL_FLOAT; break;
+            case RoxTexture::color_rgba32f: source_format=GL_RGBA32F; gl_format=GL_RGBA; precision=GL_FLOAT; break;
     #else
-            case texture::color_r32f: source_format=GL_R32F; gl_format=GL_RED; precision=GL_FLOAT; break;
-            case texture::color_rgb32f: source_format=GL_RGB32F_ARB; gl_format=GL_RGB; precision=GL_FLOAT; break;
-            case texture::color_rgba32f: source_format=GL_RGBA32F_ARB; gl_format=GL_RGBA; precision=GL_FLOAT; break;
+            case RoxTexture::color_r32f: source_format=GL_R32F; gl_format=GL_RED; precision=GL_FLOAT; break;
+            case RoxTexture::color_rgb32f: source_format=GL_RGB32F_ARB; gl_format=GL_RGB; precision=GL_FLOAT; break;
+            case RoxTexture::color_rgba32f: source_format=GL_RGBA32F_ARB; gl_format=GL_RGBA; precision=GL_FLOAT; break;
     #endif
-            case texture::depth16: source_format=GL_DEPTH_COMPONENT16; gl_format=GL_DEPTH_COMPONENT; break;
-            case texture::depth24: source_format=GL_DEPTH_COMPONENT24; gl_format=GL_DEPTH_COMPONENT; break;
-            case texture::depth32: source_format=GL_DEPTH_COMPONENT32; gl_format=GL_DEPTH_COMPONENT; break;
+            case RoxTexture::depth16: source_format=GL_DEPTH_COMPONENT16; gl_format=GL_DEPTH_COMPONENT; break;
+            case RoxTexture::depth24: source_format=GL_DEPTH_COMPONENT24; gl_format=GL_DEPTH_COMPONENT; break;
+            case RoxTexture::depth32: source_format=GL_DEPTH_COMPONENT32; gl_format=GL_DEPTH_COMPONENT; break;
 #endif
-            case texture::dxt1: source_format=gl_format=GL_COMPRESSED_RGBA_S3TC_DXT1_EXT; break;
-            case texture::dxt3: source_format=gl_format=GL_COMPRESSED_RGBA_S3TC_DXT3_EXT; break;
-            case texture::dxt5: source_format=gl_format=GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; break;
+            case RoxTexture::dxt1: source_format=gl_format=GL_COMPRESSED_RGBA_S3TC_DXT1_EXT; break;
+            case RoxTexture::dxt3: source_format=gl_format=GL_COMPRESSED_RGBA_S3TC_DXT3_EXT; break;
+            case RoxTexture::dxt5: source_format=gl_format=GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; break;
 
             default: return false;
         };
@@ -801,7 +801,7 @@ namespace
         glBindTexture(t.gl_type,t.tex_id);
     }
 
-    int create_texture_(const void *data_a[6],bool is_cubemap,unsigned int width,unsigned int height,texture::color_format &format,int mip_count)
+    int create_texture_(const void *data_a[6],bool is_cubemap,unsigned int width,unsigned int height,RoxTexture::COLOR_FORMAT &format,int mip_count)
     {
         const int idx=textures.add();
         tex_obj &t=textures.get(idx);
@@ -809,7 +809,7 @@ namespace
         t.gl_type=is_cubemap?GL_TEXTURE_CUBE_MAP:GL_TEXTURE_2D;
         set_texture(idx,0);
 
-        const unsigned int source_bpp=texture::get_format_bpp(format);
+        const unsigned int source_bpp=RoxTexture::get_format_bpp(format);
 #ifdef MANUAL_MIPMAP_GENERATION
         const bool bad_alignment=(source_bpp/8)%4!=0;
 #else
@@ -829,12 +829,12 @@ namespace
 #endif
         }
 
-        const bool is_pvrtc=format==texture::pvr_rgb2b || format==texture::pvr_rgba2b || format==texture::pvr_rgb4b || format==texture::pvr_rgba4b;
+        const bool is_pvrtc=format==RoxTexture::pvr_rgb2b || format==RoxTexture::pvr_rgba2b || format==RoxTexture::pvr_rgb4b || format==RoxTexture::pvr_rgba4b;
         if(is_pvrtc)
-            gl_setup_filtration(t.gl_type,t.has_mip,texture::filter_linear,texture::filter_linear,texture::filter_nearest);
+            gl_setup_filtration(t.gl_type,t.has_mip,RoxTexture::filter_linear,RoxTexture::filter_linear,RoxTexture::filter_nearest);
 
 #ifdef OPENGL3
-        if(format==texture::greyscale)
+        if(format==RoxTexture::greyscale)
         {
             const int swizzle[]={GL_RED,GL_RED,GL_RED,GL_ONE};
             glTexParameteriv(t.gl_type,GL_TEXTURE_SWIZZLE_RGBA,swizzle);
@@ -879,7 +879,7 @@ namespace
                 for(int i=0;i<(mip_count<=0?1:mip_count);++i,w=w>1?w/2:1,h=h>1?h/2:1)
                 {
                     unsigned int size=0;
-                    if(format<texture::dxt1)
+                    if(format<RoxTexture::dxt1)
                     {
                         size=w*h*(source_bpp/8);
                         glTexImage2D(gl_type,i,source_format,w,h,0,t.gl_format,t.gl_precision,data_pointer);
@@ -888,7 +888,7 @@ namespace
                     {
                         if(is_pvrtc)
                         {
-                            if(format==texture::pvr_rgb2b || format==texture::pvr_rgba2b)
+                            if(format==RoxTexture::pvr_rgb2b || format==RoxTexture::pvr_rgba2b)
                                 size=((w>16?w:16)*(h>8?h:8)*2 + 7)/8;
                             else
                                 size=((w>8?w:8)*(h>8?h:8)*4 + 7)/8;
@@ -922,7 +922,7 @@ namespace
     }
 }
 
-int render_opengl::create_texture(const void *data,uint width,uint height,texture::color_format &format,int mip_count)
+int RoxRenderOpengl::create_texture(const void *data,uint width,uint height,RoxTexture::COLOR_FORMAT &format,int mip_count)
 {
     init_extensions();
 
@@ -930,14 +930,14 @@ int render_opengl::create_texture(const void *data,uint width,uint height,textur
     return create_texture_(data_a,false,width,height,format,mip_count);
 }
 
-int render_opengl::create_cubemap(const void *data[6],uint width,texture::color_format &format,int mip_count)
+int RoxRenderOpengl::create_cubemap(const void *data[6],uint width,RoxTexture::COLOR_FORMAT &format,int mip_count)
 {
     init_extensions();
 
     return create_texture_(data,true,width,width,format,mip_count);
 }
 
-void render_opengl::update_texture(int idx,const void *data,uint x,uint y,uint width,uint height,int mip)
+void RoxRenderOpengl::update_texture(int idx,const void *data,uint x,uint y,uint width,uint height,int mip)
 {
     const tex_obj &t=textures.get(idx);
     set_texture(idx,0);
@@ -961,25 +961,25 @@ void render_opengl::update_texture(int idx,const void *data,uint x,uint y,uint w
     }
 }
 
-void render_opengl::set_texture_wrap(int idx,texture::wrap s,texture::wrap t)
+void RoxRenderOpengl::set_texture_wrap(int idx,RoxTexture::wrap s,RoxTexture::wrap t)
 {
     const tex_obj &tex=textures.get(idx);
     set_texture(idx,0);
 
-    const texture::wrap wraps[]={s,t};
+    const RoxTexture::wrap wraps[]={s,t};
     const GLint pnames[]={GL_TEXTURE_WRAP_S,GL_TEXTURE_WRAP_T};
     for(int i=0;i<2;++i)
     {
         switch(wraps[i])
         {
-            case texture::wrap_clamp:glTexParameteri(tex.gl_type,pnames[i],GL_CLAMP_TO_EDGE);break;
-            case texture::wrap_repeat:glTexParameteri(tex.gl_type,pnames[i],GL_REPEAT);break;
-            case texture::wrap_repeat_mirror:glTexParameteri(tex.gl_type,pnames[i],GL_MIRRORED_REPEAT);break;
+            case RoxTexture::wrap_clamp:glTexParameteri(tex.gl_type,pnames[i],GL_CLAMP_TO_EDGE);break;
+            case RoxTexture::wrap_repeat:glTexParameteri(tex.gl_type,pnames[i],GL_REPEAT);break;
+            case RoxTexture::wrap_repeat_mirror:glTexParameteri(tex.gl_type,pnames[i],GL_MIRRORED_REPEAT);break;
         }
     }
 }
 
-void render_opengl::set_texture_filter(int idx,texture::filter minification,texture::filter magnification,texture::filter mipmap,uint aniso)
+void RoxRenderOpengl::set_texture_filter(int idx,RoxTexture::filter minification,RoxTexture::filter magnification,RoxTexture::filter mipmap,uint aniso)
 {
     static int max_aniso= -1;
     if(max_aniso<0)
@@ -1000,9 +1000,9 @@ void render_opengl::set_texture_filter(int idx,texture::filter minification,text
     gl_setup_filtration(t.gl_type,t.has_mip,minification,magnification,mipmap);
 }
 
-bool render_opengl::get_texture_data(int texture,uint x,uint y,uint w,uint h,void *data)
+bool RoxRenderOpengl::get_texture_data(int RoxTexture,uint x,uint y,uint w,uint h,void *data)
 {
-    const tex_obj &t=textures.get(texture);
+    const tex_obj &t=textures.get(RoxTexture);
 
     //compressed formats are not supported
     switch(t.gl_format)
@@ -1073,7 +1073,7 @@ bool render_opengl::get_texture_data(int texture,uint x,uint y,uint w,uint h,voi
     return true;
 }
 
-void render_opengl::remove_texture(int idx)
+void RoxRenderOpengl::remove_texture(int idx)
 {
     for(int i=0;i<state::max_layers;++i)
     {
@@ -1088,7 +1088,7 @@ void render_opengl::remove_texture(int idx)
     textures.remove(idx);
 }
 
-unsigned int render_opengl::get_max_texture_dimention()
+unsigned int RoxRenderOpengl::get_max_texture_dimention()
 {
     static unsigned int max_tex_size=0;
     if(!max_tex_size)
@@ -1101,7 +1101,7 @@ unsigned int render_opengl::get_max_texture_dimention()
     return max_tex_size;
 }
 
-bool render_opengl::is_texture_format_supported(texture::color_format format)
+bool RoxRenderOpengl::isTextureFormatSupported(RoxTexture::COLOR_FORMAT format)
 {
     unsigned int source_format,gl_format,precision;
     return gl_get_format(format,source_format,gl_format,precision);
@@ -1181,7 +1181,7 @@ namespace
             *this=fbo_obj();
         }
     };
-    render_objects<fbo_obj> fbos;
+    RoxRenderObjects<fbo_obj> fbos;
 
     void ms_buffer::resolve(int from,tex_obj &tex,int cubemap_side,int attachment_idx) const
     {
@@ -1221,7 +1221,7 @@ namespace
     }
 }
 
-int render_opengl::create_target(uint width,uint height,uint samples,const int *attachment_textures,
+int RoxRenderOpengl::createTarget(uint width,uint height,uint samples,const int *attachment_textures,
                                  const int *attachment_sides,uint attachment_count,int depth_texture)
 {
     init_extensions();
@@ -1280,7 +1280,7 @@ int render_opengl::create_target(uint width,uint height,uint samples,const int *
     return idx;
 }
 
-void render_opengl::resolve_target(int idx)
+void RoxRenderOpengl::resolveTarget(int idx)
 {
     const fbo_obj &f=fbos.get(idx);
     for(int i=0;i<(int)f.color_attachments.size();++i)
@@ -1302,7 +1302,7 @@ void render_opengl::resolve_target(int idx)
     }
 }
 
-void render_opengl::remove_target(int idx)
+void RoxRenderOpengl::removeTarget(int idx)
 {
     if(applied_state.target==idx)
     {
@@ -1312,7 +1312,7 @@ void render_opengl::remove_target(int idx)
     return fbos.remove(idx);
 }
 
-unsigned int render_opengl::get_max_target_attachments()
+unsigned int RoxRenderOpengl::getMaxTargetAttachments()
 {
     static int max_attachments= -1;
     if(max_attachments<0)
@@ -1322,7 +1322,7 @@ unsigned int render_opengl::get_max_target_attachments()
     return max_attachments;
 }
 
-unsigned int render_opengl::get_max_target_msaa()
+unsigned int RoxRenderOpengl::getMaxTargetMsaa()
 {
     static int max_ms=-1;
 
@@ -1339,7 +1339,7 @@ unsigned int render_opengl::get_max_target_msaa()
     return max_ms>1?max_ms:1;
 }
 
-static void apply_viewport_state(render_api_interface::viewport_state s)
+static void apply_viewport_state(RoxRenderApiInterface::ViewportState s)
 {
     if(ignore_cache_vp)
     {
@@ -1390,7 +1390,7 @@ static void apply_viewport_state(render_api_interface::viewport_state s)
     if(s.scissor!=applied_state.scissor)
         glScissor(s.scissor.x,s.scissor.y,s.scissor.width,s.scissor.height);
 
-    *(render_api_interface::viewport_state*)&applied_state=s;
+    *(RoxRenderApiInterface::ViewportState*)&applied_state=s;
 	ignore_cache_vp=false;
 }
 
@@ -1413,7 +1413,7 @@ inline GLenum gl_blend_mode(blend::mode m)
     return GL_ONE;
 }
 
-void render_opengl::clear(const viewport_state &s,bool color,bool depth,bool stencil)
+void RoxRenderOpengl::clear(const ViewportState &s,bool color,bool depth,bool stencil)
 {
     apply_viewport_state(s);
 
@@ -1444,13 +1444,13 @@ void render_opengl::clear(const viewport_state &s,bool color,bool depth,bool ste
     glClear(mode);
 }
 
-void render_opengl::invalidate_cached_state()
+void RoxRenderOpengl::invalidate_cached_state()
 {
     ignore_cache = true;
 	ignore_cache_vp = true;
 
     applied_state.index_buffer=applied_state.vertex_buffer= -1;
-    applied_state.shader=applied_state.uniform_buffer= -1;
+    applied_state.RoxShader=applied_state.uniform_buffer= -1;
     active_layer=-1;
     for(int i=0;i<state::max_layers;++i)
     {
@@ -1466,15 +1466,15 @@ void render_opengl::invalidate_cached_state()
 #endif
 }
 
-namespace { nya_math::mat4 modelview, projection; }
+namespace { RoxMath::Matrix4 modelview, projection; }
 
-void render_opengl::set_camera(const nya_math::mat4 &mv,const nya_math::mat4 &p)
+void RoxRenderOpengl::setCamera(const RoxMath::Matrix4 &mv,const RoxMath::Matrix4 &p)
 {
     modelview=mv;
     projection=p;
 }
 
-void render_opengl::apply_state(const state &c)
+void RoxRenderOpengl::applyState(const state &c)
 {
     state &a=applied_state;
 
@@ -1559,17 +1559,17 @@ void render_opengl::apply_state(const state &c)
     ignore_cache = false;
 }
 
-template<bool transform_feedback>void draw_(const nya_render::render_api_interface::state &s)
+template<bool transform_feedback>void draw_(const RoxRender::RoxRenderApiInterface::state &s)
 {
-    if(s.vertex_buffer<0 || s.shader<0)
+    if(s.vertex_buffer<0 || s.RoxShader<0)
         return;
 
-    set_shader(s.shader);
+    set_shader(s.RoxShader);
 
-    ShaderObj &shdr=shaders.get(s.shader);
+    ShaderObj &shdr=shaders.get(s.RoxShader);
     if(shdr.mat_mvp>=0)
     {
-        const nya_math::mat4 mvp=modelview*projection;
+        const RoxMath::Matrix4 mvp=modelview*projection;
         glUniformMatrix4fv(shdr.mat_mvp,1,false,mvp[0]);
     }
     if(shdr.mat_mv>=0)
@@ -1699,13 +1699,13 @@ template<bool transform_feedback>void draw_(const nya_render::render_api_interfa
     }
 }
 
-void render_opengl::draw(const state &s)
+void RoxRenderOpengl::draw(const state &s)
 {
     apply_state(s);
     draw_<false>(s);
 }
 
-void render_opengl::transform_feedback(const tf_state &s)
+void RoxRenderOpengl::transform_feedback(const tf_state &s)
 {
     if(!is_transform_feedback_supported())
         return;
@@ -1729,7 +1729,7 @@ void render_opengl::transform_feedback(const tf_state &s)
     //glDisable(GL_RASTERIZER_DISCARD);
 }
 
-bool render_opengl::is_transform_feedback_supported()
+bool RoxRenderOpengl::is_transform_feedback_supported()
 {
 #ifdef NO_EXTENSIONS_INIT
     return true;
@@ -1738,24 +1738,24 @@ bool render_opengl::is_transform_feedback_supported()
 #endif
 }
 
-unsigned int render_opengl::get_gl_texture_id(int idx)
+unsigned int RoxRenderOpengl::get_gl_texture_id(int idx)
 {
     return textures.get(idx).tex_id;
 }
 
-void render_opengl::gl_bind_texture2d(uint gl_tex,uint layer)
+void RoxRenderOpengl::gl_bind_texture2d(uint gl_tex,uint layer)
 {
     gl_bind_texture(GL_TEXTURE_2D,gl_tex,layer);
 }
 
-void render_opengl::gl_bind_texture(uint gl_type,uint gl_tex,uint layer)
+void RoxRenderOpengl::gl_bind_texture(uint gl_type,uint gl_tex,uint layer)
 {
     set_texture(-1,layer);
     gl_select_multitex_layer((int)layer);
     glBindTexture(gl_type, gl_tex);
 }
 
-void render_opengl::log_errors(const char *place)
+void RoxRenderOpengl::log_errors(const char *place)
 {
     for(int i=glGetError();i!=GL_NO_ERROR;i=glGetError())
     {
@@ -1782,8 +1782,8 @@ void render_opengl::log_errors(const char *place)
     }
 }
 
-bool render_opengl::has_extension(const char *name) { return ::has_extension(name); }
-void *render_opengl::get_extension(const char*name) { return ::get_extension(name); }
+bool RoxRenderOpengl::has_extension(const char *name) { return ::has_extension(name); }
+void *RoxRenderOpengl::get_extension(const char*name) { return ::get_extension(name); }
 
 namespace
 {
@@ -1802,7 +1802,7 @@ namespace
         {
             case GL_DEBUG_SOURCE_API:               source_str = "api"; break;
             case GL_DEBUG_SOURCE_WINDOW_SYSTEM:     source_str = "window system"; break;
-            case GL_DEBUG_SOURCE_SHADER_COMPILER:   source_str = "shader compiler"; break;
+            case GL_DEBUG_SOURCE_SHADER_COMPILER:   source_str = "RoxShader compiler"; break;
             case GL_DEBUG_SOURCE_THIRD_PARTY:       source_str = "third party"; break;
             case GL_DEBUG_SOURCE_APPLICATION:       source_str = "application"; break;
             case GL_DEBUG_SOURCE_OTHER:             source_str = "other"; break;
@@ -1838,7 +1838,7 @@ namespace
     bool log_set=false;
 }
 
-void render_opengl::enable_debug(bool synchronous)
+void RoxRenderOpengl::enable_debug(bool synchronous)
 {
     if(log_set)
         return;
@@ -1861,5 +1861,5 @@ void render_opengl::enable_debug(bool synchronous)
 #endif
 }
 
-render_opengl &render_opengl::get() { static render_opengl *api = new render_opengl(); return *api; }
+RoxRenderOpengl &RoxRenderOpengl::get() { static RoxRenderOpengl *api = new RoxRenderOpengl(); return *api; }
 }

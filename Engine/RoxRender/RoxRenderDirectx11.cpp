@@ -1,11 +1,11 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
-#include "render_directx11.h"
+#include "RoxRenderDirectx11.h"
 
-namespace nya_render
+namespace RoxRender
 {
 
-bool render_directx11::is_available() const
+bool RoxRenderDirectx11::isAvailable() const
 {
 #ifdef _WIN32
     return true;
@@ -16,7 +16,7 @@ bool render_directx11::is_available() const
 
 namespace
 {
-    render_api_interface::state applied_state;
+    RoxRenderApiInterface::State applied_state;
     bool ignore_cache = true;
 }
 
@@ -332,22 +332,22 @@ static void apply_viewport_state()
 #endif
 }
 
-namespace { nya_math::mat4 modelview, projection; }
+namespace { RoxMath::Matrix4 modelview, projection; }
 
-void render_directx11::set_camera(const nya_math::mat4 &mv,const nya_math::mat4 &p)
+void RoxRenderDirectx11::setCamera(const RoxMath::Matrix4 &mv,const RoxMath::Matrix4 &p)
 {
     modelview=mv;
     projection=p;
 }
 
-void render_directx11::clear(const viewport_state &s,bool color,bool depth,bool stencil)
+void RoxRenderDirectx11::clear(const ViewportState &s,bool color,bool depth,bool stencil)
 {
 
 }
 
-void render_directx11::invalidate_cached_state() { ignore_cache = true; }
+void RoxRenderDirectx11::invalidateCachedState() { ignore_cache = true; }
 
-void render_directx11::apply_state(const state &s)
+void RoxRenderDirectx11::applyState(const state &s)
 {
     //ToDo
 
@@ -355,7 +355,7 @@ void render_directx11::apply_state(const state &s)
     ignore_cache = false;
 }
 
-render_directx11 &render_directx11::get() { static render_directx11 *api = new render_directx11(); return *api; }
+RoxRenderDirectx11 &RoxRenderDirectx11::get() { static RoxRenderDirectx11 *api = new RoxRenderDirectx11(); return *api; }
 
 #ifdef DIRECTX11
 namespace
@@ -402,7 +402,7 @@ void set_context(ID3D11DeviceContext *context)
     render_context=context;
 }
 
-void render_directx11::set_default_target(ID3D11RenderTargetView *color,ID3D11DepthStencilView *depth,int height)
+void RoxRenderDirectx11::set_default_target(ID3D11RenderTargetView *color,ID3D11DepthStencilView *depth,int height)
 {
     dx_set_target(color,depth,true,height);
 }

@@ -11,155 +11,155 @@ namespace RoxRender
 void set_log(RoxLogger::RoxLoggerBase *l);
 RoxLogger::RoxLoggerBase &log();
 
-struct rect
+struct Rectangle
 {
     int x,y,width,height;
 
-    bool operator == (const rect &other) const
+    bool operator == (const Rectangle &other) const
     { return width==other.width && height==other.height && x==other.x && y==other.y; }
-    bool operator != (const rect &other) const { return !(*this==other); }
-    rect(): x(0),y(0),width(0),height(0) {}
+    bool operator != (const Rectangle &other) const { return !(*this==other); }
+    Rectangle(): x(0),y(0),width(0),height(0) {}
 };
 
-void set_viewport(int x,int y,int width,int height);
-void set_viewport(const rect &r);
-const rect &get_viewport();
+void setViewport(int x,int y,int width,int height);
+void setViewport(const Rectangle &r);
+const Rectangle &getViewport();
 
-struct scissor
+struct Scissor
 {
     static void enable(int x,int y,int w,int h);
-    static void enable(const rect &r);
+    static void enable(const Rectangle &r);
     static void disable();
 
-    static bool is_enabled();
-    static const rect &get();
+    static bool isEnabled();
+    static const Rectangle &get();
 };
 
-void set_projection_matrix(const nya_math::mat4 &mat);
-void set_modelview_matrix(const nya_math::mat4 &mat);
-void set_orientation_matrix(const nya_math::mat4 &mat);
+void set_projection_matrix(const RoxMath::Matrix4 &mat);
+void set_modelview_matrix(const RoxMath::Matrix4 &mat);
+void set_orientation_matrix(const RoxMath::Matrix4 &mat);
 
-const nya_math::mat4 &get_projection_matrix();
-const nya_math::mat4 &get_modelview_matrix();
-const nya_math::mat4 &get_orientation_matrix();
+const RoxMath::Matrix4 &get_projection_matrix();
+const RoxMath::Matrix4 &get_modelview_matrix();
+const RoxMath::Matrix4 &get_orientation_matrix();
 
 void set_clear_color(float r,float g,float b,float a);
-void set_clear_color(const nya_math::vec4 &c);
-nya_math::vec4 get_clear_color();
+void set_clear_color(const RoxMath::Vector4 &c);
+RoxMath::Vector4 get_clear_color();
 void set_clear_depth(float value);
 float get_clear_depth();
 void clear(bool clear_color,bool clear_depth,bool clear_stencil=false);
 
 struct blend
 {
-    enum mode
+	enum MODE
     {
-        zero,
-        one,
-        src_color,
-        inv_src_color,
-        src_alpha,
-        inv_src_alpha,
-        dst_color,
-        inv_dst_color,
-        dst_alpha,
-        inv_dst_alpha
+        ZERO,
+        ONE,
+        SRC_COLOR,
+        INV_SRC_COLOR,
+        SRC_ALPHA,
+        INV_SRC_ALPHA,
+        DST_COLOR,
+        INV_DST_COLOR,
+        DST_ALPHA,
+        INV_DST_ALPHA
     };
 
-    static void enable(mode src,mode dst);
+    static void enable(MODE src,MODE dst);
     static void disable();
 };
 
-struct cull_face
+struct CullFace
 {
-    enum order
-    {
-        ccw,
-        cw
-    };
+	enum ORDER
+	{
+		CCW,
+		CW
+	};
 
-    static void enable(order o);
+	static void enable(ORDER o);
     static void disable();
 };
 
-struct depth_test
+struct DepthTest
 {
-    enum comparsion
-    {
-        never,
-        less,
-        equal,
-        greater,
-        not_less, //greater or equal
-        not_equal,
-        not_greater, //less or equal
-        allways
-    };
+	enum COMPARISON
+	{
+		NEVER,
+		LESS,
+		EQUAL,
+		GREATER,
+		NOT_LESS, //greater or equal
+		NOT_EQUAL,
+		NOT_GREATER, //less or equal
+		ALLWAYS
+	};
 
-    static void enable(comparsion mode);
+    static void enable(COMPARISON MODE);
     static void disable();
 };
 
-struct zwrite
+struct Zwrite
 {
     static void enable();
     static void disable();
 };
 
-struct color_write
+struct Color_Write
 {
     static void enable();
     static void disable();
 };
 
-struct state
+struct State
 {
     bool blend;
-    blend::mode blend_src;
-    blend::mode blend_dst;
-    void set_blend(bool blend, blend::mode src = blend::one, blend::mode dst = blend::zero)
+    blend::MODE blend_src;
+    blend::MODE blend_dst;
+    void setBlend(bool blend, blend::MODE src = blend::ONE, blend::MODE dst = blend::ZERO)
     {
         this->blend = blend;
         blend_src = src;
         blend_dst = dst;
     }
 
-    bool cull_face;
-    cull_face::order cull_order;
-    void set_cull_face(bool cull_face, cull_face::order order = cull_face::ccw)
+    bool CullFace;
+    CullFace::ORDER cull_order;
+    void setCullFace(bool CullFace, CullFace::ORDER order = CullFace::CCW)
     {
-        this->cull_face = cull_face;
+        this->CullFace = CullFace;
         cull_order = order;
     }
 
-    bool depth_test;
-    depth_test::comparsion depth_comparsion;
+    bool DepthTest;
+    DepthTest::COMPARISON depth_comparsion;
 
     bool zwrite;
     bool color_write;
 
-    state():
+    State():
         blend(false),
-        blend_src(blend::one),
-        blend_dst(blend::zero),
+        blend_src(blend::ONE),
+        blend_dst(blend::ZERO),
 
-        cull_face(false),
-        cull_order(cull_face::ccw),
+        CullFace(false),
+        cull_order(CullFace::CCW),
 
-        depth_test(true),
-        depth_comparsion(depth_test::not_greater),
+        DepthTest(true),
+        depth_comparsion(DepthTest::NOT_GREATER),
 
         zwrite(true),
         color_write(true)
     {}
 };
 
-void set_state(const state &s);
-const state &get_state();
+void setState(const State &s);
+const State &get_state();
 
-void apply_state(bool ignore_cache=false);
+void applyState(bool ignore_cache=false);
 
 //artificial restrictions for consistent behaviour among platforms
-void set_platform_restrictions(bool ignore);
-bool is_platform_restrictions_ignored();
+void setPlatformRestrictions(bool ignore);
+bool isPlatformRestrictionsIgnored();
 }

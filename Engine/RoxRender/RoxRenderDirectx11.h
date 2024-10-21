@@ -33,13 +33,13 @@ private:
     RoxRenderDirectx11() {}
     
 private:
-    ID3D11Device *get_device();
-    void set_device(ID3D11Device *device);
+    ID3D11Device *getDevice();
+    void setDevice(ID3D11Device *device);
 
-    ID3D11DeviceContext *get_context();
-    void set_context(ID3D11DeviceContext *context);
+    ID3D11DeviceContext *getContext();
+    void setContext(ID3D11DeviceContext *context);
 
-    void set_default_target(ID3D11RenderTargetView *color,ID3D11DepthStencilView *depth,int height=-1);
+    void setDefault_target(ID3D11RenderTargetView *color,ID3D11DepthStencilView *depth,int height=-1);
 };
 
 }
