@@ -31,7 +31,7 @@ public:
 public:
     bool convertToHlsl();
     bool convertToGlsl();
-    bool convertToGlsl_es2(const char *precision="mediump");
+    bool convertToGlslEs2(const char *precision="mediump");
     bool convertToGlsl3();
     bool convertToMetal();
 
@@ -82,7 +82,7 @@ private:
     void removeComments();
 
     bool parseUniforms(bool remove);
-    bool parsePredefined_uniforms(const char *replace_prefix_str,bool replace);
+    bool parsePredefinedUniforms(const char *replace_prefix_str,bool replace);
     bool parseAttributes(const char *info_replace_str,const char *code_replace_str);
     bool parseVarying(bool remove);
     bool parseOut(bool remove);

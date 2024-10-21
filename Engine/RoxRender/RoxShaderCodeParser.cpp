@@ -33,14 +33,14 @@ inline int type_regsize(RoxShaderCodeParser::VARIABLE_TYPE type)
 
 static bool is_name_char(char c) { return isalnum(c) || c=='_'; }
 
-bool RoxShaderCodeParser::convert_to_hlsl()
+bool RoxShaderCodeParser::convertToHlsl()
 {
     m_uniforms.clear();
     m_attributes.clear();
 
     std::string prefix="#define DIRECTX11 1\n";
 
-    parse_predefined_uniforms(m_replace_str.c_str(),true);
+    parsePredefinedUniforms(m_replace_str.c_str(),true);
     if(!m_uniforms.empty())
     {
         std::sort(m_uniforms.begin(),m_uniforms.end());
@@ -48,7 +48,7 @@ bool RoxShaderCodeParser::convert_to_hlsl()
         prefix.append("cbuffer "+m_replace_str+"constant_buffer:register(b0){");
         for(size_t i=0;i<m_uniforms.size();++i)
         {
-            std::string type=m_uniforms[i].type==type_float?"float":"matrix";
+            std::string type=m_uniforms[i].type==TYPE_FLOAT?"float":"matrix";
             prefix.append(type+" "+m_uniforms[i].name+";");
         }
         prefix.append("}\n");
@@ -56,13 +56,13 @@ bool RoxShaderCodeParser::convert_to_hlsl()
 
     const size_t predefined_count=m_uniforms.size();
 
-    if(!parse_uniforms(true))
+    if(!parseUniforms(true))
     {
         m_error.append("unable to parse uniforms\n");
         return false;
     }
 
-    if(!parse_varying(true))
+    if(!parseVarying(true))
     {
         m_error.append("unable to parse varying\n");
         return false;
@@ -71,7 +71,7 @@ bool RoxShaderCodeParser::convert_to_hlsl()
     std::sort(m_varying.begin(),m_varying.end());
 
     const std::string replace_constructor=m_replace_str+"cast_float";
-    if(replace_vec_from_float(replace_constructor.c_str()))
+    if(replaceVecFromFloat(replace_constructor.c_str()))
     {
         prefix.append("float2 "+replace_constructor+"2(float a){return float2(a,a);} ");
         prefix.append("float2 "+replace_constructor+"2(float2 a){return a;}\n");
@@ -81,36 +81,36 @@ bool RoxShaderCodeParser::convert_to_hlsl()
         prefix.append("float4 "+replace_constructor+"4(float4 a){return a;}\n");
     }
 
-    replace_hlsl_mul("mul");
-    replace_hlsl_types();
+    replaceHlslMul("mul");
+    replaceHlslTypes();
 
-    replace_variable("mix","lerp");
-    replace_variable("fract","frac");
-    replace_variable("inversesqrt","rsqrt");
-    if(replace_variable("pow",(m_replace_str+"pow").c_str()))
+    replaceVariable("mix","lerp");
+    replaceVariable("fract","frac");
+    replaceVariable("inversesqrt","rsqrt");
+    if(replaceVariable("pow",(m_replace_str+"pow").c_str()))
         prefix.append("#define "+m_replace_str+"pow(f,e) pow(abs(f),e)\n");
 
     int samplers_count=0;
     for(size_t i=predefined_count;i<m_uniforms.size();++i)
     {
         const variable &v=m_uniforms[i];
-        if(v.type!=type_sampler2d && v.type!=type_sampler_cube)
+        if(v.type!=TYPE_SAMPLER2D && v.type!=TYPE_SAMPLER_CUBE)
             continue;
 
         const char *types[]={"Texture2D","TextureCube"};
 
         char buf[512];
         printf(buf,"%s %s: register(t%d); SamplerState %s_nya_st: register(s%d);\n",
-                types[v.type-type_sampler2d],v.name.c_str(),samplers_count,v.name.c_str(),samplers_count);
+                types[v.type-TYPE_SAMPLER2D],v.name.c_str(),samplers_count,v.name.c_str(),samplers_count);
         prefix.append(buf);
         ++samplers_count;
     }
 
     if(samplers_count>0)
     {
-        if(find_variable("texture2D")) prefix.append("#define texture2D(a,b) a.Sample(a##"+m_replace_str+"st,(b))\n");
-        if(find_variable("textureCube")) prefix.append("#define textureCube(a,b) a.Sample(a##"+m_replace_str+"st,(b))\n");
-        if(find_variable("texture2DProj"))
+        if(findVariable("texture2D")) prefix.append("#define texture2D(a,b) a.Sample(a##"+m_replace_str+"st,(b))\n");
+        if(findVariable("textureCube")) prefix.append("#define textureCube(a,b) a.Sample(a##"+m_replace_str+"st,(b))\n");
+        if(findVariable("texture2DProj"))
         {
             prefix.append("float2 "+m_replace_str+"tc_proj(float3 tc){return tc.xy/tc.z;}\n");
             prefix.append("float2 "+m_replace_str+"tc_proj(float4 tc){return tc.xy/tc.w;}\n");
@@ -126,7 +126,7 @@ bool RoxShaderCodeParser::convert_to_hlsl()
     for(int i=0,idx=0;i<(int)m_varying.size();++i)
     {
         const variable &v=m_varying[i];
-        if(v.type==type_invalid)
+        if(v.type==TYPE_INVALID)
             return false;
 
         if(v.type-1>=sizeof(type_names)/sizeof(type_names[0]))
@@ -141,13 +141,13 @@ bool RoxShaderCodeParser::convert_to_hlsl()
 
     const std::string input_var=m_replace_str+"in";
     const std::string ps_out_var=m_replace_str+std::string(gl_ps_out+3); //strlen("gl_")
-    const bool is_fragment=replace_variable(gl_ps_out,ps_out_var.c_str());
+    const bool is_fragment=replaceVariable(gl_ps_out,ps_out_var.c_str());
     if(is_fragment)
     {
         prefix.append("static float4 "+ps_out_var+";\n");
 
         const std::string main=std::string("void ")+m_replace_str+"main()";
-        if(!replace_main_function_header(main.c_str()))
+        if(!replaceMainFunctionHeader(main.c_str()))
         {
             m_error.append("main function not found\n");
             return false;
@@ -157,7 +157,7 @@ bool RoxShaderCodeParser::convert_to_hlsl()
         for(int i=0;i<(int)m_varying.size();++i)
         {
             const variable &v=m_varying[i];
-            if(v.type==type_invalid)
+            if(v.type==TYPE_INVALID)
             {
                 m_error.append("invalid variable \'"+v.name+"\' type\n");
                 return false;
@@ -176,7 +176,7 @@ bool RoxShaderCodeParser::convert_to_hlsl()
     }
     else
     {
-        if(!parse_attributes(m_replace_str.c_str(),(input_var+".").c_str()))
+        if(!parseAttributes(m_replace_str.c_str(),(input_var+".").c_str()))
         {
             m_error.append("unable to parse attributes\n");
             return false;
@@ -205,7 +205,7 @@ bool RoxShaderCodeParser::convert_to_hlsl()
             }
 
             std::string instance_var=m_replace_str+"InstanceID";
-            if(replace_variable("gl_InstanceID",(input_var+"."+instance_var).c_str()))
+            if(replaceVariable("gl_InstanceID",(input_var+"."+instance_var).c_str()))
                 prefix.append("uint "+instance_var+":SV_InstanceID;");
 
             prefix.append("};\n");
@@ -215,10 +215,10 @@ bool RoxShaderCodeParser::convert_to_hlsl()
         prefix.append("static "+m_replace_str+"vsin "+input_var+";\n");
 
         const std::string main=std::string("void ")+m_replace_str+"main()";
-        replace_main_function_header(main.c_str());
+        replaceMainFunctionHeader(main.c_str());
         const std::string vs_out_var=out_var+"."+m_replace_str+std::string(gl_vs_out+3); //strlen("gl_")
 
-        replace_variable(gl_vs_out,vs_pos_out.c_str());
+        replaceVariable(gl_vs_out,vs_pos_out.c_str());
 
         std::string out_var_assign;
         prefix.append("static float4 "+vs_pos_out+";");
@@ -226,7 +226,7 @@ bool RoxShaderCodeParser::convert_to_hlsl()
         for(int i=0;i<(int)m_varying.size();++i)
         {
             const variable &v=m_varying[i];
-            if(v.type==type_invalid)
+            if(v.type==TYPE_INVALID)
                 return false;
 
             if(v.type-1>=sizeof(type_names)/sizeof(type_names[0]))
@@ -252,7 +252,7 @@ bool RoxShaderCodeParser::convert_to_hlsl()
         for(size_t i=predefined_count;i<m_uniforms.size();++i)
         {
             const variable &v=m_uniforms[i];
-            if(v.type==type_invalid)
+            if(v.type==TYPE_INVALID)
                 return false;
 
             if(v.type-1>=sizeof(type_names)/sizeof(type_names[0]))
@@ -295,19 +295,19 @@ inline bool has_args(std::string &code,size_t pos)
     return false;
 }
 
-bool RoxShaderCodeParser::convert_to_metal()
+bool RoxShaderCodeParser::convertToMetal()
 {
     m_uniforms.clear();
     m_attributes.clear();
 
-    parse_predefined_uniforms(m_replace_str.c_str(),true);
-    if(!parse_uniforms(true))
+    parsePredefinedUniforms(m_replace_str.c_str(),true);
+    if(!parseUniforms(true))
     {
         m_error.append("unable to parse uniforms\n");
         return false;
     }
 
-    if(!parse_varying(true))
+    if(!parseVarying(true))
     {
         m_error.append("unable to parse varying\n");
         return false;
@@ -325,7 +325,7 @@ bool RoxShaderCodeParser::convert_to_metal()
         for(size_t i=0;i<m_uniforms.size();++i)
         {
             const variable &v=m_uniforms[i];
-            if(v.type==type_invalid)
+            if(v.type==TYPE_INVALID)
                 return false;
 
             if(v.type>=sizeof(type_names)/sizeof(type_names[0]))
@@ -341,13 +341,13 @@ bool RoxShaderCodeParser::convert_to_metal()
             else
                 prefix.append(";");
 
-            replace_variable(v.name.c_str(),(uniforms_name+'.'+v.name).c_str());
+            replaceVariable(v.name.c_str(),(uniforms_name+'.'+v.name).c_str());
         }
         prefix.append("};\n");
     }
 
     const std::string vertex_type = m_replace_str + "vertex";
-    const bool is_fragment=replace_variable(gl_ps_out,"out");
+    const bool is_fragment=replaceVariable(gl_ps_out,"out");
     
     std::string vs_pos_out=m_replace_str+std::string(gl_vs_out+3);
     const std::string varying_type = m_replace_str+"varying";
@@ -360,7 +360,7 @@ bool RoxShaderCodeParser::convert_to_metal()
         for(int i=0;i<(int)m_varying.size();++i)
         {
             const variable &v=m_varying[i];
-            if(v.type==type_invalid)
+            if(v.type==TYPE_INVALID)
             {
                 m_error.append("invalid variable \'"+v.name+"\' type\n");
                 return false;
@@ -400,14 +400,14 @@ bool RoxShaderCodeParser::convert_to_metal()
     for(size_t i=0;i<m_uniforms.size();++i)
     {
         const variable &v=m_uniforms[i];
-        if(v.type!=type_sampler2d && v.type!=type_sampler_cube)
+        if(v.type!=TYPE_SAMPLER2D && v.type!=TYPE_SAMPLER_CUBE)
             continue;
 
         const char *types[]={"texture2d<float>","texturecube<float>"};
 
         char buf[64];
         printf(buf,"[[texture(%d)]]",samplers_count);
-        args.add(types[v.type-type_sampler2d],v.name,buf);
+        args.add(types[v.type-TYPE_SAMPLER2D],v.name,buf);
         printf(buf,"[[sampler(%d)]]",samplers_count);
         args.add("sampler",v.name+m_replace_str+"st",buf);
 
@@ -416,9 +416,9 @@ bool RoxShaderCodeParser::convert_to_metal()
 
     if(samplers_count>0)
     {
-        if(find_variable("texture2D")) prefix.append("#define texture2D(a,b) a.sample(a##"+m_replace_str+"st,(b))\n");
-        if(find_variable("textureCube")) prefix.append("#define textureCube(a,b) a.sample(a##"+m_replace_str+"st,(b))\n");
-        if(find_variable("texture2DProj"))
+        if(findVariable("texture2D")) prefix.append("#define texture2D(a,b) a.sample(a##"+m_replace_str+"st,(b))\n");
+        if(findVariable("textureCube")) prefix.append("#define textureCube(a,b) a.sample(a##"+m_replace_str+"st,(b))\n");
+        if(findVariable("texture2DProj"))
         {
             prefix.append("float2 "+m_replace_str+"tc_proj(float3 tc){return tc.xy/tc.z;}\n");
             prefix.append("float2 "+m_replace_str+"tc_proj(float4 tc){return tc.xy/tc.w;}\n");
@@ -437,7 +437,7 @@ bool RoxShaderCodeParser::convert_to_metal()
         {
             args.add(varying_type,"in","[[stage_in]]");
             for(int i=0;i<(int)m_varying.size();++i)
-                replace_variable(m_varying[i].name.c_str(),("in."+m_varying[i].name).c_str());
+                replaceVariable(m_varying[i].name.c_str(),("in."+m_varying[i].name).c_str());
         }
 
         if(!m_uniforms.empty())
@@ -450,7 +450,7 @@ bool RoxShaderCodeParser::convert_to_metal()
 
         args.add(vertex_type,"in","[[stage_in]]");
 
-        if(!parse_attributes(m_replace_str.c_str(),"in."))
+        if(!parseAttributes(m_replace_str.c_str(),"in."))
         {
             m_error.append("unable to parse attributes\n");
             return false;
@@ -477,23 +477,23 @@ bool RoxShaderCodeParser::convert_to_metal()
         prefix.append("};\n");
 
         const std::string vertexID = m_replace_str+"VertexID";
-        if(replace_variable("gl_VertexID",vertexID.c_str()))
+        if(replaceVariable("gl_VertexID",vertexID.c_str()))
             args.add("uint", vertexID,"[[vertex_id]]");
 
         const std::string instanceID = m_replace_str+"InstanceID";
-        if(replace_variable("gl_InstanceID",instanceID.c_str()))
+        if(replaceVariable("gl_InstanceID",instanceID.c_str()))
             args.add("uint", instanceID,"[[instance_id]]");
 
         for(int i=0;i<(int)m_varying.size();++i)
-            replace_variable(m_varying[i].name.c_str(),("out."+m_varying[i].name).c_str());
-        replace_variable(gl_vs_out,("out."+vs_pos_out).c_str());
+            replaceVariable(m_varying[i].name.c_str(),("out."+m_varying[i].name).c_str());
+        replaceVariable(gl_vs_out,("out."+vs_pos_out).c_str());
 
         if(!m_uniforms.empty())
             args.add("constant "+uniforms_type+'&',uniforms_name,"[[buffer(1)]]");
     }
 
-    replace_hlsl_types();
-    replace_variable("discard","discard_fragment()");
+    replaceHlslTypes();
+    replaceVariable("discard","discard_fragment()");
 
     std::vector<std::string> functions;
 
@@ -609,27 +609,27 @@ bool RoxShaderCodeParser::convert_to_metal()
     return true;
 }
 
-bool RoxShaderCodeParser::convert_to_glsl()
+bool RoxShaderCodeParser::convertToGlsl()
 {
-    if(replace_variable("gl_InstanceID","gl_InstanceIDARB"))
+    if(replaceVariable("gl_InstanceID","gl_InstanceIDARB"))
         m_code.insert(0,"#extension GL_ARB_draw_instanced:enable\n");
-    if(find_variable("gl_VertexID"))
+    if(findVariable("gl_VertexID"))
         m_code.insert(0,"#extension GL_EXT_gpu_shader4:require\n");
     return true;
 }
 
-bool RoxShaderCodeParser::convert_to_glsl_es2(const char *precision)
+bool RoxShaderCodeParser::convertToGlslEs2(const char *precision)
 {
     m_uniforms.clear();
     m_attributes.clear();
 
-    if(!parse_predefined_uniforms(m_replace_str.c_str(),true))
+    if(!parsePredefinedUniforms(m_replace_str.c_str(),true))
     {
         m_error.append("unable to parse predefined uniforms\n");
         return false;
     }
 
-    if(!parse_attributes(m_replace_str.c_str(),m_replace_str.c_str()))
+    if(!parseAttributes(m_replace_str.c_str(),m_replace_str.c_str()))
     {
         m_error.append("unable to parse predefined attributes\n");
         return false;
@@ -637,10 +637,10 @@ bool RoxShaderCodeParser::convert_to_glsl_es2(const char *precision)
 
     std::string prefix="#define OPENGL_ES2 1\n";
 
-    if(replace_variable("gl_InstanceID","gl_InstanceIDEXT"))
+    if(replaceVariable("gl_InstanceID","gl_InstanceIDEXT"))
         prefix.append("#extension GL_EXT_draw_instanced : enable\n");
 
-    if(replace_variable("samplerExternal","samplerExternalOES"))
+    if(replaceVariable("samplerExternal","samplerExternalOES"))
         prefix.append("#extension GL_OES_EGL_image_external : require\n");
 
     for(int i=0;i<(int)m_uniforms.size();++i)
@@ -649,35 +649,35 @@ bool RoxShaderCodeParser::convert_to_glsl_es2(const char *precision)
     for(int i=0;i<(int)m_attributes.size();++i)
     {
         prefix.append("attribute ");
-        prefix.append(m_attributes[i].type==type_vec3?"vec3 ":"vec4 ");
+        prefix.append(m_attributes[i].type==TYPE_VECTOR3?"vec3 ":"vec4 ");
         prefix.append(m_attributes[i].name+";\n");
     }
 
-    parse_uniforms(false);
+    parseUniforms(false);
 
     prefix.append("precision "+std::string(precision)+" float;\n");
     m_code.insert(0,prefix);
     return true;
 }
 
-bool RoxShaderCodeParser::convert_to_glsl3()
+bool RoxShaderCodeParser::convertToGlsl3()
 {
     m_uniforms.clear();
     m_attributes.clear();
 
-    if(!parse_predefined_uniforms(m_replace_str.c_str(),true))
+    if(!parsePredefinedUniforms(m_replace_str.c_str(),true))
     {
         m_error.append("unable to parse predefined uniforms\n");
         return false;
     }
 
-    if(!parse_attributes(m_replace_str.c_str(),m_replace_str.c_str()))
+    if(!parseAttributes(m_replace_str.c_str(),m_replace_str.c_str()))
     {
         m_error.append("unable to parse predefined attributes\n");
         return false;
     }
 
-    const bool require_gl4 = find_variable("textureQueryLod") || m_code.find("textureGather") != std::string::npos;
+    const bool require_gl4 = findVariable("textureQueryLod") || m_code.find("textureGather") != std::string::npos;
 
     std::string prefix=require_gl4?"#version 400\n#define OPENGL3 1\n#define OPENGL4 1\n":
                                    "#version 330\n#define OPENGL3 1\n";
@@ -685,51 +685,51 @@ bool RoxShaderCodeParser::convert_to_glsl3()
     for(int i=0;i<(int)m_uniforms.size();++i)
         prefix.append("uniform mat4 "+m_uniforms[i].name+";\n");
 
-    parse_uniforms(false);
+    parseUniforms(false);
 
     for(int i=0;i<(int)m_attributes.size();++i)
     {
         prefix.append("in ");
-        prefix.append(m_attributes[i].type==type_vec3?"vec3 ":"vec4 ");
+        prefix.append(m_attributes[i].type==TYPE_VECTOR3?"vec3 ":"vec4 ");
         prefix.append(m_attributes[i].name+";\n");
     }
 
     //prefix.append("precision highp float;\n");
 
-    replace_variable("texture2D","texture");
-    replace_variable("texture2DProj","textureProj");
-    replace_variable("textureCube","texture");
+    replaceVariable("texture2D","texture");
+    replaceVariable("texture2DProj","textureProj");
+    replaceVariable("textureCube","texture");
 
     const char *gl_ps_out="gl_FragColor";
     std::string ps_out_var=m_replace_str+std::string(gl_ps_out+3);
-    const bool is_fragment=replace_variable(gl_ps_out,ps_out_var.c_str());
+    const bool is_fragment=replaceVariable(gl_ps_out,ps_out_var.c_str());
     if(is_fragment)
     {
         prefix.append("layout(location=0) out vec4 "+ps_out_var+";\n");
-        replace_variable("varying","in");
+        replaceVariable("varying","in");
     }
     else
     {
-        //replace_variable("attribute","in");
-        replace_variable("varying","out");
+        //replaceVariable("attribute","in");
+        replaceVariable("varying","out");
     }
     
     m_code.insert(0,prefix);
     return true;
 }
 
-int RoxShaderCodeParser::get_uniforms_count()
+int RoxShaderCodeParser::getUniformsCount()
 {
     if(m_uniforms.empty())
     {
-        parse_predefined_uniforms(m_replace_str.c_str(),false);
-        parse_uniforms(false);
+        parsePredefinedUniforms(m_replace_str.c_str(),false);
+        parseUniforms(false);
     }
 
     return (int)m_uniforms.size();
 }
 
-RoxShaderCodeParser::variable RoxShaderCodeParser::get_uniform(int idx) const
+RoxShaderCodeParser::variable RoxShaderCodeParser::getUniform(int idx) const
 {
     if(idx<0 || idx>=(int)m_uniforms.size())
         return RoxShaderCodeParser::variable();
@@ -737,15 +737,15 @@ RoxShaderCodeParser::variable RoxShaderCodeParser::get_uniform(int idx) const
     return m_uniforms[idx];
 }
 
-int RoxShaderCodeParser::get_attributes_count()
+int RoxShaderCodeParser::getAttributesCount()
 {
     if(m_attributes.empty())
-        parse_attributes(m_replace_str.c_str(),0);
+        parseAttributes(m_replace_str.c_str(),0);
 
     return (int)m_attributes.size();
 }
 
-RoxShaderCodeParser::variable RoxShaderCodeParser::get_attribute(int idx) const
+RoxShaderCodeParser::variable RoxShaderCodeParser::getAttribute(int idx) const
 {
     if(idx<0 || idx>=(int)m_attributes.size())
         return RoxShaderCodeParser::variable();
@@ -753,15 +753,15 @@ RoxShaderCodeParser::variable RoxShaderCodeParser::get_attribute(int idx) const
     return m_attributes[idx];
 }
 
-int RoxShaderCodeParser::get_out_count()
+int RoxShaderCodeParser::getOutCount()
 {
     if(m_out.empty())
-        parse_out(false);
+        parseOut(false);
 
     return (int)m_out.size();
 }
 
-RoxShaderCodeParser::variable RoxShaderCodeParser::get_out(int idx) const
+RoxShaderCodeParser::variable RoxShaderCodeParser::getOut(int idx) const
 {
     if(idx<0 || idx>=(int)m_out.size())
         return RoxShaderCodeParser::variable();
@@ -769,7 +769,7 @@ RoxShaderCodeParser::variable RoxShaderCodeParser::get_out(int idx) const
     return m_out[idx];
 }
 
-bool RoxShaderCodeParser::fix_per_component_functions()
+bool RoxShaderCodeParser::fixPerComponentFunctions()
 {
     const char *functions[]={"pow","sqrt"}; //ToDo
     int functions_args[]={2,1};
@@ -779,7 +779,7 @@ bool RoxShaderCodeParser::fix_per_component_functions()
     for(size_t i=0;i<sizeof(functions)/sizeof(functions[0]);++i)
     {
         const char *f=functions[i];
-        if(!replace_variable(f,(m_replace_str+f).c_str()))
+        if(!replaceVariable(f,(m_replace_str+f).c_str()))
             continue;
 
         const char *types[]={"float","vec2","vec3","vec4"};
@@ -813,7 +813,7 @@ bool RoxShaderCodeParser::fix_per_component_functions()
     return true;
 }
 
-void RoxShaderCodeParser::remove_comments()
+void RoxShaderCodeParser::removeComments()
 {
     while(m_code.find("//")!=std::string::npos)
     {
@@ -868,9 +868,9 @@ template<typename t> static bool parse_vars(std::string &code,std::string &error
             char dim=(type_name.length()==4)?type_name[3]:'\0';
             switch(dim)
             {
-                case '2': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_vec2,name.c_str(),count)); break;
-                case '3': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_vec3,name.c_str(),count)); break;
-                case '4': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_vec4,name.c_str(),count)); break;
+                case '2': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_VECTOR2,name.c_str(),count)); break;
+                case '3': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_VECTOR3,name.c_str(),count)); break;
+                case '4': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_VECTOR4,name.c_str(),count)); break;
                 default: return false;
             };
         }
@@ -881,16 +881,16 @@ template<typename t> static bool parse_vars(std::string &code,std::string &error
             {
                 case '2': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_mat2,name.c_str(),count)); break;
                 case '3': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_mat3,name.c_str(),count)); break;
-                case '4': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_mat4,name.c_str(),count)); break;
+                case '4': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_MATRIX4,name.c_str(),count)); break;
                 default: return false;
             };
         }
         else if(type_name=="float")
-            vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_float,name.c_str(),count));
+            vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_FLOAT,name.c_str(),count));
         else if(type_name=="sampler2D")
-            vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_sampler2d,name.c_str(),count));
+            vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_SAMPLER2D,name.c_str(),count));
         else if(type_name=="samplerCube")
-            vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_sampler_cube,name.c_str(),count));
+            vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_SAMPLER_CUBE,name.c_str(),count));
         else
             return false;
 
@@ -903,11 +903,11 @@ template<typename t> static bool parse_vars(std::string &code,std::string &error
     return true;
 }
 
-bool RoxShaderCodeParser::parse_uniforms(bool remove) { return parse_vars(m_code,m_error,m_uniforms,"uniform",remove); }
-bool RoxShaderCodeParser::parse_varying(bool remove) { return parse_vars(m_code,m_error,m_varying,"varying",remove); }
-bool RoxShaderCodeParser::parse_out(bool remove) { return parse_vars(m_code,m_error,m_out,"out",remove); }
+bool RoxShaderCodeParser::parseUniforms(bool remove) { return parse_vars(m_code,m_error,m_uniforms,"uniform",remove); }
+bool RoxShaderCodeParser::parseVarying(bool remove) { return parse_vars(m_code,m_error,m_varying,"varying",remove); }
+bool RoxShaderCodeParser::parseOut(bool remove) { return parse_vars(m_code,m_error,m_out,"out",remove); }
 
-bool RoxShaderCodeParser::parse_predefined_uniforms(const char *replace_prefix_str,bool replace)
+bool RoxShaderCodeParser::parsePredefinedUniforms(const char *replace_prefix_str,bool replace)
 {
     if(!replace_prefix_str)
         return false;
@@ -919,26 +919,26 @@ bool RoxShaderCodeParser::parse_predefined_uniforms(const char *replace_prefix_s
         std::string to=std::string(replace_prefix_str)+std::string(gl_matrix_names[i]+3); //strlen("gl_")
         if(replace)
         {
-            if(replace_variable(gl_matrix_names[i],to.c_str()))
-                push_unique_to_vec(m_uniforms,variable(type_mat4,to.c_str(),1));
+            if(replaceVariable(gl_matrix_names[i],to.c_str()))
+                push_unique_to_vec(m_uniforms,variable(TYPE_MATRIX4,to.c_str(),1));
         }
-        else if(find_variable(gl_matrix_names[i]))
-            push_unique_to_vec(m_uniforms,variable(type_mat4,to.c_str(),1));
+        else if(findVariable(gl_matrix_names[i]))
+            push_unique_to_vec(m_uniforms,variable(TYPE_MATRIX4,to.c_str(),1));
     }
 
     if(!m_flip_y_uniform.empty())
-        push_unique_to_vec(m_uniforms,variable(type_float,m_flip_y_uniform.c_str(),1));
+        push_unique_to_vec(m_uniforms,variable(TYPE_FLOAT,m_flip_y_uniform.c_str(),1));
 
     return true;
 }
 
-bool RoxShaderCodeParser::parse_attributes(const char *info_replace_str,const char *code_replace_str)
+bool RoxShaderCodeParser::parseAttributes(const char *info_replace_str,const char *code_replace_str)
 {
     if(!info_replace_str)
         return false;
 
     const char *gl_attr_names[]={"gl_Vertex","gl_Normal","gl_Color"};
-    variable_type gl_attr_types[]={type_vec4,type_vec3,type_vec4};
+    VARIABLE_TYPE gl_attr_types[]={TYPE_VECTOR4,TYPE_VECTOR3,TYPE_VECTOR4};
 
     for(size_t i=0;i<sizeof(gl_attr_names)/sizeof(gl_attr_names[0]);++i)
     {
@@ -946,7 +946,7 @@ bool RoxShaderCodeParser::parse_attributes(const char *info_replace_str,const ch
         if(code_replace_str)
         {
             const std::string replace=std::string(code_replace_str)+std::string(gl_attr_names[i]+3); //strlen("gl_")
-            if(replace_variable(gl_attr_names[i],replace.c_str()))
+            if(replaceVariable(gl_attr_names[i],replace.c_str()))
                 push_unique_to_vec(m_attributes,variable(gl_attr_types[i],info.c_str(),0));
         }
         else
@@ -970,20 +970,21 @@ bool RoxShaderCodeParser::parse_attributes(const char *info_replace_str,const ch
 
         char buf[255];
         printf(buf,"%s%s%d",info_replace_str,tc_atr_name+3,idx);
-        push_unique_to_vec(m_attributes,variable(type_vec4,buf,idx));
+        push_unique_to_vec(m_attributes,variable(TYPE_VECTOR4,buf,idx));
     }
 
     return true;
 }
 
-bool RoxShaderCodeParser::replace_hlsl_types()
+    //TODO: UPDATE LATER --- Verry Important
+bool RoxShaderCodeParser::replaceHlslTypes()
 {
-    replace_variable("vec2","float2");
-    replace_variable("vec3","float3");
-    replace_variable("vec4","float4");
-    replace_variable("mat2","float2x2");
-    replace_variable("mat3","float3x3");
-    replace_variable("mat4","float4x4");
+    replaceVariable("vec2","float2");
+    replaceVariable("vec3","float3");
+    replaceVariable("vec4","float4");
+    replaceVariable("mat2","float2x2");
+    replaceVariable("mat3","float3x3");
+    replaceVariable("mat4","float4x4");
     return true;
 }
 
@@ -1045,7 +1046,7 @@ static void remove_var_spaces(std::string &s)
     s=s.substr(f,t);
 }
 
-bool RoxShaderCodeParser::replace_hlsl_mul(const char *func_name)
+bool RoxShaderCodeParser::replaceHlslMul(const char *func_name)
 {
     if(!func_name)
         return false;
@@ -1054,8 +1055,8 @@ bool RoxShaderCodeParser::replace_hlsl_mul(const char *func_name)
     scope global_scope=scope(0,std::string::npos);
     typedef std::map<std::string,scope> mat_map;
     mat_map matrices;
-    for(int i=0;i<(int)m_varying.size();++i) if(m_varying[i].type==type_mat4) matrices[m_varying[i].name]=global_scope;
-    for(int i=0;i<(int)m_uniforms.size();++i) if(m_uniforms[i].type==type_mat4) matrices[m_uniforms[i].name]=global_scope;
+    for(int i=0;i<(int)m_varying.size();++i) if(m_varying[i].type==TYPE_MATRIX4) matrices[m_varying[i].name]=global_scope;
+    for(int i=0;i<(int)m_uniforms.size();++i) if(m_uniforms[i].type==TYPE_MATRIX4) matrices[m_uniforms[i].name]=global_scope;
 
     size_t start_pos=0;
     while((start_pos=m_code.find("mat",start_pos))!=std::string::npos)
@@ -1139,7 +1140,7 @@ bool RoxShaderCodeParser::replace_hlsl_mul(const char *func_name)
     return result;
 }
 
-bool RoxShaderCodeParser::replace_vec_from_float(const char *func_name)
+bool RoxShaderCodeParser::replaceVecFromFloat(const char *func_name)
 {
     if(!func_name)
         return false;
@@ -1214,7 +1215,7 @@ bool RoxShaderCodeParser::replace_vec_from_float(const char *func_name)
     return result;
 }
 
-bool RoxShaderCodeParser::replace_main_function_header(const char *replace_str)
+bool RoxShaderCodeParser::replaceMainFunctionHeader(const char *replace_str)
 {
     if(!replace_str)
         return false;
@@ -1256,7 +1257,7 @@ bool RoxShaderCodeParser::replace_main_function_header(const char *replace_str)
     return false;
 }
 
-bool RoxShaderCodeParser::replace_variable(const char *from,const char *to,size_t start_pos)
+bool RoxShaderCodeParser::replaceVariable(const char *from,const char *to,size_t start_pos)
 {
     if(!from || !from[0] || !to)
         return false;
@@ -1280,7 +1281,7 @@ bool RoxShaderCodeParser::replace_variable(const char *from,const char *to,size_
     return result;
 }
 
-bool RoxShaderCodeParser::find_variable(const char *str,size_t start_pos)
+bool RoxShaderCodeParser::findVariable(const char *str,size_t start_pos)
 {
     if(!str)
         return false;
