@@ -220,13 +220,13 @@ int RoxRenderOpengl::createShader(const char *VERTEX,const char *fragment)
 
         for(int j=0;j<parser.getUniformsCount();++j)
         {
-            const RoxShaderCodeParser::variable from=parser.get_uniform(j);
+            const RoxShaderCodeParser::variable from=parser.getUniform(j);
             ShaderObj::uniform to;
             to.name=from.name;
-            to.type=(RoxShader::uniform_type)from.type;
+            to.type=(RoxShader::UNIFORM_TYPE)from.type;
             to.array_size=from.array_size;
 
-            if(to.type==RoxShader::uniform_mat4)
+            if(to.type==RoxShader::UNIFORM_MAT4)
             {
                 if(to.name=="_nya_ModelViewProjectionMatrix")
                 {
@@ -251,7 +251,7 @@ int RoxRenderOpengl::createShader(const char *VERTEX,const char *fragment)
         }
     }
 
-    if(!ft_vars.empty() && is_transform_feedback_supported())
+    if(!ft_vars.empty() && isTransformFeedbackSupported())
     {
         std::vector<const GLchar *> vars;
         for(int i=0;i<(int)ft_vars.size();++i)
@@ -283,7 +283,7 @@ int RoxRenderOpengl::createShader(const char *VERTEX,const char *fragment)
     for(size_t i=0,layer=0;i<shdr.uniforms.size();++i)
     {
         const ShaderObj::uniform &u=shdr.uniforms[i];
-        if(u.type!=RoxShader::uniform_sampler2d && u.type!=RoxShader::uniform_sampler_cube)
+        if(u.type!=RoxShader::UNIFORM_SAMPLER2D && u.type!=RoxShader::UNIFORM_SAMPLER_CUBE)
             continue;
 
         int handler=glGetUniformLocation(shdr.program,u.name.c_str());
@@ -317,13 +317,13 @@ int RoxRenderOpengl::createShader(const char *VERTEX,const char *fragment)
     for(int i=0;i<(int)shdr.uniforms.size();++i)
     {
         ShaderObj::uniform &u=shdr.uniforms[i];
-        if(u.type==RoxShader::uniform_sampler2d || u.type==RoxShader::uniform_sampler_cube)
+        if(u.type==RoxShader::UNIFORM_SAMPLER2D || u.type==RoxShader::UNIFORM_SAMPLER_CUBE)
             continue;
         u.cache_idx=cache_size;
-        cache_size+=u.array_size*(u.type==RoxShader::uniform_mat4?16:4);
+        cache_size+=u.array_size*(u.type==RoxShader::UNIFORM_MAT4?16:4);
 
         if(u.handler<0)
-            u.type=RoxShader::uniform_not_found;
+            u.type=RoxShader::UNIFORM_NOT_FOUND;
     }
     shdr.uniform_cache.resize(cache_size);
 
@@ -333,23 +333,23 @@ int RoxRenderOpengl::createShader(const char *VERTEX,const char *fragment)
 }
 
 RoxRenderOpengl::uint RoxRenderOpengl::getUniformsCount(int RoxShader) { return (int)shaders.get(RoxShader).uniforms.size(); }
-RoxShader::uniform RoxRenderOpengl::get_uniform(int RoxShader,int idx) { return shaders.get(RoxShader).uniforms[idx]; }
+RoxShader::uniform RoxRenderOpengl::getUniform(int RoxShader,int idx) { return shaders.get(RoxShader).uniforms[idx]; }
 
-void RoxRenderOpengl::remove_shader(int RoxShader)
+void RoxRenderOpengl::removeShader(int RoxShader)
 {
-    if(applied_state.RoxShader==RoxShader)
+    if(applied_state.shader==RoxShader)
     {
         glUseProgram(0);
-        applied_state.RoxShader=-1;
+        applied_state.shader=-1;
     }
     shaders.remove(RoxShader);
 }
 
 //ToDo: uniform buffers
 
-int RoxRenderOpengl::create_uniform_buffer(int RoxShader) { return RoxShader; }
+int RoxRenderOpengl::createUniformBuffer(int RoxShader) { return RoxShader; }
 
-void RoxRenderOpengl::set_uniform(int RoxShader,int idx,const float *buf,uint count)
+void RoxRenderOpengl::setUniform(int RoxShader,int idx,const float *buf,uint count)
 {
     ShaderObj &s=shaders.get(RoxShader);
 
@@ -363,55 +363,55 @@ void RoxRenderOpengl::set_uniform(int RoxShader,int idx,const float *buf,uint co
     const int handler=s.uniforms[idx].handler;
     switch(s.uniforms[idx].type)
     {
-        case RoxShader::uniform_mat4: glUniformMatrix4fv(handler,count/16,false,buf); break;
-        case RoxShader::uniform_vec4: glUniform4fv(handler,count/4,buf); break;
-        case RoxShader::uniform_vec3: glUniform3fv(handler,count/3,buf); break;
-        case RoxShader::uniform_vec2: glUniform2fv(handler,count/2,buf); break;
-        case RoxShader::uniform_float: glUniform1fv(handler,count,buf); break;
+        case RoxShader::UNIFORM_MAT4: glUniformMatrix4fv(handler,count/16,false,buf); break;
+        case RoxShader::UNIFORM_VEC4: glUniform4fv(handler,count/4,buf); break;
+        case RoxShader::UNIFORM_VEC3: glUniform3fv(handler,count/3,buf); break;
+        case RoxShader::UNIFORM_VEC2: glUniform2fv(handler,count/2,buf); break;
+        case RoxShader::UNIFORM_FLOAT: glUniform1fv(handler,count,buf); break;
         default: break;
     }
 }
 
-void RoxRenderOpengl::remove_uniform_buffer(int uniform_buffer) {}
+void RoxRenderOpengl::removeUniformBuffer(int uniform_buffer) {}
 
 namespace
 {
     int active_transform_feedback=0;
 
-    int get_gl_element_type(RoxFbo::element_type type)
+    int get_gl_element_type(RoxVbo::ELEMENT_TYPE type)
     {
         switch(type)
         {
-            case RoxFbo::triangles: return GL_TRIANGLES;;
-            case RoxFbo::triangle_strip: return GL_TRIANGLE_STRIP;
-            case RoxFbo::points: return GL_POINTS;
-            case RoxFbo::lines: return GL_LINES;
-            case RoxFbo::line_strip: return GL_LINE_STRIP;
+            case RoxVbo::TRIANGLES: return GL_TRIANGLES;;
+            case RoxVbo::TRIANGLE_STRIP: return GL_TRIANGLE_STRIP;
+            case RoxVbo::POINTS: return GL_POINTS;
+            case RoxVbo::LINES: return GL_LINES;
+            case RoxVbo::LINE_STRIP: return GL_LINE_STRIP;
             default: return -1;
         }
 
         return -1;
     }
 
-    int get_gl_element_type(RoxFbo::vertex_atrib_type type)
+    int get_gl_element_type(RoxVbo::VERTEX_ATRIB_TYPE type)
     {
         switch(type)
         {
-            case RoxFbo::float16: return GL_HALF_FLOAT;
-            case RoxFbo::float32: return GL_FLOAT;
-            case RoxFbo::uint8: return GL_UNSIGNED_BYTE;
+            case RoxVbo::FLOAT_16: return GL_HALF_FLOAT;
+            case RoxVbo::FLOAT_32: return GL_FLOAT;
+            case RoxVbo::UINT_8: return GL_UNSIGNED_BYTE;
         }
 
         return GL_FLOAT;
     }
 
-    int gl_usage(RoxFbo::usage_hint usage)
+    int gl_usage(RoxVbo::USAGE_HINT usage)
     {
         switch(usage)
         {
-            case RoxFbo::static_draw: return GL_STATIC_DRAW;
-            case RoxFbo::dynamic_draw: return GL_DYNAMIC_DRAW;
-            case RoxFbo::stream_draw: return GL_STREAM_DRAW;
+            case RoxVbo::STATIC_DRAW: return GL_STATIC_DRAW;
+            case RoxVbo::DYNAMIC_DRAW: return GL_DYNAMIC_DRAW;
+            case RoxVbo::STREAM_DRAW: return GL_STREAM_DRAW;
         }
 
         return GL_DYNAMIC_DRAW;
@@ -425,10 +425,10 @@ namespace
         unsigned int vertex_array_object;
         unsigned int active_vao_ibuf;
 #endif
-        RoxFbo::layout layout;
+        RoxVbo::Layout layout;
         unsigned int stride;
         unsigned int count;
-        RoxFbo::usage_hint usage;
+        RoxVbo::USAGE_HINT usage;
 
     public:
         void release()
@@ -443,14 +443,14 @@ namespace
             id=0;
         }
     };
-    render_objects<vert_buf> vert_bufs;
+    RoxRenderObjects<vert_buf> vert_bufs;
 
     struct ind_buf
     {
         unsigned int id;
-        RoxFbo::index_size type;
+        RoxVbo::INDEX_SIZE type;
         unsigned int count;
-        RoxFbo::usage_hint usage;
+        RoxVbo::USAGE_HINT usage;
 
     public:
         void release()
@@ -460,10 +460,10 @@ namespace
             id=0;
         }
     };
-    render_objects<ind_buf> ind_bufs;
+    RoxRenderObjects<ind_buf> ind_bufs;
 }
 
-int RoxRenderOpengl::create_vertex_buffer(const void *data,uint stride,uint count,RoxFbo::usage_hint usage)
+int RoxRenderOpengl::createVertexBuffer(const void *data,uint stride,uint count,RoxVbo::USAGE_HINT usage)
 {
     init_extensions();
 
@@ -482,7 +482,7 @@ int RoxRenderOpengl::create_vertex_buffer(const void *data,uint stride,uint coun
     return idx;
 }
 
-void RoxRenderOpengl::set_vertex_layout(int idx,RoxFbo::layout layout)
+void RoxRenderOpengl::setVertexLayout(int idx,RoxVbo::Layout layout)
 {
     vert_buf &v=vert_bufs.get(idx);
     v.layout=layout;
@@ -496,7 +496,7 @@ void RoxRenderOpengl::set_vertex_layout(int idx,RoxFbo::layout layout)
 #endif
 }
 
-void RoxRenderOpengl::update_vertex_buffer(int idx,const void *data)
+void RoxRenderOpengl::updateVertexBuffer(int idx,const void *data)
 {
     vert_buf &v=vert_bufs.get(idx);
     //if(applied_state.vertex_buffer!=idx)
@@ -516,7 +516,7 @@ void RoxRenderOpengl::update_vertex_buffer(int idx,const void *data)
 #endif
 }
 
-bool RoxRenderOpengl::get_vertex_data(int idx,void *data)
+bool RoxRenderOpengl::getVertexData(int idx,void *data)
 {
     const vert_buf &v=vert_bufs.get(idx);
     //if(applied_state.vertex_buffer!=idx)
@@ -553,7 +553,7 @@ bool RoxRenderOpengl::get_vertex_data(int idx,void *data)
     return true;
 }
 
-void RoxRenderOpengl::remove_vertex_buffer(int idx)
+void RoxRenderOpengl::removeVertexBuffer(int idx)
 {
     if(active_transform_feedback==idx)
     {
@@ -572,7 +572,7 @@ void RoxRenderOpengl::remove_vertex_buffer(int idx)
     vert_bufs.remove(idx);
 }
 
-int RoxRenderOpengl::create_index_buffer(const void *data,RoxFbo::index_size size,uint indices_count,RoxFbo::usage_hint usage)
+int RoxRenderOpengl::createIndexBuffer(const void *data,RoxVbo::INDEX_SIZE size,uint indices_count,RoxVbo::USAGE_HINT usage)
 {
     init_extensions();
 
@@ -599,7 +599,7 @@ int RoxRenderOpengl::create_index_buffer(const void *data,RoxFbo::index_size siz
     return idx;
 }
 
-void RoxRenderOpengl::update_index_buffer(int idx,const void *data)
+void RoxRenderOpengl::updateIndexBuffer(int idx,const void *data)
 {
     const ind_buf &i=ind_bufs.get(idx);
 
@@ -618,7 +618,7 @@ void RoxRenderOpengl::update_index_buffer(int idx,const void *data)
 #endif
 }
 
-bool RoxRenderOpengl::get_index_data(int idx,void *data)
+bool RoxRenderOpengl::getIndexData(int idx,void *data)
 {
     const ind_buf &i=ind_bufs.get(idx);
 
@@ -655,7 +655,7 @@ bool RoxRenderOpengl::get_index_data(int idx,void *data)
     return true;
 }
 
-void RoxRenderOpengl::remove_index_buffer(int idx)
+void RoxRenderOpengl::removeIndexBuffer(int idx)
 {
     if(applied_state.index_buffer==idx)
     {
@@ -671,34 +671,34 @@ namespace
                                      GL_TEXTURE_CUBE_MAP_POSITIVE_Y,GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
                                      GL_TEXTURE_CUBE_MAP_POSITIVE_Z,GL_TEXTURE_CUBE_MAP_NEGATIVE_Z};
 
-    void gl_setup_filtration(int target,bool has_mips,RoxTexture::filter minif,RoxTexture::filter magnif,RoxTexture::filter mip)
+    void gl_setup_filtration(int target,bool has_mips,RoxTexture::FILTER minif,RoxTexture::FILTER magnif,RoxTexture::FILTER mip)
     {
-        glTexParameteri(target,GL_TEXTURE_MAG_FILTER,magnif==RoxTexture::filter_nearest?GL_NEAREST:GL_LINEAR);
+        glTexParameteri(target,GL_TEXTURE_MAG_FILTER,magnif==RoxTexture::FILTER_NEAREST?GL_NEAREST:GL_LINEAR);
 
-        GLint filter;
+        GLint FILTER;
         if(has_mips)
         {
-            if(minif==RoxTexture::filter_nearest)
+            if(minif==RoxTexture::FILTER_LINEAR)
             {
-                if(mip==RoxTexture::filter_nearest)
-                    filter=GL_NEAREST_MIPMAP_NEAREST;
+                if(mip==RoxTexture::FILTER_NEAREST)
+                    FILTER=GL_NEAREST_MIPMAP_NEAREST;
                 else
-                    filter=GL_NEAREST_MIPMAP_LINEAR;
+                    FILTER=GL_NEAREST_MIPMAP_LINEAR;
             }
             else
             {
-                if(mip==RoxTexture::filter_nearest)
-                    filter=GL_LINEAR_MIPMAP_NEAREST;
+                if(mip==RoxTexture::FILTER_NEAREST)
+                    FILTER=GL_LINEAR_MIPMAP_NEAREST;
                 else
-                    filter=GL_LINEAR_MIPMAP_LINEAR;
+                    FILTER=GL_LINEAR_MIPMAP_LINEAR;
             }
         }
-        else if(minif==RoxTexture::filter_nearest)
-            filter=GL_NEAREST;
+        else if(minif==RoxTexture::FILTER_NEAREST)
+            FILTER=GL_NEAREST;
         else
-            filter=GL_LINEAR;
+            FILTER=GL_LINEAR;
 
-        glTexParameteri(target,GL_TEXTURE_MIN_FILTER,filter);
+        glTexParameteri(target,GL_TEXTURE_MIN_FILTER,FILTER);
     }
 
     void gl_generate_mips_pre(int gl_type)
@@ -722,16 +722,16 @@ namespace
         precision=GL_UNSIGNED_BYTE;
         switch(format)
         {
-            case RoxTexture::color_rgb: source_format=gl_format=GL_RGB; break; //in es stored internally as rgba
-            case RoxTexture::color_rgba: source_format=gl_format=GL_RGBA; break;
+            case RoxTexture::COLOR_RGB: source_format=gl_format=GL_RGB; break; //in es stored internally as rgba
+            case RoxTexture::COLOR_RGBA: source_format=gl_format=GL_RGBA; break;
 #ifdef USE_BGRA
-            case RoxTexture::color_bgra: source_format=GL_RGBA; gl_format=GL_BGRA; break;
+            case RoxTexture::COLOR_BGRA: source_format=GL_RGBA; gl_format=GL_BGRA; break;
 #endif
-            case RoxTexture::greyscale: source_format=gl_format=GL_LUMINANCE; break;
+            case RoxTexture::GREYSCALE: source_format=gl_format=GL_LUMINANCE; break;
 #ifdef OPENGL_ES
-            case RoxTexture::color_r32f: source_format=GL_RED_EXT; gl_format=GL_RED_EXT; precision=GL_FLOAT; break;
-            case RoxTexture::color_rgb32f: source_format=GL_RGB; gl_format=GL_RGB; precision=GL_FLOAT; break;
-            case RoxTexture::color_rgba32f: source_format=GL_RGBA; gl_format=GL_RGBA; precision=GL_FLOAT; break;
+            case RoxTexture::COLOR_R32F: source_format=GL_RED_EXT; gl_format=GL_RED_EXT; precision=GL_FLOAT; break;
+            case RoxTexture::COLOR_RGB32F: source_format=GL_RGB; gl_format=GL_RGB; precision=GL_FLOAT; break;
+            case RoxTexture::COLOR_RGBA32F: source_format=GL_RGBA; gl_format=GL_RGBA; precision=GL_FLOAT; break;
 
             case RoxTexture::depth16: source_format=gl_format=GL_DEPTH_COMPONENT; precision=GL_UNSIGNED_SHORT; break;
             case RoxTexture::depth32: source_format=gl_format=GL_DEPTH_COMPONENT; precision=GL_UNSIGNED_INT; break;
@@ -741,27 +741,27 @@ namespace
             case RoxTexture::etc2_a1: source_format=gl_format=GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2; break;
             case RoxTexture::etc2_eac: source_format=gl_format=GL_COMPRESSED_RGBA8_ETC2_EAC; break;
 
-            case RoxTexture::pvr_rgb2b: source_format=gl_format=GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG; break;
-            case RoxTexture::pvr_rgb4b: source_format=gl_format=GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG; break;
-            case RoxTexture::pvr_rgba2b: source_format=gl_format=GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG; break;
-            case RoxTexture::pvr_rgba4b: source_format=gl_format=GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG; break;
+            case RoxTexture::PVR_RGB2B: source_format=gl_format=GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG; break;
+            case RoxTexture::PVR_RGB4B: source_format=gl_format=GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG; break;
+            case RoxTexture::PVR_RGBA2B: source_format=gl_format=GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG; break;
+            case RoxTexture::PVR_RGBA4B: source_format=gl_format=GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG; break;
 #else
     #ifdef OPENGL3
-            case RoxTexture::color_r32f: source_format=GL_R32F; gl_format=GL_RED; precision=GL_FLOAT; break;
-            case RoxTexture::color_rgb32f: source_format=GL_RGB32F; gl_format=GL_RGB; precision=GL_FLOAT; break;
-            case RoxTexture::color_rgba32f: source_format=GL_RGBA32F; gl_format=GL_RGBA; precision=GL_FLOAT; break;
+            case RoxTexture::COLOR_R32F: source_format=GL_R32F; gl_format=GL_RED; precision=GL_FLOAT; break;
+            case RoxTexture::COLOR_RGB32F: source_format=GL_RGB32F; gl_format=GL_RGB; precision=GL_FLOAT; break;
+            case RoxTexture::COLOR_RGBA32F: source_format=GL_RGBA32F; gl_format=GL_RGBA; precision=GL_FLOAT; break;
     #else
-            case RoxTexture::color_r32f: source_format=GL_R32F; gl_format=GL_RED; precision=GL_FLOAT; break;
-            case RoxTexture::color_rgb32f: source_format=GL_RGB32F_ARB; gl_format=GL_RGB; precision=GL_FLOAT; break;
-            case RoxTexture::color_rgba32f: source_format=GL_RGBA32F_ARB; gl_format=GL_RGBA; precision=GL_FLOAT; break;
+            case RoxTexture::COLOR_R32F: source_format=GL_R32F; gl_format=GL_RED; precision=GL_FLOAT; break;
+            case RoxTexture::COLOR_RGB32F: source_format=GL_RGB32F_ARB; gl_format=GL_RGB; precision=GL_FLOAT; break;
+            case RoxTexture::COLOR_RGBA32F: source_format=GL_RGBA32F_ARB; gl_format=GL_RGBA; precision=GL_FLOAT; break;
     #endif
-            case RoxTexture::depth16: source_format=GL_DEPTH_COMPONENT16; gl_format=GL_DEPTH_COMPONENT; break;
-            case RoxTexture::depth24: source_format=GL_DEPTH_COMPONENT24; gl_format=GL_DEPTH_COMPONENT; break;
-            case RoxTexture::depth32: source_format=GL_DEPTH_COMPONENT32; gl_format=GL_DEPTH_COMPONENT; break;
+            case RoxTexture::DEPTH16: source_format=GL_DEPTH_COMPONENT16; gl_format=GL_DEPTH_COMPONENT; break;
+            case RoxTexture::DEPTH24: source_format=GL_DEPTH_COMPONENT24; gl_format=GL_DEPTH_COMPONENT; break;
+            case RoxTexture::DEPTH32: source_format=GL_DEPTH_COMPONENT32; gl_format=GL_DEPTH_COMPONENT; break;
 #endif
-            case RoxTexture::dxt1: source_format=gl_format=GL_COMPRESSED_RGBA_S3TC_DXT1_EXT; break;
-            case RoxTexture::dxt3: source_format=gl_format=GL_COMPRESSED_RGBA_S3TC_DXT3_EXT; break;
-            case RoxTexture::dxt5: source_format=gl_format=GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; break;
+            case RoxTexture::DXT1: source_format=gl_format=GL_COMPRESSED_RGBA_S3TC_DXT1_EXT; break;
+            case RoxTexture::DXT3: source_format=gl_format=GL_COMPRESSED_RGBA_S3TC_DXT3_EXT; break;
+            case RoxTexture::DXT5: source_format=gl_format=GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; break;
 
             default: return false;
         };
@@ -782,7 +782,7 @@ namespace
             tex_id=0;
         }
     };
-    render_objects<tex_obj> textures;
+    RoxRenderObjects<tex_obj> textures;
 
     void set_texture(int idx,int layer)
     {
@@ -809,7 +809,7 @@ namespace
         t.gl_type=is_cubemap?GL_TEXTURE_CUBE_MAP:GL_TEXTURE_2D;
         set_texture(idx,0);
 
-        const unsigned int source_bpp=RoxTexture::get_format_bpp(format);
+        const unsigned int source_bpp=RoxTexture::getFormatBpp(format);
 #ifdef MANUAL_MIPMAP_GENERATION
         const bool bad_alignment=(source_bpp/8)%4!=0;
 #else
@@ -829,12 +829,12 @@ namespace
 #endif
         }
 
-        const bool is_pvrtc=format==RoxTexture::pvr_rgb2b || format==RoxTexture::pvr_rgba2b || format==RoxTexture::pvr_rgb4b || format==RoxTexture::pvr_rgba4b;
+        const bool is_pvrtc=format==RoxTexture::PVR_RGB2B || format==RoxTexture::PVR_RGBA2B || format==RoxTexture::PVR_RGB4B || format==RoxTexture::PVR_RGBA4B;
         if(is_pvrtc)
-            gl_setup_filtration(t.gl_type,t.has_mip,RoxTexture::filter_linear,RoxTexture::filter_linear,RoxTexture::filter_nearest);
+            gl_setup_filtration(t.gl_type,t.has_mip,RoxTexture::FILTER_LINEAR,RoxTexture::FILTER_LINEAR,RoxTexture::FILTER_NEAREST);
 
 #ifdef OPENGL3
-        if(format==RoxTexture::greyscale)
+        if(format==RoxTexture::GREYSCALE)
         {
             const int swizzle[]={GL_RED,GL_RED,GL_RED,GL_ONE};
             glTexParameteriv(t.gl_type,GL_TEXTURE_SWIZZLE_RGBA,swizzle);
@@ -879,7 +879,7 @@ namespace
                 for(int i=0;i<(mip_count<=0?1:mip_count);++i,w=w>1?w/2:1,h=h>1?h/2:1)
                 {
                     unsigned int size=0;
-                    if(format<RoxTexture::dxt1)
+                    if(format<RoxTexture::DXT1)
                     {
                         size=w*h*(source_bpp/8);
                         glTexImage2D(gl_type,i,source_format,w,h,0,t.gl_format,t.gl_precision,data_pointer);
@@ -888,7 +888,7 @@ namespace
                     {
                         if(is_pvrtc)
                         {
-                            if(format==RoxTexture::pvr_rgb2b || format==RoxTexture::pvr_rgba2b)
+                            if(format==RoxTexture::PVR_RGB2B || format==RoxTexture::PVR_RGBA2B)
                                 size=((w>16?w:16)*(h>8?h:8)*2 + 7)/8;
                             else
                                 size=((w>8?w:8)*(h>8?h:8)*4 + 7)/8;
@@ -922,7 +922,7 @@ namespace
     }
 }
 
-int RoxRenderOpengl::create_texture(const void *data,uint width,uint height,RoxTexture::COLOR_FORMAT &format,int mip_count)
+int RoxRenderOpengl::createTexture(const void *data,uint width,uint height,RoxTexture::COLOR_FORMAT &format,int mip_count)
 {
     init_extensions();
 
@@ -930,14 +930,14 @@ int RoxRenderOpengl::create_texture(const void *data,uint width,uint height,RoxT
     return create_texture_(data_a,false,width,height,format,mip_count);
 }
 
-int RoxRenderOpengl::create_cubemap(const void *data[6],uint width,RoxTexture::COLOR_FORMAT &format,int mip_count)
+int RoxRenderOpengl::createCubemap(const void *data[6],uint width,RoxTexture::COLOR_FORMAT &format,int mip_count)
 {
     init_extensions();
 
     return create_texture_(data,true,width,width,format,mip_count);
 }
 
-void RoxRenderOpengl::update_texture(int idx,const void *data,uint x,uint y,uint width,uint height,int mip)
+void RoxRenderOpengl::updateTexture(int idx,const void *data,uint x,uint y,uint width,uint height,int mip)
 {
     const tex_obj &t=textures.get(idx);
     set_texture(idx,0);
@@ -961,25 +961,25 @@ void RoxRenderOpengl::update_texture(int idx,const void *data,uint x,uint y,uint
     }
 }
 
-void RoxRenderOpengl::set_texture_wrap(int idx,RoxTexture::wrap s,RoxTexture::wrap t)
+void RoxRenderOpengl::setTextureWrap(int idx,RoxTexture::WRAP s,RoxTexture::WRAP t)
 {
     const tex_obj &tex=textures.get(idx);
     set_texture(idx,0);
 
-    const RoxTexture::wrap wraps[]={s,t};
+    const RoxTexture::WRAP wraps[]={s,t};
     const GLint pnames[]={GL_TEXTURE_WRAP_S,GL_TEXTURE_WRAP_T};
     for(int i=0;i<2;++i)
     {
         switch(wraps[i])
         {
-            case RoxTexture::wrap_clamp:glTexParameteri(tex.gl_type,pnames[i],GL_CLAMP_TO_EDGE);break;
-            case RoxTexture::wrap_repeat:glTexParameteri(tex.gl_type,pnames[i],GL_REPEAT);break;
-            case RoxTexture::wrap_repeat_mirror:glTexParameteri(tex.gl_type,pnames[i],GL_MIRRORED_REPEAT);break;
+            case RoxTexture::WRAP_CLAMP:glTexParameteri(tex.gl_type,pnames[i],GL_CLAMP_TO_EDGE);break;
+            case RoxTexture::WRAP_REPEAT:glTexParameteri(tex.gl_type,pnames[i],GL_REPEAT);break;
+            case RoxTexture::WRAP_REPEAT_MIRROR:glTexParameteri(tex.gl_type,pnames[i],GL_MIRRORED_REPEAT);break;
         }
     }
 }
 
-void RoxRenderOpengl::set_texture_filter(int idx,RoxTexture::filter minification,RoxTexture::filter magnification,RoxTexture::filter mipmap,uint aniso)
+void RoxRenderOpengl::setTextureFilter(int idx,RoxTexture::FILTER minification,RoxTexture::FILTER magnification,RoxTexture::FILTER mipmap,uint aniso)
 {
     static int max_aniso= -1;
     if(max_aniso<0)
@@ -1000,7 +1000,7 @@ void RoxRenderOpengl::set_texture_filter(int idx,RoxTexture::filter minification
     gl_setup_filtration(t.gl_type,t.has_mip,minification,magnification,mipmap);
 }
 
-bool RoxRenderOpengl::get_texture_data(int RoxTexture,uint x,uint y,uint w,uint h,void *data)
+bool RoxRenderOpengl::getTextureData(int RoxTexture,uint x,uint y,uint w,uint h,void *data)
 {
     const tex_obj &t=textures.get(RoxTexture);
 
@@ -1073,9 +1073,9 @@ bool RoxRenderOpengl::get_texture_data(int RoxTexture,uint x,uint y,uint w,uint 
     return true;
 }
 
-void RoxRenderOpengl::remove_texture(int idx)
+void RoxRenderOpengl::removeTexture(int idx)
 {
-    for(int i=0;i<state::max_layers;++i)
+    for(int i=0;i<State::max_layers;++i)
     {
         if(applied_state.textures[i]!=idx)
             continue;
@@ -1088,7 +1088,7 @@ void RoxRenderOpengl::remove_texture(int idx)
     textures.remove(idx);
 }
 
-unsigned int RoxRenderOpengl::get_max_texture_dimention()
+unsigned int RoxRenderOpengl::getMaxTextureDimention()
 {
     static unsigned int max_tex_size=0;
     if(!max_tex_size)
@@ -1394,20 +1394,20 @@ static void apply_viewport_state(RoxRenderApiInterface::ViewportState s)
 	ignore_cache_vp=false;
 }
 
-inline GLenum gl_blend_mode(blend::mode m)
+inline GLenum gl_blend_mode(blend::MODE m)
 {
     switch(m)
     {
-        case blend::zero: return GL_ZERO;
-        case blend::one: return GL_ONE;
-        case blend::src_color: return GL_SRC_COLOR;
-        case blend::inv_src_color: return GL_ONE_MINUS_SRC_COLOR;
-        case blend::src_alpha: return GL_SRC_ALPHA;
-        case blend::inv_src_alpha: return GL_ONE_MINUS_SRC_ALPHA;
-        case blend::dst_color: return GL_DST_COLOR;
-        case blend::inv_dst_color: return GL_ONE_MINUS_DST_COLOR;
-        case blend::dst_alpha: return GL_DST_ALPHA;
-        case blend::inv_dst_alpha: return GL_ONE_MINUS_DST_ALPHA;
+        case blend::ZERO: return GL_ZERO;
+        case blend::ONE: return GL_ONE;
+        case blend::SRC_COLOR: return GL_SRC_COLOR;
+        case blend::INV_SRC_COLOR: return GL_ONE_MINUS_SRC_COLOR;
+        case blend::SRC_ALPHA: return GL_SRC_ALPHA;
+        case blend::INV_SRC_ALPHA: return GL_ONE_MINUS_SRC_ALPHA;
+        case blend::DST_COLOR: return GL_DST_COLOR;
+        case blend::INV_DST_COLOR: return GL_ONE_MINUS_DST_COLOR;
+        case blend::DST_ALPHA: return GL_DST_ALPHA;
+        case blend::INV_DST_ALPHA: return GL_ONE_MINUS_DST_ALPHA;
     }
 
     return GL_ONE;
@@ -1444,15 +1444,15 @@ void RoxRenderOpengl::clear(const ViewportState &s,bool color,bool depth,bool st
     glClear(mode);
 }
 
-void RoxRenderOpengl::invalidate_cached_state()
+void RoxRenderOpengl::invalidateCachedState()
 {
     ignore_cache = true;
 	ignore_cache_vp = true;
 
     applied_state.index_buffer=applied_state.vertex_buffer= -1;
-    applied_state.RoxShader=applied_state.uniform_buffer= -1;
+    applied_state.shader=applied_state.uniform_buffer= -1;
     active_layer=-1;
-    for(int i=0;i<state::max_layers;++i)
+    for(int i=0;i<State::max_layers;++i)
     {
         applied_state.textures[i]=-1;
         gl_select_multitex_layer(i);
@@ -1461,7 +1461,7 @@ void RoxRenderOpengl::invalidate_cached_state()
     }
 
 #ifndef USE_VAO
-    applied_layout=RoxFbo::layout();
+    applied_layout=RoxVbo::Layout();
     //ToDo: disable layout client states
 #endif
 }
@@ -1474,9 +1474,9 @@ void RoxRenderOpengl::setCamera(const RoxMath::Matrix4 &mv,const RoxMath::Matrix
     projection=p;
 }
 
-void RoxRenderOpengl::applyState(const state &c)
+void RoxRenderOpengl::applyState(const State &c)
 {
-    state &a=applied_state;
+    State &a=applied_state;
 
     apply_viewport_state(c);
 
@@ -1506,34 +1506,34 @@ void RoxRenderOpengl::applyState(const state &c)
 
     if(c.cull_order!=a.cull_order || ignore_cache)
     {
-        if(c.cull_order==cull_face::cw)
+        if(c.cull_order== CullFace::CW)
             glFrontFace(GL_CW);
         else
             glFrontFace(GL_CCW);
         a.cull_order=c.cull_order;
     }
 
-    if(c.depth_test!=a.depth_test || ignore_cache)
+    if(c.DepthTest !=a.DepthTest || ignore_cache)
     {
-        if(c.depth_test)
+        if(c.DepthTest)
             glEnable(GL_DEPTH_TEST);
         else
             glDisable(GL_DEPTH_TEST);
-        a.depth_test=c.depth_test;
+        a.DepthTest =c.DepthTest;
     }
 
     if(c.depth_comparsion!=a.depth_comparsion || ignore_cache)
     {
         switch(c.depth_comparsion)
         {
-            case depth_test::never: glDepthFunc(GL_NEVER); break;
-            case depth_test::less: glDepthFunc(GL_LESS); break;
-            case depth_test::equal: glDepthFunc(GL_EQUAL); break;
-            case depth_test::greater: glDepthFunc(GL_GREATER); break;
-            case depth_test::not_less: glDepthFunc(GL_GEQUAL); break;
-            case depth_test::not_equal: glDepthFunc(GL_NOTEQUAL); break;
-            case depth_test::not_greater: glDepthFunc(GL_LEQUAL); break;
-            case depth_test::allways: glDepthFunc(GL_ALWAYS); break;
+            case DepthTest::NEVER: glDepthFunc(GL_NEVER); break;
+            case DepthTest::LESS: glDepthFunc(GL_LESS); break;
+            case DepthTest::EQUAL: glDepthFunc(GL_EQUAL); break;
+            case DepthTest::GREATER: glDepthFunc(GL_GREATER); break;
+            case DepthTest::NOT_LESS: glDepthFunc(GL_GEQUAL); break;
+            case DepthTest::NOT_EQUAL: glDepthFunc(GL_NOTEQUAL); break;
+            case DepthTest::NOT_GREATER: glDepthFunc(GL_LEQUAL); break;
+            case DepthTest::ALLWAYS: glDepthFunc(GL_ALWAYS); break;
         }
         a.depth_comparsion=c.depth_comparsion;
     }
@@ -1559,7 +1559,7 @@ void RoxRenderOpengl::applyState(const state &c)
     ignore_cache = false;
 }
 
-template<bool transform_feedback>void draw_(const RoxRender::RoxRenderApiInterface::state &s)
+template<bool transform_feedback>void draw_(const RoxRender::RoxRenderApiInterface::State &s)
 {
     if(s.vertex_buffer<0 || s.RoxShader<0)
         return;
@@ -1591,7 +1591,7 @@ template<bool transform_feedback>void draw_(const RoxRender::RoxRenderApiInterfa
             glGenVertexArrays(1,&v.vertex_array_object);
             glBindVertexArray(v.vertex_array_object);
 
-            applied_layout=RoxFbo::layout();
+            applied_layout=RoxVbo::Layout();
             v.active_vao_ibuf=0;
 #endif
             glBindBuffer(GL_ARRAY_BUFFER,v.id);
@@ -1601,7 +1601,7 @@ template<bool transform_feedback>void draw_(const RoxRender::RoxRenderApiInterfa
                                   v.stride,(void*)(ptrdiff_t)(v.layout.pos.offset));
             for(unsigned int i=0;i<RoxFbo::max_tex_coord;++i)
             {
-                const RoxFbo::layout::attribute &tc=v.layout.tc[i];
+                const RoxVbo::Layout::attribute &tc=v.layout.tc[i];
                 if(tc.dimension>0)
                 {
                     //if(vobj.vertex_stride!=active_attributes.vertex_stride || !tc.compare(active_attributes.tcs[i]))
@@ -1699,15 +1699,15 @@ template<bool transform_feedback>void draw_(const RoxRender::RoxRenderApiInterfa
     }
 }
 
-void RoxRenderOpengl::draw(const state &s)
+void RoxRenderOpengl::draw(const State &s)
 {
-    apply_state(s);
+    applyState(s);
     draw_<false>(s);
 }
 
-void RoxRenderOpengl::transform_feedback(const tf_state &s)
+void RoxRenderOpengl::transformFeedback(const TfState &s)
 {
-    if(!is_transform_feedback_supported())
+    if(!isTransformFeedbackSupported())
         return;
 
     //glEnable(GL_RASTERIZER_DISCARD);
@@ -1718,8 +1718,8 @@ void RoxRenderOpengl::transform_feedback(const tf_state &s)
         glBindBufferRange(GL_TRANSFORM_FEEDBACK_BUFFER,0,dst.id,s.out_offset*dst.stride,s.index_count*dst.stride);
     active_transform_feedback=s.vertex_buffer_out;
 
-    state ss=applied_state;
-    (render_state &)ss=s;
+    State ss=applied_state;
+    (RenderState &)ss=s;
     for(int i=0;i<s.max_layers;++i)
     {
         if(s.textures[i]!=applied_state.textures[i])
@@ -1729,7 +1729,7 @@ void RoxRenderOpengl::transform_feedback(const tf_state &s)
     //glDisable(GL_RASTERIZER_DISCARD);
 }
 
-bool RoxRenderOpengl::is_transform_feedback_supported()
+bool RoxRenderOpengl::isTransformFeedbackSupported()
 {
 #ifdef NO_EXTENSIONS_INIT
     return true;
@@ -1738,24 +1738,24 @@ bool RoxRenderOpengl::is_transform_feedback_supported()
 #endif
 }
 
-unsigned int RoxRenderOpengl::get_gl_texture_id(int idx)
+unsigned int RoxRenderOpengl::getGlTextureId(int idx)
 {
     return textures.get(idx).tex_id;
 }
 
-void RoxRenderOpengl::gl_bind_texture2d(uint gl_tex,uint layer)
+void RoxRenderOpengl::glBindTexture2d(uint gl_tex,uint layer)
 {
-    gl_bind_texture(GL_TEXTURE_2D,gl_tex,layer);
+    glBindTexture(GL_TEXTURE_2D,gl_tex,layer);
 }
 
-void RoxRenderOpengl::gl_bind_texture(uint gl_type,uint gl_tex,uint layer)
+void RoxRenderOpengl::glBindTexture(uint gl_type,uint gl_tex,uint layer)
 {
     set_texture(-1,layer);
     gl_select_multitex_layer((int)layer);
     glBindTexture(gl_type, gl_tex);
 }
 
-void RoxRenderOpengl::log_errors(const char *place)
+void RoxRenderOpengl::logErrors(const char *place)
 {
     for(int i=glGetError();i!=GL_NO_ERROR;i=glGetError())
     {
@@ -1782,8 +1782,8 @@ void RoxRenderOpengl::log_errors(const char *place)
     }
 }
 
-bool RoxRenderOpengl::has_extension(const char *name) { return ::has_extension(name); }
-void *RoxRenderOpengl::get_extension(const char*name) { return ::get_extension(name); }
+bool RoxRenderOpengl::hasExtension(const char *name) { return ::has_extension(name); }
+void *RoxRenderOpengl::getExtension(const char*name) { return ::get_extension(name); }
 
 namespace
 {
@@ -1830,7 +1830,7 @@ namespace
             default:                             severity_str = "unknown"; break;
         }
 
-        rox_log::log("gl log [%s] %s %s %d: %s\n", severity_str, source_str, type_str, id, message);
+        RoxLogger::log("gl log [%s] %s %s %d: %s\n", severity_str, source_str, type_str, id, message);
         if(severity!=GL_DEBUG_SEVERITY_NOTIFICATION)
             severity_str=severity_str;
     }
@@ -1838,7 +1838,7 @@ namespace
     bool log_set=false;
 }
 
-void RoxRenderOpengl::enable_debug(bool synchronous)
+void RoxRenderOpengl::enableDebug(bool synchronous)
 {
     if(log_set)
         return;
@@ -1849,7 +1849,7 @@ void RoxRenderOpengl::enable_debug(bool synchronous)
     init_extensions();
     if(!glDebugMessageCallback)
     {
-        rox_log::log("unable to set opengl log\n");
+        RoxLogger::log("unable to set opengl log\n");
         return;
     }
   #endif

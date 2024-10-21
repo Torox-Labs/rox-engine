@@ -27,7 +27,7 @@ public:
 
 public:
     void invalidateCachedState() override;
-    void applyState(const state &s) override;
+    void applyState(const State &s) override;
 
 public:
     int createShader(const char *vertex,const char *fragment) override;
@@ -40,13 +40,13 @@ public:
     void removeUniformBuffer(int uniform_buffer) override;
 
 public:
-    int createVertexBuffer(const void *data,uint stride,uint count,RoxVbo::UsageHint usage) override;
+    int createVertexBuffer(const void *data,uint stride,uint count,RoxVbo::USAGE_HINT usage) override;
     void setVertexLayout(int idx,RoxVbo::Layout Layout) override;
     void updateVertexBuffer(int idx,const void *data) override;
     bool getVertexData(int idx,void *data) override;
-    void removeBertexBuffer(int idx) override;
+    void removeVertexBuffer(int idx) override;
 
-    int createIndexBuffer(const void *data,RoxVbo::IndexSize size,uint indices_count,RoxVbo::UsageHint usage) override;
+    int createIndexBuffer(const void *data,RoxVbo::INDEX_SIZE size,uint indices_count,RoxVbo::USAGE_HINT usage) override;
     void updateIndexBuffer(int idx,const void *data) override;
     bool getIndexData(int idx,void *data) override;
     void removeIndexBuffer(int idx) override;
@@ -55,8 +55,8 @@ public:
     int createTexture(const void *data,uint width,uint height,RoxTexture::COLOR_FORMAT &format,int mip_count) override;
     int createCubemap(const void *data[6],uint width,RoxTexture::COLOR_FORMAT &format,int mip_count) override;
     void updateTexture(int idx,const void *data,uint x,uint y,uint width,uint height,int mip) override;
-    void setTextureWrap(int idx,RoxTexture::wrap s,RoxTexture::wrap t) override;
-    void setTextureFilter(int idx,RoxTexture::filter minification,RoxTexture::filter magnification,RoxTexture::filter mipmap,uint aniso) override;
+    void setTextureWrap(int idx,RoxTexture::WRAP s,RoxTexture::WRAP t) override;
+    void setTextureFilter(int idx,RoxTexture::FILTER minification,RoxTexture::FILTER magnification,RoxTexture::FILTER mipmap,uint aniso) override;
     bool getTextureData(int RoxTexture,uint x,uint y,uint w,uint h,void *data) override;
     void removeTexture(int RoxTexture) override;
     uint getMaxTextureDimention() override;
@@ -73,7 +73,7 @@ public:
 public:
     void setCamera(const RoxMath::Matrix4 &modelview,const RoxMath::Matrix4 &projection) override;
     void clear(const ViewportState &s,bool color,bool depth,bool stencil) override;
-    void draw(const state &s) override;
+    void draw(const State &s) override;
     void transformFeedback(const TfState &s) override;
     bool isTransformFeedbackSupported() override;
 

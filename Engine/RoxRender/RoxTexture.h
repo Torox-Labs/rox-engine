@@ -88,26 +88,26 @@ namespace RoxRender
 		static void unbind(uint layer);
 
 	public:
-		enum wrap
+		enum WRAP
 		{
-			wrapClamp,
-			wrapRepeat,
-			wrapRepeatMirror
+			WRAP_CLAMP,
+			WRAP_REPEAT,
+			WRAP_REPEAT_MIRROR
 		};
 
-		void setWrap(wrap s, wrap t);
+		void setWrap(WRAP s, WRAP t);
 
-		enum filter
+		enum FILTER
 		{
-			filterNearest,
-			filterLinear
+			FILTER_NEAREST,
+			FILTER_LINEAR
 		};
-
-		void setFilter(filter minification, filter magnification, filter mipmap);
+		
+		void setFilter(FILTER minification, FILTER magnification, FILTER mipmap);
 		void setAniso(uint level);
 
-		static void setDefaultWrap(wrap s, wrap t);
-		static void setDefaultFilter(filter minification, filter magnification, filter mipmap);
+		static void setDefaultWrap(WRAP s, WRAP t);
+		static void setDefaultFilter(FILTER minification, FILTER magnification, FILTER mipmap);
 		static void setDefaultAniso(uint level);
 
 	public:
@@ -118,8 +118,8 @@ namespace RoxRender
 		COLOR_FORMAT getColorFormat() const;
 		bool isCubemap() const;
 
-		static void getDefaultWrap(wrap& s, wrap& t);
-		static void getDefaultFilter(filter& minification, filter& magnification, filter& mipmap);
+		static void getDefaultWrap(WRAP& s, WRAP& t);
+		static void getDefaultFilter(FILTER& minification, FILTER& magnification, FILTER& mipmap);
 		static uint getDefaultAniso();
 
 		static unsigned int getMaxDimension();
@@ -138,7 +138,7 @@ namespace RoxRender
 
 	public:
 		RoxTexture(): m_tex(-1), m_width(0), m_height(0), m_is_cubemap(false), m_filter_set(false), m_aniso_set(false),
-		           m_aniso(0), m_filter_min(filterLinear), m_filter_mag(filterLinear), m_filter_mip(filterLinear)
+		           m_aniso(0), m_filter_min(FILTER_LINEAR), m_filter_mag(FILTER_LINEAR), m_filter_mip(FILTER_LINEAR)
 		{
 		}
 
@@ -154,6 +154,6 @@ namespace RoxRender
 		bool m_filter_set;
 		bool m_aniso_set;
 		unsigned int m_aniso;
-		filter m_filter_min, m_filter_mag, m_filter_mip;
+		FILTER m_filter_min, m_filter_mag, m_filter_mip;
 	};
 }

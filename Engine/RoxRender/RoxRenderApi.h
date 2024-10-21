@@ -31,8 +31,8 @@ namespace RoxRender
 
 		struct ViewportState
 		{
-			RoxRender::rect viewport;
-			RoxRender::rect scissor;
+			RoxRender::Rectangle viewport;
+			RoxRender::Rectangle scissor;
 			bool scissor_enabled;
 			float clear_color[4];
 			float clear_depth;
@@ -51,7 +51,7 @@ namespace RoxRender
 		{
 			int vertex_buffer;
 			int index_buffer;
-			RoxVbo::ElementType primitive;
+			RoxVbo::ELEMENT_TYPE primitive;
 			uint index_offset;
 			uint index_count;
 			uint instances_count;
@@ -73,7 +73,7 @@ namespace RoxRender
 			}
 		};
 
-		struct State : public ViewportState, RenderState, RoxRender::state
+		struct State : public ViewportState, RenderState, RoxRender::State
 		{
 		};
 
@@ -90,7 +90,7 @@ namespace RoxRender
 	public:
 		virtual int createShader(const char* vertex, const char* fragment) { return -1; }
 		virtual uint getUniformsCount(int shader) { return 0; }
-		virtual RoxShader::uniform getUniform(int shader, int idx) { return RoxRender::shader::uniform(); }
+		virtual RoxShader::uniform getUniform(int shader, int idx) { return RoxRender::RoxShader::uniform(); }
 
 		virtual void removeShader(int shader)
 		{
@@ -108,7 +108,7 @@ namespace RoxRender
 
 	public:
 		virtual int createVertexBuffer(const void* data, uint stride, uint count,
-		                                 RoxVbo::UsageHint usage = RoxVbo::STATIC_DRAW) { return -1; }
+		                                 RoxVbo::USAGE_HINT usage = RoxVbo::STATIC_DRAW) { return -1; }
 
 		virtual void setVertexLayout(int idx, RoxVbo::Layout layout)
 		{
@@ -124,8 +124,8 @@ namespace RoxRender
 		{
 		}
 
-		virtual int createIndexBuffer(const void* data, RoxVbo::IndexSize type, uint count,
-		                                RoxVbo::UsageHint usage = RoxVbo::STATIC_DRAW) { return -1; }
+		virtual int createIndexBuffer(const void* data, RoxVbo::INDEX_SIZE type, uint count,
+		                                RoxVbo::USAGE_HINT usage = RoxVbo::STATIC_DRAW) { return -1; }
 
 		virtual void updateIndexBuffer(int idx, const void* data)
 		{
@@ -151,13 +151,13 @@ namespace RoxRender
 		{
 		}
 
-		virtual void setTextureWrap(int idx, RoxRender::RoxTexture::wrap s, RoxRender::RoxTexture::wrap t)
+		virtual void setTextureWrap(int idx, RoxRender::RoxTexture::WRAP s, RoxRender::RoxTexture::WRAP t)
 		{
 		}
 
-		virtual void setTextureFilter(int idx, RoxRender::RoxTexture::filter minification,
-		                                RoxRender::RoxTexture::filter magnification,
-		                                RoxRender::RoxTexture::filter mipmap, uint aniso)
+		virtual void setTextureFilter(int idx, RoxRender::RoxTexture::FILTER minification,
+		                                RoxRender::RoxTexture::FILTER magnification,
+		                                RoxRender::RoxTexture::FILTER mipmap, uint aniso)
 		{
 		}
 
@@ -194,7 +194,7 @@ namespace RoxRender
 		{
 		}
 
-		virtual void draw(const state& s)
+		virtual void draw(const State& s)
 		{
 		}
 
@@ -208,7 +208,7 @@ namespace RoxRender
 		{
 		}
 
-		virtual void applyState(const state& s)
+		virtual void applyState(const State& s)
 		{
 		}
 	};

@@ -35,19 +35,19 @@ struct Scissor
     static const Rectangle &get();
 };
 
-void set_projection_matrix(const RoxMath::Matrix4 &mat);
-void set_modelview_matrix(const RoxMath::Matrix4 &mat);
-void set_orientation_matrix(const RoxMath::Matrix4 &mat);
+void setProjectionMatrix(const RoxMath::Matrix4 &mat);
+void setModelviewMatrix(const RoxMath::Matrix4 &mat);
+void setOrientationMatrix(const RoxMath::Matrix4 &mat);
 
-const RoxMath::Matrix4 &get_projection_matrix();
-const RoxMath::Matrix4 &get_modelview_matrix();
-const RoxMath::Matrix4 &get_orientation_matrix();
+const RoxMath::Matrix4 &getProjectionMatrix();
+const RoxMath::Matrix4 &getModelviewMatrix();
+const RoxMath::Matrix4 &getOrientationMatrix();
 
-void set_clear_color(float r,float g,float b,float a);
-void set_clear_color(const RoxMath::Vector4 &c);
-RoxMath::Vector4 get_clear_color();
-void set_clear_depth(float value);
-float get_clear_depth();
+void setClearColor(float r,float g,float b,float a);
+void setClearColor(const RoxMath::Vector4 &c);
+RoxMath::Vector4 getClearColor();
+void set_ClearDepth(float value);
+float getClearDepth();
 void clear(bool clear_color,bool clear_depth,bool clear_stencil=false);
 
 struct blend
@@ -124,11 +124,11 @@ struct State
         blend_dst = dst;
     }
 
-    bool CullFace;
+    bool cull_face;
     CullFace::ORDER cull_order;
     void setCullFace(bool CullFace, CullFace::ORDER order = CullFace::CCW)
     {
-        this->CullFace = CullFace;
+        this->cull_face = CullFace;
         cull_order = order;
     }
 
@@ -143,7 +143,7 @@ struct State
         blend_src(blend::ONE),
         blend_dst(blend::ZERO),
 
-        CullFace(false),
+        cull_face(false),
         cull_order(CullFace::CCW),
 
         DepthTest(true),
