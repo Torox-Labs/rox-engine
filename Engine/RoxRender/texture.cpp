@@ -10,11 +10,11 @@ namespace RoxRender
 
 namespace
 {
-    RoxTexture::wrap default_wrap_s=RoxTexture::wrapRepeat;
-    RoxTexture::wrap default_wrap_t=RoxTexture::wrapRepeat;
-    RoxTexture::filter default_min_filter=RoxTexture::filterLinear;
-    RoxTexture::filter default_mag_filter=RoxTexture::filterLinear;
-    RoxTexture::filter default_mip_filter=RoxTexture::filterLinear;
+    RoxTexture::WRAP default_wrap_s=RoxTexture::WRAP_REPEAT;
+    RoxTexture::WRAP default_wrap_t=RoxTexture::WRAP_REPEAT;
+    RoxTexture::FILTER default_min_filter=RoxTexture::FILTER_LINEAR;
+    RoxTexture::FILTER default_mag_filter=RoxTexture::FILTER_LINEAR;
+    RoxTexture::FILTER default_mip_filter=RoxTexture::FILTER_LINEAR;
     unsigned int default_aniso=0;
 }
 
@@ -56,7 +56,7 @@ bool RoxTexture::buildTexture(const void *data_a[6],bool is_cubemap,unsigned int
     if(format>=COLOR_R32F && mip_count<0)
         mip_count=1;
 
-    const bool is_pvrtc=format==pvr_rgb2b || format==pvr_rgba2b || format==pvr_rgb4b || format==pvr_rgba4b;
+    const bool is_pvrtc=format==PVR_RGB2B || format==PVR_RGBA2B || format==PVR_RGB4B || format==PVR_RGBA4B;
     const bool pot=((width&(width-1))==0 && (height&(height-1))==0);
 
     if(is_pvrtc && !(width==height && pot))
@@ -68,7 +68,7 @@ bool RoxTexture::buildTexture(const void *data_a[6],bool is_cubemap,unsigned int
 
     if(!is_cubemap && !m_is_cubemap && m_width==width && m_height==height && m_format==format && data)
     {
-        getApiInterface().update_texture(m_tex,data,0,0,width,height,-1);
+        getApiInterface().updateTexture(m_tex,data,0,0,width,height,-1);
         return true;
     }
     else
@@ -81,18 +81,18 @@ bool RoxTexture::buildTexture(const void *data_a[6],bool is_cubemap,unsigned int
 
     nya_memory::tmp_buffer_ref tmp_buf;
 
-    if(!get_api_interface().is_texture_format_supported(format))
+    if(!getApiInterface().isTextureFormatSupported(format))
     {
-        if(format==depth24)
+        if(format==DEPTH24)
         {
             if(data)
                 return false; //ToDo
 
-            format=depth32;
+            format=DEPTH32;
         }
-        else if(format==color_bgra || format==color_rgb)
+        else if(format==COLOR_RGBA || format==COLOR_RGB)
         {
-            if(!get_api_interface().is_texture_format_supported(color_rgba))
+            if(!getApiInterface().isTextureFormatSupported(COLOR_BGRA))
                 return false;
 
             if(data)
@@ -107,7 +107,7 @@ bool RoxTexture::buildTexture(const void *data_a[6],bool is_cubemap,unsigned int
                     const unsigned char *from=(unsigned char *)(is_cubemap?data_a[i]:data);
                     unsigned char *to=(unsigned char *)tmp_buf.get_data(i*size);
                     (is_cubemap?data_a[i]:data)=to;
-                    if(format==color_rgb)
+                    if(format==COLOR_RGB)
                     {
                         for(size_t j=0;j<size;j+=4,from+=3,to+=4)
                         {
@@ -115,7 +115,7 @@ bool RoxTexture::buildTexture(const void *data_a[6],bool is_cubemap,unsigned int
                             to[3]=255;
                         }
                     }
-                    else if(format==color_bgra)
+                    else if(format==COLOR_BGRA)
                     {
                         for(size_t j=0;j<size;j+=4)
                         {
@@ -127,7 +127,7 @@ bool RoxTexture::buildTexture(const void *data_a[6],bool is_cubemap,unsigned int
                     }
                 }
             }
-            format=color_rgba;
+            format=COLOR_BGRA;
         }
         else
         {
@@ -137,9 +137,9 @@ bool RoxTexture::buildTexture(const void *data_a[6],bool is_cubemap,unsigned int
     }
 
     if(is_cubemap)
-        m_tex=get_api_interface().create_cubemap(data_a,width,format,mip_count);
+        m_tex=getApiInterface().createCubemap(data_a,width,format,mip_count);
     else
-        m_tex=get_api_interface().create_texture(data,width,height,format,mip_count);
+        m_tex=getApiInterface().createTexture(data,width,height,format,mip_count);
 
     tmp_buf.free();
 
@@ -157,28 +157,28 @@ bool RoxTexture::buildTexture(const void *data_a[6],bool is_cubemap,unsigned int
     }
     if(!m_aniso_set)
         m_aniso=default_aniso;
-    get_api_interface().set_texture_filter(m_tex,m_filter_min,m_filter_mag,m_filter_mip,m_aniso);
+    getApiInterface().setTextureFilter(m_tex,m_filter_min,m_filter_mag,m_filter_mip,m_aniso);
 
     if(!is_cubemap)
     {
-        const bool force_clamp=!pot && !is_platform_restrictions_ignored();
-        get_api_interface().set_texture_wrap(m_tex,force_clamp?wrap_clamp:default_wrap_s,force_clamp?wrap_clamp:default_wrap_t);
+        const bool force_clamp=!pot && !isPlatformRestrictionsIgnored();
+        getApiInterface().setTextureWrap(m_tex,force_clamp? WRAP_CLAMP:default_wrap_s,force_clamp?WRAP_CLAMP:default_wrap_t);
     }
     return true;
 }
 
-bool RoxTexture::build_texture(const void *data,unsigned int width,unsigned int height,COLOR_FORMAT format,int mip_count)
+bool RoxTexture::buildTexture(const void *data,unsigned int width,unsigned int height,COLOR_FORMAT format,int mip_count)
 {
     const void *data_a[6]={data};
-    return build_texture(data_a,false,width,height,format,mip_count);
+    return buildTexture(data_a,false,width,height,format,mip_count);
 }
 
-bool RoxTexture::build_cubemap(const void *data[6],unsigned int width,unsigned int height,COLOR_FORMAT format,int mip_count)
+bool RoxTexture::buildCubemap(const void *data[6],unsigned int width,unsigned int height,COLOR_FORMAT format,int mip_count)
 {
-    return build_texture(data,true,width,height,format,mip_count);
+    return buildTexture(data,true,width,height,format,mip_count);
 }
 
-bool RoxTexture::update_region(const void *data,unsigned int x,unsigned int y,unsigned int width,unsigned int height,int mip)
+bool RoxTexture::updateRegion(const void *data,unsigned int x,unsigned int y,unsigned int width,unsigned int height,int mip)
 {
     if(m_tex<0 && m_is_cubemap)
         return false;
@@ -190,14 +190,14 @@ bool RoxTexture::update_region(const void *data,unsigned int x,unsigned int y,un
     if(x+width>mip_width || y+height>mip_height)
         return false;
 
-    if(m_format>=depth16)
+    if(m_format>=DEPTH16)
         return false;
 
-    get_api_interface().update_texture(m_tex,data,x,y,width,height,-1);
+    getApiInterface().updateTexture(m_tex,data,x,y,width,height,-1);
     return true;
 }
 
-bool RoxTexture::copy_region(const RoxTexture &src,uint src_x,uint src_y,uint width,uint height,uint dst_x,uint dst_y)
+bool RoxTexture::copyRegion(const RoxTexture &src,uint src_x,uint src_y,uint width,uint height,uint dst_x,uint dst_y)
 {
     if(src.m_tex<0 || m_tex<0)
         return false;
@@ -227,26 +227,26 @@ bool RoxTexture::copy_region(const RoxTexture &src,uint src_x,uint src_y,uint wi
 
 void RoxTexture::bind(unsigned int layer) const
 {
-    if(layer>=render_api_interface::state::max_layers)
+    if(layer>=RoxRenderApiInterface::State::max_layers)
         return;
 
-    get_api_state().textures[layer]=m_tex;
+    getApiState().textures[layer]=m_tex;
 }
 
 void RoxTexture::unbind(unsigned int layer)
 {
-    if(layer>=render_api_interface::state::max_layers)
+    if(layer>=RoxRenderApiInterface::State::max_layers)
         return;
 
-    get_api_state().textures[layer]=-1;
+    getApiState().textures[layer]=-1;
 }
 
-bool RoxTexture::get_data(nya_memory::tmp_buffer_ref &data) const
+bool RoxTexture::getData(nya_memory::tmp_buffer_ref &data) const
 {
-    return get_data(data,0,0,m_width,m_height);
+    return getData(data,0,0,m_width,m_height);
 }
 
-bool RoxTexture::get_data(nya_memory::tmp_buffer_ref &data,unsigned int x,unsigned int y,unsigned int w,unsigned int h) const
+bool RoxTexture::getData(nya_memory::tmp_buffer_ref &data,unsigned int x,unsigned int y,unsigned int w,unsigned int h) const
 {
     if(m_tex<0 || !w || !h || x+w>m_width || y+h>m_height)
         return false;
@@ -254,21 +254,21 @@ bool RoxTexture::get_data(nya_memory::tmp_buffer_ref &data,unsigned int x,unsign
     size_t size=w*h;
     switch(m_format)
     {
-        case greyscale: break;
-        case color_rgb: size*=3; break;
+        case GREYSCALE: break;
+        case COLOR_RGB: size*=3; break;
 
-        case color_r32f: break;
-        case color_rgb32f: size*=3*sizeof(float); break;
-        case color_rgba32f: size*=4*sizeof(float); break;
+        case COLOR_R32F: break;
+        case COLOR_RGB32F: size*=3*sizeof(float); break;
+        case COLOR_RGBA32F: size*=4*sizeof(float); break;
 
-        case depth16: break; size*=2; break;
-        case depth24: break; size*=3; break;
+        case DEPTH16: break; size*=2; break;
+        case DEPTH24: break; size*=3; break;
 
         default: size*=4;
     }
 
     data.allocate(size);
-    if(!get_api_interface().get_texture_data(m_tex,x,y,w,h,data.get_data()))
+    if(!getApiInterface().getTextureData(m_tex,x,y,w,h,data.get_data()))
     {
         data.free();
         return false;
@@ -276,24 +276,24 @@ bool RoxTexture::get_data(nya_memory::tmp_buffer_ref &data,unsigned int x,unsign
     return true;
 }
 
-unsigned int RoxTexture::get_width() const { return m_width; }
-unsigned int RoxTexture::get_height() const { return m_height; }
-RoxTexture::COLOR_FORMAT RoxTexture::get_color_format() const { return m_format; }
-bool RoxTexture::is_cubemap() const { return m_is_cubemap; }
+unsigned int RoxTexture::getWidth() const { return m_width; }
+unsigned int RoxTexture::getHeight() const { return m_height; }
+RoxTexture::COLOR_FORMAT RoxTexture::getColorFormat() const { return m_format; }
+bool RoxTexture::isCubemap() const { return m_is_cubemap; }
 
-void RoxTexture::set_wrap(wrap s,wrap t)
+void RoxTexture::setWrap(WRAP s,WRAP t)
 {
     if(m_tex<0 || m_is_cubemap)
         return;
 
     const bool pot=((m_width&(m_width-1))==0 && (m_height&(m_height-1))==0);
     if(!pot)
-        s=t=wrap_clamp;
+        s=t=WRAP_CLAMP;
 
-    get_api_interface().set_texture_wrap(m_tex,s,t);
+    getApiInterface().setTextureWrap(m_tex,s,t);
 }
 
-void RoxTexture::set_aniso(unsigned int level)
+void RoxTexture::setAniso(unsigned int level)
 {
     m_aniso=level;
     m_aniso_set=true;
@@ -301,10 +301,10 @@ void RoxTexture::set_aniso(unsigned int level)
     if(m_tex<0)
         return;
 
-    get_api_interface().set_texture_filter(m_tex,m_filter_min,m_filter_mag,m_filter_mip,m_aniso);
+    getApiInterface().setTextureFilter(m_tex,m_filter_min,m_filter_mag,m_filter_mip,m_aniso);
 }
 
-void RoxTexture::set_filter(filter minification,filter magnification,filter mipmap)
+void RoxTexture::setFilter(FILTER minification,FILTER magnification,FILTER mipmap)
 {
     m_filter_min=minification;
     m_filter_mag=magnification;
@@ -314,95 +314,95 @@ void RoxTexture::set_filter(filter minification,filter magnification,filter mipm
     if(m_tex<0)
         return;
 
-    get_api_interface().set_texture_filter(m_tex,m_filter_min,m_filter_mag,m_filter_mip,m_aniso);
+    getApiInterface().setTextureFilter(m_tex,m_filter_min,m_filter_mag,m_filter_mip,m_aniso);
 }
 
-void RoxTexture::set_default_wrap(wrap s,wrap t)
+void RoxTexture::setDefaultWrap(WRAP s,WRAP t)
 {
     default_wrap_s=s;
     default_wrap_t=t;
 }
 
-void RoxTexture::set_default_filter(filter minification,filter magnification,filter mipmap)
+void RoxTexture::setDefaultFilter(FILTER minification,FILTER magnification,FILTER mipmap)
 {
     default_min_filter=minification;
     default_mag_filter=magnification;
     default_mip_filter=mipmap;
 }
 
-void RoxTexture::set_default_aniso(unsigned int level) { default_aniso=level; }
+void RoxTexture::setDefaultAniso(unsigned int level) { default_aniso=level; }
 
-void RoxTexture::get_default_wrap(wrap &s,wrap &t)
+void RoxTexture::getDefaultWrap(WRAP &s,WRAP &t)
 {
     s=default_wrap_s;
     t=default_wrap_t;
 }
 
-void RoxTexture::get_default_filter(filter &minification,filter &magnification,filter &mipmap)
+void RoxTexture::getDefaultFilter(FILTER &minification,FILTER &magnification,FILTER &mipmap)
 {
     minification=default_min_filter;
     magnification=default_mag_filter;
     mipmap=default_mip_filter;
 }
 
-unsigned int RoxTexture::get_default_aniso() { return default_aniso; }
-unsigned int RoxTexture::getMaxDimension() { return get_api_interface().get_max_texture_dimention(); }
-bool RoxTexture::is_dxt_supported() { return get_api_interface().is_texture_format_supported(dxt1); }
+unsigned int RoxTexture::getDefaultAniso() { return default_aniso; }
+unsigned int RoxTexture::getMaxDimension() { return getApiInterface().getMaxTextureDimention(); }
+bool RoxTexture::isDxtSupported() { return getApiInterface().isTextureFormatSupported(DXT1); }
 
-unsigned int RoxTexture::get_format_bpp(RoxTexture::COLOR_FORMAT format)
+unsigned int RoxTexture::getFormatBpp(RoxTexture::COLOR_FORMAT format)
 {
     switch(format)
     {
-        case RoxTexture::color_bgra: return 32;
-        case RoxTexture::color_rgba: return 32;
-        case RoxTexture::color_rgb: return 24;
-        case RoxTexture::greyscale: return 8;
-        case RoxTexture::color_rgba32f: return 32*4;
-        case RoxTexture::color_rgb32f: return 32*3;
-        case RoxTexture::color_r32f: return 32;
-        case RoxTexture::depth16: return 16;
-        case RoxTexture::depth24: return 24;
-        case RoxTexture::depth32: return 32;
+        case RoxTexture::COLOR_BGRA: return 32;
+        case RoxTexture::COLOR_RGBA: return 32;
+        case RoxTexture::COLOR_RGB: return 24;
+        case RoxTexture::GREYSCALE: return 8;
+        case RoxTexture::COLOR_RGBA32F: return 32*4;
+        case RoxTexture::COLOR_RGB32F: return 32*3;
+        case RoxTexture::COLOR_R32F: return 32;
+        case RoxTexture::DEPTH16: return 16;
+        case RoxTexture::DEPTH24: return 24;
+        case RoxTexture::DEPTH32: return 32;
 
-        case RoxTexture::dxt1: return 4;
-        case RoxTexture::dxt3: return 8;
-        case RoxTexture::dxt5: return 8;
+        case RoxTexture::DXT1: return 4;
+        case RoxTexture::DXT3: return 8;
+        case RoxTexture::DXT5: return 8;
 
-        case RoxTexture::etc1: return 4;
-        case RoxTexture::etc2: return 4;
-        case RoxTexture::etc2_a1: return 4;
-        case RoxTexture::etc2_eac: return 8;
+        case RoxTexture::ETC1: return 4;
+        case RoxTexture::ETC2: return 4;
+        case RoxTexture::ETC2_A1: return 4;
+        case RoxTexture::ETC2_EAC: return 8;
 
-        case RoxTexture::pvr_rgb2b: return 2;
-        case RoxTexture::pvr_rgb4b: return 4;
-        case RoxTexture::pvr_rgba2b: return 2;
-        case RoxTexture::pvr_rgba4b: return 4;
+        case RoxTexture::PVR_RGB2B: return 2;
+        case RoxTexture::PVR_RGB4B: return 4;
+        case RoxTexture::PVR_RGBA2B: return 2;
+        case RoxTexture::PVR_RGBA4B: return 4;
     };
 
     return 0;
 }
 
-ID3D11Texture2D *RoxTexture::get_dx11_tex_id() const
+ID3D11Texture2D *RoxTexture::getDx11TexId() const
 {
     //renderapi
 
     return 0;
 }
 
-unsigned int RoxTexture::get_gl_tex_id() const
+unsigned int RoxTexture::getGlTexId() const
 {
     if(m_tex<0)
         return 0;
 
-    if(get_render_api()==render_api_opengl)
-        return render_opengl::get().get_gl_texture_id(m_tex);
+    if(getRenderApi()==RENDER_API_OPENGL)
+        return RoxRenderOpengl::get().getGlTextureId(m_tex);
     
     //renderapi
 
     return 0;
 }
 
-unsigned int RoxTexture::get_used_vmem_size()
+unsigned int RoxTexture::getUsedVmemSize()
 {
     //renderapi
 
@@ -414,8 +414,8 @@ void RoxTexture::release()
     if(m_tex<0)
         return;
 
-    get_api_interface().remove_texture(m_tex);
-    render_api_interface::state &s=get_api_state();
+    getApiInterface().removeTexture(m_tex);
+    RoxRenderApiInterface::State &s=getApiState();
     for(int i=0;i<s.max_layers;++i)
     {
         if(s.textures[i]==m_tex)
