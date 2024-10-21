@@ -20,11 +20,11 @@ public:
 public:
     void setCamera(const RoxMath::Matrix4 &mv,const RoxMath::Matrix4 &p) override;
     void clear(const ViewportState &s,bool color,bool depth,bool stencil) override;
-    void draw(const state &s) override {}
+    void draw(const State &s) override {}
 
 public:
     void invalidateCachedState() override;
-    void applyState(const state &s) override;
+    void applyState(const State &s) override;
 
 public:
     static RoxRenderDirectx11 &get();

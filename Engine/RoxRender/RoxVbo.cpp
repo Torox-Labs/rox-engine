@@ -26,7 +26,7 @@ namespace
 {
     uint active_vert_count=0;
     uint active_ind_count=0;
-    RoxVbo::ElementType active_ElementType=RoxVbo::TRIANGLES;
+    RoxVbo::ELEMENT_TYPE active_ElementType=RoxVbo::TRIANGLES;
 }
 
 void RoxVbo::bindVerts() const
@@ -47,7 +47,7 @@ void RoxVbo::unbind() { getApiState().vertex_buffer=getApiState().index_buffer= 
 void RoxVbo::draw() { draw(0,getApiState().index_buffer<0?active_vert_count:active_ind_count,active_ElementType); }
 void RoxVbo::draw(uint count) { draw(0,count,active_ElementType); }
 
-void RoxVbo::draw(uint offset,uint count, ElementType el_type,uint instances)
+void RoxVbo::draw(uint offset,uint count, ELEMENT_TYPE el_type,uint instances)
 {
     RoxRenderApiInterface::State &s=getApiState();
 
@@ -86,7 +86,7 @@ void RoxVbo::transformFeedback(RoxVbo &target)
     getApiInterface().transformFeedback(s);
 }
 
-void RoxVbo::transformFeedback(RoxVbo &target,uint src_offset,uint dst_offset,uint count,ElementType type)
+void RoxVbo::transformFeedback(RoxVbo &target,uint src_offset,uint dst_offset,uint count,ELEMENT_TYPE type)
 {
     RoxRenderApiInterface::TfState s;
 
@@ -103,7 +103,7 @@ void RoxVbo::transformFeedback(RoxVbo &target,uint src_offset,uint dst_offset,ui
     getApiInterface().transformFeedback(s);
 }
 
-bool RoxVbo::setVertexData(const void*data,uint vert_stride,uint vert_count,UsageHint usage)
+bool RoxVbo::setVertexData(const void*data,uint vert_stride,uint vert_count,USAGE_HINT usage)
 {
     RoxRenderApiInterface &api=getApiInterface();
 
@@ -132,7 +132,7 @@ bool RoxVbo::setVertexData(const void*data,uint vert_stride,uint vert_count,Usag
     return true;
 }
 
-bool RoxVbo::setIndexData(const void*data, IndexSize size,uint indices_count, UsageHint usage)
+bool RoxVbo::setIndexData(const void*data, INDEX_SIZE size,uint indices_count, USAGE_HINT usage)
 {
     RoxRenderApiInterface &api=getApiInterface();
 
@@ -148,7 +148,7 @@ bool RoxVbo::setIndexData(const void*data, IndexSize size,uint indices_count, Us
     return true;
 }
 
-void RoxVbo::setVertices(uint offset,uint dimension,VertexAtribType type)
+void RoxVbo::setVertices(uint offset,uint dimension,VERTEX_ATRIB_TYPE type)
 {
     if(dimension>4)
         return;
@@ -159,7 +159,7 @@ void RoxVbo::setVertices(uint offset,uint dimension,VertexAtribType type)
     setLayout(m_layout);
 }
 
-void RoxVbo::setNormals(uint offset,VertexAtribType type)
+void RoxVbo::setNormals(uint offset, VERTEX_ATRIB_TYPE type)
 {
     m_layout.normal.offset=offset;
     m_layout.normal.dimension=3;
@@ -167,7 +167,7 @@ void RoxVbo::setNormals(uint offset,VertexAtribType type)
     setLayout(m_layout);
 }
 
-void RoxVbo::setTc(uint tc_idx,uint offset,uint dimension,VertexAtribType type)
+void RoxVbo::setTc(uint tc_idx,uint offset,uint dimension, VERTEX_ATRIB_TYPE type)
 {
     if(tc_idx>=max_tex_coord || dimension>4)
         return;
@@ -178,7 +178,7 @@ void RoxVbo::setTc(uint tc_idx,uint offset,uint dimension,VertexAtribType type)
     setLayout(m_layout);
 }
 
-void RoxVbo::setColors(uint offset,uint dimension,VertexAtribType type)
+void RoxVbo::setColors(uint offset,uint dimension, VERTEX_ATRIB_TYPE type)
 {
     if(dimension>4)
         return;
@@ -196,7 +196,7 @@ void RoxVbo::setLayout(const Layout &l)
         getApiInterface().setVertexLayout(m_verts,m_layout);
 }
 
-void RoxVbo::setElementType(ElementType type)
+void RoxVbo::setElementType(ELEMENT_TYPE type)
 {
     if(m_verts>=0 && getApiState().vertex_buffer==m_verts)
         active_ElementType=type;
@@ -240,8 +240,8 @@ bool RoxVbo::getIndexData(nya_memory::tmp_buffer_ref &data) const
 }
 
 const RoxVbo::Layout &RoxVbo::getLayout() const { return m_layout; }
-RoxVbo::IndexSize RoxVbo::getIndexSize() const { return m_ind_size; }
-RoxVbo::ElementType RoxVbo::getElementType() const { return m_ElementType; }
+RoxVbo::INDEX_SIZE RoxVbo::getIndexSize() const { return m_ind_size; }
+RoxVbo::ELEMENT_TYPE RoxVbo::getElementType() const { return m_ElementType; }
 uint RoxVbo::getVertStride() const{ return m_stride; }
 uint RoxVbo::getVertOffset() const { return m_layout.pos.offset; }
 uint RoxVbo::getVertDimension() const { return m_layout.pos.dimension; }

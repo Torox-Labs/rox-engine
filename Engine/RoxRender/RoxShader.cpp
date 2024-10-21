@@ -1,24 +1,24 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
-#include "shader.h"
-#include "shader_code_parser.h"
-#include "render.h"
-#include "render_api.h"
+#include "RoxShader.h"
+#include "RoxShaderCodeParser.h"
+#include "RoxRender.h"
+#include "RoxRenderApi.h"
 
-namespace nya_render
+namespace RoxRender
 {
 
-bool shader::add_program(program_type type,const char*code)
+bool RoxShader::add_program(program_type type,const char*code)
 {
     if(type>=program_types_count)
     {
-        log()<<"Unable to add shader program: invalid shader type\n";
+        log()<<"Unable to add RoxShader program: invalid RoxShader type\n";
         return false;
     }
 
     if(!code || !code[0])
     {
-        log()<<"Unable to add shader program: invalid code\n";
+        log()<<"Unable to add RoxShader program: invalid code\n";
         return false;
     }
 
@@ -41,10 +41,10 @@ bool shader::add_program(program_type type,const char*code)
     return true;
 }
 
-void shader::bind() const { get_api_state().shader=m_shdr; get_api_state().uniform_buffer=m_buf; }
-void shader::unbind() { get_api_state().shader= -1; get_api_state().uniform_buffer= -1; }
+void RoxShader::bind() const { get_api_state().RoxShader=m_shdr; get_api_state().uniform_buffer=m_buf; }
+void RoxShader::unbind() { get_api_state().RoxShader= -1; get_api_state().uniform_buffer= -1; }
 
-int shader::get_sampler_layer(const char *name) const
+int RoxShader::get_sampler_layer(const char *name) const
 {
     if(!name || !name[0])
         return -1;
@@ -64,7 +64,7 @@ int shader::get_sampler_layer(const char *name) const
     return -1;
 }
 
-int shader::find_uniform(const char *name) const
+int RoxShader::find_uniform(const char *name) const
 {
     if(!name || !name[0])
         return -1;
@@ -78,7 +78,7 @@ int shader::find_uniform(const char *name) const
     return -1;
 }
 
-void shader::set_uniform(int i,float f0,float f1,float f2,float f3) const
+void RoxShader::set_uniform(int i,float f0,float f1,float f2,float f3) const
 {
     if(i<0 || i>=(int)m_uniforms.size())
         return;
@@ -87,7 +87,7 @@ void shader::set_uniform(int i,float f0,float f1,float f2,float f3) const
     get_api_interface().set_uniform(m_shdr,i,f,4);
 }
 
-void shader::set_uniform3_array(int i,const float *f,unsigned int count) const
+void RoxShader::set_uniform3_array(int i,const float *f,unsigned int count) const
 {
     if(!f || i<0 || i>=(int)m_uniforms.size())
         return;
@@ -102,7 +102,7 @@ void shader::set_uniform3_array(int i,const float *f,unsigned int count) const
     get_api_interface().set_uniform(m_shdr,i,f,count*3);
 }
 
-void shader::set_uniform4_array(int i,const float *f,unsigned int count) const
+void RoxShader::set_uniform4_array(int i,const float *f,unsigned int count) const
 {
     if(!f || i<0 || i>=(int)m_uniforms.size())
         return;
@@ -128,7 +128,7 @@ void shader::set_uniform4_array(int i,const float *f,unsigned int count) const
     }
 }
 
-void shader::set_uniform16_array(int i,const float *f,unsigned int count) const
+void RoxShader::set_uniform16_array(int i,const float *f,unsigned int count) const
 {
     if(!f || i<0 || i>=(int)m_uniforms.size())
         return;
@@ -146,29 +146,29 @@ void shader::set_uniform16_array(int i,const float *f,unsigned int count) const
     get_api_interface().set_uniform(m_shdr,i,f,count*16);
 }
 
-int shader::get_uniforms_count() const { return (int)m_uniforms.size(); }
+int RoxShader::get_uniforms_count() const { return (int)m_uniforms.size(); }
 
-const char *shader::get_uniform_name(int idx) const
+const char *RoxShader::get_uniform_name(int idx) const
 {
     return idx>=0 && idx<(int)m_uniforms.size()?m_uniforms[idx].name.c_str():0;
 }
 
-shader::uniform_type shader::get_uniform_type(int idx) const
+RoxShader::uniform_type RoxShader::get_uniform_type(int idx) const
 {
     return idx>=0 && idx<(int)m_uniforms.size()?m_uniforms[idx].type:uniform_not_found;
 }
 
-unsigned int shader::get_uniform_array_size(int idx) const
+unsigned int RoxShader::get_uniform_array_size(int idx) const
 {
     return idx>=0 && idx<(int)m_uniforms.size()?m_uniforms[idx].array_size:0;
 }
 
-void shader::release()
+void RoxShader::release()
 {
     if(m_shdr>=0)
     {
-        if(get_api_state().shader==m_shdr)
-            get_api_state().shader=-1;
+        if(get_api_state().RoxShader==m_shdr)
+            get_api_state().RoxShader=-1;
         get_api_interface().remove_shader(m_shdr);
     }
 

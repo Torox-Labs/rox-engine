@@ -347,7 +347,7 @@ void RoxRenderDirectx11::clear(const ViewportState &s,bool color,bool depth,bool
 
 void RoxRenderDirectx11::invalidateCachedState() { ignore_cache = true; }
 
-void RoxRenderDirectx11::applyState(const state &s)
+void RoxRenderDirectx11::applyState(const State &s)
 {
     //ToDo
 

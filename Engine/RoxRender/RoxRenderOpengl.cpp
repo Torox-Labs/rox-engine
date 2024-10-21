@@ -73,7 +73,7 @@ namespace
 
         GLuint program,objects[RoxShader::PROGRAM_TYPES_COUNT];
 
-        struct uniform: public RoxShader::uniform { int handler,cache_idx; };
+        struct uniform: public RoxShader::Uniform { int handler,cache_idx; };
         std::vector<uniform> uniforms;
         std::vector<float> uniform_cache;
         int mat_mvp,mat_mv,mat_p;
@@ -346,7 +346,7 @@ int RoxRenderOpengl::createShader(const char *VERTEX,const char *fragment)
 }
 
 RoxRenderOpengl::uint RoxRenderOpengl::getUniformsCount(int RoxShader) { return (int)shaders.get(RoxShader).uniforms.size(); }
-RoxShader::uniform RoxRenderOpengl::getUniform(int RoxShader,int idx) { return shaders.get(RoxShader).uniforms[idx]; }
+RoxShader::Uniform RoxRenderOpengl::getUniform(int RoxShader,int idx) { return shaders.get(RoxShader).uniforms[idx]; }
 
 void RoxRenderOpengl::removeShader(int RoxShader)
 {
