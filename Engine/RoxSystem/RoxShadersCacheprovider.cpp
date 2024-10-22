@@ -24,10 +24,10 @@
 namespace RoxSystem
 {
 
-    bool RoxCompiledShadersProvider::get(const char* text, RoxRender::CompiledShader& shader)
+    bool RoxCompiledShadersProvider::get(const char* text, RoxRender::RoxCompiledShader& shader)
  {
     //shader = RoxRender::CompiledShader();
-    shader = RoxRender::CompiledShader();
+    shader = RoxRender::RoxCompiledShader();
 
     if(!text)
         return false;
@@ -37,14 +37,14 @@ namespace RoxSystem
     if(!data)
         return false;
 
-    shader=RoxRender::CompiledShader(data->get_size());
+    shader=RoxRender::RoxCompiledShader(data->get_size());
     data->read_all(shader.getData());
     data->release();
 
     return true;
 }
 
-bool RoxCompiledShadersProvider::set(const char *text,const RoxRender::CompiledShader &shader)
+bool RoxCompiledShadersProvider::set(const char *text,const RoxRender::RoxCompiledShader &shader)
 {
     if(!text)
         return false;
