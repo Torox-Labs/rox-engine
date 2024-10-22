@@ -1,20 +1,33 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Updated By the ROX_ENGINE
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+// Update the render api intefrace to check Metal 1th.
+//
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxShadersCacheprovider.h"
 #include "RoxResources/RoxResources.h"
 
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdio>
 
 //ToDo: hash collisions
 
 namespace RoxSystem
 {
 
-    bool RoxCompiledShadersProvider::get(const char* text, RoxRender::compiled_shader& shader)
+    bool RoxCompiledShadersProvider::get(const char* text, RoxRender::CompiledShader& shader)
  {
     //shader = RoxRender::CompiledShader();
-    shader = RoxRender::compiled_shader();
+    shader = RoxRender::CompiledShader();
 
     if(!text)
         return false;
@@ -24,19 +37,19 @@ namespace RoxSystem
     if(!data)
         return false;
 
-    shader=RoxRender::compiled_shader(data->get_size());
-    data->read_all(shader.get_data());
+    shader=RoxRender::CompiledShader(data->get_size());
+    data->read_all(shader.getData());
     data->release();
 
     return true;
 }
 
-bool RoxCompiledShadersProvider::set(const char *text,const RoxRender::compiled_shader &shader)
+bool RoxCompiledShadersProvider::set(const char *text,const RoxRender::CompiledShader &shader)
 {
     if(!text)
         return false;
 
-    const void *data=shader.get_data();
+    const void *data=shader.getData();
     if(!data)
         return false;
 
@@ -44,7 +57,7 @@ bool RoxCompiledShadersProvider::set(const char *text,const RoxRender::compiled_
     if(!f)
         return false;
 
-    fwrite(data,shader.get_size(),1,f);
+    fwrite(data,shader.getSize(),1,f);
     fclose(f);
 
     return true;

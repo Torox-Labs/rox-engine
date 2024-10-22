@@ -39,7 +39,7 @@ private:
     ID3D11DeviceContext *getContext();
     void setContext(ID3D11DeviceContext *context);
 
-    void setDefault_target(ID3D11RenderTargetView *color,ID3D11DepthStencilView *depth,int height=-1);
+    void setDefaultTarget(ID3D11RenderTargetView *color,ID3D11DepthStencilView *depth,int height=-1);
 };
 
 }

@@ -1,4 +1,17 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Updated By the ROX_ENGINE
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+// Update the render api intefrace to check Metal 1th.
+//
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #pragma once
 
@@ -51,17 +64,17 @@ public:
         Uniform(): type(UNIFORM_NOT_FOUND),array_size(0) {}
     };
 
-    int get_uniforms_count() const;
-    const char *get_uniform_name(int idx) const;
-    int find_uniform(const char *name) const;
-    UNIFORM_TYPE get_uniform_type(int idx) const;
-    unsigned int get_uniform_array_size(int idx) const;
+    int getUniformsCount() const;
+    const char *getUniformName(int idx) const;
+    int findUniform(const char *name) const;
+    UNIFORM_TYPE getUniformType(int idx) const;
+    unsigned int getUniformArraySize(int idx) const;
 
 public:
-    void set_uniform(int idx,float f0,float f1=0.0f,float f2=0.0f,float f3=0.0f) const;
-    void set_uniform3_array(int idx,const float *f,unsigned int count) const;
-    void set_uniform4_array(int idx,const float *f,unsigned int count) const;
-    void set_uniform16_array(int idx,const float *f,unsigned int count) const;
+    void setUniform(int idx,float f0,float f1=0.0f,float f2=0.0f,float f3=0.0f) const;
+    void setUniform3Array(int idx,const float *f,unsigned int count) const;
+    void setUniform4Array(int idx,const float *f,unsigned int count) const;
+    void setUniform16Array(int idx,const float *f,unsigned int count) const;
 
 public:
     void release();
@@ -76,16 +89,16 @@ private:
     std::string m_code[PROGRAM_TYPES_COUNT];
 };
 
-class compiled_shader
+class RoxCompiledShader
 {
 public:
-    void *get_data() { if(m_data.empty()) return 0; return &m_data[0]; }
-    const void *get_data() const { if(m_data.empty()) return 0; return &m_data[0]; }
-    size_t get_size() const { return m_data.size(); }
+    void *getData() { if(m_data.empty()) return 0; return &m_data[0]; }
+    const void *getData() const { if(m_data.empty()) return 0; return &m_data[0]; }
+    size_t getSize() const { return m_data.size(); }
 
 public:
-    compiled_shader() {}
-    compiled_shader(size_t size) { m_data.resize(size); }
+    RoxCompiledShader() {}
+    RoxCompiledShader(size_t size) { m_data.resize(size); }
 
 private:
     std::vector<char> m_data;
@@ -94,8 +107,8 @@ private:
 class RoxCompiledShadersProvider
 {
 public:
-    virtual bool get(const char *text,compiled_shader &shader) { return 0; }
-    virtual bool set(const char *text,const compiled_shader &shader) { return false; }
+    virtual bool get(const char *text, RoxCompiledShader &shader) { return 0; }
+    virtual bool set(const char *text,const RoxCompiledShader &shader) { return false; }
 };
 
 void set_compiled_shaders_provider(RoxCompiledShadersProvider *provider);

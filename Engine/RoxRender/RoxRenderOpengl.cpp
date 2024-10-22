@@ -1407,20 +1407,20 @@ static void apply_viewport_state(RoxRenderApiInterface::ViewportState s)
 	ignore_cache_vp=false;
 }
 
-inline GLenum gl_blend_mode(blend::MODE m)
+inline GLenum gl_blend_mode(Blend::MODE m)
 {
     switch(m)
     {
-        case blend::ZERO: return GL_ZERO;
-        case blend::ONE: return GL_ONE;
-        case blend::SRC_COLOR: return GL_SRC_COLOR;
-        case blend::INV_SRC_COLOR: return GL_ONE_MINUS_SRC_COLOR;
-        case blend::SRC_ALPHA: return GL_SRC_ALPHA;
-        case blend::INV_SRC_ALPHA: return GL_ONE_MINUS_SRC_ALPHA;
-        case blend::DST_COLOR: return GL_DST_COLOR;
-        case blend::INV_DST_COLOR: return GL_ONE_MINUS_DST_COLOR;
-        case blend::DST_ALPHA: return GL_DST_ALPHA;
-        case blend::INV_DST_ALPHA: return GL_ONE_MINUS_DST_ALPHA;
+        case Blend::ZERO: return GL_ZERO;
+        case Blend::ONE: return GL_ONE;
+        case Blend::SRC_COLOR: return GL_SRC_COLOR;
+        case Blend::INV_SRC_COLOR: return GL_ONE_MINUS_SRC_COLOR;
+        case Blend::SRC_ALPHA: return GL_SRC_ALPHA;
+        case Blend::INV_SRC_ALPHA: return GL_ONE_MINUS_SRC_ALPHA;
+        case Blend::DST_COLOR: return GL_DST_COLOR;
+        case Blend::INV_DST_COLOR: return GL_ONE_MINUS_DST_COLOR;
+        case Blend::DST_ALPHA: return GL_DST_ALPHA;
+        case Blend::INV_DST_ALPHA: return GL_ONE_MINUS_DST_ALPHA;
     }
 
     return GL_ONE;
@@ -1526,13 +1526,13 @@ void RoxRenderOpengl::applyState(const State &c)
         a.cull_order=c.cull_order;
     }
 
-    if(c.DepthTest !=a.DepthTest || ignore_cache)
+    if(c.depth_test !=a.depth_test || ignore_cache)
     {
-        if(c.DepthTest)
+        if(c.depth_test)
             glEnable(GL_DEPTH_TEST);
         else
             glDisable(GL_DEPTH_TEST);
-        a.DepthTest =c.DepthTest;
+        a.depth_test =c.depth_test;
     }
 
     if(c.depth_comparsion!=a.depth_comparsion || ignore_cache)
@@ -1574,12 +1574,12 @@ void RoxRenderOpengl::applyState(const State &c)
 
 template<bool transform_feedback>void draw_(const RoxRender::RoxRenderApiInterface::State &s)
 {
-    if(s.vertex_buffer<0 || s.RoxShader<0)
+    if(s.vertex_buffer<0 || s.shader <0)
         return;
 
-    set_shader(s.RoxShader);
+    set_shader(s.shader);
 
-    ShaderObj &shdr=shaders.get(s.RoxShader);
+    ShaderObj &shdr=shaders.get(s.shader);
     if(shdr.mat_mvp>=0)
     {
         const RoxMath::Matrix4 mvp=modelview*projection;
@@ -1612,7 +1612,7 @@ template<bool transform_feedback>void draw_(const RoxRender::RoxRenderApiInterfa
             glEnableVertexAttribArray(vertex_attribute);
             glVertexAttribPointer(vertex_attribute,v.layout.pos.dimension,get_gl_element_type(v.layout.pos.type),true,
                                   v.stride,(void*)(ptrdiff_t)(v.layout.pos.offset));
-            for(unsigned int i=0;i<RoxFbo::max_tex_coord;++i)
+            for(unsigned int i=0;i<RoxVbo::max_tex_coord; ++i)
             {
                 const RoxVbo::Layout::attribute &tc=v.layout.tc[i];
                 if(tc.dimension>0)
@@ -1679,7 +1679,7 @@ template<bool transform_feedback>void draw_(const RoxRender::RoxRenderApiInterfa
             applied_state.index_buffer=s.index_buffer;
         }
 #endif
-        const unsigned int gl_elem_type=(i.type==RoxFbo::index4b?GL_UNSIGNED_INT:GL_UNSIGNED_SHORT);
+        const unsigned int gl_elem_type=(i.type==RoxVbo::INDEX_4D?GL_UNSIGNED_INT:GL_UNSIGNED_SHORT);
 #ifdef USE_INSTANCING
         if(s.instances_count>1 && glDrawElementsInstancedARB)
             glDrawElementsInstancedARB(gl_elem,s.index_count,gl_elem_type,(void*)(ptrdiff_t)(s.index_offset*i.type),s.instances_count);

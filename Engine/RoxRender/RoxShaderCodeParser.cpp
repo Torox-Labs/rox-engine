@@ -879,8 +879,8 @@ template<typename t> static bool parse_vars(std::string &code,std::string &error
             char dim=(type_name.length()==4)?type_name[3]:'\0';
             switch(dim)
             {
-                case '2': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_mat2,name.c_str(),count)); break;
-                case '3': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::type_mat3,name.c_str(),count)); break;
+                case '2': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_MATRIX2,name.c_str(),count)); break;
+                case '3': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_MATRIX3,name.c_str(),count)); break;
                 case '4': vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_MATRIX4,name.c_str(),count)); break;
                 default: return false;
             };

@@ -13,13 +13,13 @@
 // 2. Commercial License (for use on proprietary platforms)
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
-#include "render_directx11.h"
+#include "RoxRenderDirectx11.h"
 #include "RoxLogger/RoxLogger.h"
 #include "RoxRenderOpengl.h"
-#include "render_metal.h"
+#include "RoxRenderMetal.h"
 
 #include "RoxTexture.h"
-#include "transform.h"
+#include "RoxTransform.h"
 #include "RoxMath/RoxVector.h"
 
 #include <map>
@@ -30,70 +30,75 @@ namespace RoxRender
 namespace
 {
     RoxLogger::RoxLoggerBase *render_log=0;
-    nya_render::render_api_interface::state current_state;
+    RoxRender::RoxRenderApiInterface::State current_state;
 
-    render_api_interface *available_render_interface()
+    RoxRenderApiInterface *availableRenderInterface()
     {
-        // Add to support the Metal Render ROX_ENGINE UPDATE
-        if(nya_render::render_metal::get().is_available())
-            return &nya_render::render_metal::get();
-        
-        if (render_opengl::get().is_available())
-            return &render_opengl::get();
 
-        if (render_directx11::get().is_available())
-            return &render_directx11::get();
+#if __APPLE__
+        // Add to support the Metal Render ROX_ENGINE UPDATE
+        if(RoxRender::RoxRenderMetal::get().isAvailable())
+            return &RoxRender::RoxRenderMetal::get();
+#endif
+
+        if (RoxRenderOpengl::get().isAvailable())
+            return &RoxRenderOpengl::get();
+
+#if WIN32
+        if (RoxRenderDirectx11::get().isAvailable())
+            return &RoxRenderDirectx11::get();
+#endif
 
         return 0;
     }
 
-    render_api_interface *render_interface = available_render_interface();
+    RoxRenderApiInterface *render_interface = availableRenderInterface();
 }
 
-void set_log(rox_log::log_base *l) { render_log=l; }
-rox_log::log_base &log()
+void set_log(RoxLogger::RoxLoggerBase *l) { render_log=l; }
+RoxLogger::RoxLoggerBase &log()
 {
     if(!render_log)
-        return rox_log::log();
+        return RoxLogger::log();
 
     return *render_log;
 }
 
-void set_viewport(const rect &r) { current_state.viewport=r; }
-void set_viewport(int x,int y,int width,int height)
+void setViewport(const Rectangle &r) { current_state.viewport=r; }
+void setViewport(int x,int y,int width,int height)
 {
     current_state.viewport.x=x;
     current_state.viewport.y=y;
     current_state.viewport.width=width;
     current_state.viewport.height=height;
 }
-const rect &get_viewport() { return current_state.viewport; }
+const Rectangle &getViewport() { return current_state.viewport; }
 
-void set_projection_matrix(const nya_math::mat4 &mat)
+void setProjectionMatrix(const RoxMath::Matrix4 &mat)
 {
-    transform::get().set_projection_matrix(mat);
-    get_api_interface().set_camera(get_modelview_matrix(),get_projection_matrix());
+    RoxTransform::get().setProjectionMatrix(mat);
+    getApiInterface().setCamera(getModelviewMatrix(),getProjectionMatrix());
 }
 
-void set_modelview_matrix(const nya_math::mat4 &mat)
+void setModelviewMatrix(const RoxMath::Matrix4 &mat)
 {
-    transform::get().set_modelview_matrix(mat);
-    get_api_interface().set_camera(get_modelview_matrix(),get_projection_matrix());
+    RoxTransform::get().setModelviewMatrix(mat);
+    getApiInterface().setCamera(getModelviewMatrix(),getProjectionMatrix());
 }
 
-void set_orientation_matrix(const nya_math::mat4 &mat)
+void set_orientation_matrix(const RoxMath::Matrix4 &mat)
 {
-    transform::get().set_orientation_matrix(mat);
-    get_api_interface().set_camera(get_modelview_matrix(),get_projection_matrix());
+    RoxTransform::get().setOrientationMatrix(mat);
+    getApiInterface().setCamera(getModelviewMatrix(),getProjectionMatrix());
 }
 
-const nya_math::mat4 &get_projection_matrix() { return transform::get().get_projection_matrix(); }
-const nya_math::mat4 &get_modelview_matrix() { return transform::get().get_modelview_matrix(); }
-const nya_math::mat4 &get_orientation_matrix() { return transform::get().get_orientation_matrix(); }
+const RoxMath::Matrix4 &getProjectionMatrix() { return RoxTransform::get().getProjectionMatrix(); }
+const RoxMath::Matrix4 &getModelviewMatrix() { return RoxTransform::get().getModelviewMatrix(); }
+const RoxMath::Matrix4 &getOrientationMatrix() { return RoxTransform::get().getOrientationMatrix(); }
 
-nya_math::vec4 get_clear_color() { return nya_math::vec4(current_state.clear_color); }
-void set_clear_color(const nya_math::vec4 &c) { set_clear_color(c.x,c.y,c.z,c.w); }
-void set_clear_color(float r,float g,float b,float a)
+RoxMath::Vector4 getClearColor() { return RoxMath::Vector4(current_state.clear_color); }
+void setClearColor(const RoxMath::Vector4 &c) { setClearColor(c.x, c.y, c.z, c.w); }
+void setClearColor(float r,float g,float b,float a)
 {
     current_state.clear_color[0]=r;
     current_state.clear_color[1]=g;
@@ -101,40 +106,40 @@ void set_clear_color(float r,float g,float b,float a)
     current_state.clear_color[3]=a;
 }
 
-float get_clear_depth() { return current_state.clear_depth; }
-void set_clear_depth(float value) { current_state.clear_depth=value; }
+float getClearDepth() { return current_state.clear_depth; }
+void setClearDepth(float value) { current_state.clear_depth=value; }
 void clear(bool color,bool depth,bool stencil) { render_interface->clear(current_state,color,depth,stencil); }
 
-void blend::enable(blend::mode src,blend::mode dst)
+void Blend::enable(Blend::MODE src,Blend::MODE dst)
 {
     current_state.blend=true;
     current_state.blend_src=src;
     current_state.blend_dst=dst;
 }
-void blend::disable() { current_state.blend=false; }
+void Blend::disable() { current_state.blend=false; }
 
-void cull_face::enable(cull_face::order o)
+void CullFace::enable(CullFace::ORDER o)
 {
     current_state.cull_face=true;
     current_state.cull_order=o;
 }
-void cull_face::disable() { current_state.cull_face=false; }
+void CullFace::disable() { current_state.cull_face=false; }
 
-void depth_test::enable(comparsion mode)
+void DepthTest::enable(COMPARISON MODE)
 {
     current_state.depth_test=true;
-    current_state.depth_comparsion=mode;
+    current_state.depth_comparsion=MODE;
 }
-void depth_test::disable() { current_state.depth_test=false; }
+void DepthTest::disable() { current_state.depth_test =false; }
 
-void zwrite::enable() { current_state.zwrite=true; }
-void zwrite::disable() { current_state.zwrite=false; }
+void Zwrite::enable() { current_state.zwrite=true; }
+void Zwrite::disable() { current_state.zwrite=false; }
 
-void color_write::enable() { current_state.color_write=true; }
-void color_write::disable() { current_state.color_write=false; }
+void Color_Write::enable() { current_state.color_write=true; }
+void Color_Write::disable() { current_state.color_write=false; }
 
-void scissor::enable(const rect &r) { current_state.scissor_enabled=true; current_state.scissor=r; }
-void scissor::enable(int x,int y,int w,int h)
+void Scissor::enable(const Rectangle &r) { current_state.scissor_enabled=true; current_state.scissor=r; }
+void Scissor::enable(int x,int y,int w,int h)
 {
     current_state.scissor_enabled=true;
     current_state.scissor.x=x;
@@ -142,60 +147,60 @@ void scissor::enable(int x,int y,int w,int h)
     current_state.scissor.width=w;
     current_state.scissor.height=h;
 }
-void scissor::disable() { current_state.scissor_enabled=false; }
-bool scissor::is_enabled() { return current_state.scissor_enabled; }
-const rect &scissor::get() { return current_state.scissor; }
+void Scissor::disable() { current_state.scissor_enabled=false; }
+bool Scissor::isEnabled() { return current_state.scissor_enabled; }
+const Rectangle &Scissor::get() { return current_state.scissor; }
 
-void set_state(const state &s) { *((state *)&current_state)=s; }
-const state &get_state() { return current_state; }
+void setState(const State &s) { *((State *)&current_state)=s; }
+const State &getState() { return current_state; }
 
-void apply_state(bool ignore_cache)
+void applyState(bool ignore_cache)
 {
     if (ignore_cache)
-        render_interface->invalidate_cached_state();
+        render_interface->invalidateCachedState();
 
-    render_interface->apply_state(current_state);
+    render_interface->applyState(current_state);
 }
 
-render_api get_render_api()
+RrenderApi getRenderApi()
 {
-    if (render_interface == &render_opengl::get())
-        return render_api_opengl;
+    if (render_interface == &RoxRenderOpengl::get())
+        return RENDER_API_OPENGL;
 
-    if (render_interface == &render_directx11::get())
-        return render_api_directx11;
+    if (render_interface == &RoxRenderDirectx11::get())
+        return RENDER_API_DIRECTX11;
 
-    if (render_interface == &render_metal::get())
-        return render_api_metal;
+    if (render_interface == &RoxRenderMetal::get())
+        return RENDER_API_METAL;
 
-    return render_api_custom;
+    return RENDER_API_CUSTOM;
 }
 
-bool set_render_api(render_api api)
+bool setRenderApi(RrenderApi api)
 {
     switch(api)
     {
-        case render_api_directx11: return set_render_api(&render_directx11::get());
-        case render_api_opengl: return set_render_api(&render_opengl::get());
-        case render_api_metal: return set_render_api(&render_metal::get());
-        case render_api_custom: return false;
+        case RENDER_API_DIRECTX11: return setRenderApi(&RoxRenderDirectx11::get());
+        case RENDER_API_OPENGL: return setRenderApi(&RoxRenderOpengl::get());
+        case RENDER_API_METAL: return setRenderApi(&RoxRenderMetal::get());
+        case RENDER_API_CUSTOM: return false;
     }
     return false;
 }
 
-bool set_render_api(render_api_interface *api)
+bool setRenderApi(RoxRenderApiInterface *api)
 {
-    if (!api || !api->is_available())
+    if (!api || !api->isAvailable())
         return false;
     
     render_interface = api;
     return true;
 }
 
-render_api_interface::state &get_api_state() { return current_state; }
-render_api_interface &get_api_interface() { return *render_interface; }
+RoxRenderApiInterface::State &getApiState() { return current_state; }
+RoxRenderApiInterface &getApiInterface() { return *render_interface; }
 
-namespace { bool ignore_platform_restrictions=true; }
-void set_ignore_platform_restrictions(bool ignore) { ignore_platform_restrictions=ignore; }
-bool is_platform_restrictions_ignored() { return ignore_platform_restrictions; }
+namespace { bool ignorePlatformRestrictions=true; }
+void setIgnorePlatformRestrictions(bool ignore) { ignorePlatformRestrictions =ignore; }
+bool isPlatformRestrictionsIgnored() { return ignorePlatformRestrictions; }
 }

@@ -1,4 +1,17 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+// Updated By the ROX_ENGINE
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+// Update the render api intefrace to check Metal 1th.
+//
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #pragma once
 
@@ -46,11 +59,11 @@ const RoxMath::Matrix4 &getOrientationMatrix();
 void setClearColor(float r,float g,float b,float a);
 void setClearColor(const RoxMath::Vector4 &c);
 RoxMath::Vector4 getClearColor();
-void set_ClearDepth(float value);
+void setClearDepth(float value);
 float getClearDepth();
 void clear(bool clear_color,bool clear_depth,bool clear_stencil=false);
 
-struct blend
+struct Blend
 {
 	enum MODE
     {
@@ -115,9 +128,9 @@ struct Color_Write
 struct State
 {
     bool blend;
-    blend::MODE blend_src;
-    blend::MODE blend_dst;
-    void setBlend(bool blend, blend::MODE src = blend::ONE, blend::MODE dst = blend::ZERO)
+    Blend::MODE blend_src;
+    Blend::MODE blend_dst;
+    void setBlend(bool blend, Blend::MODE src = Blend::ONE, Blend::MODE dst = Blend::ZERO)
     {
         this->blend = blend;
         blend_src = src;
@@ -132,7 +145,7 @@ struct State
         cull_order = order;
     }
 
-    bool DepthTest;
+    bool depth_test;
     DepthTest::COMPARISON depth_comparsion;
 
     bool zwrite;
@@ -140,13 +153,13 @@ struct State
 
     State():
         blend(false),
-        blend_src(blend::ONE),
-        blend_dst(blend::ZERO),
+        blend_src(Blend::ONE),
+        blend_dst(Blend::ZERO),
 
         cull_face(false),
         cull_order(CullFace::CCW),
 
-        DepthTest(true),
+        depth_test(true),
         depth_comparsion(DepthTest::NOT_GREATER),
 
         zwrite(true),
