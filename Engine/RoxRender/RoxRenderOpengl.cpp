@@ -15,7 +15,7 @@
 
 #include "RoxRenderOpengl.h"
 #include "RoxRenderOpenglExt.h"
-#include "RoxMemory/tmp_buffer.h"
+#include "RoxMemory/RoxTmpBuffers.h"
 #include "RoxRenderObjects.h"
 #include "RoxBitmap.h"
 #include "RoxFbo.h"

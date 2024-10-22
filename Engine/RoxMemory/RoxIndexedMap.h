@@ -2,8 +2,8 @@
 
 #pragma once
 
-// 'insert' and 'get_by_key' are O(log(size)) operations
-// 'get_by_idx' is O(1) operation
+// 'insert' and 'getByKey' are O(log(size)) operations
+// 'getByIdx' is O(1) operation
 // 'erase', 'get_idx_for_key' and 'get_key_for_idx' are O(size) operations
 // copy construction and assigment are O(size^2) operations
 
@@ -11,13 +11,15 @@
 #include <vector>
 #include <list>
 #include <algorithm>
+#include <string>
+
 #include "invalid_object.h"
 
-namespace nya_memory
+namespace RoxMemory
 {
 
 template <class object_t,class key_t=std::string>
-class indexed_map
+class RoxIndexedMap
 {
 public:
     bool insert(const key_t &k,const object_t &obj)
@@ -51,21 +53,21 @@ public:
             return *(key_iter->second);
     }
 
-    bool has_key(const key_t &k) const { return m_keys.find(k)!=m_keys.end(); }
-    bool is_empty() const { return m_objects.empty(); }
-    int get_size() const { return (int)m_objects.size(); }
+    bool hasKey(const key_t &k) const { return m_keys.find(k)!=m_keys.end(); }
+    bool isEmpty() const { return m_objects.empty(); }
+    int getSize() const { return (int)m_objects.size(); }
 
-    int get_idx_for_key(const key_t &k) const
+    int getIdxForKey(const key_t &k) const
     {
         typename keys_map::const_iterator key_iter=m_keys.find(k);
         if(key_iter==m_keys.end())
             return -1;
 
-        return (int)get_idx_for_iter(key_iter->second);
+        return (int)getIdxForIter(key_iter->second);
     }
 
     // returns invalid key on bad idx
-    key_t get_key_for_idx(size_t idx) const
+    key_t getKeyForIdx(size_t idx) const
     {
         if(idx>=m_objects.size())
             return invalid_object<key_t>();
@@ -77,7 +79,7 @@ public:
         return key_iter->first;
     }
 
-    object_t &get_by_idx(size_t idx)
+    object_t &getByIdx(size_t idx)
     {
         if(idx>=m_objects.size())
             return invalid_object<object_t>();
@@ -85,7 +87,7 @@ public:
         return *(m_indices[idx]);
     }
 
-    const object_t &get_by_idx(size_t idx) const
+    const object_t &getByIdx(size_t idx) const
     {
         if(idx >= m_objects.size())
             return invalid_object<object_t>();
@@ -93,7 +95,7 @@ public:
         return *(m_indices[idx]);
     }
 
-    object_t &get_by_key(const key_t &k)
+    object_t &getByKey(const key_t &k)
     {
         typename keys_map::iterator iter=m_keys.find(k);
         if(iter==m_keys.end())
@@ -102,7 +104,7 @@ public:
         return *(iter->second);
     }
 
-    const object_t &get_by_key(const key_t &k) const
+    const object_t &getByKey(const key_t &k) const
     {
         typename keys_map::const_iterator iter=m_keys.find(k);
         if(iter==m_keys.end())
@@ -118,25 +120,25 @@ public:
         m_indices.clear();
     }
 
-    bool erase_by_idx(size_t idx)
+    bool eraseByIdx(size_t idx)
     {
         if(idx>=m_objects.size())
             return false;
 
-        key_t k=get_key_for_idx(idx);
+        key_t k=getKeyForIdx(idx);
         m_objects.erase(m_indices[idx]);
         m_indices.erase(m_indices.begin()+idx);
         m_keys.erase(k);
         return true;
     }
 
-    bool erase_by_key(const key_t &k)
+    bool eraseByKey(const key_t &k)
     {
         typename keys_map::iterator key_iter=m_keys.find(k);
         if(key_iter==m_keys.end())
             return false;
 
-        size_t idx=get_idx_for_iter(key_iter->second);
+        size_t idx=getIdxForIter(key_iter->second);
         m_objects.erase(m_indices[idx]);
         m_indices.erase(m_indices.begin()+idx);
         m_keys.erase(key_iter);
@@ -144,28 +146,28 @@ public:
     }
 
 public:
-    indexed_map() {}
-    indexed_map(const indexed_map &m):
+    RoxIndexedMap() {}
+    RoxIndexedMap(const RoxIndexedMap &m):
     m_objects(m.m_objects)
     {
         for(typename keys_map::const_iterator it=m.m_keys.begin(); it!=m.m_keys.end(); ++it)
-            m_keys.insert(std::make_pair(it->first,find_corressponding_iterator(m.m_objects,it->second)));
+            m_keys.insert(std::make_pair(it->first,findCorresspondingIterator(m.m_objects,it->second)));
 
         for(typename indices_map::const_iterator it=m.m_indices.begin(); it!=m.m_indices.end(); ++it)
-            m_indices.push_back(find_corressponding_iterator(m.m_objects,*it));
+            m_indices.push_back(findCorresspondingIterator(m.m_objects,*it));
     }
 
-    indexed_map &operator=(const indexed_map &m)
+    RoxIndexedMap &operator=(const RoxIndexedMap &m)
     {
         m_objects=m.m_objects;
 
         m_keys.clear();
         for(typename keys_map::const_iterator it=m.m_keys.begin(); it!=m.m_keys.end(); ++it)
-            m_keys.insert(std::make_pair(it->first,find_corressponding_iterator(m.m_objects,it->second)));
+            m_keys.insert(std::make_pair(it->first,findCorresspondingIterator(m.m_objects,it->second)));
 
         m_indices.clear();
         for(typename indices_map::const_iterator it=m.m_indices.begin();it!=m.m_indices.end(); ++it)
-            m_indices.push_back(find_corressponding_iterator(m.m_objects,*it));
+            m_indices.push_back(findCorresspondingIterator(m.m_objects,*it));
 
         return *this;
     }
@@ -175,7 +177,7 @@ private:
     typedef std::map<key_t, typename std::list<object_t>::iterator> keys_map;
     typedef std::vector<typename std::list<object_t>::iterator> indices_map;
 
-    size_t get_idx_for_iter(typename objects_list::const_iterator object_iter) const
+    size_t getIdxForIter(typename objects_list::const_iterator object_iter) const
     {
         size_t result=0;
         while(m_indices[result]!=object_iter)
@@ -184,7 +186,7 @@ private:
         return result;
     }
 
-    typename objects_list::iterator find_corressponding_iterator(const objects_list &another_objects,
+    typename objects_list::iterator findCorresspondingIterator(const objects_list &another_objects,
                                                                  typename objects_list::const_iterator another_iter)
     {
         typename objects_list::iterator result=m_objects.begin();

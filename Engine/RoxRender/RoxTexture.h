@@ -14,9 +14,9 @@
 
 #pragma once
 
-namespace nya_memory
+namespace RoxMemory
 {
-	class tmp_buffer_ref;
+	class RoxTmpBufferRef;
 }
 
 struct ID3D11Texture2D;
@@ -111,8 +111,8 @@ namespace RoxRender
 		static void setDefaultAniso(uint level);
 
 	public:
-		bool getData(nya_memory::tmp_buffer_ref& data) const;
-		bool getData(nya_memory::tmp_buffer_ref& data, uint x, uint y, uint w, uint h) const;
+		bool getData(RoxMemory::RoxTmpBufferRef& data) const;
+		bool getData(RoxMemory::RoxTmpBufferRef& data, uint x, uint y, uint w, uint h) const;
 		uint getWidth() const;
 		uint getHeight() const;
 		COLOR_FORMAT getColorFormat() const;

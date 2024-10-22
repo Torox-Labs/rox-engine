@@ -14,7 +14,7 @@
 
 #pragma once
 
-namespace nya_memory { class tmp_buffer_ref; }
+namespace RoxMemory { class RoxTmpBufferRef; }
 
 namespace RoxRender
 {
@@ -75,8 +75,8 @@ public:
     void setLayout(const Layout&l);
 
 public:
-    bool getVertexData(nya_memory::tmp_buffer_ref &data) const;
-    bool getIndexData(nya_memory::tmp_buffer_ref &data) const;
+    bool getVertexData(RoxMemory::RoxTmpBufferRef &data) const;
+    bool getIndexData(RoxMemory::RoxTmpBufferRef &data) const;
     ELEMENT_TYPE getElementType() const;
     uint getVertsCount() const;
     uint getVertStride() const;

@@ -2,13 +2,13 @@
 
 #pragma once
 
-namespace nya_memory
+namespace RoxMemory
 {
 
-template<typename t> class optional
+template<typename t> class RoxOptional
 {
 public:
-    bool is_valid() const { return m_obj!=0; }
+    bool isValid() const { return m_obj!=0; }
 
     const t *operator -> () const { return m_obj; };
     t *operator -> () { return m_obj; };
@@ -30,9 +30,9 @@ public:
         m_obj=0;
     }
 
-    optional():m_obj(0) {}
+    RoxOptional():m_obj(0) {}
 
-    optional(const optional &from)
+    RoxOptional(const optional &from)
     {
         if(from.m_obj)
         {
@@ -43,9 +43,9 @@ public:
             m_obj=0;
     }
 
-    ~optional() { free(); }
+    ~RoxOptional() { free(); }
 
-    optional &operator = (const optional &from)
+    RoxOptional &operator = (const optional &from)
     {
         if(this==&from)
             return *this;

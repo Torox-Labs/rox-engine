@@ -2,25 +2,26 @@
 
 #pragma once
 
-#include "invalid_object.h"
-#include "non_copyable.h"
+#include "RoxInvalidObject.h"
+#include "RoxNonCopyable.h"
 #include <list>
 #include <map>
+#include <string>
 
-namespace nya_memory
+namespace RoxMemory
 {
 
-template<class t,size_t count> class lru: public non_copyable
+template<class t,size_t count> class RoxLru: public RoxNonCopyable
 {
 protected:
-    virtual bool on_access(const char *name,t& value) { return false; }
-    virtual bool on_free(const char *name,t& value) { return true; }
+    virtual bool onAccess(const char *name,t& value) { return false; }
+    virtual bool onFree(const char *name,t& value) { return true; }
 
 public:
     t &access(const char *name)
     {
         if(!name)
-            return invalid_object<t>();
+            return invalidObject<t>();
 
         typename map::iterator it=m_map.find(name);
 		if(it!=m_map.end())
@@ -42,7 +43,7 @@ public:
         if(!on_access(name,m_list.front().second))
         {
             m_list.pop_front();
-            return invalid_object<t>();
+            return invalidObject<t>();
         }
 
         m_map[name]=m_list.begin();
@@ -71,7 +72,7 @@ public:
         m_map.clear();
     }
 
-public: lru(){}
+public: RoxLru(){}
 
 private:
     typedef std::pair<std::string,t> entry;

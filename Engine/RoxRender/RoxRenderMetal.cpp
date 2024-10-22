@@ -16,8 +16,8 @@
 #include "RoxRenderMetal.h"
 #include "RoxRenderObjects.h"
 #include "RoxShaderCodeParser.h"
-#include "RoxMemory/mutex.h"
-#include "RoxMemory/tmp_buffer.h"
+#include "RoxMemory/RoxMutex.h"
+#include "RoxMemory/RoxTmpBuffers.h"
 #include "RoxRender/RoxBitmap.h"
 #include <queue>
 #include <list>

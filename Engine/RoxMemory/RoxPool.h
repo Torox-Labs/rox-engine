@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include "non_copyable.h"
+#include "RoxNonCopyable.h"
 #include <vector>
 
-namespace nya_memory
+namespace RoxMemory
 {
 
-template<typename t_data,size_t block_elements_count> class pool: public non_copyable
+template<typename t_data,size_t block_elements_count> class pool: public RoxNonCopyable
 {
 public:
     t_data *allocate()
@@ -104,8 +104,8 @@ public:
     }
 
 public:
-    size_t get_count() const { return m_used_count; }
-    size_t get_mem_size() const { return m_blocks.size()*sizeof(t_data)*block_elements_count; }
+    size_t getCount() const { return m_used_count; }
+    size_t getMemSize() const { return m_blocks.size()*sizeof(t_data)*block_elements_count; }
 
 public:
     pool(): m_free_node_idx(no_idx),m_used_count(0) {}

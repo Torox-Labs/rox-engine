@@ -3,13 +3,13 @@
 #pragma once
 
 #include <cstddef>
-#include <string.h>
+#include <cstring>
 #include <string>
 
-namespace nya_memory
+namespace RoxMemory
 {
 
-class memory_reader
+class RoxMemoryReader
 {
 public:
     template <typename t> t read()
@@ -27,8 +27,8 @@ public:
         return a;
     }
 
-    std::string read_string() { return read_string<unsigned short>(); }
-    template <typename t> std::string read_string()
+    std::string readString() { return readString<unsigned short>(); }
+    template <typename t> std::string readString()
     {
         const t size=read<t>();
         const char *str=(const char *)get_data();
@@ -57,7 +57,7 @@ public:
         return true;
     }
 
-    bool check_remained(size_t size) const { return size<=m_size-m_offset; }
+    bool checkRemained(size_t size) const { return size<=m_size-m_offset; }
 
     bool seek(size_t offset)
     {
@@ -92,9 +92,9 @@ public:
         return true;
     }
 
-    size_t get_offset() const { return m_offset; }
+    size_t getOffset() const { return m_offset; }
 
-    size_t get_remained() const
+    size_t getRemained() const
     {
         if(m_offset>=m_size)
             return 0;
@@ -102,7 +102,7 @@ public:
         return m_size-m_offset;
     }
 
-    const void *get_data()  const
+    const void *getData()  const
     {
         if(m_offset>=m_size)
             return 0;
@@ -110,7 +110,7 @@ public:
         return m_data+m_offset;
     }
 
-    memory_reader(const void *data,size_t size)
+    RoxMemoryReader(const void *data,size_t size)
     {
         if(data)
         {

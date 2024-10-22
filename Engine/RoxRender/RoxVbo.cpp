@@ -15,7 +15,7 @@
 #include "RoxVbo.h"
 #include "RoxRenderApi.h"
 #include "RoxStatistics.h"
-#include "RoxMemory/tmp_buffer.h"
+#include "RoxMemory/RoxTmpBuffers.h"
 
 typedef unsigned int uint;
 
@@ -203,7 +203,7 @@ void RoxVbo::setElementType(ELEMENT_TYPE type)
     m_ElementType=type;
 }
 
-bool RoxVbo::getVertexData(nya_memory::tmp_buffer_ref &data) const
+bool RoxVbo::getVertexData(RoxMemory::RoxTmpBufferRef &data) const
 {
     if(m_verts<0)
     {
@@ -212,7 +212,7 @@ bool RoxVbo::getVertexData(nya_memory::tmp_buffer_ref &data) const
     }
 
     data.allocate(m_stride*m_vert_count);
-    if(!getApiInterface().getVertexData(m_verts,data.get_data()))
+    if(!getApiInterface().getVertexData(m_verts,data.getData()))
     {
         data.free();
         return false;
@@ -221,7 +221,7 @@ bool RoxVbo::getVertexData(nya_memory::tmp_buffer_ref &data) const
     return true;
 }
 
-bool RoxVbo::getIndexData(nya_memory::tmp_buffer_ref &data) const
+bool RoxVbo::getIndexData(RoxMemory::RoxTmpBufferRef &data) const
 {
     if(m_indices<0)
     {
@@ -230,7 +230,7 @@ bool RoxVbo::getIndexData(nya_memory::tmp_buffer_ref &data) const
     }
 
     data.allocate(m_ind_count*m_ind_size);
-    if(!getApiInterface().getIndexData(m_indices,data.get_data()))
+    if(!getApiInterface().getIndexData(m_indices,data.getData()))
     {
         data.free();
         return false;

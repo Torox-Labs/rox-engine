@@ -15,7 +15,7 @@
 #include "RoxTexture.h"
 #include "RoxBitmap.h"
 #include "RoxRenderOpengl.h"
-#include "RoxMemory/tmp_buffer.h"
+#include "RoxMemory/RoxTmpBuffers.h"
 
 namespace RoxRender
 {
@@ -91,7 +91,7 @@ bool RoxTexture::buildTexture(const void *data_a[6],bool is_cubemap,unsigned int
     else if(!pot)
         mip_count=1;
 
-    nya_memory::tmp_buffer_ref tmp_buf;
+    RoxMemory::RoxTmpBufferRef tmp_buf;
 
     if(!getApiInterface().isTextureFormatSupported(format))
     {
@@ -117,7 +117,7 @@ bool RoxTexture::buildTexture(const void *data_a[6],bool is_cubemap,unsigned int
                 for(int i=0;i<(is_cubemap?6:1);++i)
                 {
                     const unsigned char *from=(unsigned char *)(is_cubemap?data_a[i]:data);
-                    unsigned char *to=(unsigned char *)tmp_buf.get_data(i*size);
+                    unsigned char *to=(unsigned char *)tmp_buf.getData(i*size);
                     (is_cubemap?data_a[i]:data)=to;
                     if(format==COLOR_RGB)
                     {
@@ -253,12 +253,12 @@ void RoxTexture::unbind(unsigned int layer)
     getApiState().textures[layer]=-1;
 }
 
-bool RoxTexture::getData(nya_memory::tmp_buffer_ref &data) const
+bool RoxTexture::getData(RoxMemory::RoxTmpBufferRef &data) const
 {
     return getData(data,0,0,m_width,m_height);
 }
 
-bool RoxTexture::getData(nya_memory::tmp_buffer_ref &data,unsigned int x,unsigned int y,unsigned int w,unsigned int h) const
+bool RoxTexture::getData(RoxMemory::RoxTmpBufferRef&data,unsigned int x,unsigned int y,unsigned int w,unsigned int h) const
 {
     if(m_tex<0 || !w || !h || x+w>m_width || y+h>m_height)
         return false;
@@ -280,7 +280,7 @@ bool RoxTexture::getData(nya_memory::tmp_buffer_ref &data,unsigned int x,unsigne
     }
 
     data.allocate(size);
-    if(!getApiInterface().getTextureData(m_tex,x,y,w,h,data.get_data()))
+    if(!getApiInterface().getTextureData(m_tex,x,y,w,h,data.getData()))
     {
         data.free();
         return false;

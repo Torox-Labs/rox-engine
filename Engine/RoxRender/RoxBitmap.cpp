@@ -13,8 +13,8 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxBitmap.h"
-#include "RoxMemory/align_alloc.h"
-#include "RoxMemory/tmp_buffer.h"
+#include "RoxMemory/RoxAlignAlloc.h"
+#include "RoxMemory/RoxTmpBuffers.h"
 #include <cstring>
 #include <vector>
 
@@ -73,7 +73,7 @@ namespace RoxRender
 
 	void bitmapDownsample2x(uint8_t* data, int width, int height, int channels)
 	{
-		if (channels == 4 && nya_memory::is_aligned(data, 4))
+		if (channels == 4 && RoxMemory::isAligned(data, 4))
 		{
 			if (width > 1)
 			{
@@ -111,7 +111,7 @@ namespace RoxRender
 			return;
 		}
 
-		if (channels == 4 && nya_memory::is_aligned(data, 4))
+		if (channels == 4 && RoxMemory::isAligned(data, 4))
 		{
 			const uint32_t* data32 = (uint32_t*)data;
 			uint32_t* out32 = (uint32_t*)out;
@@ -206,9 +206,9 @@ namespace RoxRender
 	{
 		if (width != height)
 		{
-			nya_memory::tmp_buffer_scoped buf(width * height * channels);
-			bitmapRotate_90_left(data, width, height, channels, (uint8_t*)buf.get_data());
-			buf.copy_to(data, buf.get_size());
+			RoxMemory::RoxTmpBufferScoped buf(width * height * channels);
+			bitmapRotate_90_left(data, width, height, channels, (uint8_t*)buf.getData());
+			buf.copyTo(data, buf.getSize());
 			return;
 		}
 
@@ -234,9 +234,9 @@ namespace RoxRender
 	{
 		if (width != height)
 		{
-			nya_memory::tmp_buffer_scoped buf(width * height * channels);
-			bitmapRotate_90_right(data, width, height, channels, (uint8_t*)buf.get_data());
-			buf.copy_to(data, buf.get_size());
+			RoxMemory::RoxTmpBufferScoped buf(width * height * channels);
+			bitmapRotate_90_right(data, width, height, channels, (uint8_t*)buf.getData());
+			buf.copyTo(data, buf.getSize());
 			return;
 		}
 
@@ -354,7 +354,7 @@ namespace RoxRender
 		if (channels < 3)
 			return;
 
-		if (channels == 4 && nya_memory::is_aligned(data, 4))
+		if (channels == 4 && RoxMemory::isAligned(data, 4))
 		{
 			for (const uint8_t* to = data + width * height * 4; data < to; data += 4)
 				*(uint32_t*)(data) = (data[0] << 16) | (data[1] << 8) | data[2] | (data[3] << 24);
@@ -378,7 +378,7 @@ namespace RoxRender
 		}
 		else if (channels == 4)
 		{
-			if (nya_memory::is_aligned(out, 4))
+			if (RoxMemory::isAligned(out, 4))
 			{
 				uint32_t* out32 = (uint32_t*)out;
 				for (const uint8_t* to = data + width * height * 4; data < to; data += 4)

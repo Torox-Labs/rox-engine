@@ -4,11 +4,11 @@
 
 #include <vector>
 
-namespace nya_memory
+namespace RoxMemory
 {
 
 template <class index=int,int invalid=-1>
-class tile_map
+class RoxTileMap
 {
 public:
     index get(int x,int y) const
@@ -85,17 +85,17 @@ public:
         m_w=w,m_h=h;
     }
 
-    void clear() { *this=tile_map(); }
+    void clear() { *this=RoxTileMap(); }
 
-    int get_x() const { return m_x; }
-    int get_y() const { return m_y; }
-    int get_w() const { return m_w; }
-    int get_h() const { return m_h; }
+    int getX() const { return m_x; }
+    int getY() const { return m_y; }
+    int getW() const { return m_w; }
+    int getH() const { return m_h; }
 
-    const index *get_tiles() const { return m_tiles.data(); }
+    const index *getTiles() const { return m_tiles.data(); }
 
 public:
-    tile_map(): m_x(0),m_y(0),m_w(0),m_h(0) {}
+    RoxTileMap(): m_x(0),m_y(0),m_w(0),m_h(0) {}
 
 private:
     int m_x,m_y,m_h,m_w;

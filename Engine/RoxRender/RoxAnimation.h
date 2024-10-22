@@ -17,7 +17,7 @@
 #include "RoxMath/RoxVector.h"
 #include "RoxMath/RoxQuaternion.h"
 #include "RoxMath/RoxBezier.h"
-#include "RoxMemory/shared_ptr.h"
+#include "RoxMemory/RoxSharedPtr.h"
 #include <vector>
 #include <map>
 #include <string>
@@ -84,8 +84,8 @@ private:
     struct bone
     {
         std::string name;
-        nya_memory::shared_ptr<pos_sequence> pos;
-        nya_memory::shared_ptr<rot_sequence> rot;
+        RoxMemory::RoxSharedPtr<pos_sequence> pos;
+        RoxMemory::RoxSharedPtr<rot_sequence> rot;
         bone() {}
         bone(const char *name): name(name) { pos.create(); rot.create(); }
     };
@@ -95,7 +95,7 @@ private:
     struct curve
     {
         std::string name;
-        nya_memory::shared_ptr<curve_sequence> value;
+        RoxMemory::RoxSharedPtr<curve_sequence> value;
         curve() {}
         curve(const char *name): name(name) { value.create(); }
     };

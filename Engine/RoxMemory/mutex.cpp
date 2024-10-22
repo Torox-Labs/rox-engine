@@ -1,11 +1,11 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
-#include "mutex.h"
+#include "RoxMutex.h"
 
-namespace nya_memory
+namespace RoxMemory
 {
 
-void mutex::lock()
+void RoxMutex::lock()
 {
 #ifdef _MSC_VER
     m_mutex.lock();
@@ -14,7 +14,7 @@ void mutex::lock()
 #endif
 }
 
-void mutex::unlock()
+void RoxMutex::unlock()
 {
 #ifdef _MSC_VER
     m_mutex.unlock();
@@ -23,21 +23,21 @@ void mutex::unlock()
 #endif
 }
 
-mutex::mutex()
+RoxMutex::RoxMutex()
 {
 #ifndef _MSC_VER
     pthread_mutex_init(&m_mutex,0);
 #endif
 }
 
-mutex::~mutex()
+RoxMutex::~RoxMutex()
 {
 #ifndef _MSC_VER
     pthread_mutex_destroy(&m_mutex);
 #endif
 }
 
-void mutex_rw::lock_read()
+void RoxMutexRw::lockRead()
 {
 #ifdef _MSC_VER
     m_mutex.lock();
@@ -48,7 +48,7 @@ void mutex_rw::lock_read()
 #endif
 }
 
-void mutex_rw::lock_write()
+void RoxMutexRw::lockWrite()
 {
 #ifdef _MSC_VER
     m_mutex.lock();
@@ -58,7 +58,7 @@ void mutex_rw::lock_write()
 #endif
 }
 
-void mutex_rw::unlock_read()
+void RoxMutexRw::unlockRead()
 {
 #ifdef _MSC_VER
     --m_readers;
@@ -67,7 +67,7 @@ void mutex_rw::unlock_read()
 #endif
 }
 
-void mutex_rw::unlock_write()
+void RoxMutexRw::unlockWrite()
 {
 #ifdef _MSC_VER
     m_mutex.unlock();
@@ -76,7 +76,7 @@ void mutex_rw::unlock_write()
 #endif
 }
 
-mutex_rw::mutex_rw()
+RoxMutexRw::RoxMutexRw()
 {
 #ifdef _MSC_VER
     m_readers=0;
@@ -85,7 +85,7 @@ mutex_rw::mutex_rw()
 #endif
 }
 
-mutex_rw::~mutex_rw()
+RoxMutexRw::~RoxMutexRw()
 {
 #if !defined _MSC_VER && !defined EMSCRIPTEN
     pthread_rwlock_destroy(&m_mutex);

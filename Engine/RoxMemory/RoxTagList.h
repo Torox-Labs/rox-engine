@@ -2,16 +2,17 @@
 
 #pragma once
 
-#include "invalid_object.h"
+#include "RoxInvalidObject.h"
+
 #include <algorithm>
 #include <vector>
 #include <string>
 #include <map>
 
-namespace nya_memory
+namespace RoxMemory
 {
 
-template<class t> class tag_list
+template<class t> class RoxTagList
 {
 public:
     t &add() { return add(0,0); }
@@ -31,7 +32,7 @@ public:
     }
 
 public:
-    int get_count(const char *tag) const
+    int getCount(const char *tag) const
     {
         if(!tag)
             return (int)m_elements.size();
@@ -43,7 +44,7 @@ public:
         return (int)it->second.size();
     }
 
-    int get_idx(const char *tag,int idx) const
+    int getIdx(const char *tag,int idx) const
     {
         if(!tag || idx<0)
             return -1;
@@ -62,7 +63,7 @@ public:
     t &get(const char *tag,int idx) { return get(get_idx(tag,idx)); }
 
 public:
-    int get_count() const { return (int)m_elements.size(); }
+    int getCount() const { return (int)m_elements.size(); }
 
     const t &get(int idx) const
     {

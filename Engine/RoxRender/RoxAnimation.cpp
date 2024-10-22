@@ -13,12 +13,12 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxAnimation.h"
-#include "RoxMemory/invalid_object.h"
+#include "RoxMemory/RoxInvalidObject.h"
 
 namespace
 {
 
-template<typename t_list,typename t_frame> void add_frame(nya_memory::shared_ptr<t_list> &seq,const t_frame &f,
+template<typename t_list,typename t_frame> void add_frame(RoxMemory::RoxSharedPtr<t_list> &seq,const t_frame &f,
                                                           unsigned int time,unsigned int &duration)
 {
     if(time>duration)
@@ -40,7 +40,7 @@ template<typename t_map> int get_idx(const char *name,t_map &map)
 }
 
 template<typename t_value,typename t_data,typename t_frame> t_value get_value(
-                  unsigned int time,bool looped,const nya_memory::shared_ptr<t_data> &seq_sh,unsigned int duration)
+                  unsigned int time,bool looped,const RoxMemory::RoxSharedPtr<t_data> &seq_sh,unsigned int duration)
 {
     const t_data &seq = *seq_sh.operator->();
 
@@ -201,7 +201,7 @@ void RoxAnimation::addCurveFrame(int idx,unsigned int time,float value)
 const RoxAnimation::pos_sequence &RoxAnimation::getPosFrames(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
-        return nya_memory::invalid_object<pos_sequence>();
+        return RoxMemory::invalidObject<pos_sequence>();
 
     return *m_bones[idx].pos.operator->();
 }
@@ -209,7 +209,7 @@ const RoxAnimation::pos_sequence &RoxAnimation::getPosFrames(int idx) const
 const RoxAnimation::rot_sequence &RoxAnimation::getRotFrames(int idx) const
 {
     if(idx<0 || idx>=(int)m_bones.size())
-        return nya_memory::invalid_object<rot_sequence>();
+        return RoxMemory::invalidObject<rot_sequence>();
 
     return *m_bones[idx].rot.operator->();
 }
@@ -217,7 +217,7 @@ const RoxAnimation::rot_sequence &RoxAnimation::getRotFrames(int idx) const
 const RoxAnimation::curve_sequence &RoxAnimation::getCurveFrames(int idx) const
 {
     if(idx<0 || idx>=(int)m_curves.size())
-        return nya_memory::invalid_object<curve_sequence>();
+        return RoxMemory::invalidObject<curve_sequence>();
 
     return *m_curves[idx].value.operator->();
 }
