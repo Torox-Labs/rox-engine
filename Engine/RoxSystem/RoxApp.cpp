@@ -168,9 +168,9 @@ public:
         if (FAILED(hr))
             return;
         
-        nya_render::set_context(m_context);
-        nya_render::set_device(m_device);
-        nya_render::cull_face::disable();
+        RoxRender::set_context(m_context);
+        RoxRender::set_device(m_device);
+        RoxRender::cull_face::disable();
         recreate_targets(w,
                          h);
 #else
@@ -206,7 +206,7 @@ public:
         
         if (antialiasing > 0)
         {
-            if (!nya_render::render_opengl::has_extension("GL_ARB_multisample"))
+            if (!RoxRender::RoxRenderOpengl::hasExtension("GL_ARB_multisample"))
             {
                 //antialiasing=0;
                 RoxSystem::log() << "GL_ARB_multisample not found\n";
@@ -217,7 +217,7 @@ public:
         if (antialiasing > 0)
         {
             wglChoosePixelFormatARB =
-            (PFNWGLCHOOSEPIXELFORMATARBPROC)nya_render::render_opengl::get_extension("wglChoosePixelFormatARB");
+            (PFNWGLCHOOSEPIXELFORMATARBPROC)RoxRender::RoxRenderOpengl::getExtension("wglChoosePixelFormatARB");
             if (!wglChoosePixelFormatARB)
             {
                 antialiasing = 0;
@@ -336,7 +336,7 @@ public:
                          GWLP_USERDATA,
                          (LONG_PTR)&app);
         
-        RoxRender::set_viewport(0,
+        RoxRender::setViewport(0,
                                  0,
                                  w,
                                  h);
@@ -470,7 +470,7 @@ private:
     {
         HRESULT hr = S_OK;
         
-        nya_render::set_default_target(0,
+        RoxRender::set_default_target(0,
                                        0);
         
         if (m_color_target)
@@ -527,7 +527,7 @@ private:
                                          &m_depth_target);
         depthStencil->Release();
         
-        nya_render::set_default_target(m_color_target,
+        RoxRender::set_default_target(m_color_target,
                                        m_depth_target);
         return true;
     }
@@ -608,7 +608,7 @@ private:
                     .recreate_targets(w,
                                       h);
 #endif
-                RoxRender::set_viewport(0,
+                RoxRender::setViewport(0,
                                          0,
                                          w,
                                          h);
