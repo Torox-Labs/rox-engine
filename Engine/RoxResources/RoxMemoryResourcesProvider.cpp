@@ -1,18 +1,18 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
-#include "memory_resources_provider.h"
-#include "memory/align_alloc.h"
-#include <string.h>
+#include "RoxMemoryResourcesProvider.h"
+#include "RoxMemory/RoxAlignAlloc.h"
+#include <cstring>
 
-namespace nya_resources
+namespace RoxResources
 {
 
-bool memory_resources_provider::has(const char *name)
+bool RoxMemoryResourcesProvider::has(const char *name)
 {
     if(!name)
         return false;
 
-    nya_memory::lock_guard_read lock(m_mutex);
+    RoxMemory::RoxLockGuardRead lock(m_mutex);
 
     for(int i=0;i<(int)m_entries.size();++i)
     {
@@ -23,9 +23,9 @@ bool memory_resources_provider::has(const char *name)
     return false;
 }
 
-int memory_resources_provider::get_resources_count() { return (int)m_entries.size(); }
+int RoxMemoryResourcesProvider::getResourcesCount() { return (int)m_entries.size(); }
 
-const char *memory_resources_provider::get_resource_name(int idx)
+const char *RoxMemoryResourcesProvider::getResourceName(int idx)
 {
     if(idx<0 || idx>=(int)m_entries.size())
         return 0;
@@ -33,7 +33,7 @@ const char *memory_resources_provider::get_resource_name(int idx)
     return m_entries[idx].name.c_str();
 }
 
-bool memory_resources_provider::add(const char *name,const void *data,size_t size)
+bool RoxMemoryResourcesProvider::add(const char *name,const void *data,size_t size)
 {
     if(!name)
         return false;
@@ -44,7 +44,7 @@ bool memory_resources_provider::add(const char *name,const void *data,size_t siz
     if(has(name))
         return false;
 
-    void *new_data=nya_memory::align_alloc(size,16);
+    void *new_data=RoxMemory::alignAlloc(size,16);
     memcpy(new_data,data,size);
 
     entry e;
@@ -52,18 +52,18 @@ bool memory_resources_provider::add(const char *name,const void *data,size_t siz
     e.data=(char *)new_data;
     e.size=size;
 
-    nya_memory::lock_guard_write lock(m_mutex);
+    RoxMemory::RoxLockGuardWrite lock(m_mutex);
 
     m_entries.push_back(e);
     return true;
 }
 
-bool memory_resources_provider::remove(const char *name)
+bool RoxMemoryResourcesProvider::remove(const char *name)
 {
     if(!name)
         return false;
 
-    nya_memory::lock_guard_write lock(m_mutex);
+    RoxMemory::RoxLockGuardWrite lock(m_mutex);
 
     for(int i=0;i<(int)m_entries.size();++i)
     {
@@ -79,7 +79,7 @@ bool memory_resources_provider::remove(const char *name)
 
 namespace
 {
-    struct resource: public resource_data
+    struct resource: public RoxResourceData
     {
         const char *data;
         size_t size;
@@ -113,12 +113,12 @@ namespace
     };
 }
 
-resource_data *memory_resources_provider::access(const char *name)
+RoxResourceData *RoxMemoryResourcesProvider::access(const char *name)
 {
     if(!name)
         return 0;
 
-    nya_memory::lock_guard_read lock(m_mutex);
+    RoxMemory::RoxLockGuardRead lock(m_mutex);
 
     for(int i=0;i<(int)m_entries.size();++i)
     {

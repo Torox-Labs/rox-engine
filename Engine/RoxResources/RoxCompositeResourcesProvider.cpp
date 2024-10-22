@@ -1,12 +1,13 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
-#include "composite_resources_provider.h"
-#include "memory/pool.h"
+#include "RoxCompositeResourcesProvider.h"
+#include "RoxMemory/RoxPool.h"
+
 #include <set>
 #include <algorithm>
-#include <string.h>
+#include <cstring>
 
-namespace nya_resources
+namespace RoxResources
 {
 
 inline std::string fix_name(const std::string &name)
@@ -32,15 +33,15 @@ inline std::string fix_name(const std::string &name)
     return out;
 }
 
-void composite_resources_provider::add_provider(resources_provider *provider,const char *folder)
+void RoxCompositeResourcesProvider::addProvider(RoxResourcesProvider *provider,const char *folder)
 {
     if(!provider)
     {
-        log()<<"unable to add provider: invalid provider\n";
+        RoxLogger::log()<<"unable to add provider: invalid provider\n";
         return;
     }
 
-    nya_memory::lock_guard_write lock(m_mutex);
+    RoxMemory::RoxLockGuardWrite lock(m_mutex);
 
     for(size_t i=0;i<m_providers.size();++i)
     {
@@ -48,34 +49,34 @@ void composite_resources_provider::add_provider(resources_provider *provider,con
             continue;
 
         std::swap(m_providers[i],m_providers.back());
-        rebuild_cache();
+        rebuildCache();
         return;
     }
 
     m_update_names=true;
     m_providers.push_back(std::make_pair(provider,(folder && folder[0])?fix_name(std::string(folder)+"/"):""));
     if(m_cache_entries)
-        cache_provider((int)m_providers.size()-1);
+        cacheProvider((int)m_providers.size()-1);
 }
 
-void composite_resources_provider::remove_providers()
+void RoxCompositeResourcesProvider::removeProviders()
 {
-    nya_memory::lock_guard_write lock(m_mutex);
+    RoxMemory::RoxLockGuardWrite lock(m_mutex);
 
     m_providers.clear();
     m_resource_names.clear();
     m_cached_entries.clear();
 }
 
-resource_data *composite_resources_provider::access(const char *resource_name)
+RoxResourceData *RoxCompositeResourcesProvider::access(const char *resource_name)
 {
     if(!resource_name)
     {
-        log()<<"unable to access composite entry: invalid name\n";
+        RoxLogger::log()<<"unable to access composite entry: invalid name\n";
         return 0;
     }
 
-    nya_memory::lock_guard_read lock(m_mutex);
+    RoxMemory::RoxLockGuardRead lock(m_mutex);
 
     if(!m_cache_entries)
     {
@@ -110,7 +111,7 @@ resource_data *composite_resources_provider::access(const char *resource_name)
 
     if(it==m_cached_entries.end())
     {
-        log()<<"unable to access composite entry "<<resource_name
+        RoxLogger::log()<<"unable to access composite entry "<<resource_name
                 <<": not found\n";
         return 0;
     }
@@ -118,12 +119,12 @@ resource_data *composite_resources_provider::access(const char *resource_name)
     return m_providers[it->second.prov_idx].first->access(it->second.original_name.c_str());
 }
 
-bool composite_resources_provider::has(const char *resource_name)
+bool RoxCompositeResourcesProvider::has(const char *resource_name)
 {
     if(!resource_name)
         return false;
 
-    nya_memory::lock_guard_read lock(m_mutex);
+    RoxMemory::RoxLockGuardRead lock(m_mutex);
 
     if(!m_cache_entries)
     {
@@ -156,25 +157,25 @@ bool composite_resources_provider::has(const char *resource_name)
     return m_cached_entries.find(fix_name(resource_name))!=m_cached_entries.end();
 }
 
-void composite_resources_provider::enable_cache()
+void RoxCompositeResourcesProvider::enableCache()
 {
-    m_mutex.lock_write();
+    m_mutex.lockWrite();
 
     if(m_cache_entries)
     {
-        m_mutex.unlock_write();
+        m_mutex.unlockWrite();
         return;
     }
 
     m_cache_entries=true;
-    m_mutex.unlock_write();
+    m_mutex.unlockWrite();
 
-    rebuild_cache();
+    rebuildCache();
 }
 
-void composite_resources_provider::rebuild_cache()
+void RoxCompositeResourcesProvider::rebuildCache()
 {
-    nya_memory::lock_guard_write lock(m_mutex);
+    RoxMemory::RoxLockGuardWrite lock(m_mutex);
 
     if(!m_cache_entries)
         return;
@@ -182,47 +183,47 @@ void composite_resources_provider::rebuild_cache()
     m_update_names=true;
     m_cached_entries.clear();
     for(int i=0;i<(int)m_providers.size();++i)
-        cache_provider(i);
+        cacheProvider(i);
 }
 
-int composite_resources_provider::get_resources_count()
+int RoxCompositeResourcesProvider::getResourcesCount()
 {
     if(m_update_names)
-        update_names();
+        updateNames();
 
     return (int)m_resource_names.size();
 }
 
-const char *composite_resources_provider::get_resource_name(int idx)
+const char *RoxCompositeResourcesProvider::getResourceName(int idx)
 {
-    if(idx<0 || idx>=get_resources_count())
+    if(idx<0 || idx>=getResourcesCount())
         return 0;
 
     return m_resource_names[idx].c_str();
 }
 
-void composite_resources_provider::lock()
+void RoxCompositeResourcesProvider::lock()
 {
-    resources_provider::lock();
+    RoxResourcesProvider::lock();
 
     if(m_update_names)
     {
-        resources_provider::unlock();
-        m_mutex.lock_write();
+        RoxResourcesProvider::unlock();
+        m_mutex.lockWrite();
         if(m_update_names)
-            update_names();
-        m_mutex.unlock_write();
+            updateNames();
+        m_mutex.unlockWrite();
         lock();
     }
 }
 
-void composite_resources_provider::set_ignore_case(bool ignore)
+void RoxCompositeResourcesProvider::setIgnoreCase(bool ignore)
 {
-    m_mutex.lock_write();
+    m_mutex.lockWrite();
 
     if(ignore==m_ignore_case)
     {
-        m_mutex.unlock_write();
+        m_mutex.unlockWrite();
         return;
     }
 
@@ -233,25 +234,25 @@ void composite_resources_provider::set_ignore_case(bool ignore)
     if(m_cache_entries)
     {
         for(int i=0;i<(int)m_providers.size();++i)
-            cache_provider(i);
+            cacheProvider(i);
     }
 
-    m_mutex.unlock_write();
+    m_mutex.unlockWrite();
 
     if(ignore)
-        enable_cache();
+        rebuildCache();
 }
 
-void composite_resources_provider::cache_provider(int idx)
+void RoxCompositeResourcesProvider::cacheProvider(int idx)
 {
     if(idx<0 || idx>=(int)m_providers.size())
         return;
 
-    resources_provider *provider=m_providers[idx].first;
+    RoxResourcesProvider *provider=m_providers[idx].first;
     provider->lock();
-    for(int i=0;i<provider->get_resources_count();++i)
+    for(int i=0;i<provider->getResourcesCount();++i)
     {
-        const char *name=provider->get_resource_name(i);
+        const char *name=provider->getResourceName(i);
         if(!name)
             continue;
 
@@ -267,7 +268,7 @@ void composite_resources_provider::cache_provider(int idx)
     provider->unlock();
 }
 
-void composite_resources_provider::update_names()
+void RoxCompositeResourcesProvider::updateNames()
 {
     m_update_names=false;
     m_resource_names.clear();
@@ -283,11 +284,11 @@ void composite_resources_provider::update_names()
         std::set<std::string> already_has;
         for(size_t i=0;i<m_providers.size();++i)
         {
-            resources_provider *provider=m_providers[i].first;
+            RoxResourcesProvider *provider=m_providers[i].first;
             provider->lock();
-            for(int j=0;j<provider->get_resources_count();++j)
+            for(int j=0;j<provider->getResourcesCount();++j)
             {
-                const char *name=provider->get_resource_name(j);
+                const char *name=provider->getResourceName(j);
                 if(!name)
                     continue;
 

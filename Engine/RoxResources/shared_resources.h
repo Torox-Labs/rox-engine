@@ -2,30 +2,30 @@
 
 #pragma once
 
-#include "resources.h"
-#include "memory/pool.h"
+#include "RoxResources.h"
+#include "RoxMemory/RoxPool.h"
 #include <map>
 #include <string>
 #include <algorithm>
 
-namespace nya_resources
+namespace RoxResources
 {
 
-template<typename t_res,int block_count> class shared_resources: public nya_memory::non_copyable
+template<typename t_res,int block_count> class RoxSharedResources: public RoxMemory::RoxNonCopyable
 {
 private:
     virtual bool fill_resource(const char *name,t_res &res) { return false; }
     virtual bool release_resource(t_res &res) { return false; }
 
 private:
-    class shared_resources_creator
+    class RoxSharedResourcesCreator
     {
-        template<typename,int> friend class shared_resources;
+        template<typename,int> friend class RoxSharedResources;
         struct res_holder;
 
         class shared_resource_ref
         {
-            template<typename,int> friend class shared_resources;
+            template<typename,int> friend class RoxSharedResources;
 
         public:
             bool is_valid() const { return m_res!=0; }
@@ -89,7 +89,7 @@ private:
             ~shared_resource_ref() { free(); }
 
         protected:
-            shared_resource_ref(t_res*res,res_holder*holder,shared_resources_creator *creator):
+            shared_resource_ref(t_res*res,res_holder*holder,RoxSharedResourcesCreator *creator):
                                 m_res(res),m_res_holder(holder),m_creator(creator) {}
         private:
             void ref_count_inc()
@@ -103,12 +103,12 @@ private:
 
         private:
             res_holder *m_res_holder;
-            shared_resources_creator *m_creator;
+            RoxSharedResourcesCreator *m_creator;
         };
 
         class shared_resource_mutable_ref: public shared_resource_ref
         {
-            template<typename,int> friend class shared_resources;
+            template<typename,int> friend class RoxSharedResources;
 
         public:
             t_res *get() { return this->m_res; }
@@ -118,7 +118,7 @@ private:
             shared_resource_mutable_ref() {}
 
         private:
-            shared_resource_mutable_ref(t_res*res,res_holder*holder,shared_resources_creator *creator)
+            shared_resource_mutable_ref(t_res*res,res_holder*holder,RoxSharedResourcesCreator *creator)
             { *(shared_resource_ref*)this=shared_resource_ref(res,holder,creator); }
         };
 
@@ -368,7 +368,7 @@ private:
         bool has_refs() { return m_ref_count>0; }
 
     public:
-        shared_resources_creator(shared_resources *base): m_base(base),m_should_unload_unused(true),
+        RoxSharedResourcesCreator(RoxSharedResources *base): m_base(base),m_should_unload_unused(true),
                                                           m_force_lowercase(true), m_ref_count(1) {}
     private:
         typedef std::map<std::string,res_holder*> resources_map;
@@ -388,22 +388,22 @@ private:
         nya_memory::pool<res_holder,block_count> m_res_pool;
 
     private:
-        shared_resources *m_base;
+        RoxSharedResources *m_base;
         bool m_should_unload_unused;
         bool m_force_lowercase;
         size_t m_ref_count;
     };
 
 public:
-    typedef typename shared_resources_creator::shared_resource_ref shared_resource_ref;
-    typedef typename shared_resources_creator::shared_resource_mutable_ref shared_resource_mutable_ref;
+    typedef typename RoxSharedResourcesCreator::shared_resource_ref shared_resource_ref;
+    typedef typename RoxSharedResourcesCreator::shared_resource_mutable_ref shared_resource_mutable_ref;
 
 public:
     shared_resource_ref access(const char*name) { return m_creator->access(name); }
     shared_resource_mutable_ref create() { return m_creator->create(); }
-    static shared_resource_mutable_ref modify(shared_resource_ref &res) { return shared_resources_creator::modify(res); }
+    static shared_resource_mutable_ref modify(shared_resource_ref &res) { return RoxSharedResourcesCreator::modify(res); }
 
-    shared_resources() { m_creator = new shared_resources_creator(this); }
+    RoxSharedResources() { m_creator = new RoxSharedResourcesCreator(this); }
 
 public:
     //void free_all() { m_creator->free_all(); }
@@ -419,7 +419,7 @@ public:
         if(m_creator->m_res_map.empty())
             return shared_resource_ref();
 
-        struct shared_resources_creator::res_holder *holder=m_creator->m_res_map.begin()->second;
+        struct RoxSharedResourcesCreator::res_holder *holder=m_creator->m_res_map.begin()->second;
         if(!holder)
             return shared_resource_ref();
 
@@ -432,11 +432,11 @@ public:
         if(curr.m_creator!=m_creator || !curr.m_res_holder)
             return shared_resource_ref();
 
-        typename shared_resources_creator::resources_map_iterator it=curr.m_res_holder->map_it;
+        typename RoxSharedResourcesCreator::resources_map_iterator it=curr.m_res_holder->map_it;
         if(++it==m_creator->m_res_map.end())
             return shared_resource_ref();
 
-        struct shared_resources_creator::res_holder *holder=it->second;
+        struct RoxSharedResourcesCreator::res_holder *holder=it->second;
         if(!holder)
             return shared_resource_ref();
 
@@ -445,7 +445,7 @@ public:
     }
 
 public:
-    virtual ~shared_resources()
+    virtual ~RoxSharedResources()
     {
         m_creator->base_released();
         if(!m_creator->has_refs())
@@ -453,6 +453,6 @@ public:
     }
 
 private:
-    class shared_resources_creator *m_creator;
+    class RoxSharedResourcesCreator *m_creator;
 };
 }

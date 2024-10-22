@@ -2,17 +2,17 @@
 
 #pragma once
 
-#include "resources.h"
+#include "RoxResources.h"
 #include <vector>
 #include <string>
 
-namespace nya_resources
+namespace RoxResources
 {
 
-class memory_resources_provider: public resources_provider
+class RoxMemoryResourcesProvider: public RoxResourcesProvider
 {
 public:
-    resource_data *access(const char *resource_name);
+    RoxResourceData *access(const char *resource_name);
     bool has(const char *resource_name);
 
 public:
@@ -20,8 +20,8 @@ public:
     bool remove(const char *name);
 
 public:
-    int get_resources_count();
-    const char *get_resource_name(int idx);
+    int getResourcesCount();
+    const char *getResourceName(int idx);
 
 private:
     struct entry { std::string name; const char *data; size_t size; };

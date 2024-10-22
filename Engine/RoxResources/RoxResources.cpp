@@ -1,85 +1,85 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+//nya-e(C) nyan.developer@gmail.com released under the MIT l(see LICENSE)
 
-#include "resources.h"
-#include "file_resources_provider.h"
-//#include "system/system.h"
-#include <string.h>
+#include "RoxResources.h"
+#include "RoxFileResourcesProvider.h"
+#include "RoxSystem/RoxSystem.h"
+#include <cstring>
 
 #if defined(_WIN32)
-    #define strcasecmp _stricmp
+#define strcasecmp _stricmp
 #endif
 
-namespace nya_resources
+namespace RoxResources
 {
 
-namespace
-{
-    resources_provider *res_provider=0;
-    rox_log::log_base *resources_log=0;
-
-    file_resources_provider &default_provider()
+    namespace
     {
-        static file_resources_provider *fprov=new file_resources_provider();
-        return *fprov;
-    }
-}
+        RoxResourcesProvider* res_provider= 0;
+        RoxLogger::RoxLoggerBase* resources_log= 0;
 
-void set_resources_path(const char *path)
-{
-    res_provider=&default_provider();
-    default_provider().set_folder(path);
-}
-
-void set_resources_provider(resources_provider *provider)
-{
-    res_provider=provider;
-}
-
-resources_provider &get_resources_provider()
-{
-    if(!res_provider)
-    {
-        res_provider=&default_provider();
-        //default_provider().set_folder(nya_system::get_app_path());
+        RoxFileResourcesProvider& default_provider()
+        {
+            static RoxFileResourcesProvider* file_provider = new RoxFileResourcesProvider();
+            return *file_provider;
+        }
     }
 
-    return *res_provider;
-}
+    void setResourcesPath(const char* path)
+    {
+        res_provider = &default_provider();
+        default_provider().setFolder(path);
+    }
 
-nya_memory::tmp_buffer_ref read_data(const char *name)
-{
-    resource_data *r=get_resources_provider().access(name);
-    if(!r)
-        return nya_memory::tmp_buffer_ref();
+    void setResourcesProvider(RoxResourcesProvider* provider)
+    {
+        res_provider = provider;
+    }
 
-    nya_memory::tmp_buffer_ref result;
-    result.allocate(r->get_size());
-    if(!r->read_all(result.get_data()))
-        result.free();
-    r->release();
-    return result;
-}
+    RoxResourcesProvider& gresourcesProvider()
+    {
+        if(!res_provider)
+        {
+            res_provider = &default_provider();
+            //default_provider().sfolder(nya_system::gappPath());
+        }
 
-void set_log(rox_log::log_base *l) { resources_log=l; }
+        return *res_provider;
+    }
 
-rox_log::log_base &log()
-{
-    if(!resources_log)
-        return rox_log::log();
+    RoxMemory::RoxTmpBufferRef rdata(const char* name)
+    {
+        RoxResourceData* r = gresourcesProvider().access(name);
+        if(!r)
+            return RoxMemory::RoxTmpBufferRef();
 
-    return *resources_log;
-}
+        RoxMemory::RoxTmpBufferRef result;
+        result.allocate(r->getSize());
+        if(!r->readAll(result.getData()))
+            result.free();
+        r->release();
+        return result;
+    }
 
-bool check_extension(const char *name,const char *ext)
-{
-    if(!name || !ext)
-        return false;
+    void slog(RoxLogger::RoxLoggerBase* l) { resources_log = l; }
 
-    const size_t name_len=strlen(name),ext_len=strlen(ext);
-    if(ext_len>name_len)
-        return false;
+    RoxLogger::RoxLoggerBase& l()
+    {
+        if(!resources_log)
+            return RoxLogger::log();
 
-    return strcasecmp(name+name_len-ext_len,ext)==0;
-}
+        return *resources_log;
+    }
+
+    bool checkExtension(const char* name, const char* ext)
+    {
+        if(!name || !ext)
+            return false;
+
+        const size_t name_len = strlen(name), ext_len = strlen(ext);
+        if(ext_len > name_len)
+            return false;
+
+        return strcasecmp(name + name_len - ext_len, ext) == 0;
+    }
 
 }
