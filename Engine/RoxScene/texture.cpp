@@ -1,6 +1,6 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
-#include "RoxTexture.h"
+#include "texture.h"
 #include "scene.h"
 #include "RoxMemory/RoxMemoryReader.h"
 #include "RoxMemory/RoxTmpBuffers.h"
@@ -30,7 +30,7 @@ bool RoxTexture::load_ktx(shared_texture &res,resource_data &data,const char* na
     if(memcmp((const char *)data.get_data()+1,"KTX ",4)!=0)
         return false;
 
-    RoxFormats::ktx ktx;
+    RoxFormats::KhronosTexture ktx;
     const size_t header_size=ktx.decode_header(data.get_data(),data.get_size());
     if(!header_size)
     {
@@ -42,19 +42,19 @@ bool RoxTexture::load_ktx(shared_texture &res,resource_data &data,const char* na
 
     switch(ktx.pf)
     {
-        case RoxFormats::ktx::rgb: cf=RoxRender::RoxTexture::color_rgb; break;
-        case RoxFormats::ktx::rgba: cf=RoxRender::RoxTexture::COLOR_RGBA; break;
-        case RoxFormats::ktx::bgra: cf=RoxRender::RoxTexture::color_bgra; break;
+        case RoxFormats::KhronosTexture::RGB: cf=RoxRender::RoxTexture::color_rgb; break;
+        case RoxFormats::KhronosTexture::rgba: cf=RoxRender::RoxTexture::COLOR_RGBA; break;
+        case RoxFormats::KhronosTexture::bgra: cf=RoxRender::RoxTexture::color_bgra; break;
 
-        case RoxFormats::ktx::etc1: cf=RoxRender::RoxTexture::etc1; break;
-        case RoxFormats::ktx::etc2: cf=RoxRender::RoxTexture::etc2; break;
-        case RoxFormats::ktx::etc2_eac: cf=RoxRender::RoxTexture::etc2_eac; break;
-        case RoxFormats::ktx::etc2_a1: cf=RoxRender::RoxTexture::etc2_a1; break;
+        case RoxFormats::KhronosTexture::etc1: cf=RoxRender::RoxTexture::etc1; break;
+        case RoxFormats::KhronosTexture::etc2: cf=RoxRender::RoxTexture::etc2; break;
+        case RoxFormats::KhronosTexture::etc2_eac: cf=RoxRender::RoxTexture::etc2_eac; break;
+        case RoxFormats::KhronosTexture::etc2_a1: cf=RoxRender::RoxTexture::etc2_a1; break;
 
-        case RoxFormats::ktx::pvr_rgb2b: cf=RoxRender::RoxTexture::pvr_rgb2b; break;
-        case RoxFormats::ktx::pvr_rgb4b: cf=RoxRender::RoxTexture::pvr_rgb4b; break;
-        case RoxFormats::ktx::pvr_rgba2b: cf=RoxRender::RoxTexture::pvr_rgba2b; break;
-        case RoxFormats::ktx::pvr_rgba4b: cf=RoxRender::RoxTexture::pvr_rgba4b; break;
+        case RoxFormats::KhronosTexture::pvr_rgb2b: cf=RoxRender::RoxTexture::pvr_rgb2b; break;
+        case RoxFormats::KhronosTexture::pvr_rgb4b: cf=RoxRender::RoxTexture::pvr_rgb4b; break;
+        case RoxFormats::KhronosTexture::pvr_rgba2b: cf=RoxRender::RoxTexture::pvr_rgba2b; break;
+        case RoxFormats::KhronosTexture::pvr_rgba4b: cf=RoxRender::RoxTexture::pvr_rgba4b; break;
 
         default: log()<<"unable to load ktx: unsupported color format in file "<<name<<"\n"; return false;
     }
