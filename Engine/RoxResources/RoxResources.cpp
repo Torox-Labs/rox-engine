@@ -1,4 +1,16 @@
-//nya-e(C) nyan.developer@gmail.com released under the MIT l(see LICENSE)
+// Updated By the ROX_ENGINE
+// Copyright (C) 2024 Torox Project
+// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+//
+// This file was modified by the Torox Project.
+// 
+// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
+// See the LICENSE-MIT file in the root directory for more information.
+//
+// This file is also part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License (for non-commercial and commercial use under specific conditions)
+// 2. Commercial License (for use on proprietary platforms)
+// See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxResources.h"
 #include "RoxFileResourcesProvider.h"
@@ -46,7 +58,7 @@ namespace RoxResources
         return *res_provider;
     }
 
-    RoxMemory::RoxTmpBufferRef rdata(const char* name)
+    RoxMemory::RoxTmpBufferRef readData(const char* name)
     {
         RoxResourceData* r = gresourcesProvider().access(name);
         if(!r)
@@ -60,7 +72,7 @@ namespace RoxResources
         return result;
     }
 
-    void slog(RoxLogger::RoxLoggerBase* l) { resources_log = l; }
+    void setLog(RoxLogger::RoxLoggerBase* l) { resources_log = l; }
 
     RoxLogger::RoxLoggerBase& l()
     {

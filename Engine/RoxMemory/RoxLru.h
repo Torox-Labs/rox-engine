@@ -34,13 +34,13 @@ public:
         {
             typename list::iterator last=m_list.end();
 			last--;
-            on_free(last->first.c_str(),last->second);
+            onFree(last->first.c_str(),last->second);
 			m_map.erase(last->first);
 			m_list.pop_back();
 		}
 
 		m_list.push_front(entry(name,t()));
-        if(!on_access(name,m_list.front().second))
+        if(!onAccess(name,m_list.front().second))
         {
             m_list.pop_front();
             return invalidObject<t>();
@@ -59,7 +59,7 @@ public:
         if(it==m_map.end())
             return;
 
-        on_free(it->first.c_str(),it->second->second);
+        onFree(it->first.c_str(),it->second->second);
         m_list.erase(it->second);
         m_map.erase(it);
     }

@@ -31,8 +31,8 @@ public:
     template <typename t> std::string readString()
     {
         const t size=read<t>();
-        const char *str=(const char *)get_data();
-        if(!check_remained(size) || !size)
+        const char *str=(const char *)getData();
+        if(!checkRemained(size) || !size)
             return "";
 
         m_offset+=size;

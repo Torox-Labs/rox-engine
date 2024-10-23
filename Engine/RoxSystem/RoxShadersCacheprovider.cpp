@@ -32,13 +32,13 @@ namespace RoxSystem
     if(!text)
         return false;
 
-    RoxResources::resource_data*data=
-    RoxResources::get_resources_provider().access((m_load_path+crc(text)+".nsc").c_str());
+    RoxResources::RoxResourceData*data=
+    RoxResources::getResourcesProvider().access((m_load_path+crc(text)+".nsc").c_str());
     if(!data)
         return false;
 
-    shader=RoxRender::RoxCompiledShader(data->get_size());
-    data->read_all(shader.getData());
+    shader=RoxRender::RoxCompiledShader(data->getSize());
+    data->readAll(shader.getData());
     data->release();
 
     return true;
