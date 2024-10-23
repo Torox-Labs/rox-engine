@@ -1,8 +1,8 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
 #include "animation.h"
-#include "memory/memory_reader.h"
-#include "formats/nan.h"
+#include "RoxMemory/RoxMemoryReader.h"
+#include "RoxFormats/RoxAnim.h"
 
 namespace nya_scene
 {

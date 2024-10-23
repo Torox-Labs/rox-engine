@@ -1,9 +1,9 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
 #include "material.h"
-#include "formats/text_parser.h"
-#include "formats/string_convert.h"
-#include "memory/invalid_object.h"
+#include "RoxFormats/RoxTextParser.h"
+#include "RoxFormats/RoxStringConvert.h"
+#include "RoxMemory/RoxInvalidObject.h"
 #include <list>
 #include <cstring>
 
@@ -13,7 +13,7 @@
     #include <sys/time.h>
 #endif
 
-namespace nya_scene
+namespace RoxScene
 {
 
 const char *material::default_pass="default";
@@ -25,18 +25,18 @@ namespace
 
     std::vector<std::pair<std::string,texture_proxy> > global_textures_replace;
 
-    bool is_shader_sampler_cube(const shader &sh,unsigned int layer)
+    bool is_shader_sampler_cube(const RoxShader &sh,unsigned int layer)
     {
         if(!sh.internal().get_shared_data().is_valid())
             return false;
 
-        const nya_render::shader &rsh=sh.internal().get_shared_data()->shdr;
-        for(int i=0;i<rsh.get_uniforms_count();++i)
+        const RoxRender::RoxShader &rsh=sh.internal().get_shared_data()->shdr;
+        for(int i=0;i<rsh.getUniformsCount();++i)
         {
-            if(rsh.get_uniform_type(i)!=nya_render::shader::uniform_sampler_cube)
+            if(rsh.getUniformType(i)!=RoxRender::RoxShader::UNIFORM_SAMPLER_CUBE)
                 continue;
 
-            if(rsh.get_sampler_layer(rsh.get_uniform_name(i))==(int)layer)
+            if(rsh.getSamplerLayer(rsh.getUniformName(i))==(int)layer)
                 return true;
         }
 
@@ -87,22 +87,22 @@ namespace
             const unsigned char white_data[4]={255,255,255,255};
 
             shared_texture red_res;
-            red_res.tex.build_texture(red_data,1,1,nya_render::texture::color_rgba);
+            red_res.tex.buildTexture(red_data,1,1,RoxRender::RoxTexture::COLOR_RGBA);
             missing_red.create(red_res);
 
             shared_texture white_res;
-            white_res.tex.build_texture(white_data,1,1,nya_render::texture::color_rgba);
+            white_res.tex.buildTexture(white_data,1,1,RoxRender::RoxTexture::COLOR_RGBA);
             missing_white.create(white_res);
 
             const void *cube_red_data[6]={red_data,red_data,red_data,red_data,red_data,red_data};
             const void *cube_white_data[6]={white_data,white_data,white_data,white_data,white_data,white_data};
 
             shared_texture cube_red_res;
-            cube_red_res.tex.build_cubemap(cube_red_data,1,1,nya_render::texture::color_rgba);
+            cube_red_res.tex.buildTexture(cube_red_data,1,1,RoxRender::RoxTexture::COLOR_RGBA);
             missing_cube_red.create(cube_red_res);
 
             shared_texture cube_white_res;
-            cube_white_res.tex.build_cubemap(cube_white_data,1,1,nya_render::texture::color_rgba);
+            cube_white_res.tex.buildTexture(cube_white_data,1,1,RoxRender::RoxTexture::COLOR_RGBA);
             missing_cube_white.create(cube_white_res);
 
             initialised=true;
@@ -121,7 +121,7 @@ void material::param_array::set(int idx,float f0,float f1,float f2,float f3)
         m_params[idx].set(f0,f1,f2,f3);
 }
 
-void material::param_array::set(int idx,const nya_math::vec3 &v,float w)
+void material::param_array::set(int idx,const RoxMath::Vector3 &v,float w)
 {
     if(idx>=0 && idx<(int)m_params.size()) m_params[idx].set(v,w);
 }
@@ -129,7 +129,7 @@ void material::param_array::set(int idx,const nya_math::vec3 &v,float w)
 const material::param &material::param_array::get(int idx) const
 {
     if(idx<0 || idx>=(int)m_params.size())
-        return nya_memory::invalid_object<param>();
+        return RoxMemory::invalidObject<param>();
 
     return m_params[idx];
 }
@@ -137,22 +137,22 @@ const material::param &material::param_array::get(int idx) const
 material::param &material::param_array::get(int idx)
 {
     if(idx<0 || idx>=(int)m_params.size())
-        return nya_memory::invalid_object<param>();
+        return RoxMemory::invalidObject<param>();
 
     return m_params[idx];
 }
 
-void material_internal::param_holder::apply_to_shader(const shader &shader,int uniform_idx) const
+void material_internal::param_holder::apply_to_shader(const RoxShader &RoxShader,int uniform_idx) const
 {
     if(p.is_valid())
-        shader.internal().set_uniform_value(uniform_idx,p->x,p->y,p->z,p->w);
+        RoxShader.internal().set_uniform_value(uniform_idx,p->x,p->y,p->z,p->w);
     else if(a.is_valid() && a->get_count()>0)
-        shader.internal().set_uniform4_array(uniform_idx,a->get_buf(),a->get_count());
+        RoxShader.internal().set_uniform4_array(uniform_idx,a->get_buf(),a->get_count());
     else
-        shader.internal().set_uniform_value(uniform_idx,0,0,0,0);
+        RoxShader.internal().set_uniform_value(uniform_idx,0,0,0,0);
 }
 
-void material_internal::skeleton_changed(const nya_render::skeleton *skeleton) const
+void material_internal::skeleton_changed(const RoxRender::RoxSkeleton *skeleton) const
 {
     for(int i=0;i<(int)m_passes.size();++i)
         m_passes[i].m_shader.internal().skeleton_changed(skeleton);
@@ -160,28 +160,28 @@ void material_internal::skeleton_changed(const nya_render::skeleton *skeleton) c
 
 bool material::load_text(shared_material &res,resource_data &data,const char* name)
 {
-    nya_formats::text_parser parser;
-    parser.load_from_data((const char *)data.get_data(),data.get_size());
-    for(int section_idx=0;section_idx<parser.get_sections_count();++section_idx)
+    RoxFormats::RTextParser parser;
+    parser.loadFromData((const char *)data.getData(),data.getSize());
+    for(int section_idx=0;section_idx<parser.getSectionsCount();++section_idx)
     {
-        const char *section_type=parser.get_section_type(section_idx);
+        const char *section_type=parser.getSectionType(section_idx);
         if(strcmp(section_type,"@pass")==0)
         {
-            int pass_idx = res.add_pass(parser.get_section_name(section_idx));
+            int pass_idx = res.add_pass(parser.getSectionName(section_idx));
             pass &p = res.get_pass(pass_idx);
 
-            for(int subsection_idx=0;subsection_idx<parser.get_subsections_count(section_idx);++subsection_idx)
+            for(int subsection_idx=0;subsection_idx<parser.getSubsectionsCount(section_idx);++subsection_idx)
             {
-                const char *subsection_type = parser.get_subsection_type(section_idx,subsection_idx);
-                const char *subsection_value = parser.get_subsection_value(section_idx,subsection_idx);
+                const char *subsection_type = parser.getSubsectionType(section_idx,subsection_idx);
+                const char *subsection_value = parser.getSubsectionValue(section_idx,subsection_idx);
                 if(!subsection_type || !subsection_value)
                     continue;
 
-                if(strcmp(subsection_type,"shader") == 0)
+                if(strcmp(subsection_type,"RoxShader") == 0)
                 {
                     if(!p.m_shader.load(subsection_value))
                     {
-                        log()<<"can't load shader when loding material '"<<name<<"'\n";
+                        log()<<"can't load RoxShader when loding material '"<<name<<"'\n";
                         return false;
                     }
                     continue;
@@ -189,44 +189,44 @@ bool material::load_text(shared_material &res,resource_data &data,const char* na
 
                 if(strcmp(subsection_type,"blend")==0)
                 {
-                    nya_render::state &s=p.get_state();
-                    s.blend=nya_formats::blend_mode_from_string(subsection_value,s.blend_src,s.blend_dst);
+                    RoxRender::State &s=p.get_state();
+                    s.blend=RoxFormats::blendModeFromString(subsection_value,s.blend_src,s.blend_dst);
                     continue;
                 }
 
                 if(strcmp(subsection_type,"zwrite")==0)
                 {
-                    p.get_state().zwrite=parser.get_subsection_value_bool(section_idx,subsection_idx);
+                    p.get_state().zwrite=parser.getSubsectionValueBool(section_idx,subsection_idx);
                     continue;
                 }
 
                 if(strcmp(subsection_type,"cull")==0)
                 {
-                    nya_render::state &s=p.get_state();
-                    s.cull_face=nya_formats::cull_face_from_string(subsection_value,s.cull_order);
+                    RoxRender::State &s=p.get_state();
+                    s.cull_face=RoxFormats::cullFaceFromString(subsection_value,s.cull_order);
                     continue;
                 }
 
                 if(strcmp(subsection_type,"depth_test")==0)
                 {
-                    p.get_state().depth_test=parser.get_subsection_value_bool(section_idx,subsection_idx);
+                    p.get_state().depth_test=parser.getSubsectionValueBool(section_idx,subsection_idx);
                     continue;
                 }
 
-                p.set_pass_param(subsection_type,param(nya_formats::vec4_from_string(subsection_value)));
+                p.set_pass_param(subsection_type,param(RoxFormats::vec4FromString(subsection_value)));
             }
         }
         else if(strcmp(section_type,"@texture")==0)
         {
             texture_proxy tex;
             tex.create();
-            if(tex->load(parser.get_section_value(section_idx)))
+            if(tex->load(parser.getSectionValue(section_idx)))
             {
-                const int texture_idx=res.get_texture_idx(parser.get_section_name(section_idx));
+                const int texture_idx=res.get_texture_idx(parser.getSectionName(section_idx));
                 if(texture_idx<0)
                 {
                     material_internal::material_texture mat;
-                    mat.semantics=parser.get_section_name(section_idx);
+                    mat.semantics=parser.getSectionName(section_idx);
                     mat.proxy=tex;
                     res.m_textures.push_back(mat);
                 }
@@ -239,10 +239,10 @@ bool material::load_text(shared_material &res,resource_data &data,const char* na
         else if(strcmp(section_type,"@param")==0)
         {
             material_internal::param_holder ph;
-            ph.name=parser.get_section_name(section_idx);
-            ph.p=param_proxy(material_internal::param(parser.get_section_value_vec4(section_idx)));
+            ph.name=parser.getSectionName(section_idx);
+            ph.p=param_proxy(material_internal::param(parser.getSectionValueVec4(section_idx)));
 
-            const int param_idx=res.get_param_idx(parser.get_section_name(section_idx));
+            const int param_idx=res.get_param_idx(parser.getSectionName(section_idx));
             if(param_idx>=0)
                 res.m_params[param_idx]=ph;
             else
@@ -281,7 +281,7 @@ void material_internal::set(const char *pass_name) const
         p.m_shader.internal().set_uniform_value(pp.uniform_idx,pp.p.x,pp.p.y,pp.p.z,pp.p.w);
     }
 
-    nya_render::set_state(p.m_render_state);
+    RoxRender::setState(p.m_render_state);
 
     for(int slot_idx=0;slot_idx<(int)p.m_textures_slots_map.size();++slot_idx)
     {
@@ -293,13 +293,13 @@ void material_internal::set(const char *pass_name) const
         {
             if(!m_textures[texture_idx].proxy->internal().set(slot_idx))
             {
-                rox_log::warning()<<"invalid texture for semantics '"<<p.m_shader.internal().get_texture_semantics(slot_idx)<<"' in material '"<<m_name<<"\n";
+                RoxLogger::warning()<<"invalid texture for semantics '"<<p.m_shader.internal().get_texture_semantics(slot_idx)<<"' in material '"<<m_name<<"\n";
                 missing_texture(is_shader_sampler_cube(p.m_shader,slot_idx)).internal().set(slot_idx);
             }
         }
         else
         {
-            rox_log::warning()<<"invalid texture proxy for semantics '"<<p.m_shader.internal().get_texture_semantics(slot_idx)<<"' in material '"<<m_name<<"\n";
+            RoxLogger::warning()<<"invalid texture proxy for semantics '"<<p.m_shader.internal().get_texture_semantics(slot_idx)<<"' in material '"<<m_name<<"\n";
             missing_texture(is_shader_sampler_cube(p.m_shader,slot_idx)).internal().set(slot_idx);
         }
     }
@@ -326,13 +326,13 @@ void material_internal::unset() const
     p.m_shader.internal().unset();
 
     if(p.m_render_state.blend)
-        nya_render::blend::disable();
+        RoxRender::Blend::disable();
 
     if(!p.m_render_state.zwrite)
-        nya_render::zwrite::enable();
+        RoxRender::Zwrite::enable();
 
     if(!p.m_render_state.color_write)
-        nya_render::color_write::enable();
+        RoxRender::Color_Write::enable();
 
     for(int slot_idx=0;slot_idx<(int)p.m_textures_slots_map.size();++slot_idx)
     {
@@ -385,9 +385,9 @@ material_internal::pass &material_internal::pass::operator=(const pass &p)
     return *this;
 }
 
-void material_internal::pass::set_shader(const shader &shader)
+void material_internal::pass::set_shader(const RoxShader &RoxShader)
 {
-    m_shader=shader;
+    m_shader=RoxShader;
     m_shader_changed=true;
     m_uniforms_idxs_map.clear();
     m_textures_slots_map.clear();
@@ -505,7 +505,7 @@ int material_internal::get_pass_idx(const char *pass_name) const
 material_internal::pass &material_internal::get_pass(int idx)
 {
     if(idx<0 || idx>=(int)m_passes.size())
-        return nya_memory::invalid_object<pass>();
+        return RoxMemory::invalidObject<pass>();
 
     return m_passes[idx];
 }
@@ -513,7 +513,7 @@ material_internal::pass &material_internal::get_pass(int idx)
 const material_internal::pass &material_internal::get_pass(int idx) const
 {
     if(idx<0 || idx>=(int)m_passes.size())
-        return nya_memory::invalid_object<pass>();
+        return RoxMemory::invalidObject<pass>();
 
     return m_passes[idx];
 }
@@ -552,11 +552,11 @@ void material_internal::update_passes_maps() const
     // substep 1: build boolean map indicating used parameters and map of names of parameters to be added
     //std::vector<bool> used_parameters(m_params.size());
     //std::fill(used_parameters.begin(),used_parameters.end(),false);
-    std::list<std::pair<std::string,nya_math::vec4> > parameters_to_add;
+    std::list<std::pair<std::string,RoxMath::Vector4> > parameters_to_add;
     std::list<std::pair<std::string,int> > param_arrays_to_add;
     for(int pass_idx=0;pass_idx<(int)m_passes.size();++pass_idx)
     {
-        const shader &sh=m_passes[pass_idx].m_shader;
+        const RoxShader &sh=m_passes[pass_idx].m_shader;
         for(int uniform_idx=0;uniform_idx<sh.internal().get_uniforms_count();++uniform_idx)
         {
             const std::string name = sh.internal().get_uniform(uniform_idx).name;
@@ -596,7 +596,7 @@ void material_internal::update_passes_maps() const
     }
 */
     // add missing parameters
-    for(std::list<std::pair<std::string,nya_math::vec4> >::iterator iter=parameters_to_add.begin();
+    for(std::list<std::pair<std::string,RoxMath::Vector4> >::iterator iter=parameters_to_add.begin();
                                                                     iter!=parameters_to_add.end();++iter)
     {
         m_params.push_back(param_holder());
@@ -748,7 +748,7 @@ int material::get_texture_idx(const char *semantics) const
 const texture_proxy &material::get_texture(int idx) const
 {
     if(idx < 0 || idx>=(int)internal().m_textures.size() )
-        return nya_memory::invalid_object<texture_proxy>();
+        return RoxMemory::invalidObject<texture_proxy>();
 
     return internal().m_textures[idx].proxy;
 }
@@ -771,7 +771,7 @@ void material::set_param(int idx,float f0,float f1,float f2,float f3)
     set_param(idx,param(f0,f1,f2,f3));
 }
 
-void material::set_param(int idx,const nya_math::vec3 &v,float w)
+void material::set_param(int idx,const RoxMath::Vector3 &v,float w)
 {
     set_param(idx,param(v,w));
 }
@@ -806,12 +806,12 @@ void material::set_param_array(int idx,const param_array_proxy &p)
 
 void material::set_param(const char *name,float f0,float f1,float f2,float f3)
 {
-    set_param(name,param_proxy(nya_math::vec4(f0,f1,f2,f3)));
+    set_param(name,param_proxy(RoxMath::Vector4(f0,f1,f2,f3)));
 }
 
-void material::set_param(const char *name,const nya_math::vec3 &v,float w)
+void material::set_param(const char *name,const RoxMath::Vector3 &v,float w)
 {
-    set_param(name,param_proxy(nya_math::vec4(v,w)));
+    set_param(name,param_proxy(RoxMath::Vector4(v,w)));
 }
 
 void material::set_param(const char *name,const param &p)
@@ -865,7 +865,7 @@ int material::get_params_count() const
 const material::param_proxy &material::get_param(int idx) const
 {
     if(idx<0 || idx>=(int)internal().m_params.size())
-        return nya_memory::invalid_object<param_proxy>();
+        return RoxMemory::invalidObject<param_proxy>();
 
     return m_internal.m_params[idx].p;
 }
@@ -873,7 +873,7 @@ const material::param_proxy &material::get_param(int idx) const
 const material::param_array_proxy &material::get_param_array(int idx) const
 {
     if(idx<0 || idx>=(int)internal().m_params.size())
-        return nya_memory::invalid_object<param_array_proxy>();
+        return RoxMemory::invalidObject<param_array_proxy>();
 
     return internal().m_params[idx].a;
 }

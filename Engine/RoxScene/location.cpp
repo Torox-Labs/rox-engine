@@ -1,15 +1,15 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
 #include "location.h"
-#include "formats/text_parser.h"
-#include "formats/string_convert.h"
+#include "RoxFormats/RoxTextParser.h"
+#include "RoxFormats/RoxStringConvert.h"
 
-namespace nya_scene
+namespace RoxScene
 {
 
 bool location::load_text(shared_location &res,resource_data &data,const char* name)
 {
-    nya_formats::text_parser parser;
+    RoxFormats::RTextParser parser;
     if(!parser.load_from_data((char *)data.get_data(),data.get_size()))
         return false;
 
@@ -31,17 +31,17 @@ bool location::load_text(shared_location &res,resource_data &data,const char* na
                     m.tg.add(tags(parser.get_subsection_value(i,j)));
                 else if(strcmp(type,"pos")==0)
                 {
-                    const nya_math::vec4 v=nya_formats::vec4_from_string(parser.get_subsection_value(i,j));
+                    const RoxMath::Vector4 v=RoxFormats::vec4_from_string(parser.get_subsection_value(i,j));
                     m.tr.set_pos(v.xyz());
                 }
                 else if(strcmp(type,"rot")==0)
                 {
-                    const nya_math::vec4 v=nya_formats::vec4_from_string(parser.get_subsection_value(i,j));
+                    const RoxMath::Vector4 v=RoxFormats::vec4_from_string(parser.get_subsection_value(i,j));
                     m.tr.set_rot(v.x,v.y,v.z);
                 }
                 else if(strcmp(type,"scale")==0)
                 {
-                    const nya_math::vec4 v=nya_formats::vec4_from_string(parser.get_subsection_value(i,j));
+                    const RoxMath::Vector4 v=RoxFormats::vec4_from_string(parser.get_subsection_value(i,j));
                     m.tr.set_scale(v.x,v.y,v.z);
                 }
             }
@@ -50,7 +50,7 @@ bool location::load_text(shared_location &res,resource_data &data,const char* na
         }
         else if(strcmp(type,"@material_param")==0)
         {
-            nya_math::vec4 v=parser.get_section_value_vec4(i);
+            RoxMath::Vector4 v=parser.get_section_value_vec4(i);
             const char *opt=parser.get_section_option(i);
             if(strcmp(opt,"normalize")==0)
                 v.normalize();
@@ -211,7 +211,7 @@ const char *location::get_material_param_name(int idx) const
 const material::param_proxy &location::get_material_param(int idx) const
 {
     if(idx<0 || idx>=get_material_params_count())
-        return nya_memory::invalid_object<material::param_proxy>();
+        return RoxMemory::invalidObject<material::param_proxy>();
 
     return m_material_params[idx].second;
 }

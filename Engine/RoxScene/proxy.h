@@ -2,46 +2,46 @@
 
 #pragma once
 
-#include "memory/shared_ptr.h"
-#include "memory/invalid_object.h"
+#include "RoxMemory/RoxSharedPtr.h"
+#include "RoxMemory/RoxInvalidObject.h"
 
-namespace nya_scene
+namespace RoxScene
 {
 
 template<typename t>
-class proxy: public nya_memory::shared_ptr<t>
+class proxy: public RoxMemory::RoxSharedPtr<t>
 {
 public:
     proxy &set(const t &obj)
     {
-        if(!nya_memory::shared_ptr<t>::m_ref)
+        if(!RoxMemory::RoxSharedPtr<t>::m_ref)
             return *this;
 
-        *nya_memory::shared_ptr<t>::m_ref=obj;
+        *RoxMemory::RoxSharedPtr<t>::m_ref=obj;
         return *this;
     }
 
     const t &get() const
     {
-        if(!nya_memory::shared_ptr<t>::m_ref)
-            return nya_memory::invalid_object<t>();
+        if(!RoxMemory::RoxSharedPtr<t>::m_ref)
+            return RoxMemory::invalidObject<t>();
 
-        return *nya_memory::shared_ptr<t>::m_ref;
+        return *RoxMemory::RoxSharedPtr<t>::m_ref;
     }
 
     t &get()
     {
-        if(!nya_memory::shared_ptr<t>::m_ref)
-            return nya_memory::invalid_object<t>();
+        if(!RoxMemory::RoxSharedPtr<t>::m_ref)
+            return RoxMemory::invalidObject<t>();
 
-        return *nya_memory::shared_ptr<t>::m_ref;
+        return *RoxMemory::RoxSharedPtr<t>::m_ref;
     }
 
-    proxy(): nya_memory::shared_ptr<t>() {}
+    proxy(): RoxMemory::RoxSharedPtr<t>() {}
 
-    explicit proxy(const t &obj): nya_memory::shared_ptr<t>(obj) {}
+    explicit proxy(const t &obj): RoxMemory::RoxSharedPtr<t>(obj) {}
 
-    proxy(const proxy &p): nya_memory::shared_ptr<t>(p) {}
+    proxy(const proxy &p): RoxMemory::RoxSharedPtr<t>(p) {}
 };
 
 }

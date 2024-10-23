@@ -4,14 +4,14 @@
 
 #include "shared_resources.h"
 #include "render/animation.h"
-#include "memory/optional.h"
+#include "RoxMemory/RoxOptional.h"
 
-namespace nya_scene
+namespace RoxScene
 {
 
 struct shared_animation
 {
-    nya_render::animation anim;
+    RoxRender::animation anim;
 
     bool release()
     {
@@ -67,7 +67,7 @@ private:
 
     struct mask_data { std::map<std::string,bool> data; };
 
-    nya_memory::optional<mask_data> m_mask;
+    RoxMemory::optional<mask_data> m_mask;
 };
 
 }

@@ -4,12 +4,12 @@
 
 #include "shared_resources.h"
 #include "material.h"
-#include "RoxFormats/RoxMathExprParser.h"
+#include "formats/math_expr_parser.h"
 #include "material.h"
 #include "transform.h"
-#include "RoxRender/RoxVbo.h"
+#include "render/vbo.h"
 
-namespace RoxScene
+namespace nya_scene
 {
 
 struct shared_particles
@@ -27,7 +27,7 @@ struct shared_particles
     struct param
     {
         std::string id, name;
-        RoxMath::Vector3 value;
+        nya_math::vec4 value;
     };
 
     std::vector<param> params;
@@ -40,14 +40,14 @@ struct shared_particles
 
     std::vector<tex> textures;
 
-    typedef std::vector<std::pair<float,RoxMath::Vector3> > curve_points;
+    typedef std::vector<std::pair<float,nya_math::vec4> > curve_points;
 
     struct curve
     {
         std::string id, name;
         curve_points points;
         static const int samples_count=128;
-        RoxMath::Vector3 samples[samples_count];
+        nya_math::vec4 samples[samples_count];
 
         void sample(const curve_points &points);
     };
@@ -58,7 +58,7 @@ struct shared_particles
     {
         short inout_idx;
         short bind_offset,bind_count;
-        mutable RoxFormats::RoxMathExprParser expr; //ToDo
+        mutable nya_formats::math_expr_parser expr; //ToDo
     };
 
     struct function
@@ -90,7 +90,7 @@ struct shared_particles
         short sort_key_offset;
         bool sort_ascending;
 
-        RoxRender::RoxVbo mesh;
+        nya_render::vbo mesh;
         short prim_count;
         short element_per_prim;
         bool prim_looped;
@@ -166,16 +166,16 @@ public:
     void draw(const char *pass_name=material::default_pass) const;
 
 public:
-    void set_pos(const RoxMath::Vector3 &pos) { m_transform.set_pos(pos); }
-    void set_rot(const RoxMath::Quaternion &rot) { m_transform.set_rot(rot); }
-    void set_rot(RoxMath::AngleDeg yaw,RoxMath::AngleDeg pitch,RoxMath::AngleDeg roll);
+    void set_pos(const nya_math::vec3 &pos) { m_transform.set_pos(pos); }
+    void set_rot(const nya_math::quat &rot) { m_transform.set_rot(rot); }
+    void set_rot(nya_math::angle_deg yaw,nya_math::angle_deg pitch,nya_math::angle_deg roll);
     void set_scale(float s) { m_transform.set_scale(s,s,s); }
-    void set_scale(const RoxMath::Vector3 &s) { m_transform.set_scale(s.x,s.y,s.z); }
+    void set_scale(const nya_math::vec3 &s) { m_transform.set_scale(s.x,s.y,s.z); }
 
 public:
-    const RoxMath::Vector3 &get_pos() const { return m_transform.get_pos(); }
-    const RoxMath::Quaternion &get_rot() const { return m_transform.get_rot(); }
-    const RoxMath::Vector3 &get_scale() const { return m_transform.get_scale(); }
+    const nya_math::vec3 &get_pos() const { return m_transform.get_pos(); }
+    const nya_math::quat &get_rot() const { return m_transform.get_rot(); }
+    const nya_math::vec3 &get_scale() const { return m_transform.get_scale(); }
 
 public:
     void spawn(const char *emitter_id);
@@ -187,15 +187,15 @@ public:
     int get_param_idx(const char *name) const;
 
     void set_param(int idx,float f0,float f1=0.0f,float f2=0.0f,float f3=0.0f);
-    void set_param(int idx,const RoxMath::Vector3 &v,float w=0.0f);
-    void set_param(int idx,const RoxMath::Vector4 &v);
+    void set_param(int idx,const nya_math::vec3 &v,float w=0.0f);
+    void set_param(int idx,const nya_math::vec4 &v);
 
     void set_param(const char *name,float f0,float f1=0.0f,float f2=0.0f,float f3=0.0f);
-    void set_param(const char *name,const RoxMath::Vector3 &v,float w=0.0f);
-    void set_param(const char *name,const RoxMath::Vector4 &v);
+    void set_param(const char *name,const nya_math::vec3 &v,float w=0.0f);
+    void set_param(const char *name,const nya_math::vec4 &v);
 
-    const RoxMath::Vector3 &get_param(int idx) const;
-    const RoxMath::Vector3 &get_param(const char *name) const;
+    const nya_math::vec4 &get_param(int idx) const;
+    const nya_math::vec4 &get_param(const char *name) const;
 
 public:
     int get_textures_count() const;
@@ -258,11 +258,11 @@ private:
 
     std::vector<shared_particles::emitter_bind> m_emitter_emitter_binds;
 
-    std::vector<RoxMath::Vector3> m_params;
-    std::vector<RoxScene::texture_proxy> m_textures;
+    std::vector<nya_math::vec4> m_params;
+    std::vector<nya_scene::texture_proxy> m_textures;
     bool m_need_update_params;
 
-    RoxMath::Vector3 m_local_cam_pos;
+    nya_math::vec3 m_local_cam_pos;
 
 private:
     static void time_func(float *a,float *r);

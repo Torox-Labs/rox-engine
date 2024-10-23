@@ -109,7 +109,7 @@ namespace RoxFormats
         this->height = height;
         this->channels = channels;
         this->rle = rle;
-        this->horizontalFlip = (imageDescriptor & 0x10) != 0;
+        this->horisontalFlip = (imageDescriptor & 0x10) != 0;
         this->verticalFlip = (imageDescriptor & 0x20) != 0;
         this->data = reader.getData();
         this->compressedSize = reader.getRemained();
@@ -134,7 +134,7 @@ namespace RoxFormats
             return 0;
 
         unsigned char imageDescriptor = 0;
-        if (horizontalFlip)
+        if (horisontalFlip)
             imageDescriptor |= 0x10;
         if (verticalFlip)
             imageDescriptor |= 0x20;
@@ -487,7 +487,7 @@ namespace RoxFormats
             return false;
 
         mHeader.flipHorizontal(&mData[0], &mData[0]);
-        mHeader.horizontalFlip = !mHeader.horizontalFlip;
+        mHeader.horisontalFlip = !mHeader.horisontalFlip;
 
         return true;
     }

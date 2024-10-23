@@ -3,15 +3,15 @@
 #pragma once
 
 #include "shared_resources.h"
-#include "render/texture.h"
+#include "RoxRender/RoxTexture.h"
 #include "proxy.h"
 
-namespace nya_scene
+namespace RoxScene
 {
 
 struct shared_texture
 {
-    nya_render::texture tex;
+    RoxRender::RoxTexture tex;
 
     bool release()
     {
@@ -56,14 +56,14 @@ public:
     void create(const shared_texture &res) { m_internal.create(res); }
 
 public:
-    typedef nya_render::texture::color_format color_format;
+    typedef RoxRender::RoxTexture::COLOR_FORMAT color_format;
 
     const char *get_name() const { return internal().get_name(); }
     unsigned int get_width() const;
     unsigned int get_height() const;
     color_format get_format() const;
-    nya_memory::tmp_buffer_ref get_data() const;
-    nya_memory::tmp_buffer_ref get_data(int x,int y,int width,int height) const;
+    RoxMemory::RoxTmpBufferRef get_data() const;
+    RoxMemory::RoxTmpBufferRef get_data(int x,int y,int width,int height) const;
     bool is_cubemap() const;
 
 public:

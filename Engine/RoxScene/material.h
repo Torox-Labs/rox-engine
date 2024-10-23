@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "render/render.h"
+#include "RoxRender/RoxRender.h"
 #include "scene.h"
 #include "shader.h"
 #include "texture.h"
 
-namespace nya_scene
+namespace RoxScene
 {
 
 class material_internal;
@@ -21,7 +21,7 @@ public:
 public:
     void set(const char *pass_name=default_pass) const;
     void unset() const;
-    void skeleton_changed(const nya_render::skeleton *skeleton) const;
+    void skeleton_changed(const RoxRender::RoxSkeleton *skeleton) const;
     int get_param_idx(const char *name) const;
     int get_texture_idx(const char *semantics) const;
     bool release();
@@ -31,7 +31,7 @@ public:
 private:
     friend class material;
 
-    typedef nya_math::vec4 param;
+    typedef RoxMath::Vector4 param;
     typedef proxy<param> param_proxy;
 
     class param_array
@@ -41,7 +41,7 @@ private:
         int get_count() const { return (int)m_params.size(); }
         void set(int idx,const param &p) { if(idx>=0 && idx<(int)m_params.size()) m_params[idx]=p; }
         void set(int idx,float f0,float f1=0.0f,float f2=0.0f,float f3=0.0f);
-        void set(int idx,const nya_math::vec3 &v,float w=0.0f);
+        void set(int idx,const RoxMath::Vector3 &v,float w=0.0f);
         const param &get(int idx) const;
         param &get(int idx);
         const float *get_buf() const { return m_params.empty()?0:&m_params[0].x; }
@@ -59,7 +59,7 @@ private:
         param_proxy p;
         param_array_proxy a;
 
-        void apply_to_shader(const shader &shader, int uniform_idx) const;
+        void apply_to_shader(const RoxShader &shader, int uniform_idx) const;
     };
 
     struct material_texture
@@ -72,10 +72,10 @@ private:
     {
     public:
         const char *get_name() const {return m_name.c_str();}
-        nya_render::state &get_state() {return m_render_state;}
-        const nya_render::state &get_state() const {return m_render_state;}
-        const shader &get_shader() const {return m_shader;}
-        void set_shader(const shader &shader);
+        RoxRender::State &get_state() {return m_render_state;}
+        const RoxRender::State &get_state() const {return m_render_state;}
+        const RoxShader &get_shader() const {return m_shader;}
+        void set_shader(const RoxShader &shader);
         void set_pass_param(const char *name,const param &value); //overrides material param
 
     public:
@@ -90,8 +90,8 @@ private:
         void update_pass_params();
 
         std::string m_name;
-        nya_render::state m_render_state;
-        shader m_shader;
+        RoxRender::State m_render_state;
+        RoxShader m_shader;
         mutable bool m_shader_changed;
         mutable std::vector<int> m_uniforms_idxs_map;
         mutable std::vector<int> m_textures_slots_map;
@@ -169,14 +169,14 @@ public:
     int get_param_idx(const char *name) const {return m_internal.get_param_idx(name);}
 
     void set_param(int idx,float f0,float f1=0.0f,float f2=0.0f,float f3=0.0f);
-    void set_param(int idx,const nya_math::vec3 &v,float w=0.0f);
+    void set_param(int idx,const RoxMath::Vector3 &v,float w=0.0f);
     void set_param(int idx,const param &p);
     void set_param(int idx,const param_proxy &p);
     void set_param_array(int idx,const param_array & a);
     void set_param_array(int idx,const param_array_proxy & p);
 
     void set_param(const char *name,float f0,float f1=0.0f,float f2=0.0f,float f3=0.0f);
-    void set_param(const char *name,const nya_math::vec3 &v,float w=0.0f);
+    void set_param(const char *name,const RoxMath::Vector3 &v,float w=0.0f);
     void set_param(const char *name,const param &p);
     void set_param(const char *name,const param_proxy &p);
     void set_param_array(const char *name,const param_array & a);

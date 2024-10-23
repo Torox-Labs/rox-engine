@@ -1,10 +1,10 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
-#include "scene.h"
+#include "RoxScene.h"
 
 namespace { RoxLogger::RoxLoggerBase *scene_log=0; }
 
-namespace RoxScene
+namespace nya_scene
 {
 
 void set_log(RoxLogger::RoxLoggerBase *l) { scene_log=l; }

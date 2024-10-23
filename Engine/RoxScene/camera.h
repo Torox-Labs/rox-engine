@@ -3,49 +3,49 @@
 #pragma once
 
 #include "proxy.h"
-#include "math/matrix.h"
-#include "math/vector.h"
-#include "math/quaternion.h"
-#include "math/frustum.h"
+#include "RoxMath/RoxMatrix.h"
+#include "RoxMath/RoxVector.h"
+#include "RoxMath/RoxQuaternion.h"
+#include "RoxMath/RoxFrustum.h"
 
-namespace nya_scene
+namespace RoxScene
 {
 
 class camera
 {
 public:
-    void set_proj(nya_math::angle_deg fov,float aspect,float near,float far);
+    void set_proj(RoxMath::AngleDeg fov,float aspect,float near,float far);
     void set_proj(float left,float right,float bottom,float top,float near,float far);
-    void set_proj(const nya_math::mat4 &mat);
+    void set_proj(const RoxMath::Matrix4 &mat);
 
-    void set_pos(float x,float y,float z) { set_pos(nya_math::vec3(x,y,z)); }
-    void set_pos(const nya_math::vec3 &pos);
-    void set_rot(nya_math::angle_deg yaw,nya_math::angle_deg pitch,nya_math::angle_deg roll);
-    void set_rot(const nya_math::quat &rot);
-    void set_rot(const nya_math::vec3 &direction);
-
-public:
-    const nya_math::mat4 &get_proj_matrix() const { return m_proj; }
-    const nya_math::mat4 &get_view_matrix() const;
-
-    const nya_math::frustum &get_frustum() const;
+    void set_pos(float x,float y,float z) { set_pos(RoxMath::Vector3(x,y,z)); }
+    void set_pos(const RoxMath::Vector3 &pos);
+    void set_rot(RoxMath::AngleDeg yaw,RoxMath::AngleDeg pitch,RoxMath::AngleDeg roll);
+    void set_rot(const RoxMath::Quaternion &rot);
+    void set_rot(const RoxMath::Vector3 &direction);
 
 public:
-	const nya_math::vec3 &get_pos() const { return m_pos; }
-	const nya_math::quat &get_rot() const { return m_rot; }
-    const nya_math::vec3 get_dir() const;
+    const RoxMath::Matrix4 &get_proj_matrix() const { return m_proj; }
+    const RoxMath::Matrix4 &get_view_matrix() const;
+
+    const RoxMath::RoxFrustum &get_frustum() const;
+
+public:
+	const RoxMath::Vector3 &get_pos() const { return m_pos; }
+	const RoxMath::Quaternion &get_rot() const { return m_rot; }
+    const RoxMath::Vector3 get_dir() const;
 
 public:
     camera(): m_recalc_view(true), m_recalc_frustum(true) {}
 
 private:
-    nya_math::mat4 m_proj;
-    mutable nya_math::mat4 m_view;
+    RoxMath::Matrix4 m_proj;
+    mutable RoxMath::Matrix4 m_view;
 
-    nya_math::vec3 m_pos;
-    nya_math::quat m_rot;
+    RoxMath::Vector3 m_pos;
+    RoxMath::Quaternion m_rot;
 
-    mutable nya_math::frustum m_frustum;
+    mutable RoxMath::RoxFrustum m_frustum;
 
     mutable bool m_recalc_view;
     mutable bool m_recalc_frustum;

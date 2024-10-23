@@ -74,7 +74,7 @@ Quaternion Quaternion::nlerp(const Quaternion &q1,const Quaternion &q2,float t)
          t2*q1.w+t*q2.w).normalize();
 }
 
-Vector3 Quaternion::get_euler() const
+Vector3 Quaternion::getEuler() const
 {
     const float x2=v.x+v.x;
     const float y2=v.y+v.y;
@@ -207,7 +207,7 @@ Quaternion &Quaternion::normalize()
     return *this;
 }
 
-Quaternion &Quaternion::apply_weight(float weight)
+Quaternion &Quaternion::applyWeight(float weight)
 {
     v*=weight;
     w*=weight;

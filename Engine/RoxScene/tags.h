@@ -5,7 +5,7 @@
 #include <vector>
 #include <string.h>
 
-namespace nya_scene
+namespace RoxScene
 {
 
 class tags

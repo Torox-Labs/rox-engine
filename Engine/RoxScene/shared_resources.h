@@ -2,13 +2,14 @@
 
 #pragma once
 
-#include "resources/shared_resources.h"
-#include "memory/tmp_buffer.h"
+#include "RoxResources/RoxSharedResources.h"
+#include "RoxMemory/RoxTmpBuffers.h"
 
-namespace nya_scene
+namespace RoxScene
 {
 
-typedef nya_memory::tmp_buffer_ref resource_data;
+	//ToDo - Update this resource_data to the new RoxMemory::RoxTmpBufferRef
+typedef RoxMemory::RoxTmpBufferRef resource_data;
 
 template<typename t>
 class scene_shared
@@ -135,7 +136,7 @@ protected:
             }
 
             const size_t data_size=file_data->get_size();
-            nya_memory::tmp_buffer_ref res_data(data_size);
+            RoxMemory::RoxTmpBufferRef res_data(data_size);
             file_data->read_all(res_data.get_data());
             file_data->release();
 

@@ -34,7 +34,7 @@ namespace RoxFormats
         int height;
         COLORMODE channels;
         bool rle;
-        bool horizontalFlip;
+        bool horisontalFlip;
         bool verticalFlip;
 
         const void* data;
@@ -57,7 +57,7 @@ namespace RoxFormats
 
     public:
         RTga()
-            : width(0), height(0), rle(false), horizontalFlip(false),
+            : width(0), height(0), rle(false), horisontalFlip(false),
             verticalFlip(false), data(nullptr), compressedSize(0), uncompressedSize(0) {}
     };
 
@@ -76,7 +76,7 @@ namespace RoxFormats
     public:
         bool isRle() const { return mHeader.rle; }
         bool isFlippedVertical() const { return mHeader.verticalFlip; }
-        bool isFlippedHorizontal() const { return mHeader.horizontalFlip; }
+        bool isFlippedHorizontal() const { return mHeader.horisontalFlip; }
         int getWidth() const { return mHeader.width; }
         int getHeight() const { return mHeader.height; }
         RTga::COLORMODE getChannels() const { return mHeader.channels; }

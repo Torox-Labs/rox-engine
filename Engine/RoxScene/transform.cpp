@@ -1,11 +1,11 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
 #include "transform.h"
-#include "render/render.h"
+#include "RoxRender/RoxRender.h"
 #include "camera.h"
-#include "memory/invalid_object.h"
+#include "RoxMemory/RoxInvalidObject.h"
 
-namespace nya_scene
+namespace RoxScene
 {
 
 namespace { const transform *active_transform=0; }
@@ -20,15 +20,15 @@ const transform &transform::get()
 {
     if(!active_transform)
     {
-        return nya_memory::invalid_object<transform>();
+        return RoxMemory::invalidObject<transform>();
     }
 
     return *active_transform;
 }
 
-nya_math::vec3 transform::transform_vec(const nya_math::vec3 &vec) const
+RoxMath::Vector3 transform::transform_vec(const RoxMath::Vector3 &vec) const
 {
-    nya_math::vec3 out=vec;
+    RoxMath::Vector3 out=vec;
     out.x*=m_scale.x;
     out.y*=m_scale.y;
     out.z*=m_scale.z;
@@ -36,14 +36,14 @@ nya_math::vec3 transform::transform_vec(const nya_math::vec3 &vec) const
     return m_pos+m_rot.rotate(out);
 }
 
-nya_math::quat transform::transform_quat(const nya_math::quat &quat) const
+RoxMath::Quaternion transform::transform_quat(const RoxMath::Quaternion &quat) const
 {
     return m_rot*quat;
 }
 
-nya_math::vec3 transform::inverse_transform(const nya_math::vec3 &vec) const
+RoxMath::Vector3 transform::inverse_transform(const RoxMath::Vector3 &vec) const
 {
-    nya_math::vec3 out=m_rot.rotate_inv(vec-m_pos);
+    RoxMath::Vector3 out=m_rot.rotate_inv(vec-m_pos);
     const float eps=0.0001f;
     out.x=fabsf(m_scale.x)>eps?out.x/m_scale.x:0.0f;
     out.y=fabsf(m_scale.y)>eps?out.y/m_scale.y:0.0f;
@@ -52,19 +52,19 @@ nya_math::vec3 transform::inverse_transform(const nya_math::vec3 &vec) const
     return out;
 }
 
-nya_math::quat transform::inverse_transform(const nya_math::quat &quat) const
+RoxMath::Quaternion transform::inverse_transform(const RoxMath::Quaternion &quat) const
 {
-    return nya_math::quat::invert(m_rot)*quat;
+    return RoxMath::Quaternion::invert(m_rot)*quat;
 }
 
-nya_math::vec3 transform::inverse_rot(const nya_math::vec3 &vec) const
+RoxMath::Vector3 transform::inverse_rot(const RoxMath::Vector3 &vec) const
 {
     return m_rot.rotate_inv(vec);
 }
 
-nya_math::vec3 transform::inverse_rot_scale(const nya_math::vec3 &vec) const
+RoxMath::Vector3 transform::inverse_rot_scale(const RoxMath::Vector3 &vec) const
 {
-    nya_math::vec3 out=m_rot.rotate_inv(vec);
+    RoxMath::Vector3 out=m_rot.rotate_inv(vec);
     const float eps=0.0001f;
     out.x=fabsf(m_scale.x)>eps?out.x/m_scale.x:0.0f;
     out.y=fabsf(m_scale.y)>eps?out.y/m_scale.y:0.0f;
@@ -73,22 +73,22 @@ nya_math::vec3 transform::inverse_rot_scale(const nya_math::vec3 &vec) const
     return out;
 }
 
-nya_math::aabb transform::transform_aabb(const nya_math::aabb &box) const
+RoxMath::Aabb transform::transform_aabb(const RoxMath::Aabb &box) const
 {
-    return nya_math::aabb(box,m_pos,m_rot,m_scale);
+    return RoxMath::Aabb(box,m_pos,m_rot,m_scale);
 }
 
 void transform::apply() const
 {
-    nya_math::mat4 mat=get_camera().get_view_matrix();
+    RoxMath::Matrix4 mat=get_camera().get_view_matrix();
     mat.translate(m_pos).rotate(m_rot).scale(m_scale.x,m_scale.y,m_scale.z);
 
-    nya_render::set_modelview_matrix(mat);
+    RoxRender::set_modelview_matrix(mat);
 }
 
-void transform::set_rot(nya_math::angle_deg yaw,nya_math::angle_deg pitch,nya_math::angle_deg roll)
+void transform::set_rot(RoxMath::AngleDeg yaw,RoxMath::AngleDeg pitch,RoxMath::AngleDeg roll)
 {
-    m_rot=nya_math::quat(pitch,yaw,roll);
+    m_rot=RoxMath::Quaternion(pitch,yaw,roll);
 }
 
 }

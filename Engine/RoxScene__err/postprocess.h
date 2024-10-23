@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include "RoxScene/material.h"
-#include "RoxRender/RoxScreenQuad.h"
-#include "RoxRender/RoxFbo.h"
-#include "RoxRender/RoxRender.h"
+#include "scene/material.h"
+#include "render/screen_quad.h"
+#include "render/fbo.h"
+#include "render/render.h"
 #include "tags.h"
 
-namespace RoxScene
+namespace nya_scene
 {
 
 struct shared_postprocess
@@ -53,8 +53,8 @@ public:
     void set_texture(const char *name,const texture_proxy &tex);
     const texture_proxy &get_texture(const char *name) const;
 
-    void set_shader_param(const char *name,const RoxMath::Vector4 &value);
-    const RoxMath::Vector4 &get_shader_param(const char *name) const;
+    void set_shader_param(const char *name,const nya_math::vec4 &value);
+    const nya_math::vec4 &get_shader_param(const char *name) const;
 
 public:
     unsigned int get_width() const { return m_width; };
@@ -76,7 +76,7 @@ private:
 private:
     unsigned int m_width,m_height;
     bool m_auto_resize;
-    RoxMemory::RoxSharedPtr<RoxRender::RoxScreenQuad> m_quad;
+    nya_memory::shared_ptr<nya_render::screen_quad> m_quad;
 
     struct tex_holder
     {
@@ -87,7 +87,7 @@ private:
     std::vector<std::pair<std::string,bool> > m_conditions;
     std::vector<std::pair<std::string,float> > m_variables;
     std::vector<std::pair<std::string,tex_holder> > m_textures;
-    std::vector<std::pair<std::string,RoxMath::Vector4> > m_shader_params;
+    std::vector<std::pair<std::string,nya_math::vec4> > m_shader_params;
 
     enum op_types
     {
@@ -117,7 +117,7 @@ private:
     struct op_clear
     {
         bool color,depth;
-        RoxMath::Vector4 color_value;
+        nya_math::vec4 color_value;
         float depth_value;
     };
     std::vector<op_clear> m_op_clear;
@@ -126,7 +126,7 @@ private:
     {
         shader sh;
         std::vector<int> params_map;
-        std::vector<std::pair<int,RoxMath::Vector4> > params;
+        std::vector<std::pair<int,nya_math::vec4> > params;
     };
     std::vector<op_set_shader> m_op_set_shader;
 
@@ -134,7 +134,7 @@ private:
     {
         material mat;
         std::vector<int> params_map;
-        std::vector<std::pair<int,RoxMath::Vector4> > params;
+        std::vector<std::pair<int,nya_math::vec4> > params;
     };
     std::vector<op_set_material> m_op_set_material;
 
@@ -147,8 +147,8 @@ private:
 
     struct op_target
     {
-        RoxScene::proxy<RoxRender::RoxFbo> fbo;
-        RoxRender::Rectangle rect;
+        nya_scene::proxy<nya_render::fbo> fbo;
+        nya_render::rect rect;
         int color_idx, depth_idx;
         int samples;
 

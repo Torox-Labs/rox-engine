@@ -5,7 +5,7 @@
 #include "RoxLogger/RoxLogger.h"
 #include "RoxLogger/RoxWarning.h"
 
-namespace RoxScene
+namespace nya_scene
 {
 
 void set_log(RoxLogger::RoxLoggerBase *l);

@@ -110,7 +110,7 @@ void RoxSkeleton::updateBone(int idx)
         if(bnd.rot)
         {
             RoxMath::Quaternion tmp=src.rot;
-            tmp.apply_weight(bnd.k);
+            tmp.applyWeight(bnd.k);
             b.rot=(b.rot*tmp).normalize();
         }
         baseUpdateBone(idx);

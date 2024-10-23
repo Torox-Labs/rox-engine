@@ -2,22 +2,19 @@
 
 #pragma once
 
-#include "shared_resources.h"
-#include "RoxRender/RoxShader.h"
+#include "RoxSharedResources.h"
+#include "RoxRender/RoxRender.h"
 #include "RoxRender/RoxSkeleton.h"
 #include "RoxMath/RoxVector.h"
 #include "RoxMemory/RoxOptional.h"
-//#include "scene/texture.h"
-
-#include "RoxMemory/RoxOptional.h"
-#include "RoxRender/RoxTexture.h"
+#include "RoxScene/RoxTexture.h"
 
 namespace RoxScene
 {
 
 struct shared_shader
 {
-    RoxRender::RoxShader shdr;
+    nya_render::shader shdr;
 
     std::vector<std::string> samplers;
 
@@ -65,7 +62,7 @@ struct shared_shader
         std::string name;
         int location;
         transform_type transform;
-        RoxMath::Vector4 default_value;
+        nya_math::vec4 default_value;
 
         uniform(): location(-1), transform(none) {}
     };
@@ -80,7 +77,7 @@ struct shared_shader
         predefines.clear();
         uniforms.clear();
         samplers.clear();
-        if(texture_buffers.isValid())
+        if(texture_buffers.is_valid())
         {
             texture_buffers->skeleton_pos_texture.release();
             texture_buffers->skeleton_rot_texture.release();
@@ -94,31 +91,31 @@ struct shared_shader
     {
         unsigned int skeleton_pos_max_count;
         unsigned int skeleton_rot_max_count;
-        RoxRender::RoxTexture skeleton_pos_texture;
-        RoxRender::RoxTexture skeleton_rot_texture;
-        const RoxRender::RoxSkeleton *last_skeleton_pos_texture;
-        const RoxRender::RoxSkeleton *last_skeleton_rot_texture;
+        nya_render::texture skeleton_pos_texture;
+        nya_render::texture skeleton_rot_texture;
+        const nya_render::skeleton *last_skeleton_pos_texture;
+        const nya_render::skeleton *last_skeleton_rot_texture;
 
         texture_buffers():skeleton_pos_max_count(0),skeleton_rot_max_count(0),
                           last_skeleton_pos_texture(0),last_skeleton_rot_texture(0) {}
     };
 
-    mutable RoxMemory::RoxOptional<texture_buffers> texture_buffers;
+    mutable nya_memory::optional<texture_buffers> texture_buffers;
 
     //cache
-    const mutable RoxRender::RoxSkeleton *last_skeleton_pos;
-    const mutable RoxRender::RoxSkeleton *last_skeleton_rot;
+    const mutable nya_render::skeleton *last_skeleton_pos;
+    const mutable nya_render::skeleton *last_skeleton_rot;
 };
 
 class shader_internal: public scene_shared<shared_shader>
 {
 public:
     void set() const;
-    static void unset() { RoxRender::RoxShader::unbind(); }
+    static void unset() { nya_render::shader::unbind(); }
 
-    static void set_skeleton(const RoxRender::RoxSkeleton *RoxSkeleton) { m_skeleton=RoxSkeleton; }
+    static void set_skeleton(const nya_render::skeleton *skeleton) { m_skeleton=skeleton; }
     void reset_skeleton() { if(!m_shared.is_valid()) return; m_shared->last_skeleton_pos=0; m_shared->last_skeleton_rot=0; }
-    void skeleton_changed(const RoxRender::RoxSkeleton *RoxSkeleton) const;
+    void skeleton_changed(const nya_render::skeleton *skeleton) const;
 
 public:
     int get_texture_slot(const char *semantic) const;
@@ -129,16 +126,16 @@ public:
     int get_uniforms_count() const;
     int get_uniform_idx(const char *name) const;
     const shared_shader::uniform &get_uniform(int idx) const;
-    RoxRender::RoxShader::UNIFORM_TYPE get_uniform_type(int idx) const;
+    nya_render::shader::uniform_type get_uniform_type(int idx) const;
     unsigned int get_uniform_array_size(int idx) const;
     void set_uniform_value(int idx,float f0,float f1,float f2,float f3) const;
     void set_uniform4_array(int idx,const float *array,unsigned int count) const;
 
 private:
-    static const RoxRender::RoxSkeleton *m_skeleton;
+    static const nya_render::skeleton *m_skeleton;
 };
 
-class RoxShader
+class shader
 {
 public:
     bool load(const char *name);
@@ -156,9 +153,9 @@ public:
     const char *get_name() const { return m_internal.get_name(); }
 
 public:
-    RoxShader() {}
-    RoxShader(const char *name) { *this=RoxShader(); load(name); }
-    ~RoxShader() { unload(); }
+    shader() {}
+    shader(const char *name) { *this=shader(); load(name); }
+    ~shader() { unload(); }
 
 public:
     static bool load_nya_shader(shared_shader &res,resource_data &data,const char* name);

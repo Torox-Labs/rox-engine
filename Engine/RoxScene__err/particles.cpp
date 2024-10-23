@@ -2,13 +2,13 @@
 
 #include "particles.h"
 #include "camera.h"
-#include "RoxFormats/RoxTextParser.h"
-#include "RoxFormats/RoxStringConvert.h"
-#include "RoxMemory/RoxInvalidObject.h"
-#include "cstdlib"
-#include "cstring"
+#include "formats/text_parser.h"
+#include "formats/string_convert.h"
+#include "memory/invalid_object.h"
+#include "stdlib.h"
+#include "string.h"
 
-namespace RoxScene
+namespace nya_scene
 {
 
 bool particles::load(const char *name)
@@ -413,7 +413,7 @@ void particles::spawn(const char *emitter_id)
     }
 }
 
-void particles::set_rot(RoxMath::AngleDeg yaw,RoxMath::AngleDeg pitch,RoxMath::AngleDeg roll)
+void particles::set_rot(nya_math::angle_deg yaw,nya_math::angle_deg pitch,nya_math::angle_deg roll)
 {
     m_transform.set_rot(yaw,pitch,roll);
 }
@@ -487,15 +487,15 @@ int particles::get_param_idx(const char *name) const
 
 void particles::set_param(int idx,float f0,float f1,float f2,float f3)
 {
-    set_param(idx,RoxMath::Vector4(f0,f1,f2,f3));
+    set_param(idx,nya_math::vec4(f0,f1,f2,f3));
 }
 
-void particles::set_param(int idx,const RoxMath::Vector3 &v,float w)
+void particles::set_param(int idx,const nya_math::vec3 &v,float w)
 {
-    set_param(idx,RoxMath::Vector4(v,w));
+    set_param(idx,nya_math::vec4(v,w));
 }
 
-void particles::set_param(int idx,const RoxMath::Vector4 &p)
+void particles::set_param(int idx,const nya_math::vec4 &p)
 {
     if(idx<0 || idx>=get_params_count())
         return;
@@ -511,25 +511,25 @@ void particles::set_param(const char *name,float f0,float f1,float f2,float f3)
     set_param(get_param_idx(name),f0,f1,f2,f3);
 }
 
-void particles::set_param(const char *name,const RoxMath::Vector3 &v,float w)
+void particles::set_param(const char *name,const nya_math::vec3 &v,float w)
 {
     set_param(get_param_idx(name),v,w);
 }
 
-void particles::set_param(const char *name,const RoxMath::Vector4 &v)
+void particles::set_param(const char *name,const nya_math::vec4 &v)
 {
     set_param(get_param_idx(name),v);
 }
 
-const RoxMath::Vector4 &particles::get_param(int idx) const
+const nya_math::vec4 &particles::get_param(int idx) const
 {
     if(idx<0 || idx>=get_params_count())
-        return RoxMemory::invalidObject<RoxMath::Vector4>();
+        return nya_memory::invalid_object<nya_math::vec4>();
 
     return m_params[idx];
 }
 
-const RoxMath::Vector4 &particles::get_param(const char *name) const
+const nya_math::vec4 &particles::get_param(const char *name) const
 {
     return get_param(get_param_idx(name));
 }
@@ -602,7 +602,7 @@ int particles::find_emitter_emitter_bind(int from,int to)
 const shared_particles::function &particles::get_function(int idx)
 {
     if(!m_shared.is_valid() || idx<0)
-        return RoxMemory::invalidObject<shared_particles::function>();
+        return nya_memory::invalid_object<shared_particles::function>();
 
     return m_shared->functions[idx];
 }
@@ -633,7 +633,7 @@ void shared_particles::particle::init_mesh_points(int count)
         verts[i*2]=float(i);
 
     mesh.set_vertices(0,2);
-    mesh.set_element_type(RoxRender::RoxVbo::points);
+    mesh.set_element_type(nya_render::vbo::points);
     mesh.set_vertex_data(&verts[0],sizeof(float)*2,(unsigned int)prim_count);
 }
 
@@ -641,7 +641,7 @@ void shared_particles::particle::init_mesh_line(int count)
 {
     init_mesh_points(count);
     prim_looped=true;
-    mesh.set_element_type(RoxRender::RoxVbo::line_strip);
+    mesh.set_element_type(nya_render::vbo::line_strip);
 }
 
 namespace { struct quad_vert { float x,y,i,u,v; }; }
@@ -679,7 +679,7 @@ void shared_particles::particle::init_mesh_quads(int count)
 
     mesh.set_tc(0,sizeof(float)*3,2);
     mesh.set_vertex_data(&verts[0],sizeof(quad_vert),(unsigned int)verts.size());
-    mesh.set_index_data(&inds[0],RoxRender::RoxVbo::index2b,(unsigned int)inds.size());
+    mesh.set_index_data(&inds[0],nya_render::vbo::index2b,(unsigned int)inds.size());
 }
 
 void shared_particles::particle::init_mesh_quad_strip(int count)
@@ -693,13 +693,13 @@ void shared_particles::particle::init_mesh_quad_strip(int count)
     if(count<=0)
         return;
 
-    std::vector<RoxMath::vec2> verts(count*2);
+    std::vector<nya_math::vec2> verts(count*2);
     for(int i=0;i<count*2;++i)
         verts[i].set(i%2?-1.0f:1.0f,float(i/2));
 
     mesh.set_vertices(0,2);
-    mesh.set_element_type(RoxRender::RoxVbo::triangle_strip);
-    mesh.set_vertex_data(&verts[0],sizeof(RoxMath::vec2),(unsigned int)verts.size());
+    mesh.set_element_type(nya_render::vbo::triangle_strip);
+    mesh.set_vertex_data(&verts[0],sizeof(nya_math::vec2),(unsigned int)verts.size());
 }
 
 short shared_particles::function::get_inout_idx(const char *name) const
@@ -900,7 +900,7 @@ void shared_particles::curve::sample(const curve_points &p)
     if(points.empty())
     {
         for(int i=0;i<samples_count;++i)
-            samples[i]=RoxMath::Vector4();
+            samples[i]=nya_math::vec4();
         return;
     }
 
@@ -921,7 +921,7 @@ void shared_particles::curve::sample(const curve_points &p)
         for(int j=idx0<0?0:idx0;j<idx1 && j<samples_count;++j)
         {
             const float k=(j/float(samples_count-1) - points[i-1].first) / (points[i].first - points[i-1].first);
-            samples[j]=RoxMath::Vector4::lerp(points[i-1].second,points[i].second, k);
+            samples[j]=nya_math::vec4::lerp(points[i-1].second,points[i].second, k);
         }
     }
 
@@ -934,11 +934,11 @@ void shared_particles::curve::sample(const curve_points &p)
         samples[i]=points.back().second;
 }
 
-namespace { typedef std::list<RoxFormats::RTextParser> parsers_list; }
+namespace { typedef std::list<nya_formats::text_parser> parsers_list; }
 
 static bool load_includes(parsers_list &list,parsers_list::iterator current,const char *name)
 {
-    RoxFormats::RTextParser &parser=*current;
+    nya_formats::text_parser &parser=*current;
     for(int i=0;i<parser.get_sections_count();++i)
     {
         if(parser.is_section_type(i,"include"))
@@ -970,13 +970,13 @@ static bool load_includes(parsers_list &list,parsers_list::iterator current,cons
             }
 
             const size_t data_size=file_data->get_size();
-            RoxMemory::tmp_buffer_scoped include_data(data_size);
+            nya_memory::tmp_buffer_scoped include_data(data_size);
             file_data->read_all(include_data.get_data());
             file_data->release();
 
             parsers_list::iterator it=current;
             ++it;
-            it=list.insert(it,RoxFormats::RTextParser());
+            it=list.insert(it,nya_formats::text_parser());
 
             if(!it->load_from_data((char *)include_data.get_data(),include_data.get_size()))
             {
@@ -993,7 +993,7 @@ static bool load_includes(parsers_list &list,parsers_list::iterator current,cons
 
 bool particles::load_text(shared_particles &res,resource_data &data,const char* name)
 {
-    typedef std::list<RoxFormats::RTextParser> parsers_list;
+    typedef std::list<nya_formats::text_parser> parsers_list;
     parsers_list parsers(1);
     if(!parsers.back().load_from_data((char *)data.get_data(),data.get_size()))
         return false;
@@ -1007,7 +1007,7 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
 
     for (parsers_list::reverse_iterator it=parsers.rbegin();it!=parsers.rend();++it)
     {
-        const RoxFormats::RTextParser &parser=*it;
+        const nya_formats::text_parser &parser=*it;
         for(int i=0;i<parser.get_sections_count();++i)
         {
             if(parser.is_section_type(i,"emitter"))
@@ -1083,7 +1083,7 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
 
     for (parsers_list::reverse_iterator it=parsers.rbegin();it!=parsers.rend();++it)
     {
-        const RoxFormats::RTextParser &parser=*it;
+        const nya_formats::text_parser &parser=*it;
         for(int i=0;i<parser.get_sections_count();++i)
         {
             const char *sname=parser.get_section_name(i);
@@ -1115,7 +1115,7 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
                         idx=(int)f.in_out.size(),f.in_out.push_back(fname);
 
                     f.expressions[j].inout_idx=idx;
-                    RoxFormats::math_expr_parser &e=f.expressions[j].expr;
+                    nya_formats::math_expr_parser &e=f.expressions[j].expr;
 
                     e.set_function("time",1,1,time_func);
                     e.set_function("get_dt",0,1,get_dt_func);
@@ -1224,19 +1224,19 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
 
                     if(type=="blend")
                     {
-                        RoxRender::state &s=p.mat.get_default_pass().get_state();
-                        s.blend=RoxFormats::cullFaceFromString(value,s.blend_src,s.blend_dst);
+                        nya_render::state &s=p.mat.get_default_pass().get_state();
+                        s.blend=nya_formats::blend_mode_from_string(value,s.blend_src,s.blend_dst);
                     }
 
                     if(type=="zwrite")
                     {
-                        RoxRender::state &s=p.mat.get_default_pass().get_state();
+                        nya_render::state &s=p.mat.get_default_pass().get_state();
                         s.zwrite=parser.get_subsection_value_bool(i,j);
                     }
 
                     if(type=="depth_test")
                     {
-                        RoxRender::state &s=p.mat.get_default_pass().get_state();
+                        nya_render::state &s=p.mat.get_default_pass().get_state();
                         s.depth_test=parser.get_subsection_value_bool(i,j);
                     }
 
@@ -1473,7 +1473,7 @@ void particles::curve_func(float *a,float *r)
 
 void particles::print_func(float *a,float *r) { log()<<"particle print: "<<a[0]<<"\n"; r[0]=a[0]; }
 void particles::die_if_func(float *a,float *r) { r[0]=float(m_curr_want_die || (m_curr_want_die=a[0]>0.0f)); }
-void particles::dist_to_cam(float *a,float *r) { r[0]=(m_curr_particles->m_local_cam_pos - RoxMath::Vector3(a[0],a[1],a[2])).length(); }
-void particles::fade(float *a,float *r) { r[0]=RoxMath::fade(a[0],a[1],a[2],a[3]); }
+void particles::dist_to_cam(float *a,float *r) { r[0]=(m_curr_particles->m_local_cam_pos - nya_math::vec3(a[0],a[1],a[2])).length(); }
+void particles::fade(float *a,float *r) { r[0]=nya_math::fade(a[0],a[1],a[2],a[3]); }
 
 }

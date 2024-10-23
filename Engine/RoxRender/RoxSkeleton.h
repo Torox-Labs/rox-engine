@@ -41,7 +41,7 @@ public:
     RoxMath::Vector3 getBoneOriginalPos(int idx) const;
     RoxMath::Quaternion getBoneOriginalRot(int idx) const;
 
-    bool hasoriginalRot() const { return !m_rot_org.empty(); }
+    bool hasOriginalRot() const { return !m_rot_org.empty(); }
 
     void setBoneTransform(int bone_idx,const RoxMath::Vector3 &pos,
                                                 const RoxMath::Quaternion &rot);

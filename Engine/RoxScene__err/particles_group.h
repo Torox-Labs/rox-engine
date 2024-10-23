@@ -4,13 +4,13 @@
 
 #include "particles.h"
 
-namespace RoxScene
+namespace nya_scene
 {
 
 struct shared_particles_group
 {
-    std::vector<RoxScene::particles> particles;
-    std::vector<std::pair<std::string,RoxMath::Vector4> > params;
+    std::vector<nya_scene::particles> particles;
+    std::vector<std::pair<std::string,nya_math::vec4> > params;
 
     bool release()
     {
@@ -31,16 +31,16 @@ public:
     void draw(const char *pass_name=material::default_pass) const;
 
 public:
-    void set_pos(const RoxMath::Vector3 &pos);
-    void set_rot(const RoxMath::Quaternion &rot);
-    void set_rot(RoxMath::AngleDeg yaw,RoxMath::AngleDeg pitch,RoxMath::AngleDeg roll);
+    void set_pos(const nya_math::vec3 &pos);
+    void set_rot(const nya_math::quat &rot);
+    void set_rot(nya_math::angle_deg yaw,nya_math::angle_deg pitch,nya_math::angle_deg roll);
     void set_scale(float s);
-    void set_scale(const RoxMath::Vector3 &s);
+    void set_scale(const nya_math::vec3 &s);
 
 public:
-    const RoxMath::Vector3 &get_pos() const { return m_transform.get_pos(); }
-    const RoxMath::Quaternion &get_rot() const { return m_transform.get_rot(); }
-    const RoxMath::Vector3 &get_scale() const { return m_transform.get_scale(); }
+    const nya_math::vec3 &get_pos() const { return m_transform.get_pos(); }
+    const nya_math::quat &get_rot() const { return m_transform.get_rot(); }
+    const nya_math::vec3 &get_scale() const { return m_transform.get_scale(); }
 
 public:
     int get_count() const;

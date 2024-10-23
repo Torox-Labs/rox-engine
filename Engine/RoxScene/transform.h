@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include "math/matrix.h"
-#include "math/vector.h"
-#include "math/quaternion.h"
-#include "math/constants.h"
-#include "math/frustum.h"
+#include "RoxMath/RoxMatrix.h"
+#include "RoxMath/RoxVector.h"
+#include "RoxMath/RoxQuaternion.h"
+#include "RoxMath/RoxConstants.h"
+#include "RoxMath/RoxFrustum.h"
 
-namespace nya_scene
+namespace RoxScene
 {
 
 class transform
@@ -19,35 +19,35 @@ public:
 
 public:
     void set_pos(float x,float y,float z) { m_pos.x=x; m_pos.y=y; m_pos.z=z; }
-    void set_pos(const nya_math::vec3 &p) { m_pos=p; }
-    void set_rot(const nya_math::quat &q) { m_rot=q; }
-    void set_rot(nya_math::angle_deg yaw,nya_math::angle_deg pitch,nya_math::angle_deg roll);
+    void set_pos(const RoxMath::Vector3 &p) { m_pos=p; }
+    void set_rot(const RoxMath::Quaternion &q) { m_rot=q; }
+    void set_rot(RoxMath::AngleDeg yaw,RoxMath::AngleDeg pitch,RoxMath::AngleDeg roll);
     void set_scale(float sx,float sy,float sz) { m_scale.x=sx; m_scale.y=sy; m_scale.z=sz; }
 
 public:
-    const nya_math::vec3 &get_pos() const { return m_pos; }
-    const nya_math::quat &get_rot() const { return m_rot; }
-    const nya_math::vec3 &get_scale() const { return m_scale; }
+    const RoxMath::Vector3 &get_pos() const { return m_pos; }
+    const RoxMath::Quaternion &get_rot() const { return m_rot; }
+    const RoxMath::Vector3 &get_scale() const { return m_scale; }
 
 public:
-    nya_math::vec3 inverse_transform(const nya_math::vec3 &vec) const;
-    nya_math::quat inverse_transform(const nya_math::quat &quat) const;
-    nya_math::vec3 inverse_rot(const nya_math::vec3 &vec) const;
-    nya_math::vec3 inverse_rot_scale(const nya_math::vec3 &vec) const;
-    nya_math::vec3 transform_vec(const nya_math::vec3 &vec) const;
-    nya_math::quat transform_quat(const nya_math::quat &quat) const;
-    nya_math::aabb transform_aabb(const nya_math::aabb &box) const;
+    RoxMath::Vector3 inverse_transform(const RoxMath::Vector3 &vec) const;
+    RoxMath::Quaternion inverse_transform(const RoxMath::Quaternion &Quaternion) const;
+    RoxMath::Vector3 inverse_rot(const RoxMath::Vector3 &vec) const;
+    RoxMath::Vector3 inverse_rot_scale(const RoxMath::Vector3 &vec) const;
+    RoxMath::Vector3 transform_vec(const RoxMath::Vector3 &vec) const;
+    RoxMath::Quaternion transform_quat(const RoxMath::Quaternion &Quaternion) const;
+    RoxMath::Aabb transform_aabb(const RoxMath::Aabb &box) const;
 
 public:
-    transform():m_scale(nya_math::vec3(1.0f,1.0f,1.0f)){}
+    transform():m_scale(RoxMath::Vector3(1.0f,1.0f,1.0f)){}
 
 private:
     void apply() const;
 
 private:
-    nya_math::vec3 m_pos;
-    nya_math::quat m_rot;
-    nya_math::vec3 m_scale;
+    RoxMath::Vector3 m_pos;
+    RoxMath::Quaternion m_rot;
+    RoxMath::Vector3 m_scale;
 };
 
 }

@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "memory/tag_list.h"
+#include "RoxMemory/RoxTagList.h"
 #include "mesh.h"
 #include "tags.h"
 
-namespace nya_scene
+namespace RoxScene
 {
 
 struct shared_location
@@ -20,8 +20,8 @@ struct shared_location
 
     std::vector<location_mesh> meshes;
 
-    std::vector<std::pair<std::string,nya_math::vec4> > material_params;
-    std::vector<std::pair<std::string,nya_math::vec4> > vec_params;
+    std::vector<std::pair<std::string,RoxMath::Vector4> > material_params;
+    std::vector<std::pair<std::string,RoxMath::Vector4> > vec_params;
     std::vector<std::pair<std::string,std::string> > string_params;
 
     bool release() { *this=shared_location(); return true; }
@@ -38,11 +38,11 @@ public:
     int add_mesh(const char *mesh_name,const tags &tg,const transform &tr);
     void remove_mesh(int idx) { m_meshes.remove(idx); }
 
-    int get_meshes_count() const { return m_meshes.get_count(); }
+    int get_meshes_count() const { return m_meshes.getCount(); }
     const mesh &get_mesh(int idx) const { return m_meshes.get(idx).m; }
     mesh &modify_mesh(int idx,bool need_apply=true);
 
-    int get_meshes_count(const char *tag) const { return m_meshes.get_count(tag); }
+    int get_meshes_count(const char *tag) const { return m_meshes.getCount(tag); }
     const mesh &get_mesh(const char *tag,int idx) const { return m_meshes.get(tag,idx).m; }
     mesh &modify_mesh(const char *tag,int idx,bool need_apply=true);
 
@@ -76,7 +76,7 @@ private:
         location_mesh(): visible(false), need_apply(false) {}
     };
 
-    nya_memory::tag_list<location_mesh> m_meshes;
+    RoxMemory::RoxTagList<location_mesh> m_meshes;
     mutable std::vector<bool> m_draw_cache;
     std::vector<std::pair<std::string,material::param_proxy> > m_material_params;
     bool m_need_apply;

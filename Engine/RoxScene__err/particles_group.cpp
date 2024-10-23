@@ -1,12 +1,12 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
 #include "particles_group.h"
-#include "RoxFormats/RoxTextParser.h"
-#include "RoxFormats/RoxStringConvert.h"
-#include "RoxMemory/RoxInvalidObject.h"
+#include "formats/text_parser.h"
+#include "formats/string_convert.h"
+#include "memory/invalid_object.h"
 #include "stdlib.h"
 
-namespace RoxScene
+namespace nya_scene
 {
 
 bool particles_group::load(const char *name)
@@ -44,21 +44,21 @@ void particles_group::draw(const char *pass_name) const
         m_particles[i].draw(pass_name);
 }
 
-void particles_group::set_pos(const RoxMath::Vector3 &pos)
+void particles_group::set_pos(const nya_math::vec3 &pos)
 {
     m_transform.set_pos(pos);
     for(int i=0;i<get_count();++i)
         m_particles[i].set_pos(pos);
 }
 
-void particles_group::set_rot(const RoxMath::Quaternion &rot)
+void particles_group::set_rot(const nya_math::quat &rot)
 {
     m_transform.set_rot(rot);
     for(int i=0;i<get_count();++i)
         m_particles[i].set_rot(rot);
 }
 
-void particles_group::set_rot(RoxMath::AngleDeg yaw,RoxMath::AngleDeg pitch,RoxMath::AngleDeg roll)
+void particles_group::set_rot(nya_math::angle_deg yaw,nya_math::angle_deg pitch,nya_math::angle_deg roll)
 {
     m_transform.set_rot(yaw,pitch,roll);
     for(int i=0;i<get_count();++i)
@@ -72,7 +72,7 @@ void particles_group::set_scale(float s)
         m_particles[i].set_scale(s);
 }
 
-void particles_group::set_scale(const RoxMath::Vector3 &s)
+void particles_group::set_scale(const nya_math::vec3 &s)
 {
     m_transform.set_scale(s.x,s.y,s.z);
     for(int i=0;i<get_count();++i)
@@ -87,39 +87,39 @@ int particles_group::get_count() const
 const particles &particles_group::get(int idx) const
 {
     if(idx<0 || idx>=get_count())
-        return RoxMemory::invalidObject<particles>();
+        return nya_memory::invalid_object<particles>();
 
     return m_particles[idx];
 }
 
 bool particles_group::load_text(shared_particles_group &res,resource_data &data,const char* name)
 {
-    RoxFormats::RTextParser parser;
-    if(!parser.loadFromData((char *)data.getData(),data.getSize()))
+    nya_formats::text_parser parser;
+    if(!parser.load_from_data((char *)data.get_data(),data.get_size()))
         return false;
 
-    for(int i=0;i<parser.getSectionsCount();++i)
+    for(int i=0;i<parser.get_sections_count();++i)
     {
-        if(parser.isSectionType(i,"particles"))
+        if(parser.is_section_type(i,"particles"))
         {
-            res.particles.push_back(particles(parser.getSectionName(i)));
-            for(int j=0;j<parser.getSubsectionsCount(i);++j)
+            res.particles.push_back(particles(parser.get_section_name(i)));
+            for(int j=0;j<parser.get_subsections_count(i);++j)
             {
-                const char *type=parser.getSubsectionType(i,j);
+                const char *type=parser.get_subsection_type(i,j);
                 if(!type || !type[0])
                     continue;
 
                 particles &p=res.particles.back();
-                p.set_param(type,parser.getSubsectionValueVec4(i,j));
+                p.set_param(type,parser.get_subsection_value_vec4(i,j));
             }
         }
-        else if(parser.isSectionType(i,"param"))
+        else if(parser.is_section_type(i,"param"))
         {
-            const char *pname=parser.getSectionName(i);
+            const char *pname=parser.get_section_name(i);
             if(!pname || !pname[0])
                 continue;
 
-            res.params.push_back(std::make_pair(pname,parser.getSectionValueVec4(i)));
+            res.params.push_back(std::make_pair(pname,parser.get_section_value_vec4(i)));
         }
     }
 

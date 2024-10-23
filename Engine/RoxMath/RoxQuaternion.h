@@ -49,13 +49,13 @@ struct Quaternion
     Quaternion operator * (const Quaternion &q) const;
     Quaternion operator *= (const Quaternion &q) { *this=*this*q; return *this; }
 
-    Vector3 get_euler() const; //pitch,yaw,roll in radians
+    Vector3 getEuler() const; //pitch,yaw,roll in radians
 
     Quaternion &normalize();
 
     Quaternion &invert() { v= -v; return *this; }
 
-    Quaternion &apply_weight(float weight);
+    Quaternion &applyWeight(float weight);
 
     Vector3 rotate(const Vector3 &v) const;
     Vector3 rotateInv(const Vector3 &v) const;
