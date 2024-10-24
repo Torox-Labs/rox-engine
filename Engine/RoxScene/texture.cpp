@@ -349,7 +349,7 @@ bool read_meta(shared_texture &res,resource_data &data)
 
 bool texture_internal::set(int slot) const
 {
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
     {
         RoxRender::RoxTexture::unbind(slot);
         return false;
@@ -363,7 +363,7 @@ bool texture_internal::set(int slot) const
 
 void texture_internal::unset() const
 {
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return;
 
     m_shared->tex.unbind(m_last_slot);
@@ -371,56 +371,56 @@ void texture_internal::unset() const
 
 unsigned int texture::get_width() const
 {
-    if( !internal().get_shared_data().is_valid() )
+    if( !internal().get_shared_data().isValid() )
         return 0;
 
-    return internal().get_shared_data()->tex.get_width();
+    return internal().get_shared_data()->tex.getWidth();
 }
 
 unsigned int texture::get_height() const
 {
-    if(!internal().get_shared_data().is_valid())
+    if(!internal().get_shared_data().isValid())
         return 0;
 
-    return internal().get_shared_data()->tex.get_height();
+    return internal().get_shared_data()->tex.getHeight();
 }
 
 RoxRender::RoxTexture::COLOR_FORMAT texture::get_format() const
 {
-    if(!internal().get_shared_data().is_valid())
+    if(!internal().get_shared_data().isValid())
         return RoxRender::RoxTexture::COLOR_RGBA;
 
-    return internal().get_shared_data()->tex.get_color_format();
+    return internal().get_shared_data()->tex.getColorFormat();
 }
 
 RoxMemory::RoxTmpBufferRef texture::get_data() const
 {
     RoxMemory::RoxTmpBufferRef result;
-    if(internal().get_shared_data().is_valid())
-        internal().get_shared_data()->tex.get_data(result);
+    if(internal().get_shared_data().isValid())
+        internal().get_shared_data()->tex.getData(result);
     return result;
 }
 
 RoxMemory::RoxTmpBufferRef texture::get_data(int x,int y,int width,int height) const
 {
     RoxMemory::RoxTmpBufferRef result;
-    if(internal().get_shared_data().is_valid())
-        internal().get_shared_data()->tex.get_data(result,x,y,width,height);
+    if(internal().get_shared_data().isValid())
+        internal().get_shared_data()->tex.getData(result,x,y,width,height);
     return result;
 }
 
 bool texture::is_cubemap() const
 {
-    if(!internal().get_shared_data().is_valid())
+    if(!internal().get_shared_data().isValid())
         return false;
 
-    return internal().get_shared_data()->tex.is_cubemap();
+    return internal().get_shared_data()->tex.isCubemap();
 }
 
 bool texture::build(const void *data,unsigned int width,unsigned int height,color_format format)
 {
     texture_internal::shared_resources::RoxSharedResourceMutableRef ref;
-    if(m_internal.m_shared.get_ref_count()==1 && !m_internal.m_shared.get_name())  //was created and unique
+    if(m_internal.m_shared.getRefCount()==1 && !m_internal.m_shared.getName())  //was created and unique
     {
         ref=texture_internal::shared_resources::modify(m_internal.m_shared);
         return ref->tex.buildTexture(data,width,height,format);
@@ -450,7 +450,7 @@ bool texture::crop(uint x,uint y,uint width,uint height)
     if(x+width>get_width() || y+height>get_height())
         return false;
 
-    if(!m_internal.m_shared.is_valid())
+    if(!m_internal.m_shared.isValid())
         return false;
 
     RoxRender::RoxTexture new_tex;
@@ -477,7 +477,7 @@ bool texture::crop(uint x,uint y,uint width,uint height)
     }
 
     texture_internal::shared_resources::RoxSharedResourceMutableRef ref;
-    if(m_internal.m_shared.get_ref_count()==1 && !m_internal.m_shared.get_name())  //was created and unique
+    if(m_internal.m_shared.getRefCount()==1 && !m_internal.m_shared.getName())  //was created and unique
     {
         ref=texture_internal::shared_resources::modify(m_internal.m_shared);
         ref->tex.release();
@@ -579,17 +579,17 @@ bool texture::update_region(const void *data,uint x,uint y,uint width,uint heigh
         return x<=get_width() && y<=get_height();
 
     texture_internal::shared_resources::RoxSharedResourceMutableRef ref;
-    if(m_internal.m_shared.get_ref_count()==1 && !m_internal.m_shared.get_name())  //was created and unique
+    if(m_internal.m_shared.getRefCount()==1 && !m_internal.m_shared.getName())  //was created and unique
     {
         ref=texture_internal::shared_resources::modify(m_internal.m_shared);
         return ref->tex.updateRegion(data,x,y,width,height);
     }
 
-    if(!m_internal.m_shared.is_valid())
+    if(!m_internal.m_shared.isValid())
         return false;
 
-    const uint w=m_internal.m_shared->tex.get_width();
-    const uint h=m_internal.m_shared->tex.get_height();
+    const uint w=m_internal.m_shared->tex.getWidth();
+    const uint h=m_internal.m_shared->tex.getHeight();
 
     if(!x && !y && w==width && h==height && mip<0)
         return build(data,w,h,get_format());
@@ -627,7 +627,7 @@ bool texture::update_region(const texture &source,unsigned int x,unsigned int y)
 
 bool texture::update_region(const texture_proxy &source,uint src_x,uint src_y,uint width,uint height,uint dst_x,uint dst_y)
 {
-    if(!source.isValid() || !source->internal().get_shared_data().is_valid())
+    if(!source.isValid() || !source->internal().get_shared_data().isValid())
         return false;
 
     if(src_x+width>source->get_width() || src_y+height>source->get_height())
@@ -636,10 +636,10 @@ bool texture::update_region(const texture_proxy &source,uint src_x,uint src_y,ui
     if(dst_x+width>get_width() || dst_y+height>get_height())
         return false;
 
-    if(!internal().get_shared_data().is_valid())
+    if(!internal().get_shared_data().isValid())
         return false;
 
-    if(m_internal.m_shared.get_ref_count()==1 && !m_internal.m_shared.get_name())  //was created and unique
+    if(m_internal.m_shared.getRefCount()==1 && !m_internal.m_shared.getName())  //was created and unique
     {
         RoxRender::RoxTexture &tex=texture_internal::shared_resources::modify(m_internal.m_shared)->tex;
         if(tex.copyRegion(source->internal().get_shared_data()->tex,src_x,src_y,width,height,dst_x,dst_y))

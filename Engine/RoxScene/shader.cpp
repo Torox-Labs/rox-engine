@@ -426,7 +426,7 @@ bool RoxShader::load(const char *name)
 void RoxShader::unload()
 {
     m_internal.unload();
-    if(skeleton_blit.isValid() && !m_internal.get_shared_resources().get_first_resource().isValid())
+    if(skeleton_blit.isValid() && !m_internal.get_shared_resources().getFirstResource().isValid())
         skeleton_blit.release();
 }
 
@@ -727,7 +727,7 @@ RoxRender::RoxShader::UNIFORM_TYPE shader_internal::get_uniform_type(int idx) co
     if(!m_shared.isValid())
         return RoxRender::RoxShader::UNIFORM_NOT_FOUND;
 
-    return m_shared->shdr.get_uniform_type(get_uniform(idx).location);
+    return m_shared->shdr.getUniformType(get_uniform(idx).location);
 }
 
 unsigned int shader_internal::get_uniform_array_size(int idx) const
@@ -735,7 +735,7 @@ unsigned int shader_internal::get_uniform_array_size(int idx) const
     if(!m_shared.isValid())
         return 0;
 
-    return m_shared->shdr.get_uniform_array_size(get_uniform(idx).location);
+    return m_shared->shdr.getUniformArraySize(get_uniform(idx).location);
 }
 
 void shader_internal::set_uniform_value(int idx,float f0,float f1,float f2,float f3) const

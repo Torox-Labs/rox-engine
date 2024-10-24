@@ -27,7 +27,7 @@ namespace
 
     bool is_shader_sampler_cube(const RoxShader &sh,unsigned int layer)
     {
-        if(!sh.internal().get_shared_data().is_valid())
+        if(!sh.internal().get_shared_data().isValid())
             return false;
 
         const RoxRender::RoxShader &rsh=sh.internal().get_shared_data()->shdr;
@@ -675,7 +675,7 @@ bool material::load(const char *name)
     if(!m_internal.load(name))
         return false;
 
-    if(!internal().m_shared.is_valid())
+    if(!internal().m_shared.isValid())
         return false;
 
     m_internal.m_last_set_pass_idx= -1;

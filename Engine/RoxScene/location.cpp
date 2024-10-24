@@ -74,7 +74,7 @@ bool location::load(const char *name)
     if(!scene_shared::load(name))
         return false;
 
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return false;
 
     m_material_params.resize(m_shared->material_params.size());

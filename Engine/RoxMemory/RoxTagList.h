@@ -59,8 +59,8 @@ public:
         return it->second[idx];
     }
 
-    const t &get(const char *tag,int idx) const { return get(get_idx(tag,idx)); }
-    t &get(const char *tag,int idx) { return get(get_idx(tag,idx)); }
+    const t &get(const char *tag,int idx) const { return get(getIdx(tag,idx)); }
+    t &get(const char *tag,int idx) { return get(getIdx(tag,idx)); }
 
 public:
     int getCount() const { return (int)m_elements.size(); }
@@ -68,7 +68,7 @@ public:
     const t &get(int idx) const
     {
         if(idx<0 || idx>=(int)m_elements.size())
-            invalid_object<t>();
+            invalidObject<t>();
 
         return m_elements[idx];
     }
@@ -76,7 +76,7 @@ public:
     t &get(int idx)
     {
         if(idx<0 || idx>=(int)m_elements.size())
-            invalid_object<t>();
+            invalidObject<t>();
 
         return m_elements[idx];
     }

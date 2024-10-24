@@ -8,7 +8,7 @@
 namespace RoxScene
 {
 
-	//ToDo - Update this resource_data to the new RoxMemory::RoxTmpBufferRef
+//ToDo - Update this resource_data to the new RoxMemory::RoxTmpBufferRef
 typedef RoxMemory::RoxTmpBufferRef resource_data;
 
 template<typename t>
@@ -24,9 +24,9 @@ public:
         }
 
         const std::string final_name=get_resources_prefix_str()+name;
-        if(m_shared.is_valid())
+        if(m_shared.isValid())
         {
-            const char *res_name=m_shared.get_name();
+            const char *res_name=m_shared.getName();
             if(res_name && final_name==res_name)
                 return true;
         }
@@ -35,13 +35,13 @@ public:
 
         m_shared=get_shared_resources().access(final_name.c_str());
 
-        return m_shared.is_valid();
+        return m_shared.isValid();
     }
 
     void create(const t &res)
     {
-        typename shared_resources::shared_resource_mutable_ref ref=get_shared_resources().create();
-        if(!ref.is_valid())
+        typename shared_resources::RoxSharedResourceMutableRef ref=get_shared_resources().create();
+        if(!ref.isValid())
         {
             unload();
             return;
@@ -53,11 +53,11 @@ public:
 
     void unload()
     {
-        if(m_shared.is_valid())
+        if(m_shared.isValid())
             m_shared.free();
     }
 
-    const char *get_name() const { return m_shared.get_name(); }
+    const char *get_name() const { return m_shared.getName(); }
 
 public:
     static void set_resources_prefix(const char *prefix) { get_resources_prefix_str().assign(prefix?prefix:""); }
@@ -116,7 +116,7 @@ public:
 
 protected:
     typedef RoxResources::RoxSharedResources<t,8> shared_resources;
-    typedef typename shared_resources::shared_resource_ref shared_resource_ref;
+    typedef typename shared_resources::RoxSharedResourceRef shared_resource_ref;
 
     class shared_resources_manager: public shared_resources
     {
@@ -124,11 +124,11 @@ protected:
         {
             if(!name)
             {
-                RoxResources::log()<<"unable to load scene resource: invalid name\n";
+                RoxLogger::log()<<"unable to load scene resource: invalid name\n";
                 return false;
             }
 
-            RoxResources::resource_data *file_data=RoxResources::get_resources_provider().access(name);
+            RoxResources::RoxResourceData *file_data=RoxResources::getResourcesProvider().access(name);
             if(!file_data)
             {
                 RoxResources::log()<<"unable to load scene resource: unable to access resource "<<name<<"\n";
@@ -137,7 +137,7 @@ protected:
 
             const size_t data_size=file_data->getSize();
             RoxMemory::RoxTmpBufferRef res_data(data_size);
-            file_data->read_all(res_data.get_data());
+            file_data->readAll(res_data.getData());
             file_data->release();
 
             for(size_t i=0;i<scene_shared::get_load_functions().f.size();++i)
@@ -153,7 +153,7 @@ protected:
 
             res_data.free();
             //res.free(),res=t();
-            RoxResources::log()<<"unable to load scene resource: unknown format or invalid data in "<<name<<"\n";
+            RoxLogger::log()<<"unable to load scene resource: unknown format or invalid data in "<<name<<"\n";
             return false;
         }
 

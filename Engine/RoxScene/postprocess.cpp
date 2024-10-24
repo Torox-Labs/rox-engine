@@ -1,20 +1,20 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
 #include "postprocess.h"
-#include "formats/text_parser.h"
-#include "formats/string_convert.h"
-#include "formats/math_expr_parser.h"
-#include "memory/invalid_object.h"
+#include "RoxFormats/RoxTextParser.h"
+#include "RoxFormats/RoxStringConvert.h"
+#include "RoxFormats/RoxMathExprParser.h"
+#include "RoxMemory/RoxInvalidObject.h"
 #include "scene.h"
 #include "camera.h"
-#include <string.h>
+#include <cstring>
 
 #ifdef min
     #undef min
     #undef max
 #endif
 
-namespace nya_scene
+namespace RoxScene
 {
 
 bool postprocess::load(const char *name)
@@ -24,7 +24,7 @@ bool postprocess::load(const char *name)
     if(!scene_shared::load(name))
         return false;
 
-    m_quad=nya_memory::shared_ptr<nya_render::screen_quad>(nya_render::screen_quad());
+    m_quad=RoxMemory::RoxSharedPtr<RoxRender::RoxScreenQuad>(RoxRender::RoxScreenQuad());
     m_quad->init();
     update();
     return true;
@@ -37,15 +37,15 @@ bool postprocess::build(const char *text)
         return false;
 
     shared_postprocess s;
-    nya_memory::tmp_buffer_ref data(strlen(text));
-    data.copy_from(text,data.get_size());
+    RoxMemory::RoxTmpBufferRef data(strlen(text));
+    data.copyFrom(text,data.getSize());
     const bool result=load_text(s,data,"");
     data.free();
     if (!result)
         return false;
 
     create(s);
-    m_quad=nya_memory::shared_ptr<nya_render::screen_quad>(nya_render::screen_quad());
+    m_quad=RoxMemory::RoxSharedPtr<RoxRender::RoxScreenQuad>(RoxRender::RoxScreenQuad());
     m_quad->init();
     update();
     return true;
@@ -63,8 +63,8 @@ void postprocess::draw(int dt)
     if(m_targets.empty())
         return;
 
-    nya_render::rect prev_rect=nya_render::get_viewport();
-    nya_render::fbo prev_fbo=nya_render::fbo::get_current();
+    RoxRender::Rectangle prev_rect=RoxRender::getViewport();
+    RoxRender::RoxFbo prev_fbo=RoxRender::RoxFbo::getCurrent();
 
     if(m_auto_resize && (prev_rect.width != m_width || prev_rect.height != m_height))
     {
@@ -72,13 +72,13 @@ void postprocess::draw(int dt)
         update();
     }
     m_targets[0].fbo.set(prev_fbo);
-    const nya_render::state prev_state=nya_render::get_state();
-    nya_render::state state;
+    const RoxRender::State prev_state=RoxRender::get_state();
+    RoxRender::State state;
     state.depth_test=false;
-    const nya_math::vec4 prev_color=nya_render::get_clear_color();
-    nya_render::set_clear_color(nya_math::vec4::zero());
-    const float prev_depth=nya_render::get_clear_depth();
-    nya_render::set_clear_depth(1.0f);
+    const RoxMath::Vector4 prev_color=RoxRender::getClearColor();
+    RoxRender::setClearColor(RoxMath::Vector4::zero());
+    const float prev_depth=RoxRender::getClearDepth();
+    RoxRender::setClearDepth(1.0f);
     std::vector<size_t> textures_set;
 
     bool material_set=false;
@@ -97,14 +97,14 @@ void postprocess::draw(int dt)
                     if(param_idx<0)
                         continue;
 
-                    const nya_math::vec4 &v=m_shader_params[param_idx].second;
+                    const RoxMath::Vector4 &v=m_shader_params[param_idx].second;
                     m_op_set_shader[idx].sh.internal().set_uniform_value(j,v.x,v.y,v.z,v.w);
                 }
 
                 for(int j=0;j<(int)m_op_set_shader[idx].params.size();++j)
                 {
                     const int pidx=m_op_set_shader[idx].params[j].first;
-                    const nya_math::vec4 &v=m_op_set_shader[idx].params[j].second;
+                    const RoxMath::Vector4 &v=m_op_set_shader[idx].params[j].second;
                     m_op_set_shader[idx].sh.internal().set_uniform_value(pidx,v.x,v.y,v.z,v.w);
                 }
 
@@ -118,20 +118,20 @@ void postprocess::draw(int dt)
             case type_set_target:
                 {
                     op_target &t=m_targets[idx];
-                    nya_render::set_viewport(t.rect);
+                    RoxRender::setViewport(t.rect);
 
                     if(t.color_idx>=0)
                     {
                         texture_proxy &tp=m_textures[t.color_idx].second.tex;
-                        if(tp.is_valid() && tp->internal().get_shared_data().is_valid())
-                            t.fbo->set_color_target(tp->internal().get_shared_data()->tex,0,t.samples);
+                        if(tp.isValid() && tp->internal().get_shared_data().isValid())
+                            t.fbo->setColorTarget(tp->internal().get_shared_data()->tex,0,t.samples);
                     }
 
                     if(t.depth_idx>=0)
                     {
                         texture_proxy &tp=m_textures[t.depth_idx].second.tex;
-                        if(tp.is_valid() && tp->internal().get_shared_data().is_valid())
-                            t.fbo->set_depth_target(tp->internal().get_shared_data()->tex);
+                        if(tp.isValid() && tp->internal().get_shared_data().isValid())
+                            t.fbo->setDepthTarget(tp->internal().get_shared_data()->tex);
                     }
 
                     t.fbo->bind();
@@ -143,7 +143,7 @@ void postprocess::draw(int dt)
                     const size_t tex_idx=m_op_set_texture[idx].tex_idx;
                     textures_set.push_back(tex_idx);
                     const texture_proxy &t=m_textures[tex_idx].second.tex;
-                    if(t.is_valid())
+                    if(t.isValid())
                         t->internal().set(m_op_set_texture[idx].layer);
                 }
                 break;
@@ -151,60 +151,60 @@ void postprocess::draw(int dt)
             case type_clear:
                 {
                     const op_clear &o=m_op_clear[idx];
-                    nya_render::set_clear_color(o.color_value);
-                    nya_render::set_clear_depth(o.depth_value);
-                    nya_render::clear(o.color,o.depth);
+                    RoxRender::setClearColor(o.color_value);
+                    RoxRender::setClearDepth(o.depth_value);
+                    RoxRender::clear(o.color,o.depth);
                 }
                 break;
 
             case type_draw_scene:
-                nya_render::set_state(prev_state);
+                RoxRender::setState(prev_state);
                 draw_scene(m_op_draw_scene[idx].pass.c_str(),m_op_draw_scene[idx].t);
                 break;
 
             case type_draw_quad:
                 if(!material_set)
-                    nya_render::set_state(state);
-                nya_render::set_modelview_matrix(get_camera().get_view_matrix());
+                    RoxRender::setState(state);
+                RoxRender::setModelviewMatrix(get_camera().get_view_matrix());
                 m_quad->draw();
                 break;
         }
     }
 
     prev_fbo.bind();
-    nya_render::set_viewport(prev_rect);
+    RoxRender::setViewport(prev_rect);
     shader_internal::unset();
-    nya_render::set_state(prev_state);
+    RoxRender::setState(prev_state);
     for(size_t i=0;i<textures_set.size();++i)
     {
         const texture_proxy &t=m_textures[textures_set[i]].second.tex;
-        if(t.is_valid())
+        if(t.isValid())
             t->internal().unset();
     }
-    nya_render::set_clear_color(prev_color);
-    nya_render::set_clear_depth(prev_depth);
-    nya_render::apply_state();
+    RoxRender::setClearColor(prev_color);
+    RoxRender::setClearDepth(prev_depth);
+    RoxRender::applyState();
 }
 
 bool postprocess::load_text(shared_postprocess &res,resource_data &data,const char* name)
 {
-    nya_formats::text_parser parser;
-    if(!parser.load_from_data((char *)data.get_data(),data.get_size()))
+    RoxFormats::RTextParser parser;
+    if(!parser.loadFromData((char *)data.getData(),data.getSize()))
         return false;
 
-    res.lines.resize(parser.get_sections_count());
-    for(int i=0;i<parser.get_sections_count();++i)
+    res.lines.resize(parser.getSectionsCount());
+    for(int i=0;i<parser.getSectionsCount();++i)
     {
         shared_postprocess::line &l=res.lines[i];
-        l.type.assign(parser.get_section_type(i)+1);
-        const char *name=parser.get_section_name(i);
+        l.type.assign(parser.getSectionType(i)+1);
+        const char *name=parser.getSectionName(i);
         l.name.assign(name?name:"");
 
-        l.values.resize(parser.get_subsections_count(i));
-        for(int j=0;j<parser.get_subsections_count(i);++j)
+        l.values.resize(parser.getSubsectionsCount(i));
+        for(int j=0;j<parser.getSubsectionsCount(i);++j)
         {
-            l.values[j].first=parser.get_subsection_type(i,j);
-            const char *value=parser.get_subsection_value(i,j);
+            l.values[j].first=parser.getSubsectionType(i,j);
+            const char *value=parser.getSubsectionValue(i,j);
             l.values[j].second=value?value:"";
         }
     }
@@ -272,10 +272,10 @@ void postprocess::set_texture(const char *name,const texture_proxy &tex)
 const texture_proxy &postprocess::get_texture(const char *name) const
 {
     const int i=get_idx(m_textures,name);
-    return i<0?nya_memory::invalid_object<texture_proxy>():m_textures[i].second.tex;
+    return i<0?RoxMemory::invalidObject<texture_proxy>():m_textures[i].second.tex;
 }
 
-void postprocess::set_shader_param(const char *name,const nya_math::vec4 &value)
+void postprocess::set_shader_param(const char *name,const RoxMath::Vector4 &value)
 {
     if(!name)
         return;
@@ -326,10 +326,10 @@ void postprocess::update_shader_param(int param_idx)
     }
 }
 
-const nya_math::vec4 &postprocess::get_shader_param(const char *name) const
+const RoxMath::Vector4 &postprocess::get_shader_param(const char *name) const
 {
     const int i=get_idx(m_shader_params,name);
-    return i<0?nya_memory::invalid_object<nya_math::vec4>():m_shader_params[i].second;
+    return i<0?RoxMemory::invalidObject<RoxMath::Vector4>():m_shader_params[i].second;
 }
 
 template <typename op_t,typename t,typename op_e> t &add_op(op_t &ops,std::vector<t> &spec_ops,op_e type)
@@ -341,43 +341,43 @@ template <typename op_t,typename t,typename op_e> t &add_op(op_t &ops,std::vecto
     return spec_ops.back();
 }
 
-static bool get_format(std::string s,nya_render::texture::color_format &f)
+static bool get_format(std::string s,RoxRender::RoxTexture::COLOR_FORMAT &f)
 {
-    if(s=="rgba" || s=="rgba8") f=nya_render::texture::color_rgba;
-    else if(s=="rgb" || s=="rgb8") f=nya_render::texture::color_rgb;
-    else if(s=="grayscale") f=nya_render::texture::greyscale;
-    else if(s=="rgba32f") f=nya_render::texture::color_rgba32f;
-    else if(s=="rgb32f") f=nya_render::texture::color_rgb32f;
-    else if(s=="r32f") f=nya_render::texture::color_r32f;
+    if(s=="rgba" || s=="rgba8") f=RoxRender::RoxTexture::COLOR_RGBA;
+    else if(s=="rgb" || s=="rgb8") f=RoxRender::RoxTexture::COLOR_RGB;
+    else if(s=="grayscale") f=RoxRender::RoxTexture::GREYSCALE;
+    else if(s=="rgba32f") f=RoxRender::RoxTexture::COLOR_RGBA32F;
+    else if(s=="rgb32f") f=RoxRender::RoxTexture::COLOR_RGB32F;
+    else if(s=="r32f") f=RoxRender::RoxTexture::COLOR_R32F;
     else return false;
     return true;
 }
 
-void encode_color(const nya_math::vec4 &v,unsigned char *buf,int channels)
+void encode_color(const RoxMath::Vector4 &v,unsigned char *buf,int channels)
 {
     const float *c=&v.x;
     for(int i=0;i<channels;++i)
-        *(buf++)=(unsigned char)(nya_math::clamp(*(c++),0.0f,1.0f)*255.0f);
+        *(buf++)=(unsigned char)(RoxMath::clamp(*(c++),0.0f,1.0f)*255.0f);
 }
 
-void encode_color(const nya_math::vec4 &v,float *buf,int channels)
+void encode_color(const RoxMath::Vector4 &v,float *buf,int channels)
 {
     const float *c=&v.x;
     for(int i=0;i<channels;++i)
         *(buf++)=*(c++);
 }
 
-template<typename t> void generate_texture(nya_memory::tmp_buffer_ref &buf,int w,int h,int channels,nya_formats::math_expr_parser &p)
+template<typename t> void generate_texture(RoxMemory::RoxTmpBufferRef &buf,int w,int h,int channels,RoxFormats::RoxMathExprParser &p)
 {
     buf.allocate(w*h*channels*sizeof(t));
-    t *color=(t *)buf.get_data();
+    t *color=(t *)buf.getData();
     for(int y=0;y<h;++y)
     {
         for(int x=0;x<w;++x)
         {
-            p.set_var("x",float(x));
-            p.set_var("y",float(y));
-            encode_color(p.calculate_vec4(),color,channels);
+            p.setVar("x",float(x));
+            p.setVar("y",float(y));
+            encode_color(p.calculateVec4(),color,channels);
             color+=channels;
         }
     }
@@ -387,7 +387,7 @@ void postprocess::update()
 {
     clear_ops();
 
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return;
 
     std::vector<std::pair<bool,bool> > ifs;
@@ -422,7 +422,7 @@ void postprocess::update()
         {
             if(ifs.empty())
             {
-                log()<<"warning: postprocess: syntax error - else without if in file "<<m_shared.get_name()<<"\n";
+                log()<<"warning: postprocess: syntax error - else without if in file "<<m_shared.getName()<<"\n";
                 return;
             }
 
@@ -433,7 +433,7 @@ void postprocess::update()
         {
             if(ifs.empty())
             {
-                log()<<"warning: postprocess: syntax error - else without if in file "<<m_shared.get_name()<<"\n";
+                log()<<"warning: postprocess: syntax error - else without if in file "<<m_shared.getName()<<"\n";
                 return;
             }
 
@@ -452,7 +452,7 @@ void postprocess::update()
         {
             if(ifs.empty())
             {
-                log()<<"warning: postprocess: syntax error - end without if in file "<<m_shared.get_name()<<"\n";
+                log()<<"warning: postprocess: syntax error - end without if in file "<<m_shared.getName()<<"\n";
                 return;
             }
             else
@@ -507,11 +507,11 @@ void postprocess::update()
             const char *width=l.get_value("width"),*height=l.get_value("height");
             const char *samples=l.get_value("samples");
 
-            nya_formats::math_expr_parser p;
-            p.set_var("screen_width",float(m_width));
-            p.set_var("screen_height",float(m_height));
+            RoxFormats::RoxMathExprParser p;
+            p.setVar("screen_width",float(m_width));
+            p.setVar("screen_height",float(m_height));
             for(size_t i=0;i<m_variables.size();++i)
-                p.set_var(m_variables[i].first.c_str(),m_variables[i].second);
+                p.setVar(m_variables[i].first.c_str(),m_variables[i].second);
 
             const unsigned int w=p.parse(width)?(unsigned int)p.calculate():m_width;
             const unsigned int h=p.parse(height)?(unsigned int)p.calculate():m_height;
@@ -526,7 +526,7 @@ void postprocess::update()
             }
             else
             {
-                log()<<"warning: postprocess: target "<<l.name<<" redifinition in file "<<m_shared.get_name()<<"\n";
+                log()<<"warning: postprocess: target "<<l.name<<" redifinition in file "<<m_shared.getName()<<"\n";
                 continue;
             }
 
@@ -535,64 +535,64 @@ void postprocess::update()
 
             if(color)
             {
-                nya_render::texture::color_format f=nya_render::texture::color_rgba;
+                RoxRender::RoxTexture::COLOR_FORMAT f=RoxRender::RoxTexture::COLOR_RGBA;
                 const char *format=l.get_value("color_format");
                 if(format && !get_format(format,f))
                 {
-                    log()<<"warning: postprocess: invalid texture "<<color<<" format"<<format<<"in file "<<m_shared.get_name()<<"\n";
+                    log()<<"warning: postprocess: invalid texture "<<color<<" format"<<format<<"in file "<<m_shared.getName()<<"\n";
                     log()<<"available formats: rgba, rgb, rgba32f, rgb32f, r32f\n";
                 }
 
                 texture_proxy t=get_texture(color);
-                if(t.is_valid())
+                if(t.isValid())
                 {
                     if(t->get_width()!=w || t->get_height()!=h)
-                        log()<<"warning: postprocess: texture "<<color<<" with different size in file "<<m_shared.get_name()<<"\n";
+                        log()<<"warning: postprocess: texture "<<color<<" with different size in file "<<m_shared.getName()<<"\n";
                     if(t->get_format()!=f)
-                        log()<<"warning: postprocess: texture "<<color<<" with different format in file "<<m_shared.get_name()<<"\n";
+                        log()<<"warning: postprocess: texture "<<color<<" with different format in file "<<m_shared.getName()<<"\n";
                 }
                 else
                 {
                     const char *init_color=l.get_value("init_color");
-                    nya_memory::tmp_buffer_ref color_buf;
+                    RoxMemory::RoxTmpBufferRef color_buf;
                     if(init_color)
                     {
                         typedef unsigned char uchar;
-                        const nya_math::vec4 cf=nya_formats::vec4_from_string(init_color);
-                        const nya_math::vec4 cfc=nya_math::vec4::clamp(cf,nya_math::vec4(),nya_math::vec4(1.0f,1.0f,1.0f,1.0f))*255.0;
+                        const RoxMath::Vector4 cf=RoxFormats::vec4FromString(init_color);
+                        const RoxMath::Vector4 cfc=RoxMath::Vector4::clamp(cf,RoxMath::Vector4(),RoxMath::Vector4(1.0f,1.0f,1.0f,1.0f))*255.0;
                         const uchar c[4]={uchar(cfc.x),uchar(cfc.y),uchar(cfc.z),uchar(cfc.w)};
                         switch(f)
                         {
-                            case nya_render::texture::color_rgba:
-                            case nya_render::texture::color_rgb:
+                            case RoxRender::RoxTexture::COLOR_RGBA:
+                            case RoxRender::RoxTexture::COLOR_RGB:
                             {
-                                unsigned int bpp=f==nya_render::texture::color_rgba?4:3;
+                                unsigned int bpp=f==RoxRender::RoxTexture::COLOR_RGBA?4:3;
                                 color_buf.allocate(w*h*bpp);
                                 for(unsigned int i=0;i<w*h*bpp;i+=bpp)
-                                    memcpy(color_buf.get_data(i),c,bpp);
+                                    memcpy(color_buf.getData(i),c,bpp);
                             }
                             break;
 
-                            case nya_render::texture::color_rgba32f:
-                            case nya_render::texture::color_rgb32f:
+                            case RoxRender::RoxTexture::COLOR_RGBA32F:
+                            case RoxRender::RoxTexture::COLOR_RGB32F:
                             {
-                                unsigned int bpp=f==nya_render::texture::color_rgba32f?4*4:3*4;
+                                unsigned int bpp=f==RoxRender::RoxTexture::COLOR_RGBA32F?4*4:3*4;
                                 color_buf.allocate(w*h*bpp);
                                 for(unsigned int i=0;i<w*h*bpp;i+=bpp)
-                                    memcpy(color_buf.get_data(i),&cf,bpp);
+                                    memcpy(color_buf.getData(i),&cf,bpp);
                                 break;
                             }
 
                             default:
-                                log()<<"warning: postprocess: texture "<<color<<" invalid color format initialisation "<<m_shared.get_name()<<"\n";
+                                log()<<"warning: postprocess: texture "<<color<<" invalid color format initialisation "<<m_shared.getName()<<"\n";
                         }
                     }
 
                     t.create();
-                    t->build(color_buf.get_data(),w,h,f);
+                    t->build(color_buf.getData(),w,h,f);
                     color_buf.free();
-                    nya_render::texture tex=t->internal().get_shared_data()->tex;
-                    tex.set_wrap(nya_render::texture::wrap_clamp,nya_render::texture::wrap_clamp);
+                    RoxRender::RoxTexture tex=t->internal().get_shared_data()->tex;
+                    tex.setWrap(RoxRender::RoxTexture::WRAP_CLAMP,RoxRender::RoxTexture::WRAP_CLAMP);
 
                     m_textures.push_back(std::make_pair(color,tex_holder(false,t)));
                 }
@@ -603,37 +603,37 @@ void postprocess::update()
 
             if(depth)
             {
-                nya_render::texture::color_format f=nya_render::texture::depth16;
+                RoxRender::RoxTexture::COLOR_FORMAT f=RoxRender::RoxTexture::DEPTH16;
                 const char *format=l.get_value("depth_format");
                 if(format)
                 {
                     if(strcmp(format,"depth16")==0)
-                        f=nya_render::texture::depth16;
+                        f=RoxRender::RoxTexture::DEPTH16;
                     else if(strcmp(format,"depth24")==0)
-                        f=nya_render::texture::depth24;
+                        f=RoxRender::RoxTexture::DEPTH24;
                     else if(strcmp(format,"depth32")==0)
-                        f=nya_render::texture::depth32;
+                        f=RoxRender::RoxTexture::DEPTH32;
                     else
                     {
-                        log()<<"warning: postprocess: invalid texture "<<depth<<" format "<<format<<" in file "<<m_shared.get_name()<<"\n";
+                        log()<<"warning: postprocess: invalid texture "<<depth<<" format "<<format<<" in file "<<m_shared.getName()<<"\n";
                         log()<<"available formats: depth16, depth24, depth32\n";
                     }
                 }
 
                 texture_proxy t=get_texture(depth);
-                if(t.is_valid())
+                if(t.isValid())
                 {
                     if(t->get_width()!=w || t->get_height()!=h)
-                        log()<<"warning: postprocess: texture "<<depth<<" with different size in file "<<m_shared.get_name()<<"\n";
+                        log()<<"warning: postprocess: texture "<<depth<<" with different size in file "<<m_shared.getName()<<"\n";
                     if(t->get_format()!=f)
-                        log()<<"warning: postprocess: texture "<<depth<<" with different format in file "<<m_shared.get_name()<<"\n";
+                        log()<<"warning: postprocess: texture "<<depth<<" with different format in file "<<m_shared.getName()<<"\n";
                 }
                 else
                 {
                     t.create();
                     t->build(0,w,h,f);
-                    nya_render::texture tex=t->internal().get_shared_data()->tex;
-                    tex.set_wrap(nya_render::texture::wrap_clamp,nya_render::texture::wrap_clamp);
+                    RoxRender::RoxTexture tex=t->internal().get_shared_data()->tex;
+                    tex.setWrap(RoxRender::RoxTexture::WRAP_CLAMP,RoxRender::RoxTexture::WRAP_CLAMP);
                     m_textures.push_back(std::make_pair(depth,tex_holder(false,t)));
                 }
 
@@ -650,7 +650,7 @@ void postprocess::update()
                 if(idx<0)
                     continue;
 
-                o.params.push_back(std::make_pair(idx, nya_formats::vec4_from_string(l.values[i].second.c_str())));
+                o.params.push_back(std::make_pair(idx, RoxFormats::vec4FromString(l.values[i].second.c_str())));
             }
         }
         else if(l.type=="set_material")
@@ -674,44 +674,44 @@ void postprocess::update()
             if(!width || !height)
                 continue;
 
-            nya_render::texture::color_format f=nya_render::texture::color_rgba;
+            RoxRender::RoxTexture::COLOR_FORMAT f=RoxRender::RoxTexture::COLOR_RGBA;
             const char *format=l.get_value("color_format");
             if(format && !get_format(format,f))
             {
-                log()<<"warning: postprocess: invalid porcedural texture "<<l.name<<" format"<<format<<"in file "<<m_shared.get_name()<<"\n";
-                log()<<"available formats: rgba, rgb, greyscale, rgba32f, rgb32f, r32f\n";
+                log()<<"warning: postprocess: invalid porcedural texture "<<l.name<<" format"<<format<<"in file "<<m_shared.getName()<<"\n";
+                log()<<"available formats: rgba, rgb, GREYSCALE, rgba32f, rgb32f, r32f\n";
             }
 
             texture_proxy t;
             t.create();
 
-            nya_memory::tmp_buffer_ref buf;
+            RoxMemory::RoxTmpBufferRef buf;
 
             const int w=atoi(width),h=atoi(height);
 
-            nya_formats::math_expr_parser p;
+            RoxFormats::RoxMathExprParser p;
             p.parse(l.get_value("function"));
-            p.set_var("width",float(w));
-            p.set_var("height",float(h));
+            p.setVar("width",float(w));
+            p.setVar("height",float(h));
             for(size_t i=0;i<m_variables.size();++i)
-                p.set_var(m_variables[i].first.c_str(),m_variables[i].second);
+                p.setVar(m_variables[i].first.c_str(),m_variables[i].second);
 
             switch(f)
             {
-                case nya_render::texture::greyscale:
-                case nya_render::texture::color_rgb:
-                case nya_render::texture::color_rgba:
+                case RoxRender::RoxTexture::GREYSCALE:
+                case RoxRender::RoxTexture::COLOR_RGB:
+                case RoxRender::RoxTexture::COLOR_RGBA:
                 {
-                    const int channels=f==nya_render::texture::greyscale?1:(f==nya_render::texture::color_rgb?3:4);
+                    const int channels=f==RoxRender::RoxTexture::GREYSCALE?1:(f==RoxRender::RoxTexture::COLOR_RGB?3:4);
                     generate_texture<unsigned char>(buf,w,h,channels,p);
                 }
                 break;
 
-                case nya_render::texture::color_r32f:
-                case nya_render::texture::color_rgb32f:
-                case nya_render::texture::color_rgba32f:
+                case RoxRender::RoxTexture::COLOR_R32F:
+                case RoxRender::RoxTexture::COLOR_RGB32F:
+                case RoxRender::RoxTexture::COLOR_RGBA32F:
                 {
-                    const int channels=f==nya_render::texture::color_r32f?1:(f==nya_render::texture::color_rgb32f?3:4);
+                    const int channels=f==RoxRender::RoxTexture::COLOR_R32F?1:(f==RoxRender::RoxTexture::COLOR_RGB32F?3:4);
                     generate_texture<float>(buf,w,h,channels,p);
                 }
                 break;
@@ -719,7 +719,7 @@ void postprocess::update()
                 default: break;
             }
 
-            t->build(buf.get_data(),w,h,f);
+            t->build(buf.getData(),w,h,f);
             buf.free();
             set_value(m_textures,l.name.c_str(),tex_holder(false,t));
         }
@@ -752,7 +752,7 @@ void postprocess::update()
 
             const char *color_value=l.get_value("color");
             if(color_value)
-                o.color_value=nya_formats::vec4_from_string(color_value);
+                o.color_value=RoxFormats::vec4FromString(color_value);
             const char *depth_value=l.get_value("depth");
             if(depth_value)
                 o.depth_value=(float)atof(depth_value);
@@ -774,7 +774,7 @@ void postprocess::update()
             m_op.back().type=type_draw_quad;
         }
         else
-            log()<<"warning: postprocess: unknown operation "<<l.type<<" in file "<<m_shared.get_name()<<"\n";
+            log()<<"warning: postprocess: unknown operation "<<l.type<<" in file "<<m_shared.getName()<<"\n";
     }
 
     for(int i=0;i<(int)m_shader_params.size();++i)
@@ -790,7 +790,7 @@ void postprocess::unload()
 
 void postprocess::unload_internal()
 {
-    if(m_quad.get_ref_count()==1)
+    if(m_quad.getRefCount()==1)
         m_quad->release();
     m_quad.free();
     scene_shared::unload();
@@ -808,7 +808,7 @@ void postprocess::clear_ops()
 
     for(size_t i=1;i<m_targets.size();++i)
     {
-        if(m_targets[i].fbo.get_ref_count()==1)
+        if(m_targets[i].fbo.getRefCount()==1)
             m_targets[i].fbo->release();
     }
     m_targets.clear();

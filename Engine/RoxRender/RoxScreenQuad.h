@@ -32,24 +32,24 @@ public:
             verts[i].s=i>1? 0.0f:1.0f,verts[i].t=i%2?1.0f:0.0f;
         }
 
-        m_mesh.set_vertex_data(verts,sizeof(verts[0]),4);
-        m_mesh.set_vertices(0,2);
-        m_mesh.set_tc(0,2*4,2);
+        m_mesh.setVertexData(verts,sizeof(verts[0]),4);
+        m_mesh.setVertices(0,2);
+        m_mesh.setTc(0,2*4,2);
     }
 
     void draw(unsigned int instances_count=1) const
     {
         m_mesh.bind();
-        vbo::draw(0,m_mesh.get_verts_count(),vbo::triangle_strip,instances_count);
+        RoxVbo::draw(0,m_mesh.getVertsCount(), RoxVbo::TRIANGLE_STRIP,instances_count);
         m_mesh.unbind();
     }
 
-    bool isValid() const { return m_mesh.get_verts_count()>0; }
+    bool isValid() const { return m_mesh.getVertsCount()>0; }
 
     void release() { m_mesh.release(); }
 
 private:
-    vbo m_mesh;
+    RoxVbo m_mesh;
 };
 
 }

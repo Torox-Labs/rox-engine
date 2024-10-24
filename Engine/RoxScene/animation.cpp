@@ -14,11 +14,11 @@ bool animation::load(const char *name)
     if(!scene_shared<shared_animation>::load(name))
         return false;
 
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return false;
 
     m_range_from=0;
-    m_range_to=m_shared->anim.get_duration();
+    m_range_to=m_shared->anim.getDuration();
     m_speed=m_weight=1.0f;
     update_version();
     m_mask.free();
@@ -41,7 +41,7 @@ void animation::create(const shared_animation &res)
     scene_shared::create(res);
 
     m_range_from=0;
-    m_range_to=m_shared->anim.get_duration();
+    m_range_to=m_shared->anim.getDuration();
     m_speed=m_weight=1.0f;
     update_version();
     m_mask.free();
@@ -49,38 +49,38 @@ void animation::create(const shared_animation &res)
 
 bool animation::load_nan(shared_animation &res,resource_data &data,const char* name)
 {
-    RoxFormats::nan nan;
-    if(!nan.read(data.get_data(),data.get_size()))
+    RoxFormats::RoxAnim ran;
+    if(!ran.read(data.getData(),data.getSize()))
         return false;
 
     res.anim.release();
-    for(size_t i=0;i<nan.pos_vec3_linear_curves.size();++i)
+    for(size_t i=0;i<ran.posVec3LinearCurves.size();++i)
     {
-        const int bone_idx=res.anim.add_bone(nan.pos_vec3_linear_curves[i].bone_name.c_str());
-        for(size_t j=0;j<nan.pos_vec3_linear_curves[i].frames.size();++j)
+        const int bone_idx=res.anim.addBone(ran.posVec3LinearCurves[i].boneName.c_str());
+        for(size_t j=0;j<ran.posVec3LinearCurves[i].frames.size();++j)
         {
-            const RoxFormats::nan::pos_vec3_linear_frame &f=nan.pos_vec3_linear_curves[i].frames[j];
-            res.anim.add_bone_pos_frame(bone_idx,f.time,f.pos);
+            const RoxFormats::RoxAnim::PosVec3LinearFrame &f=ran.posVec3LinearCurves[i].frames[j];
+            res.anim.addBonePosFrame(bone_idx,f.time,f.pos);
         }
     }
 
-    for(size_t i=0;i<nan.rot_quat_linear_curves.size();++i)
+    for(size_t i=0;i<ran.rotQuatLinearCurves.size();++i)
     {
-        const int bone_idx=res.anim.add_bone(nan.rot_quat_linear_curves[i].bone_name.c_str());
-        for(size_t j=0;j<nan.rot_quat_linear_curves[i].frames.size();++j)
+        const int bone_idx=res.anim.addBone(ran.rotQuatLinearCurves[i].boneName.c_str());
+        for(size_t j=0;j<ran.rotQuatLinearCurves[i].frames.size();++j)
         {
-            const RoxFormats::nan::rot_quat_linear_frame &f=nan.rot_quat_linear_curves[i].frames[j];
-            res.anim.add_bone_rot_frame(bone_idx,f.time,f.rot);
+            const RoxFormats::RoxAnim::RotQuatLinearFrame &f=ran.rotQuatLinearCurves[i].frames[j];
+            res.anim.addBoneRotFrame(bone_idx,f.time,f.rot);
         }
     }
 
-    for(size_t i=0;i<nan.float_linear_curves.size();++i)
+    for(size_t i=0;i<ran.floatLinearCurves.size();++i)
     {
-        const int bone_idx=res.anim.add_curve(nan.float_linear_curves[i].bone_name.c_str());
-        for(size_t j=0;j<nan.float_linear_curves[i].frames.size();++j)
+        const int bone_idx=res.anim.addCurve(ran.floatLinearCurves[i].boneName.c_str());
+        for(size_t j=0;j<ran.floatLinearCurves[i].frames.size();++j)
         {
-            const RoxFormats::nan::float_linear_frame &f=nan.float_linear_curves[i].frames[j];
-            res.anim.add_curve_frame(bone_idx,f.time,f.value);
+            const RoxFormats::RoxAnim::FloatLinearFrame &f=ran.floatLinearCurves[i].frames[j];
+            res.anim.addCurveFrame(bone_idx,f.time,f.value);
         }
     }
 
@@ -89,21 +89,21 @@ bool animation::load_nan(shared_animation &res,resource_data &data,const char* n
 
 unsigned int animation::get_duration() const
 {
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return 0;
 
-    return m_shared->anim.get_duration();
+    return m_shared->anim.getDuration();
 }
 
 void animation::set_range(unsigned int from,unsigned int to)
 {
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return;
 
     m_range_from=from;
     m_range_to=to;
 
-    unsigned int duration = m_shared->anim.get_duration();
+    unsigned int duration = m_shared->anim.getDuration();
     if(m_range_from>duration)
         m_range_from=duration;
 
@@ -118,7 +118,7 @@ void animation::mask_all(bool enabled)
 {
     if(enabled)
     {
-        if(m_mask.is_valid())
+        if(m_mask.isValid())
         {
             m_mask.free();
             update_version();
@@ -126,7 +126,7 @@ void animation::mask_all(bool enabled)
     }
     else
     {
-        if(!m_mask.is_valid())
+        if(!m_mask.isValid())
             m_mask.allocate();
         else
             m_mask->data.clear();
@@ -146,15 +146,15 @@ void animation::add_mask(const char *name,bool enabled)
     if(!name)
         return;
 
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return;
 
-    if(m_shared->anim.get_bone_idx(name)<0)
+    if(m_shared->anim.getBoneIdx(name)<0)
         return;
 
     if(enabled)
     {
-        if(!m_mask.is_valid())
+        if(!m_mask.isValid())
             return;
 
         m_mask->data[name]=true;
@@ -162,11 +162,11 @@ void animation::add_mask(const char *name,bool enabled)
     }
     else
     {
-        if(!m_mask.is_valid())
+        if(!m_mask.isValid())
         {
             m_mask.allocate();
-            for(int i=0;i<m_shared->anim.get_bones_count();++i)
-                m_mask->data[m_shared->anim.get_bone_name(i)]=true;
+            for(int i=0;i<m_shared->anim.getBonesCount();++i)
+                m_mask->data[m_shared->anim.getBoneName(i)]=true;
         }
 
         std::map<std::string,bool>::iterator it=m_mask->data.find(name);

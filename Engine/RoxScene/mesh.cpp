@@ -251,7 +251,7 @@ bool mesh::load_nms(shared_mesh &res,resource_data &data,const char* name)
 
 bool mesh_internal::init_from_shared()
 {
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return false;
 
     m_replaced_materials.clear();
@@ -265,11 +265,11 @@ bool mesh_internal::init_from_shared()
         m_shared->materials[i].internal().skeleton_changed(&m_skeleton);
 
     m_recalc_aabb=true;
-    m_has_aabb=m_shared->aabb.delta.length_sq()>0.0001f;
+    m_has_aabb=m_shared->aabb.delta.lengthSq()>0.0001f;
 
     m_groups.resize(m_shared->groups.size());
     for(int i=0;i<(int)m_groups.size();++i)
-        m_groups[i].has_aabb=m_shared->groups[i].aabb.delta.length_sq()>0.0001f;
+        m_groups[i].has_aabb=m_shared->groups[i].aabb.delta.lengthSq()>0.0001f;
 
     return true;
 }
@@ -307,7 +307,7 @@ void mesh::unload()
 
 int mesh_internal::get_materials_count() const
 {
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return 0;
 
     return int(m_shared->materials.size()+m_replaced_materials.size());
@@ -324,7 +324,7 @@ const material &mesh_internal::mat(int idx) const
 
 int mesh_internal::get_mat_idx(int group_idx) const
 {
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return -1;
 
     if(group_idx<0)
@@ -345,7 +345,7 @@ int mesh_internal::get_mat_idx(int group_idx) const
 
 void mesh_internal::draw_group(int idx, const char *pass_name) const
 {
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return;
 
     if(idx<0 || idx>=(int)m_shared->groups.size())
@@ -434,7 +434,7 @@ bool mesh::has_pass(const char *pass_name) const
 
 int mesh::get_groups_count() const
 {
-    if(!internal().m_shared.is_valid())
+    if(!internal().m_shared.isValid())
         return 0;
 
     return int(internal().m_shared->groups.size());
@@ -459,7 +459,7 @@ const material &mesh::get_material(int group_idx) const
 
 material &mesh::modify_material(int idx)
 {
-    if(!internal().m_shared.is_valid())
+    if(!internal().m_shared.isValid())
         return RoxMemory::invalidObject<material>();
 
     if(idx<0 || idx>=(int)internal().m_shared->groups.size())
@@ -502,7 +502,7 @@ bool mesh::set_material(int idx,const material &mat)
 
 void mesh::set_anim(const animation_proxy & anim,int layer,bool lerp)
 {
-    if(!internal().m_shared.is_valid() || layer<0)
+    if(!internal().m_shared.isValid() || layer<0)
         return;
 
     int idx= -1;
@@ -578,7 +578,7 @@ void mesh_internal::anim_update_mapping(applied_anim &a)
 {
     a.bones_map.clear();
 
-    if(!a.anim.isValid() || !a.anim->m_shared.is_valid())
+    if(!a.anim.isValid() || !a.anim->m_shared.isValid())
         return;
 
     const RoxRender::RoxAnimation &ra=a.anim->m_shared->anim;
@@ -602,7 +602,7 @@ void mesh_internal::anim_update_mapping(applied_anim &a)
 
 void mesh_internal::update_aabb_transform() const
 {
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return;
 
     if(!m_recalc_aabb)
@@ -744,7 +744,7 @@ void mesh::update(unsigned int dt) { m_internal.update(dt); }
 
 void mesh_internal::update(unsigned int dt)
 {
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return;
 
     if(m_anims.empty() && m_bone_controls.empty())
@@ -791,8 +791,8 @@ void mesh_internal::update_skeleton() const
                 continue;
 
             const unsigned int time=(unsigned int)a.time+a.anim->m_range_from;
-            RoxMath::Vector3 bone_pos=a.anim->m_shared->anim.get_bone_pos(a.bones_map[i],time,a.anim->get_loop());
-            RoxMath::Quaternion bone_rot=a.anim->m_shared->anim.get_bone_rot(a.bones_map[i],time,a.anim->get_loop());
+            RoxMath::Vector3 bone_pos=a.anim->m_shared->anim.getBonePos(a.bones_map[i],time,a.anim->get_loop());
+            RoxMath::Quaternion bone_rot=a.anim->m_shared->anim.getBoneRot(a.bones_map[i],time,a.anim->get_loop());
 
             if(a.lerp)
             {

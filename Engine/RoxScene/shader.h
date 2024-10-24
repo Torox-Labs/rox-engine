@@ -117,7 +117,7 @@ public:
     static void unset() { RoxRender::RoxShader::unbind(); }
 
     static void set_skeleton(const RoxRender::RoxSkeleton *RoxSkeleton) { m_skeleton=RoxSkeleton; }
-    void reset_skeleton() { if(!m_shared.is_valid()) return; m_shared->last_skeleton_pos=0; m_shared->last_skeleton_rot=0; }
+    void reset_skeleton() { if(!m_shared.isValid()) return; m_shared->last_skeleton_pos=0; m_shared->last_skeleton_rot=0; }
     void skeleton_changed(const RoxRender::RoxSkeleton *RoxSkeleton) const;
 
 public:

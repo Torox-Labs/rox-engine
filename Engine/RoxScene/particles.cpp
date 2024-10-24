@@ -73,7 +73,7 @@ void particles::reset_time()
             memset(&p.init_buf[0],0,p.init_buf.size()*sizeof(p.init_buf[0]));
     }
 
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return;
 
     m_curr_particles=this;
@@ -400,7 +400,7 @@ void particles::spawn(short emitter_type,int count,short parent)
 
 void particles::spawn(const char *emitter_id)
 {
-    if(!emitter_id || !m_shared.is_valid())
+    if(!emitter_id || !m_shared.isValid())
         return;
 
     for(int i=0;i<(int)m_shared->emitters.size();++i)
@@ -442,7 +442,7 @@ template<typename t>int add_idx(t &array,std::string id)
 
 const char *particles::get_param_name(int idx) const
 {
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return 0;
 
     if(idx<0 || idx>=get_params_count())
@@ -453,7 +453,7 @@ const char *particles::get_param_name(int idx) const
 
 const char *particles::get_param_id(int idx) const
 {
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return 0;
 
     if(idx<0 || idx>=get_params_count())
@@ -469,7 +469,7 @@ int particles::get_params_count() const
 
 int particles::get_param_idx(const char *name) const
 {
-    if(!name || !m_shared.is_valid())
+    if(!name || !m_shared.isValid())
         return -1;
 
     const int idx=get_idx(m_shared->params,name);
@@ -550,7 +550,7 @@ int particles::get_textures_count() const
 
 const char *particles::get_texture_name(int idx) const
 {
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return 0;
 
     if(idx<0 || idx>=get_textures_count())
@@ -561,7 +561,7 @@ const char *particles::get_texture_name(int idx) const
 
 const char *particles::get_texture_id(int idx) const
 {
-    if(!m_shared.is_valid())
+    if(!m_shared.isValid())
         return 0;
 
     if(idx<0 || idx>=get_textures_count())
@@ -572,7 +572,7 @@ const char *particles::get_texture_id(int idx) const
 
 int particles::get_texture_idx(const char *name) const
 {
-    if(!name || !m_shared.is_valid())
+    if(!name || !m_shared.isValid())
         return -1;
 
     const int idx=get_idx(m_shared->textures,name);
@@ -601,7 +601,7 @@ int particles::find_emitter_emitter_bind(int from,int to)
 
 const shared_particles::function &particles::get_function(int idx)
 {
-    if(!m_shared.is_valid() || idx<0)
+    if(!m_shared.isValid() || idx<0)
         return RoxMemory::invalidObject<shared_particles::function>();
 
     return m_shared->functions[idx];
