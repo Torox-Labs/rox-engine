@@ -15,6 +15,7 @@
 #pragma once
 
 #include "RoxConstants.h"
+#include "RoxScalar.h"
 #include <algorithm>
 
 namespace RoxMath
@@ -44,8 +45,8 @@ template<typename t> struct Angle
     bool operator <= (const t &a) const { return value <= a.value; }
     bool operator >= (const t &a) const { return value >= a.value; }
 
-    t &clamp(const t &from,const t &to) { *this=nya_math::clamp(value,from.value,to.value); return *(t*)this; }
-    static t clamp(const t &a,const t &from,const t &to) { return nya_math::clamp(a.value,from.value,to.value); }
+    t &clamp(const t &from,const t &to) { *this= RoxMath::clamp(value,from.value,to.value); return *(t*)this; }
+    static t clamp(const t &a,const t &from,const t &to) { return RoxMath::clamp(a.value,from.value,to.value); }
 };
 
 template<typename t> t operator + (float a,const Angle<t> &b) { return t(a+b.value); }

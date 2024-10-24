@@ -67,7 +67,7 @@ void RoxVbo::draw(uint offset,uint count, ELEMENT_TYPE el_type,uint instances)
         Statistics::get().verts_count+=count*instances;
 
         const uint tri_count=(el_type==RoxVbo::TRIANGLES?count/3:(el_type==RoxVbo::TRIANGLE_STRIP?count-2:0))*instances;
-        if(get_state().blend)
+        if(getState().blend)
             Statistics::get().transparent_poly_count+=tri_count;
         else
             Statistics::get().opaque_poly_count+=tri_count;

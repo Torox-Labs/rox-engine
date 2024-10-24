@@ -168,7 +168,7 @@ struct State
 };
 
 void setState(const State &s);
-const State &get_state();
+const State &getState();
 
 void applyState(bool ignore_cache=false);
 

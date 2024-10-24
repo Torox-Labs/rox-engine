@@ -28,6 +28,7 @@
 #elif defined _WIN32
     #include <windows.h>
     #include <cstring>
+	#include <ctime>
 
     #if defined(_MSC_VER) && _MSC_VER >= 1900
 		#if _WIN32_WINNT >= _WIN32_WINNT_WIN10
@@ -44,8 +45,7 @@
     #include <unistd.h>
     #include <sys/types.h>
     #include <pwd.h>
-    #include <iostream>
-    #include <string.h>
+
 #endif
 
 namespace
@@ -171,13 +171,14 @@ const char *getUserPath()
 }
 
 #ifdef _WIN32
-#include <ctime>
 
-#pragma comment ( lib, "WINMM.LIB" )
+//#pragma comment ( lib, "WINMM.LIB" )
+#pragma comment( lib, "winmm.lib")   
 
 unsigned long getTime()
 {
-    return ::std::time(nullptr);
+
+    return timeGetTime();
 }
 
 #else

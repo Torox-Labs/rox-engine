@@ -47,71 +47,70 @@
 
 namespace
 {
+	class RoxSharedApp
+	{
+	public:
+		void startWindowed(int x,
+		                   int y,
+		                   unsigned int w,
+		                   unsigned int h,
+		                   int antialiasing,
+		                   RoxSystem::RoxApp& app)
+		{
+			m_instance = GetModuleHandle(NULL);
+			if (!m_instance)
+				return;
 
-class RoxSharedApp
-{
-public:
-    void startWindowed(int x,
-                        int y,
-                        unsigned int w,
-                        unsigned int h,
-                        int antialiasing,
-                        RoxSystem::RoxApp& app)
-    {
-        m_instance = GetModuleHandle(NULL);
-        if (!m_instance)
-            return;
-        
-        WNDCLASS wc;
-        wc.cbClsExtra = 0;
-        wc.cbWndExtra = 0;
-        wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-        wc.hCursor = LoadCursor(NULL,
-                                IDC_ARROW);
-        wc.hIcon = LoadIcon(NULL,
-                            IDI_APPLICATION);
-        wc.hInstance = m_instance;
-        wc.lpfnWndProc = wnd_proc;
-        wc.lpszClassName = TEXT("nya_engine");
-        wc.lpszMenuName = 0;
-        wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-        
-        if (!RegisterClass(&wc))
-            return;
-        
-        RECT rect = {
-            x,
-            y,
-            int(x + w),
-            int(y + h)
-        };
-        AdjustWindowRect(&rect,
-                         WS_OVERLAPPEDWINDOW,
-                         false);
-        
-        m_hwnd = CreateWindowA("nya_engine",
-                               m_title
-                               .c_str(),
-                               WS_OVERLAPPEDWINDOW,
-                               rect.left,
-                               rect.top,
-                               rect.right - rect.left,
-                               rect.bottom - rect.top,
-                               NULL,
-                               NULL,
-                               m_instance,
-                               NULL);
-        
-        if (!m_hwnd)
-            return;
-        
-        ShowWindow(m_hwnd,
-                   SW_SHOW);
-        
+			WNDCLASS wc;
+			wc.cbClsExtra = 0;
+			wc.cbWndExtra = 0;
+			wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+			wc.hCursor = LoadCursor(NULL,
+			                        IDC_ARROW);
+			wc.hIcon = LoadIcon(NULL,
+			                    IDI_APPLICATION);
+			wc.hInstance = m_instance;
+			wc.lpfnWndProc = wnd_proc;
+			wc.lpszClassName = TEXT("nya_engine");
+			wc.lpszMenuName = 0;
+			wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+
+			if (!RegisterClass(&wc))
+				return;
+
+			RECT rect = {
+				x,
+				y,
+				int(x + w),
+				int(y + h)
+			};
+			AdjustWindowRect(&rect,
+			                 WS_OVERLAPPEDWINDOW,
+			                 false);
+
+			m_hwnd = CreateWindowA("nya_engine",
+			                       m_title
+			                       .c_str(),
+			                       WS_OVERLAPPEDWINDOW,
+			                       rect.left,
+			                       rect.top,
+			                       rect.right - rect.left,
+			                       rect.bottom - rect.top,
+			                       NULL,
+			                       NULL,
+			                       m_instance,
+			                       NULL);
+
+			if (!m_hwnd)
+				return;
+
+			ShowWindow(m_hwnd,
+			           SW_SHOW);
+
 #ifdef DIRECTX11
         UINT create_device_flags = 0;
 #ifdef _DEBUG
-        //create_device_flags|=D3D11_CREATE_DEVICE_DEBUG;
+			//create_device_flags|=D3D11_CREATE_DEVICE_DEBUG;
 #endif
         
         D3D_DRIVER_TYPE driver_types[] =
@@ -174,251 +173,248 @@ public:
         recreate_targets(w,
                          h);
 #else
-        m_hdc = GetDC(m_hwnd);
-        
-        PIXELFORMATDESCRIPTOR pfd = {
-            0
-        };
-        pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-        pfd.nVersion = 1;
-        pfd.dwFlags = PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER | PFD_DRAW_TO_WINDOW;
-        pfd.iPixelType = PFD_TYPE_RGBA;
-        pfd.cColorBits = 24;
-        pfd.cAlphaBits = 8;
-        pfd.cDepthBits = 24;
-        
-        int pf = ChoosePixelFormat(m_hdc,
-                                   &pfd);
-        if (!pf)
-            return;
-        
-        if (!SetPixelFormat(m_hdc,
-                            pf,
-                            &pfd))
-            return;
-        
-        m_hglrc = wglCreateContext(m_hdc);
-        if (!m_hglrc)
-            return;
-        
-        wglMakeCurrent(m_hdc,
-                       m_hglrc);
-        
-        if (antialiasing > 0)
-        {
-            if (!RoxRender::RoxRenderOpengl::hasExtension("GL_ARB_multisample"))
-            {
-                //antialiasing=0;
-                RoxSystem::log() << "GL_ARB_multisample not found\n";
-            }
-        }
-        
-        PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = 0;
-        if (antialiasing > 0)
-        {
-            wglChoosePixelFormatARB =
-            (PFNWGLCHOOSEPIXELFORMATARBPROC)RoxRender::RoxRenderOpengl::getExtension("wglChoosePixelFormatARB");
-            if (!wglChoosePixelFormatARB)
-            {
-                antialiasing = 0;
-                RoxSystem::log() << "wglChoosePixelFormatARB not found\n";
-            }
-        }
-        
-        UINT num_aa_formats = 0;
-        int aa_pf = 0;
-        
-        if (antialiasing > 0)
-        {
-            int iAttributes[] = {
-                WGL_DRAW_TO_WINDOW_ARB,
-                GL_TRUE,
-                WGL_SUPPORT_OPENGL_ARB,
-                GL_TRUE,
-                WGL_ACCELERATION_ARB,
-                WGL_FULL_ACCELERATION_ARB,
-                WGL_COLOR_BITS_ARB,
-                24,
-                WGL_ALPHA_BITS_ARB,
-                8,
-                WGL_DEPTH_BITS_ARB,
-                24,
-                WGL_STENCIL_BITS_ARB,
-                0,
-                WGL_DOUBLE_BUFFER_ARB,
-                GL_TRUE,
-                WGL_SAMPLE_BUFFERS_ARB,
-                GL_TRUE,
-                WGL_SAMPLES_ARB,
-                antialiasing,
-                0,
-                0
-            };
-            
-            RoxSystem::log() << "antialiasing init\n";
-            
-            if (!wglChoosePixelFormatARB(m_hdc,
-                                         iAttributes,
-                                         0,
-                                         1,
-                                         &aa_pf,
-                                         &num_aa_formats))
-            {
-                RoxSystem::log() << "wglChoosePixelFormatARB failed\n";
-                antialiasing = 0;
-            }
-        }
-        
-        if (antialiasing > 0)
-        {
-            wglMakeCurrent(m_hdc,
-                           0);
-            wglDeleteContext(m_hglrc);
-            ReleaseDC(m_hwnd,
-                      m_hdc);
-            DestroyWindow(m_hwnd);
-            
-            m_hwnd = CreateWindowA("nya_engine",
-                                   m_title
-                                   .c_str(),
-                                   WS_OVERLAPPEDWINDOW,
-                                   rect.left,
-                                   rect.top,
-                                   rect.right - rect.left,
-                                   rect.bottom - rect.top,
-                                   NULL,
-                                   NULL,
-                                   m_instance,
-                                   NULL);
-            
-            ShowWindow(m_hwnd,
-                       SW_SHOW);
-            m_hdc = GetDC(m_hwnd);
-            
-            if (num_aa_formats >= 1 && SetPixelFormat(m_hdc,
-                                                      aa_pf,
-                                                      &pfd))
-            {
-                RoxSystem::log() << "antialiasiing is set\n";
-            }
-            else
-            {
-                antialiasing = 0;
-                RoxSystem::log() << "unable to set antialiasiing " << aa_pf << " " << num_aa_formats << "\n";
-                
-                int pf = ChoosePixelFormat(m_hdc,
-                                           &pfd);
-                if (!pf)
-                    return;
-                
-                if (!SetPixelFormat(m_hdc,
-                                    pf,
-                                    &pfd))
-                    return;
-            }
-            
-            m_hglrc = wglCreateContext(m_hdc);
-            if (!m_hglrc)
-                return;
-            
-            wglMakeCurrent(m_hdc,
-                           m_hglrc);
-        }
-        
-        if (antialiasing > 1)
-            glEnable(GL_MULTISAMPLE_ARB);
+			m_hdc = GetDC(m_hwnd);
+
+			PIXELFORMATDESCRIPTOR pfd = {
+				0
+			};
+			pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+			pfd.nVersion = 1;
+			pfd.dwFlags = PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER | PFD_DRAW_TO_WINDOW;
+			pfd.iPixelType = PFD_TYPE_RGBA;
+			pfd.cColorBits = 24;
+			pfd.cAlphaBits = 8;
+			pfd.cDepthBits = 24;
+
+			int pf = ChoosePixelFormat(m_hdc,
+			                           &pfd);
+			if (!pf)
+				return;
+
+			if (!SetPixelFormat(m_hdc,
+			                    pf,
+			                    &pfd))
+				return;
+
+			m_hglrc = wglCreateContext(m_hdc);
+			if (!m_hglrc)
+				return;
+
+			wglMakeCurrent(m_hdc,
+			               m_hglrc);
+
+			if (antialiasing > 0)
+			{
+				if (!RoxRender::RoxRenderOpengl::hasExtension("GL_ARB_multisample"))
+				{
+					//antialiasing=0;
+					RoxSystem::log() << "GL_ARB_multisample not found\n";
+				}
+			}
+
+			PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = 0;
+			if (antialiasing > 0)
+			{
+				wglChoosePixelFormatARB =
+					(PFNWGLCHOOSEPIXELFORMATARBPROC)RoxRender::RoxRenderOpengl::getExtension("wglChoosePixelFormatARB");
+				if (!wglChoosePixelFormatARB)
+				{
+					antialiasing = 0;
+					RoxSystem::log() << "wglChoosePixelFormatARB not found\n";
+				}
+			}
+
+			UINT num_aa_formats = 0;
+			int aa_pf = 0;
+
+			if (antialiasing > 0)
+			{
+				int iAttributes[] = {
+					WGL_DRAW_TO_WINDOW_ARB,
+					GL_TRUE,
+					WGL_SUPPORT_OPENGL_ARB,
+					GL_TRUE,
+					WGL_ACCELERATION_ARB,
+					WGL_FULL_ACCELERATION_ARB,
+					WGL_COLOR_BITS_ARB,
+					24,
+					WGL_ALPHA_BITS_ARB,
+					8,
+					WGL_DEPTH_BITS_ARB,
+					24,
+					WGL_STENCIL_BITS_ARB,
+					0,
+					WGL_DOUBLE_BUFFER_ARB,
+					GL_TRUE,
+					WGL_SAMPLE_BUFFERS_ARB,
+					GL_TRUE,
+					WGL_SAMPLES_ARB,
+					antialiasing,
+					0,
+					0
+				};
+
+				RoxSystem::log() << "antialiasing init\n";
+
+				if (!wglChoosePixelFormatARB(m_hdc,
+				                             iAttributes,
+				                             0,
+				                             1,
+				                             &aa_pf,
+				                             &num_aa_formats))
+				{
+					RoxSystem::log() << "wglChoosePixelFormatARB failed\n";
+					antialiasing = 0;
+				}
+			}
+
+			if (antialiasing > 0)
+			{
+				wglMakeCurrent(m_hdc,
+				               0);
+				wglDeleteContext(m_hglrc);
+				ReleaseDC(m_hwnd,
+				          m_hdc);
+				DestroyWindow(m_hwnd);
+
+				m_hwnd = CreateWindowA("nya_engine",
+				                       m_title
+				                       .c_str(),
+				                       WS_OVERLAPPEDWINDOW,
+				                       rect.left,
+				                       rect.top,
+				                       rect.right - rect.left,
+				                       rect.bottom - rect.top,
+				                       NULL,
+				                       NULL,
+				                       m_instance,
+				                       NULL);
+
+				ShowWindow(m_hwnd,
+				           SW_SHOW);
+				m_hdc = GetDC(m_hwnd);
+
+				if (num_aa_formats >= 1 && SetPixelFormat(m_hdc,
+				                                          aa_pf,
+				                                          &pfd))
+				{
+					RoxSystem::log() << "antialiasiing is set\n";
+				}
+				else
+				{
+					antialiasing = 0;
+					RoxSystem::log() << "unable to set antialiasiing " << aa_pf << " " << num_aa_formats << "\n";
+
+					int pf = ChoosePixelFormat(m_hdc,
+					                           &pfd);
+					if (!pf)
+						return;
+
+					if (!SetPixelFormat(m_hdc,
+					                    pf,
+					                    &pfd))
+						return;
+				}
+
+				m_hglrc = wglCreateContext(m_hdc);
+				if (!m_hglrc)
+					return;
+
+				wglMakeCurrent(m_hdc,
+				               m_hglrc);
+			}
+
+			if (antialiasing > 1)
+				glEnable(GL_MULTISAMPLE_ARB);
 #endif
-        SetWindowTextA(m_hwnd,
-                       m_title
-                       .c_str());
-        
-        SetWindowLongPtr(m_hwnd,
-                         GWLP_USERDATA,
-                         (LONG_PTR)&app);
-        
-        RoxRender::setViewport(0,
-                                 0,
-                                 w,
-                                 h);
-        app
-            .onResize(w,
-                       h);
-        m_time = RoxSystem::getTime();
-        
-        if (app.onSplash())
-        {
+			SetWindowTextA(m_hwnd,
+			               m_title
+			               .c_str());
+
+			SetWindowLongPtr(m_hwnd,
+			                 GWLP_USERDATA,
+			                 (LONG_PTR)&app);
+
+			RoxRender::setViewport(0,
+			                       0,
+			                       w,
+			                       h);
+			app
+				.onResize(w,
+				          h);
+			m_time = RoxSystem::getTime();
+
+			if (app.onSplash())
+			{
 #ifdef DIRECTX11
             m_swap_chain->Present(0,
                                   0);
 #else
-            SwapBuffers(m_hdc);
-#endif        
-        }
-        
-        app
-            .onInit();
-        
-        m_time = RoxSystem::getTime();
-        
-        MSG msg;
-        while (m_hwnd)
-        {
-            if (PeekMessage(&msg,
-                            NULL,
-                            0,
-                            0,
-                            PM_REMOVE))
-            {
-                if (msg.message == WM_QUIT)
-                    break;
-                
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
-            }
-            else
-            {
-                unsigned long time = RoxSystem::getTime();
-                unsigned int dt = (unsigned)(time - m_time);
-                m_time = time;
-                
-                app
-                    .onFrame(dt);
-                
+				SwapBuffers(m_hdc);
+#endif
+			}
+
+			app.onInit();
+
+			m_time = RoxSystem::getTime();
+
+			MSG msg;
+			while (m_hwnd)
+			{
+				if (PeekMessage(&msg,
+				                NULL,
+				                0,
+				                0,
+				                PM_REMOVE))
+				{
+					if (msg.message == WM_QUIT)
+						break;
+
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+				}
+				else
+				{
+					unsigned long time = RoxSystem::getTime();
+					unsigned int dt = (unsigned)(time - m_time);
+					m_time = time;
+
+					app.onFrame(dt);
+
 #ifdef DIRECTX11
                 m_swap_chain->Present(0,
                                       0);
 #else
-                SwapBuffers(m_hdc);
+					SwapBuffers(m_hdc);
 #endif
-            }
-        }
-        
-        finish(app);
-    }
-    
-    void startFullscreen(unsigned int w,
-                          unsigned int h,
-                          int antialiasing,
-                          RoxSystem::RoxApp& app)
-    {
-        //ToDo
-        
-        startWindowed(0,
-                       0,
-                       w,
-                       h,
-                       0,
-                       app);
-    }
-    
-    void finish(RoxSystem::RoxApp& app)
-    {
-        if (!m_hwnd)
-            return;
-        
-        app
-            .onFree();
-        
+				}
+			}
+
+			finish(app);
+		}
+
+		void startFullscreen(unsigned int w,
+		                     unsigned int h,
+		                     int antialiasing,
+		                     RoxSystem::RoxApp& app)
+		{
+			//ToDo
+
+			startWindowed(0,
+			              0,
+			              w,
+			              h,
+			              0,
+			              app);
+		}
+
+		void finish(RoxSystem::RoxApp& app)
+		{
+			if (!m_hwnd)
+				return;
+
+			app.onFree();
+
 #ifdef DIRECTX11
         if (m_context)
             m_context->ClearState();
@@ -453,16 +449,16 @@ public:
             m_device = 0;
         }
 #else
-        wglMakeCurrent(m_hdc,
-                       0);
-        wglDeleteContext(m_hglrc);
-        ReleaseDC(m_hwnd,
-                  m_hdc);
-        DestroyWindow(m_hwnd);
+			wglMakeCurrent(m_hdc,
+			               0);
+			wglDeleteContext(m_hglrc);
+			ReleaseDC(m_hwnd,
+			          m_hdc);
+			DestroyWindow(m_hwnd);
 #endif
-        m_hwnd = 0;
-    }
-    
+			m_hwnd = 0;
+		}
+
 #ifdef DIRECTX11
 private:
     bool recreate_targets(int w,
@@ -532,218 +528,227 @@ private:
         return true;
     }
 #endif
-    
-private:
-    static unsigned int get_x11_key(unsigned int key)
-    {
-        if (key >= 'A' && key <= 'Z')
-            return RoxSystem::KEY_A + key - 'A';
-        
-        if (key >= '0' && key <= '9')
-            return RoxSystem::KEY_0 + key - '0';
-        
-        if (key >= VK_F1 && key <= VK_F12)
-            return RoxSystem::KEY_F1 + key - VK_F1;
-        
-        switch (key)
-        {
-            case VK_SHIFT: return RoxSystem::KEY_SHIFT;
-            case VK_CONTROL: return RoxSystem::KEY_CONTROL;
-            case VK_MENU: return RoxSystem::KEY_ALT;
-                
-            case VK_CAPITAL: return RoxSystem::KEY_CAPITAL;
-            case VK_ESCAPE: return RoxSystem::KEY_ESCAPE;
-            case VK_SPACE: return RoxSystem::KEY_SPACE;
-            case VK_RETURN: return RoxSystem::KEY_RETURN;
-            case VK_TAB: return RoxSystem::KEY_TAB;
-                
-            case VK_PRIOR: return RoxSystem::KEY_PAGE_UP;
-            case VK_NEXT: return RoxSystem::KEY_PAGE_DOWN;
-            case VK_END: return RoxSystem::KEY_END;
-            case VK_HOME: return RoxSystem::KEY_HOME;
-            case VK_INSERT: return RoxSystem::KEY_INSERT;
-            case VK_DELETE: return RoxSystem::KEY_DELETE;
-            case VK_BACK: return RoxSystem::KEY_BACK;
-                
-            case VK_UP: return RoxSystem::KEY_UP;
-            case VK_DOWN: return RoxSystem::KEY_DOWN;
-            case VK_LEFT: return RoxSystem::KEY_LEFT;
-            case VK_RIGHT: return RoxSystem::KEY_RIGHT;
-                
-            case VK_OEM_4: return RoxSystem::KEY_BRACKET_LEFT;
-            case VK_OEM_6: return RoxSystem::KEY_BRACKET_RIGHT;
-            case VK_OEM_COMMA: return RoxSystem::KEY_COMMA;
-            case VK_OEM_PERIOD: return RoxSystem::KEY_PERIOD;
-        }
-        
-        return 0;
-    }
-    
-    static LRESULT CALLBACK wnd_proc(HWND hwnd,
-                                     UINT message,
-                                     WPARAM wparam,
-                                     LPARAM lparam)
-    {
-        RoxSystem::RoxApp* app = (RoxSystem::RoxApp*)GetWindowLongPtr(hwnd,
-                                                                  GWLP_USERDATA);
-        if (!app)
-            return DefWindowProc(hwnd,
-                                 message,
-                                 wparam,
-                                 lparam);
-        
-        switch (message)
-        {
-            case WM_SIZE:
-            {
-                RECT rc;
-                GetClientRect(hwnd,
-                              &rc);
-                
-                const int w = rc.right - rc.left;
-                const int h = rc.bottom - rc.top;
-                
+
+	private:
+		static unsigned int get_x11_key(unsigned int key)
+		{
+			if (key >= 'A' && key <= 'Z')
+				return RoxSystem::KEY_A + key - 'A';
+
+			if (key >= '0' && key <= '9')
+				return RoxSystem::KEY_0 + key - '0';
+
+			if (key >= VK_F1 && key <= VK_F12)
+				return RoxSystem::KEY_F1 + key - VK_F1;
+
+			switch (key)
+			{
+			case VK_SHIFT: return RoxSystem::KEY_SHIFT;
+			case VK_CONTROL: return RoxSystem::KEY_CONTROL;
+			case VK_MENU: return RoxSystem::KEY_ALT;
+
+			case VK_CAPITAL: return RoxSystem::KEY_CAPITAL;
+			case VK_ESCAPE: return RoxSystem::KEY_ESCAPE;
+			case VK_SPACE: return RoxSystem::KEY_SPACE;
+			case VK_RETURN: return RoxSystem::KEY_RETURN;
+			case VK_TAB: return RoxSystem::KEY_TAB;
+
+			case VK_PRIOR: return RoxSystem::KEY_PAGE_UP;
+			case VK_NEXT: return RoxSystem::KEY_PAGE_DOWN;
+			case VK_END: return RoxSystem::KEY_END;
+			case VK_HOME: return RoxSystem::KEY_HOME;
+			case VK_INSERT: return RoxSystem::KEY_INSERT;
+			case VK_DELETE: return RoxSystem::KEY_DELETE;
+			case VK_BACK: return RoxSystem::KEY_BACK;
+
+			case VK_UP: return RoxSystem::KEY_UP;
+			case VK_DOWN: return RoxSystem::KEY_DOWN;
+			case VK_LEFT: return RoxSystem::KEY_LEFT;
+			case VK_RIGHT: return RoxSystem::KEY_RIGHT;
+
+			case VK_OEM_4: return RoxSystem::KEY_BRACKET_LEFT;
+			case VK_OEM_6: return RoxSystem::KEY_BRACKET_RIGHT;
+			case VK_OEM_COMMA: return RoxSystem::KEY_COMMA;
+			case VK_OEM_PERIOD: return RoxSystem::KEY_PERIOD;
+			}
+
+			return 0;
+		}
+
+		static LRESULT CALLBACK wnd_proc(HWND hwnd,
+		                                 UINT message,
+		                                 WPARAM wparam,
+		                                 LPARAM lparam)
+		{
+			RoxSystem::RoxApp* app = (RoxSystem::RoxApp*)GetWindowLongPtr(hwnd,
+			                                                              GWLP_USERDATA);
+			if (!app)
+				return DefWindowProc(hwnd,
+				                     message,
+				                     wparam,
+				                     lparam);
+
+			switch (message)
+			{
+			case WM_SIZE:
+				{
+					RECT rc;
+					GetClientRect(hwnd,
+					              &rc);
+
+					const int w = rc.right - rc.left;
+					const int h = rc.bottom - rc.top;
+
 #ifdef DIRECTX11
                 getApp()
                     .recreate_targets(w,
                                       h);
 #endif
-                RoxRender::setViewport(0,
-                                         0,
-                                         w,
-                                         h);
-                app->onResize(w,
-                               h);
-            }
-                break;
-                
-            case WM_CLOSE: getApp()
-                    .finish(*app); break;
-                
-            case WM_MOUSEWHEEL:
-            {
-                const int x = GET_X_LPARAM(wparam);
-                const int y = GET_Y_LPARAM(wparam);
-                
-                app->onMouseScroll(x / 60,
-                                     y / 60);
-            }
-                break;
-                
-            case WM_MOUSEMOVE:
-            {
-                const int x = LOWORD(lparam);
-                const int y = HIWORD(lparam);
-                
-                RECT rc;
-                GetClientRect(hwnd,
-                              &rc);
-                
-                app->onMouseMove(x,
-                                   rc.bottom + rc.top - y);
-            }
-                break;
-                
-            case WM_LBUTTONDOWN: app->onMouseButton(RoxSystem::MouseLeft,
-                                                      true); break;
-            case WM_LBUTTONUP: app->onMouseButton(RoxSystem::MouseLeft,
-                                                    false); break;
-            case WM_MBUTTONDOWN: app->onMouseButton(RoxSystem::MouseMiddle,
-                                                      true); break;
-            case WM_MBUTTONUP: app->onMouseButton(RoxSystem::MouseMiddle,
-                                                    false); break;
-            case WM_RBUTTONDOWN: app->onMouseButton(RoxSystem::MouseRight,
-                                                      true); break;
-            case WM_RBUTTONUP: app->onMouseButton(RoxSystem::MouseRight,
-                                                    false); break;
-                
-            case WM_KEYDOWN:
-            {
-                const unsigned int key = LOWORD(wparam);
-                const unsigned int x11key = get_x11_key(key);
-                if (x11key)
-                    app->onKeyboard(x11key,
-                                     true);
-            }
-                break;
-                
-            case WM_KEYUP:
-            {
-                const unsigned int key = LOWORD(wparam);
-                const unsigned int x11key = get_x11_key(key);
-                if (x11key)
-                    app->onKeyboard(x11key,
-                                     false);
-            }
-                break;
-                
-            case WM_CHAR:
-            {
-                const unsigned int key = wparam;
-                const bool pressed = ((lparam & (1 << 31)) == 0);
-                const bool autorepeat = ((lparam & 0xff) != 0);
-                app->onCharcode(key,
-                                 pressed,
-                                 autorepeat);
-            }
-                break;
-                
-            case WM_SYSCOMMAND:
-            {
-                if (wparam == SC_MINIMIZE && !m_suspended)
-                {
-                    m_suspended = true;
-                    app->onSuspend();
-                }
-                else if (wparam == SC_RESTORE && m_suspended)
-                {
-                    m_suspended = false;
-                    app->onRestore();
-                }
-            }
-                break;
-        };
-        
-        return DefWindowProc(hwnd,
-                             message,
-                             wparam,
-                             lparam);
-    }
-    
-public:
-    void setTitle(const char* title)
-    {
-        if (!title)
-        {
-            m_title
-                .clear();
-            return;
-        }
-        
-        m_title
-            .assign(title);
-        
-        if (m_hwnd)
-            SetWindowTextA(m_hwnd,
-                           title);
-    }
+					RoxRender::setViewport(0,
+					                       0,
+					                       w,
+					                       h);
+					app->onResize(w,
+					              h);
+				}
+				break;
 
-	std::string getTitle()
-	{
-		return m_title;
-	}
+			case WM_CLOSE: getApp()
+					.finish(*app);
+				break;
 
-    void setVirtualKeyboard(int type) {}
-    
-public:
-    static RoxSharedApp& getApp()
-    {
-        static RoxSharedApp app;
-        return app;
-    }
-    
-public:
-    RoxSharedApp() :
+			case WM_MOUSEWHEEL:
+				{
+					const int x = GET_X_LPARAM(wparam);
+					const int y = GET_Y_LPARAM(wparam);
+
+					app->onMouseScroll(x / 60,
+					                   y / 60);
+				}
+				break;
+
+			case WM_MOUSEMOVE:
+				{
+					const int x = LOWORD(lparam);
+					const int y = HIWORD(lparam);
+
+					RECT rc;
+					GetClientRect(hwnd,
+					              &rc);
+
+					app->onMouseMove(x,
+					                 rc.bottom + rc.top - y);
+				}
+				break;
+
+			case WM_LBUTTONDOWN: app->onMouseButton(RoxSystem::MouseLeft,
+			                                        true);
+				break;
+			case WM_LBUTTONUP: app->onMouseButton(RoxSystem::MouseLeft,
+			                                      false);
+				break;
+			case WM_MBUTTONDOWN: app->onMouseButton(RoxSystem::MouseMiddle,
+			                                        true);
+				break;
+			case WM_MBUTTONUP: app->onMouseButton(RoxSystem::MouseMiddle,
+			                                      false);
+				break;
+			case WM_RBUTTONDOWN: app->onMouseButton(RoxSystem::MouseRight,
+			                                        true);
+				break;
+			case WM_RBUTTONUP: app->onMouseButton(RoxSystem::MouseRight,
+			                                      false);
+				break;
+
+			case WM_KEYDOWN:
+				{
+					const unsigned int key = LOWORD(wparam);
+					const unsigned int x11key = get_x11_key(key);
+					if (x11key)
+						app->onKeyboard(x11key,
+						                true);
+				}
+				break;
+
+			case WM_KEYUP:
+				{
+					const unsigned int key = LOWORD(wparam);
+					const unsigned int x11key = get_x11_key(key);
+					if (x11key)
+						app->onKeyboard(x11key,
+						                false);
+				}
+				break;
+
+			case WM_CHAR:
+				{
+					const unsigned int key = wparam;
+					const bool pressed = ((lparam & (1 << 31)) == 0);
+					const bool autorepeat = ((lparam & 0xff) != 0);
+					app->onCharcode(key,
+					                pressed,
+					                autorepeat);
+				}
+				break;
+
+			case WM_SYSCOMMAND:
+				{
+					if (wparam == SC_MINIMIZE && !m_suspended)
+					{
+						m_suspended = true;
+						app->onSuspend();
+					}
+					else if (wparam == SC_RESTORE && m_suspended)
+					{
+						m_suspended = false;
+						app->onRestore();
+					}
+				}
+				break;
+			};
+
+			return DefWindowProc(hwnd,
+			                     message,
+			                     wparam,
+			                     lparam);
+		}
+
+	public:
+		void setTitle(const char* title)
+		{
+			if (!title)
+			{
+				m_title
+					.clear();
+				return;
+			}
+
+			m_title
+				.assign(title);
+
+			if (m_hwnd)
+				SetWindowTextA(m_hwnd,
+				               title);
+		}
+
+		std::string getTitle()
+		{
+			return m_title;
+		}
+
+		void setVirtualKeyboard(int type)
+		{
+		}
+
+	public:
+		static RoxSharedApp& getApp()
+		{
+			static RoxSharedApp app;
+			return app;
+		}
+
+	public:
+		RoxSharedApp() :
 #ifdef DIRECTX11
     m_device(0),
     m_context(0),
@@ -751,14 +756,15 @@ public:
     m_color_target(0),
     m_depth_target(0),
 #else
-    m_hdc(0),
+			m_hdc(0),
 #endif
-    m_title("Nya engine"), m_time(0) {
-    }
-    
-private:
-    HINSTANCE m_instance;
-    HWND m_hwnd;
+			m_title("Nya engine"), m_time(0)
+		{
+		}
+
+	private:
+		HINSTANCE m_instance;
+		HWND m_hwnd;
 #ifdef DIRECTX11
     ID3D11Device* m_device;
     ID3D11DeviceContext* m_context;
@@ -766,18 +772,17 @@ private:
     ID3D11RenderTargetView* m_color_target;
     ID3D11DepthStencilView* m_depth_target;
 #else
-    HDC m_hdc;
-    HGLRC m_hglrc;
+		HDC m_hdc;
+		HGLRC m_hglrc;
 #endif
-    
-    std::string m_title;
-    unsigned long m_time;
-    
-    static bool m_suspended;
-};
 
-bool RoxSharedApp::m_suspended = false;
+		std::string m_title;
+		unsigned long m_time;
 
+		static bool m_suspended;
+	};
+
+	bool RoxSharedApp::m_suspended = false;
 }
 
 //MARK: Apple
@@ -788,59 +793,59 @@ bool RoxSharedApp::m_suspended = false;
 
 namespace RoxSystem
 {
-void RoxApp::startWindowed(int x,
-                         int y,
-                         unsigned int w,
-                         unsigned int h,
-                         int antialiasing)
-{
-    RoxSharedApp::getApp()
-        .startWindowed(x,
-                        y,
-                        w,
-                        h,
-                        antialiasing,
-                        *this);
-}
+	void RoxApp::startWindowed(int x,
+	                           int y,
+	                           unsigned int w,
+	                           unsigned int h,
+	                           int antialiasing)
+	{
+		RoxSharedApp::getApp()
+			.startWindowed(x,
+			               y,
+			               w,
+			               h,
+			               antialiasing,
+			               *this);
+	}
 
-void RoxApp::startFullscreen(unsigned int w,
-                           unsigned int h,
-                           int aa)
-{
-    RoxSharedApp::getApp()
-        .startFullscreen(w,
-                          h,
-                          aa,
-                          *this);
-}
+	void RoxApp::startFullscreen(unsigned int w,
+	                             unsigned int h,
+	                             int aa)
+	{
+		RoxSharedApp::getApp()
+			.startFullscreen(w,
+			                 h,
+			                 aa,
+			                 *this);
+	}
 
-void RoxApp::setTitle(const char* title)
-{
-    RoxSharedApp::getApp()
-        .setTitle(title);
-}
+	void RoxApp::setTitle(const char* title)
+	{
+		RoxSharedApp::getApp()
+			.setTitle(title);
+	}
 
-std::string RoxApp::getTitle()
-{
-    return RoxSharedApp::getApp()
-        .getTitle();
-}
+	std::string RoxApp::getTitle()
+	{
+		return RoxSharedApp::getApp()
+			.getTitle();
+	}
 
-void RoxApp::setVirtualKeyboard(VirtualKeyboardType type)
-{
-    RoxSharedApp::getApp()
-        .setVirtualKeyboard(type);
-}
+	void RoxApp::setVirtualKeyboard(VirtualKeyboardType type)
+	{
+		RoxSharedApp::getApp()
+			.setVirtualKeyboard(type);
+	}
 
-void RoxApp::setMousePos(int x,
-                        int y)
-{
-}
+	void RoxApp::setMousePos(int x,
+	                         int y)
+	{
+	}
 
-void RoxApp::finish()
-{
-    RoxSharedApp::getApp()
-        .finish(*this);
+	void RoxApp::finish()
+	{
+		RoxSharedApp::getApp()
+			.finish(*this);
 	}
 }
 
