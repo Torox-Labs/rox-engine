@@ -486,7 +486,7 @@ namespace RoxFormats
         if (mHeader.rle && !decodeRle())
             return false;
 
-        mHeader.flipHorizontal(&mData[0], &mData[0]);
+        mHeader.flipHorisontal(&mData[0], &mData[0]);
         mHeader.horisontalFlip = !mHeader.horisontalFlip;
 
         return true;

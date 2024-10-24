@@ -4,7 +4,7 @@
 #include "RoxMemory/RoxMemoryReader.h"
 #include "RoxFormats/RoxAnim.h"
 
-namespace nya_scene
+namespace RoxScene
 {
 
 bool animation::load(const char *name)
@@ -49,7 +49,7 @@ void animation::create(const shared_animation &res)
 
 bool animation::load_nan(shared_animation &res,resource_data &data,const char* name)
 {
-    nya_formats::nan nan;
+    RoxFormats::nan nan;
     if(!nan.read(data.get_data(),data.get_size()))
         return false;
 
@@ -59,7 +59,7 @@ bool animation::load_nan(shared_animation &res,resource_data &data,const char* n
         const int bone_idx=res.anim.add_bone(nan.pos_vec3_linear_curves[i].bone_name.c_str());
         for(size_t j=0;j<nan.pos_vec3_linear_curves[i].frames.size();++j)
         {
-            const nya_formats::nan::pos_vec3_linear_frame &f=nan.pos_vec3_linear_curves[i].frames[j];
+            const RoxFormats::nan::pos_vec3_linear_frame &f=nan.pos_vec3_linear_curves[i].frames[j];
             res.anim.add_bone_pos_frame(bone_idx,f.time,f.pos);
         }
     }
@@ -69,7 +69,7 @@ bool animation::load_nan(shared_animation &res,resource_data &data,const char* n
         const int bone_idx=res.anim.add_bone(nan.rot_quat_linear_curves[i].bone_name.c_str());
         for(size_t j=0;j<nan.rot_quat_linear_curves[i].frames.size();++j)
         {
-            const nya_formats::nan::rot_quat_linear_frame &f=nan.rot_quat_linear_curves[i].frames[j];
+            const RoxFormats::nan::rot_quat_linear_frame &f=nan.rot_quat_linear_curves[i].frames[j];
             res.anim.add_bone_rot_frame(bone_idx,f.time,f.rot);
         }
     }
@@ -79,7 +79,7 @@ bool animation::load_nan(shared_animation &res,resource_data &data,const char* n
         const int bone_idx=res.anim.add_curve(nan.float_linear_curves[i].bone_name.c_str());
         for(size_t j=0;j<nan.float_linear_curves[i].frames.size();++j)
         {
-            const nya_formats::nan::float_linear_frame &f=nan.float_linear_curves[i].frames[j];
+            const RoxFormats::nan::float_linear_frame &f=nan.float_linear_curves[i].frames[j];
             res.anim.add_curve_frame(bone_idx,f.time,f.value);
         }
     }

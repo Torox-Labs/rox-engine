@@ -13,13 +13,16 @@
 #include "shader.h"
 #include <cstdint>
 
+#include "material.h"
+#include "mesh.h"
+
 namespace RoxScene
 {
 
 namespace
 {
 
-material::pass &material_default_pass(material &m)
+    material::pass &material_default_pass(material &m)
 {
     int idx=m.get_pass_idx(material::default_pass);
     if(idx<0)
@@ -32,7 +35,7 @@ bool frustum_cull_enabled=true;
 
 }
 
-bool RoxFormats::RMesh::load_nms_mesh_section(shared_mesh &res,const void *data,size_t size,int version)
+bool mesh::load_nms_mesh_section(shared_mesh &res,const void *data,size_t size,int version)
 {
     RoxFormats::nms_mesh_chunk c;
     if(!c.read_header(data,size,version))
@@ -46,23 +49,23 @@ bool RoxFormats::RMesh::load_nms_mesh_section(shared_mesh &res,const void *data,
     for(size_t i=0;i<c.elements.size();++i)
     {
         const RoxFormats::nms_mesh_chunk::element &e=c.elements[i];
-        const RoxRender::RoxVbo::vertex_atrib_type type=RoxRender::RoxVbo::vertex_atrib_type(e.data_type);
+        const RoxRender::RoxVbo::VERTEX_ATRIB_TYPE type=RoxRender::RoxVbo::VERTEX_ATRIB_TYPE(e.data_type);
         switch(e.type)
         {
-            case RoxFormats::nms_mesh_chunk::pos: res.vbo.set_vertices(e.offset,e.dimension,type); break;
-            case RoxFormats::nms_mesh_chunk::normal: res.vbo.set_normals(e.offset,type); break;
-            case RoxFormats::nms_mesh_chunk::color: res.vbo.set_colors(e.offset,e.dimension,type); break;
-            default: res.vbo.set_tc(e.type-RoxFormats::nms_mesh_chunk::tc0,e.offset,e.dimension,type); break;
+            case RoxFormats::nms_mesh_chunk::pos: res.vbo.setVertices(e.offset,e.dimension,type); break;
+            case RoxFormats::nms_mesh_chunk::normal: res.vbo.setNormals(e.offset,type); break;
+            case RoxFormats::nms_mesh_chunk::color: res.vbo.setColors(e.offset,e.dimension,type); break;
+            default: res.vbo.setTc(e.type-RoxFormats::nms_mesh_chunk::tc0,e.offset,e.dimension,type); break;
         };
     }
 
-    res.vbo.set_vertex_data(c.vertices_data,c.vertex_stride,c.verts_count);
+    res.vbo.setVertexData(c.vertices_data,c.vertex_stride,c.verts_count);
 
     switch(c.index_size)
     {
         case 0: break; //to indices
-        case 2: res.vbo.set_index_data(c.indices_data,RoxRender::RoxVbo::index2b,c.indices_count); break;
-        case 4: res.vbo.set_index_data(c.indices_data,RoxRender::RoxVbo::index4b,c.indices_count); break;
+        case 2: res.vbo.setIndexData(c.indices_data,RoxRender::RoxVbo::INDEX_2D,c.indices_count); break;
+        case 4: res.vbo.setIndexData(c.indices_data,RoxRender::RoxVbo::INDEX_4D,c.indices_count); break;
         default: log()<<"nms load warning: invalid index size\n"; return false;
     }
 
@@ -91,7 +94,7 @@ bool RoxFormats::RMesh::load_nms_mesh_section(shared_mesh &res,const void *data,
     return true;
 }
 
-bool RoxFormats::RMesh::load_nms_skeleton_section(shared_mesh &res,const void *data,size_t size,int version)
+bool mesh::load_nms_skeleton_section(shared_mesh &res,const void *data,size_t size,int version)
 {
     RoxFormats::nms_skeleton_chunk c;
     if(!c.read(data,size,version))
@@ -103,13 +106,13 @@ bool RoxFormats::RMesh::load_nms_skeleton_section(shared_mesh &res,const void *d
     for(size_t i=0;i<c.bones.size();++i)
     {
         RoxFormats::nms_skeleton_chunk::bone &b=c.bones[i];
-        res.skeleton.add_bone(b.name.c_str(),b.pos,b.rot,b.parent);
+        res.skeleton.addBone(b.name.c_str(),b.pos,b.rot,b.parent);
     }
 
     return true;
 }
 
-bool RoxFormats::RMesh::load_nms_material_section(shared_mesh &res,const void *data,size_t size,int version)
+bool mesh::load_nms_material_section(shared_mesh &res,const void *data,size_t size,int version)
 {
     RoxFormats::nms_material_chunk c;
     if(!c.read(data,size,version))
@@ -136,22 +139,22 @@ bool RoxFormats::RMesh::load_nms_material_section(shared_mesh &res,const void *d
             }
             else if(name=="nya_shader")
             {
-                shader sh;
+                RoxShader sh;
                 sh.load(value.c_str());
                 material_default_pass(to).set_shader(sh);
             }
             else if(name=="nya_blend")
             {
-                RoxRender::state &st=material_default_pass(to).get_state();
-                st.blend=RoxFormats::blend_mode_from_string(value.c_str(),st.blend_src,st.blend_dst);
+                RoxRender::State &st=material_default_pass(to).get_state();
+                st.blend=RoxFormats::blendModeFromString(value.c_str(),st.blend_src,st.blend_dst);
             }
             else if(name=="nya_cull")
             {
-                RoxRender::state &st=material_default_pass(to).get_state();
-                st.cull_face=RoxFormats::cull_face_from_string(value.c_str(),st.cull_order);
+                RoxRender::State &st=material_default_pass(to).get_state();
+                st.cull_face=RoxFormats::cullFaceFromString(value.c_str(),st.cull_order);
             }
             else if(name=="nya_zwrite")
-                material_default_pass(to).get_state().zwrite=RoxFormats::bool_from_string(value.c_str());
+                material_default_pass(to).get_state().zwrite=RoxFormats::boolFromString(value.c_str());
         }
 
         for(size_t j=0;j<from.textures.size();++j)
@@ -176,7 +179,7 @@ bool RoxFormats::RMesh::load_nms_material_section(shared_mesh &res,const void *d
     return true;
 }
 
-bool RoxFormats::RMesh::load_nms_general_section(shared_mesh &res,const void *data,size_t size,int version)
+bool mesh::load_nms_general_section(shared_mesh &res,const void *data,size_t size,int version)
 {
     RoxFormats::nms_general_chunk c;
     if(!c.read(data,size,version))
@@ -212,13 +215,13 @@ bool RoxFormats::RMesh::load_nms_general_section(shared_mesh &res,const void *da
     return true;
 }
 
-bool RoxFormats::RMesh::load_nms(shared_mesh &res,resource_data &data,const char* name)
+bool mesh::load_nms(shared_mesh &res,resource_data &data,const char* name)
 {
-    if(!data.getSize() || data.getSize()<8 || memcmp(data.get_data(),"nya RoxFormats::RMesh",8)!=0)
+    if(!data.getSize() || data.getSize()<8 || memcmp(data.getData(),"nya RoxFormats::RMesh",8)!=0)
         return false;
 
-    RoxFormats::nms m;
-    if(!m.read_chunks_info(data.get_data(),data.getSize()))
+    RoxFormats::RMesh m;
+    if(!m.readChunksInfo(data.getData(),data.getSize()))
     {
         log()<<"nms load error: invalid nms\n";
         return false;
@@ -232,13 +235,13 @@ bool RoxFormats::RMesh::load_nms(shared_mesh &res,resource_data &data,const char
 
     for(size_t i=0;i<m.chunks.size();++i)
     {
-        const RoxFormats::nms::chunk_info c=m.chunks[i];
+        const RoxFormats::RMesh::ChunkInfo c=m.chunks[i];
         switch(c.type)
         {
-            case RoxFormats::nms::mesh_data: if(!load_nms_mesh_section(res,c.data,c.size,m.version)) return false; break;
-            case RoxFormats::nms::skeleton: if(!load_nms_skeleton_section(res,c.data,c.size,m.version)) return false; break;
-            case RoxFormats::nms::materials: if(!load_nms_material_section(res,c.data,c.size,m.version)) return false; break;
-            case RoxFormats::nms::general: if(!load_nms_general_section(res,c.data,c.size,m.version)) return false; break;
+        case RoxFormats::RMesh::MESH_DATA: if(!load_nms_mesh_section(res,c.data,c.size,m.version)) return false; break;
+            case RoxFormats::RMesh::SKELETON: if(!load_nms_skeleton_section(res,c.data,c.size,m.version)) return false; break;
+            case RoxFormats::RMesh::MATERIALS: if(!load_nms_material_section(res,c.data,c.size,m.version)) return false; break;
+            case RoxFormats::RMesh::GENERAL: if(!load_nms_general_section(res,c.data,c.size,m.version)) return false; break;
             //default: log()<<"nms load warning: unknown chunk type\n"; //not an error
         };
     }
@@ -271,7 +274,7 @@ bool mesh_internal::init_from_shared()
     return true;
 }
 
-bool RoxFormats::RMesh::load(const char *name)
+bool mesh::load(const char *name)
 {
     mesh_internal::default_load_function(load_nms);
 
@@ -281,13 +284,13 @@ bool RoxFormats::RMesh::load(const char *name)
     return m_internal.init_from_shared();
 }
 
-void RoxFormats::RMesh::create(const shared_mesh &res)
+void mesh::create(const shared_mesh &res)
 {
     m_internal.create(res);
     m_internal.init_from_shared();
 }
 
-void RoxFormats::RMesh::unload()
+void mesh::unload()
 {
     m_internal.unload();
 
@@ -297,7 +300,7 @@ void RoxFormats::RMesh::unload()
     m_internal.m_replaced_materials.clear();
     m_internal.m_replaced_materials_idx.clear();
     m_internal.m_anims.clear();
-    m_internal.m_skeleton=RoxRender::skeleton();
+    m_internal.m_skeleton=RoxRender::RoxSkeleton();
     m_internal.m_aabb=RoxMath::Aabb();
     m_internal.m_groups.clear();
 }
@@ -372,19 +375,19 @@ void mesh_internal::draw_group(int idx, const char *pass_name) const
     shader_internal::set_skeleton(0);
 }
 
-void RoxFormats::RMesh::draw(const char *pass_name) const
+void mesh::draw(const char *pass_name) const
 {
     if(!pass_name)
         return;
 
-    if(internal().m_has_aabb && frustum_cull_enabled && !get_camera().get_frustum().test_intersect(get_aabb()))
+    if(internal().m_has_aabb && frustum_cull_enabled && !get_camera().get_frustum().testIntersect(get_aabb()))
         return;
 
     for(int i=0;i<get_groups_count();++i)
         draw_group(i,pass_name);
 }
 
-void RoxFormats::RMesh::draw_group(int idx,const char *pass_name) const
+void mesh::draw_group(int idx,const char *pass_name) const
 {
     if(!pass_name)
         return;
@@ -401,17 +404,17 @@ void RoxFormats::RMesh::draw_group(int idx,const char *pass_name) const
         internal().update_aabb_transform();
         if(internal().m_groups[idx].has_aabb)
         {
-            if(!get_camera().get_frustum().test_intersect(internal().m_groups[idx].aabb))
+            if(!get_camera().get_frustum().testIntersect(internal().m_groups[idx].aabb))
                 return;
         }
-        else if(internal().m_has_aabb && !get_camera().get_frustum().test_intersect(get_aabb()))
+        else if(internal().m_has_aabb && !get_camera().get_frustum().testIntersect(get_aabb()))
             return;
     }
 
     internal().draw_group(idx,pass_name);
 }
 
-bool RoxFormats::RMesh::has_pass(const char *pass_name) const
+bool mesh::has_pass(const char *pass_name) const
 {
     if(!pass_name)
         return false;
@@ -429,7 +432,7 @@ bool RoxFormats::RMesh::has_pass(const char *pass_name) const
     return false;
 }
 
-int RoxFormats::RMesh::get_groups_count() const
+int mesh::get_groups_count() const
 {
     if(!internal().m_shared.is_valid())
         return 0;
@@ -437,7 +440,7 @@ int RoxFormats::RMesh::get_groups_count() const
     return int(internal().m_shared->groups.size());
 }
 
-const char *RoxFormats::RMesh::get_group_name(int group_idx) const
+const char *mesh::get_group_name(int group_idx) const
 {
     if(group_idx<0 || group_idx>=get_groups_count())
         return 0;
@@ -445,7 +448,7 @@ const char *RoxFormats::RMesh::get_group_name(int group_idx) const
     return internal().m_shared->groups[group_idx].name.c_str();
 }
 
-const material &RoxFormats::RMesh::get_material(int group_idx) const
+const material &mesh::get_material(int group_idx) const
 {
     int mat_idx=internal().get_mat_idx(group_idx);
     if(mat_idx<0)
@@ -454,7 +457,7 @@ const material &RoxFormats::RMesh::get_material(int group_idx) const
     return internal().mat(mat_idx);
 }
 
-material &RoxFormats::RMesh::modify_material(int idx)
+material &mesh::modify_material(int idx)
 {
     if(!internal().m_shared.is_valid())
         return RoxMemory::invalidObject<material>();
@@ -488,7 +491,7 @@ material &RoxFormats::RMesh::modify_material(int idx)
     return m_internal.m_replaced_materials[idx];
 }
 
-bool RoxFormats::RMesh::set_material(int idx,const material &mat)
+bool mesh::set_material(int idx,const material &mat)
 {
     if(idx<0 || idx>=internal().get_materials_count())
         return false;
@@ -497,7 +500,7 @@ bool RoxFormats::RMesh::set_material(int idx,const material &mat)
     return true;
 }
 
-void RoxFormats::RMesh::set_anim(const animation_proxy & anim,int layer,bool lerp)
+void mesh::set_anim(const animation_proxy & anim,int layer,bool lerp)
 {
     if(!internal().m_shared.is_valid() || layer<0)
         return;
@@ -512,7 +515,7 @@ void RoxFormats::RMesh::set_anim(const animation_proxy & anim,int layer,bool ler
         }
     }
 
-    if(!anim.is_valid())
+    if(!anim.isValid())
     {
         if(idx>=0)
             m_internal.m_anims.erase(m_internal.m_anims.begin()+idx);
@@ -537,7 +540,7 @@ void RoxFormats::RMesh::set_anim(const animation_proxy & anim,int layer,bool ler
 
 void mesh_internal::anim_set_time(applied_anim &a,float t)
 {
-    if(!a.anim.is_valid())
+    if(!a.anim.isValid())
     {
         a.time=0.0f;
         return;
@@ -575,25 +578,25 @@ void mesh_internal::anim_update_mapping(applied_anim &a)
 {
     a.bones_map.clear();
 
-    if(!a.anim.is_valid() || !a.anim->m_shared.is_valid())
+    if(!a.anim.isValid() || !a.anim->m_shared.is_valid())
         return;
 
     const RoxRender::RoxAnimation &ra=a.anim->m_shared->anim;
     a.bones_map.resize(get_bones_count(),-1);
 
-    if(a.anim->m_mask.is_valid())
+    if(a.anim->m_mask.isValid())
     {
         for(int j=0;j<get_bones_count();++j)
         {
-            const char *bone_name=m_skeleton.get_bone_name(j);
+            const char *bone_name=m_skeleton.getBoneName(j);
             if(a.anim->m_mask->data.find(bone_name)!=a.anim->m_mask->data.end())
-                a.bones_map[j]=ra.get_bone_idx(bone_name);
+                a.bones_map[j]=ra.getBoneIdx(bone_name);
         }
     }
     else
     {
         for(int j=0;j<get_bones_count();++j)
-            a.bones_map[j]=ra.get_bone_idx(m_skeleton.get_bone_name(j));
+            a.bones_map[j]=ra.getBoneIdx(m_skeleton.getBoneName(j));
     }
 }
 
@@ -618,16 +621,16 @@ void mesh_internal::update_aabb_transform() const
     }
     else
     {
-        const RoxRender::skeleton &sk=get_skeleton();
+        const RoxRender::RoxSkeleton &sk=get_skeleton();
         const RoxMath::Vector3 scale=RoxMath::Vector3::abs(m_transform.get_scale());
         const shared_mesh::aabb_bone_extend &e=m_shared->aabb_bone_extends[0];
-        RoxMath::Vector3 pos=m_transform.transform_vec(sk.get_bone_pos(e.idx));
+        RoxMath::Vector3 pos=m_transform.transform_vec(sk.getBonePos(e.idx));
         RoxMath::Vector3 aabb_min=pos-scale*e.radius;
         RoxMath::Vector3 aabb_max=pos+scale*e.radius;
         for(int i=1,size=(int)m_shared->aabb_bone_extends.size();i<size;++i)
         {
             const shared_mesh::aabb_bone_extend &e=m_shared->aabb_bone_extends[i];
-            pos=m_transform.transform_vec(sk.get_bone_pos(e.idx));
+            pos=m_transform.transform_vec(sk.getBonePos(e.idx));
             aabb_min=RoxMath::Vector3::min(aabb_min,pos-scale*e.radius);
             aabb_max=RoxMath::Vector3::max(aabb_max,pos+scale*e.radius);
         }
@@ -637,7 +640,7 @@ void mesh_internal::update_aabb_transform() const
     m_recalc_aabb=false;
 }
 
-const animation_proxy & RoxFormats::RMesh::get_anim(int layer) const
+const animation_proxy & mesh::get_anim(int layer) const
 {
     for(int i=0;i<int(internal().m_anims.size());++i)
     {
@@ -648,7 +651,7 @@ const animation_proxy & RoxFormats::RMesh::get_anim(int layer) const
     return RoxMemory::invalidObject<animation_proxy>();
 }
 
-void RoxFormats::RMesh::set_anim_time(unsigned int time,int layer)
+void mesh::set_anim_time(unsigned int time,int layer)
 {
     for(int i=0;i<int(internal().m_anims.size());++i)
     {
@@ -660,7 +663,7 @@ void RoxFormats::RMesh::set_anim_time(unsigned int time,int layer)
     }
 }
 
-unsigned int RoxFormats::RMesh::get_anim_time(int layer) const
+unsigned int mesh::get_anim_time(int layer) const
 {
     for(int i=0;i<int(internal().m_anims.size());++i)
     {
@@ -677,7 +680,7 @@ bool mesh_internal::is_anim_finished(int layer) const
     {
         if(m_anims[i].layer==layer)
         {
-            if(!m_anims[i].anim.is_valid())
+            if(!m_anims[i].anim.isValid())
                 return true;
 
             if(m_anims[i].anim->get_loop())
@@ -694,28 +697,28 @@ bool mesh_internal::is_anim_finished(int layer) const
     return true;
 }
 
-bool RoxFormats::RMesh::is_anim_finished(int layer) const { return internal().is_anim_finished(layer); }
+bool mesh::is_anim_finished(int layer) const { return internal().is_anim_finished(layer); }
 
-RoxMath::Vector3 RoxFormats::RMesh::get_bone_pos(int bone_idx,bool local,bool ignore_animations) const
+RoxMath::Vector3 mesh::get_bone_pos(int bone_idx,bool local,bool ignore_animations) const
 {
-    const RoxMath::Vector3 pos=ignore_animations?internal().get_skeleton().get_bone_original_pos(bone_idx):
-                                               internal().get_skeleton().get_bone_pos(bone_idx);
+    const RoxMath::Vector3 pos=ignore_animations?internal().get_skeleton().getBoneOriginalPos(bone_idx):
+                                               internal().get_skeleton().getBonePos(bone_idx);
     if(local)
         return pos;
 
     return internal().get_transform().transform_vec( pos );
 }
 
-RoxMath::Quaternion RoxFormats::RMesh::get_bone_rot(int bone_idx,bool local) const
+RoxMath::Quaternion mesh::get_bone_rot(int bone_idx,bool local) const
 {
-    const RoxMath::Quaternion rot=internal().get_skeleton().get_bone_rot(bone_idx);
+    const RoxMath::Quaternion rot=internal().get_skeleton().getBoneRot(bone_idx);
     if(local)
         return rot;
 
     return internal().get_transform().transform_quat( rot );
 }
 
-void RoxFormats::RMesh::set_bone_pos(int bone_idx,const RoxMath::Vector3 &pos,bool additive)
+void mesh::set_bone_pos(int bone_idx,const RoxMath::Vector3 &pos,bool additive)
 {
     if(bone_idx<0 || bone_idx>=get_bones_count())
         return;
@@ -726,7 +729,7 @@ void RoxFormats::RMesh::set_bone_pos(int bone_idx,const RoxMath::Vector3 &pos,bo
     internal().need_update_skeleton=true;
 }
 
-void RoxFormats::RMesh::set_bone_rot(int bone_idx,const RoxMath::Quaternion &rot,bool additive)
+void mesh::set_bone_rot(int bone_idx,const RoxMath::Quaternion &rot,bool additive)
 {
     if(bone_idx<0 || bone_idx>=get_bones_count())
         return;
@@ -737,7 +740,7 @@ void RoxFormats::RMesh::set_bone_rot(int bone_idx,const RoxMath::Quaternion &rot
     internal().need_update_skeleton=true;
 }
 
-void RoxFormats::RMesh::update(unsigned int dt) { m_internal.update(dt); }
+void mesh::update(unsigned int dt) { m_internal.update(dt); }
 
 void mesh_internal::update(unsigned int dt)
 {
@@ -811,7 +814,7 @@ void mesh_internal::update_skeleton() const
             else
             {
                 if(!a.full_weight)
-                    bone_pos*=a.anim->m_weight,bone_rot.apply_weight(a.anim->m_weight);
+                    bone_pos*=a.anim->m_weight,bone_rot.applyWeight(a.anim->m_weight);
 
                 if(j==0)
                     pos=bone_pos,rot=bone_rot;
@@ -846,7 +849,7 @@ void mesh_internal::update_skeleton() const
             }
         }
 
-        m_skeleton.set_bone_transform(i,pos,rot);
+        m_skeleton.setBoneTransform(i,pos,rot);
     }
 
     m_skeleton.update();
@@ -856,18 +859,18 @@ void mesh_internal::update_skeleton() const
         mat(i).internal().skeleton_changed(&m_skeleton);
 }
 
-const RoxMath::Aabb &RoxFormats::RMesh::get_aabb() const
+const RoxMath::Aabb &mesh::get_aabb() const
 {
     internal().update_aabb_transform();
     return internal().m_aabb;
 }
 
-void RoxFormats::RMesh::set_rot(RoxMath::AngleDeg yaw,RoxMath::AngleDeg pitch,RoxMath::AngleDeg roll)
+void mesh::set_rot(RoxMath::AngleDeg yaw,RoxMath::AngleDeg pitch,RoxMath::AngleDeg roll)
 {
     m_internal.m_transform.set_rot(yaw,pitch,roll); m_internal.m_recalc_aabb=true;
 }
 
-bool RoxFormats::RMesh::is_frustrum_cull_enabled() { return frustum_cull_enabled; }
-void RoxFormats::RMesh::set_frustum_cull(bool enable) { frustum_cull_enabled=enable; }
+bool mesh::is_frustrum_cull_enabled() { return frustum_cull_enabled; }
+void mesh::set_frustum_cull(bool enable) { frustum_cull_enabled=enable; }
 
 }

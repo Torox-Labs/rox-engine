@@ -32,7 +32,7 @@ public:
 
     RoxOptional():m_obj(0) {}
 
-    RoxOptional(const optional &from)
+    RoxOptional(const RoxOptional &from)
     {
         if(from.m_obj)
         {
@@ -45,7 +45,7 @@ public:
 
     ~RoxOptional() { free(); }
 
-    RoxOptional &operator = (const optional &from)
+    RoxOptional &operator = (const RoxOptional &from)
     {
         if(this==&from)
             return *this;
