@@ -27,7 +27,7 @@ struct shared_particles
     struct param
     {
         std::string id, name;
-        RoxMath::Vector3 value;
+        RoxMath::Vector4 value;
     };
 
     std::vector<param> params;
@@ -40,14 +40,14 @@ struct shared_particles
 
     std::vector<tex> textures;
 
-    typedef std::vector<std::pair<float,RoxMath::Vector3> > curve_points;
+    typedef std::vector<std::pair<float,RoxMath::Vector4> > curve_points;
 
     struct curve
     {
         std::string id, name;
         curve_points points;
-        static const int samples_count=128;
-        RoxMath::Vector3 samples[samples_count];
+        static const int samples_count = 128;
+        RoxMath::Vector4 samples[samples_count];
 
         void sample(const curve_points &points);
     };
@@ -194,8 +194,8 @@ public:
     void set_param(const char *name,const RoxMath::Vector3 &v,float w=0.0f);
     void set_param(const char *name,const RoxMath::Vector4 &v);
 
-    const RoxMath::Vector3 &get_param(int idx) const;
-    const RoxMath::Vector3 &get_param(const char *name) const;
+    const RoxMath::Vector4 &get_param(int idx) const;
+    const RoxMath::Vector4 &get_param(const char *name) const;
 
 public:
     int get_textures_count() const;
@@ -258,7 +258,7 @@ private:
 
     std::vector<shared_particles::emitter_bind> m_emitter_emitter_binds;
 
-    std::vector<RoxMath::Vector3> m_params;
+    std::vector<RoxMath::Vector4> m_params;
     std::vector<RoxScene::texture_proxy> m_textures;
     bool m_need_update_params;
 

@@ -500,7 +500,7 @@ void particles::set_param(int idx,const RoxMath::Vector4 &p)
     if(idx<0 || idx>=get_params_count())
         return;
 
-    if((m_params[idx]-p).length_sq()>0.001f)
+    if((m_params[idx]-p).lengthSq()>0.001f)
         m_need_update_params=true;
 
     m_params[idx]=p;
@@ -900,14 +900,14 @@ void shared_particles::curve::sample(const curve_points &p)
     if(points.empty())
     {
         for(int i=0;i<samples_count;++i)
-            samples[i]=RoxMath::Vector4();
+            samples[i] = RoxMath::Vector4();
         return;
     }
 
     if(points.size()==1)
     {
         for(int i=0;i<samples_count;++i)
-            samples[i]=points.front().second;
+            samples[i] = points.front().second;
         return;
     }
 
@@ -995,6 +995,7 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
 {
     typedef std::list<RoxFormats::RTextParser> parsers_list;
     parsers_list parsers(1);
+
     if(!parsers.back().loadFromData((char *)data.getData(),data.getSize()))
         return false;
 
@@ -1027,7 +1028,7 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
                     continue;
 
                 const int idx=add_idx(res.params,sname);
-                res.params[idx].value=parser.getSectionValueVec4(i);
+                res.params[idx].value = parser.getSectionValueVec4(i);
 
                 const char *pname=parser.getSectionName(i,1);
                 if(pname && pname[0])
@@ -1195,7 +1196,7 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
                 for(int j=0;j<parser.getSubsectionsCount(i);++j)
                 {
                     const std::string type(parser.getSubsectionType(i,j));
-                    const char *value=parser.getSubsectionValue(i,j);
+                    const char *value = parser.getSubsectionValue(i,j);
 
                     if(type=="init")
                     {
@@ -1225,7 +1226,7 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
                     if(type=="blend")
                     {
                         RoxRender::State &s=p.mat.get_default_pass().get_state();
-                        s.blend=RoxFormats::cullFaceFromString(value,s.blend_src,s.blend_dst);
+                        s.blend=RoxFormats::blendModeFromString(value,s.blend_src,s.blend_dst);
                     }
 
                     if(type=="zwrite")
