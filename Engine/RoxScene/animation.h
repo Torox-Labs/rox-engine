@@ -3,7 +3,7 @@
 #pragma once
 
 #include "shared_resources.h"
-#include "render/animation.h"
+#include "RoxRender/RoxAnimation.h"
 #include "RoxMemory/RoxOptional.h"
 
 namespace RoxScene
@@ -11,7 +11,7 @@ namespace RoxScene
 
 struct shared_animation
 {
-    RoxRender::animation anim;
+    RoxRender::RoxAnimation anim;
 
     bool release()
     {
@@ -67,7 +67,7 @@ private:
 
     struct mask_data { std::map<std::string,bool> data; };
 
-    RoxMemory::optional<mask_data> m_mask;
+    RoxMemory::RoxOptional<mask_data> m_mask;
 };
 
 }

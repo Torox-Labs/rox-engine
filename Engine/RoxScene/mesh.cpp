@@ -214,11 +214,11 @@ bool RoxFormats::RMesh::load_nms_general_section(shared_mesh &res,const void *da
 
 bool RoxFormats::RMesh::load_nms(shared_mesh &res,resource_data &data,const char* name)
 {
-    if(!data.get_size() || data.get_size()<8 || memcmp(data.get_data(),"nya RoxFormats::RMesh",8)!=0)
+    if(!data.getSize() || data.getSize()<8 || memcmp(data.get_data(),"nya RoxFormats::RMesh",8)!=0)
         return false;
 
     RoxFormats::nms m;
-    if(!m.read_chunks_info(data.get_data(),data.get_size()))
+    if(!m.read_chunks_info(data.get_data(),data.getSize()))
     {
         log()<<"nms load error: invalid nms\n";
         return false;
@@ -578,7 +578,7 @@ void mesh_internal::anim_update_mapping(applied_anim &a)
     if(!a.anim.is_valid() || !a.anim->m_shared.is_valid())
         return;
 
-    const RoxRender::animation &ra=a.anim->m_shared->anim;
+    const RoxRender::RoxAnimation &ra=a.anim->m_shared->anim;
     a.bones_map.resize(get_bones_count(),-1);
 
     if(a.anim->m_mask.is_valid())

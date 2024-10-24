@@ -632,16 +632,16 @@ void shared_particles::particle::init_mesh_points(int count)
     for(int i=0;i<prim_count;++i)
         verts[i*2]=float(i);
 
-    mesh.set_vertices(0,2);
-    mesh.set_element_type(RoxRender::RoxVbo::points);
-    mesh.set_vertex_data(&verts[0],sizeof(float)*2,(unsigned int)prim_count);
+    mesh.setVertices(0,2);
+    mesh.setElementType(RoxRender::RoxVbo::POINTS);
+    mesh.setVertexData(&verts[0],sizeof(float)*2,(unsigned int)prim_count);
 }
 
 void shared_particles::particle::init_mesh_line(int count)
 {
     init_mesh_points(count);
     prim_looped=true;
-    mesh.set_element_type(RoxRender::RoxVbo::line_strip);
+    mesh.setElementType(RoxRender::RoxVbo::LINE_STRIP);
 }
 
 namespace { struct quad_vert { float x,y,i,u,v; }; }
@@ -677,9 +677,9 @@ void shared_particles::particle::init_mesh_quads(int count)
             inds[i+j]=v+quad_inds[j];
     }
 
-    mesh.set_tc(0,sizeof(float)*3,2);
-    mesh.set_vertex_data(&verts[0],sizeof(quad_vert),(unsigned int)verts.size());
-    mesh.set_index_data(&inds[0],RoxRender::RoxVbo::index2b,(unsigned int)inds.size());
+    mesh.setTc(0,sizeof(float)*3,2);
+    mesh.setVertexData(&verts[0],sizeof(quad_vert),(unsigned int)verts.size());
+    mesh.setIndexData(&inds[0],RoxRender::RoxVbo::INDEX_2D,(unsigned int)inds.size());
 }
 
 void shared_particles::particle::init_mesh_quad_strip(int count)
@@ -693,13 +693,13 @@ void shared_particles::particle::init_mesh_quad_strip(int count)
     if(count<=0)
         return;
 
-    std::vector<RoxMath::vec2> verts(count*2);
+    std::vector<RoxMath::Vector2> verts(count*2);
     for(int i=0;i<count*2;++i)
         verts[i].set(i%2?-1.0f:1.0f,float(i/2));
 
-    mesh.set_vertices(0,2);
-    mesh.set_element_type(RoxRender::RoxVbo::triangle_strip);
-    mesh.set_vertex_data(&verts[0],sizeof(RoxMath::vec2),(unsigned int)verts.size());
+    mesh.setVertices(0,2);
+    mesh.setElementType(RoxRender::RoxVbo::TRIANGLE_STRIP);
+    mesh.setVertexData(&verts[0],sizeof(RoxMath::Vector2),(unsigned int)verts.size());
 }
 
 short shared_particles::function::get_inout_idx(const char *name) const
@@ -746,9 +746,9 @@ void shared_particles::function::update_binds(const std::vector<param> &params)
         shared_particles::expression &e=expressions[i];
         e.bind_offset=(short)binds.size();
 
-        for(int j=0;j<e.expr.get_vars_count();++j)
+        for(int j=0;j<e.expr.getVarsCount();++j)
         {
-            const char *name=e.expr.get_var_name(j);
+            const char *name=e.expr.getVarName(j);
             short idx=get_inout_idx(name);
             if(idx<0)
                 idx=(short)in_out.size(),in_out.push_back(name);
@@ -805,7 +805,7 @@ void shared_particles::function::calculate(float *inout_buf) const
     for(size_t i=0;i<expressions.size();++i)
     {
         const expression &e=expressions[i];
-        float *vars=e.expr.get_vars();
+        float *vars=e.expr.getVars();
         for(int j=e.bind_offset;j<e.bind_offset+e.bind_count;++j)
             vars[binds[j].to]=inout_buf[binds[j].from];
 
@@ -939,11 +939,11 @@ namespace { typedef std::list<RoxFormats::RTextParser> parsers_list; }
 static bool load_includes(parsers_list &list,parsers_list::iterator current,const char *name)
 {
     RoxFormats::RTextParser &parser=*current;
-    for(int i=0;i<parser.get_sections_count();++i)
+    for(int i=0;i<parser.getSectionsCount();++i)
     {
-        if(parser.is_section_type(i,"include"))
+        if(parser.isSectionType(i,"include"))
         {
-            const char *sname=parser.get_section_name(i);
+            const char *sname=parser.getSectionName(i);
             if(!sname || !sname[0])
             {
                 log()<<"unable to load include in particles "<<name<<": invalid filename\n";
@@ -962,23 +962,23 @@ static bool load_includes(parsers_list &list,parsers_list::iterator current,cons
 
             path.append(sname);
 
-            nya_resources::resource_data *file_data=nya_resources::get_resources_provider().access(path.c_str());
+            RoxResources::RoxResourceData *file_data=RoxResources::getResourcesProvider().access(path.c_str());
             if(!file_data)
             {
                 log()<<"unable to load include resource in particles "<<name<<": unable to access resource "<<path.c_str()<<"\n";
                 return false;
             }
 
-            const size_t data_size=file_data->get_size();
-            RoxMemory::tmp_buffer_scoped include_data(data_size);
-            file_data->read_all(include_data.get_data());
+            const size_t data_size=file_data->getSize();
+            RoxMemory::RoxTmpBufferScoped include_data(data_size);
+            file_data->readAll(include_data.getData());
             file_data->release();
 
             parsers_list::iterator it=current;
             ++it;
             it=list.insert(it,RoxFormats::RTextParser());
 
-            if(!it->load_from_data((char *)include_data.get_data(),include_data.get_size()))
+            if(!it->loadFromData((char *)include_data.getData(),include_data.getSize()))
             {
                 log()<<"unable to load include in particles "<<name<<": unknown format or invalid data in "<<path.c_str()<<"\n";
                 return false;
@@ -995,7 +995,7 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
 {
     typedef std::list<RoxFormats::RTextParser> parsers_list;
     parsers_list parsers(1);
-    if(!parsers.back().load_from_data((char *)data.get_data(),data.get_size()))
+    if(!parsers.back().loadFromData((char *)data.getData(),data.getSize()))
         return false;
 
     if(!load_includes(parsers,parsers.begin(),name))
@@ -1008,11 +1008,11 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
     for (parsers_list::reverse_iterator it=parsers.rbegin();it!=parsers.rend();++it)
     {
         const RoxFormats::RTextParser &parser=*it;
-        for(int i=0;i<parser.get_sections_count();++i)
+        for(int i=0;i<parser.getSectionsCount();++i)
         {
-            if(parser.is_section_type(i,"emitter"))
+            if(parser.isSectionType(i,"emitter"))
             {
-                const char *sname=parser.get_section_name(i);
+                const char *sname=parser.getSectionName(i);
                 if(!sname || !sname[0])
                     continue;
 
@@ -1020,52 +1020,52 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
                 continue;
             }
 
-            if(parser.is_section_type(i,"param"))
+            if(parser.isSectionType(i,"param"))
             {
-                const char *sname=parser.get_section_name(i);
+                const char *sname=parser.getSectionName(i);
                 if(!sname || !sname[0])
                     continue;
 
                 const int idx=add_idx(res.params,sname);
-                res.params[idx].value=parser.get_section_value_vec4(i);
+                res.params[idx].value=parser.getSectionValueVec4(i);
 
-                const char *pname=parser.get_section_name(i,1);
+                const char *pname=parser.getSectionName(i,1);
                 if(pname && pname[0])
                     res.params[idx].name=pname;
                 continue;
             }
 
-            if(parser.is_section_type(i,"curve"))
+            if(parser.isSectionType(i,"curve"))
             {
-                const char *sname=parser.get_section_name(i);
+                const char *sname=parser.getSectionName(i);
                 if(!sname || !sname[0])
                     continue;
 
                 shared_particles::curve_points points;
-                for(int j=0;j<parser.get_subsections_count(i);++j)
+                for(int j=0;j<parser.getSubsectionsCount(i);++j)
                 {
-                    const float a=(float)atof(parser.get_subsection_type(i,j));
-                    points.push_back(std::make_pair(a,parser.get_subsection_value_vec4(i,j)));
+                    const float a=(float)atof(parser.getSubsectionType(i,j));
+                    points.push_back(std::make_pair(a,parser.getSubsectionValueVec4(i,j)));
                 }
 
                 const int idx=add_idx(res.curves,sname);
                 res.curves[idx].sample(points);
 
-                const char *pname=parser.get_section_name(i,1);
+                const char *pname=parser.getSectionName(i,1);
                 if(pname && pname[0])
                 res.curves[idx].name=pname;
                 continue;
             }
 
-            if(parser.is_section_type(i,"texture"))
+            if(parser.isSectionType(i,"texture"))
             {
-                const char *sname=parser.get_section_name(i);
+                const char *sname=parser.getSectionName(i);
                 if(!sname || !sname[0])
                     continue;
 
-                textures[sname]=parser.get_section_value(i);
+                textures[sname]=parser.getSectionValue(i);
 
-                const char *pname=parser.get_section_name(i,1);
+                const char *pname=parser.getSectionName(i,1);
                 if(pname && pname[0])
                     texture_names[sname]=pname;
                 continue;
@@ -1084,11 +1084,11 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
     for (parsers_list::reverse_iterator it=parsers.rbegin();it!=parsers.rend();++it)
     {
         const RoxFormats::RTextParser &parser=*it;
-        for(int i=0;i<parser.get_sections_count();++i)
+        for(int i=0;i<parser.getSectionsCount();++i)
         {
-            const char *sname=parser.get_section_name(i);
+            const char *sname=parser.getSectionName(i);
 
-            if(parser.is_section_type(i,"function"))
+            if(parser.isSectionType(i,"function"))
             {
                 if(!sname || !sname[0])
                     continue;
@@ -1102,11 +1102,11 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
                 shared_particles::function f;
                 f.id.assign(sname);
 
-                f.expressions.resize(parser.get_subsections_count(i));
+                f.expressions.resize(parser.getSubsectionsCount(i));
                 for(int j=0;j<(int)f.expressions.size();++j)
                 {
-                    const char *fname=parser.get_subsection_type(i,j);
-                    const char *fvalue=parser.get_subsection_value(i,j);
+                    const char *fname=parser.getSubsectionType(i,j);
+                    const char *fvalue=parser.getSubsectionValue(i,j);
                     if(!fvalue || !fvalue[0])
                         fvalue=fname,fname="";
 
@@ -1115,42 +1115,42 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
                         idx=(int)f.in_out.size(),f.in_out.push_back(fname);
 
                     f.expressions[j].inout_idx=idx;
-                    RoxFormats::math_expr_parser &e=f.expressions[j].expr;
+                    RoxFormats::RoxMathExprParser &e=f.expressions[j].expr;
 
-                    e.set_function("time",1,1,time_func);
-                    e.set_function("get_dt",0,1,get_dt_func);
-                    e.set_function("print",1,1,print_func);
-                    e.set_function("die_if",1,1,die_if_func);
-                    e.set_function("dist_to_cam",3,1,dist_to_cam);
-                    e.set_function("fade",4,1,fade);
+                    e.setFunction("time",1,1,time_func);
+                    e.setFunction("get_dt",0,1,get_dt_func);
+                    e.setFunction("print",1,1,print_func);
+                    e.setFunction("die_if",1,1,die_if_func);
+                    e.setFunction("dist_to_cam",3,1,dist_to_cam);
+                    e.setFunction("fade",4,1,fade);
 
                     //ToDo: warn on var name collisions
 
                     if(strstr(fvalue,"spawn"))
                     {
-                        e.set_function("spawn",2,1,spawn_func);
+                        e.setFunction("spawn",2,1,spawn_func);
                         for(int k=0;k<(int)res.emitters.size();++k)
-                            e.set_constant(res.emitters[k].id.c_str(),float(k));
+                            e.setConstant(res.emitters[k].id.c_str(),float(k));
                     }
 
                     if(strstr(fvalue,"emit"))
                     {
-                        e.set_function("emit",2,1,emit_func);
+                        e.setFunction("emit",2,1,emit_func);
                         for(int k=0;k<(int)res.particles.size();++k)
-                            e.set_constant(res.particles[k].name.c_str(),float(k));
+                            e.setConstant(res.particles[k].name.c_str(),float(k));
                     }
 
                     if(strstr(fvalue,"curve"))
                     {
-                        e.set_function("curve",2,1,curve_func);
+                        e.setFunction("curve",2,1,curve_func);
                         for(int k=0;k<(int)res.curves.size();++k)
                         {
-                            e.set_constant(res.curves[k].id.c_str(),float(k*4));
+                            e.setConstant(res.curves[k].id.c_str(),float(k*4));
                             char rgba[]="rgba",xyzw[]="xyzw";
                             for(int i=0;i<4;++i)
                             {
-                                e.set_constant((res.curves[k].id+'.'+rgba[i]).c_str(),float(k*4+i));
-                                e.set_constant((res.curves[k].id+'.'+xyzw[i]).c_str(),float(k*4+i));
+                                e.setConstant((res.curves[k].id+'.'+rgba[i]).c_str(),float(k*4+i));
+                                e.setConstant((res.curves[k].id+'.'+xyzw[i]).c_str(),float(k*4+i));
                             }
                         }
                     }
@@ -1167,21 +1167,21 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
                 continue;
             }
 
-            if(parser.is_section_type(i,"particle"))
+            if(parser.isSectionType(i,"particle"))
             {
                 shared_particles::particle p;
 
-                const char *mat=parser.get_subsection_value(i,"material");
+                const char *mat=parser.getSubsectionValue(i,"material");
                 if(mat && mat[0] && !p.mat.load(mat))
                 {
                     log()<<"invalid material when loading particles '"<<name<<"'\n";
                     return false;
                 }
 
-                const char *sh=parser.get_subsection_value(i,"shader");
+                const char *sh=parser.getSubsectionValue(i,"shader");
                 if(sh && sh[0])
                 {
-                    shader s;
+                    RoxShader s;
                     if(!s.load(sh))
                     {
                         log()<<"invalid shader when loading particles '"<<name<<"'\n";
@@ -1192,10 +1192,10 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
                 }
 
                 p.name.assign(sname?sname:"");
-                for(int j=0;j<parser.get_subsections_count(i);++j)
+                for(int j=0;j<parser.getSubsectionsCount(i);++j)
                 {
-                    const std::string type(parser.get_subsection_type(i,j));
-                    const char *value=parser.get_subsection_value(i,j);
+                    const std::string type(parser.getSubsectionType(i,j));
+                    const char *value=parser.getSubsectionValue(i,j);
 
                     if(type=="init")
                     {
@@ -1224,43 +1224,43 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
 
                     if(type=="blend")
                     {
-                        RoxRender::state &s=p.mat.get_default_pass().get_state();
+                        RoxRender::State &s=p.mat.get_default_pass().get_state();
                         s.blend=RoxFormats::cullFaceFromString(value,s.blend_src,s.blend_dst);
                     }
 
                     if(type=="zwrite")
                     {
-                        RoxRender::state &s=p.mat.get_default_pass().get_state();
-                        s.zwrite=parser.get_subsection_value_bool(i,j);
+                        RoxRender::State &s=p.mat.get_default_pass().get_state();
+                        s.zwrite=parser.getSubsectionValueBool(i,j);
                     }
 
                     if(type=="depth_test")
                     {
-                        RoxRender::state &s=p.mat.get_default_pass().get_state();
-                        s.depth_test=parser.get_subsection_value_bool(i,j);
+                        RoxRender::State &s=p.mat.get_default_pass().get_state();
+                        s.depth_test=parser.getSubsectionValueBool(i,j);
                     }
 
                     if(type=="quads.count")
                     {
-                        p.init_mesh_quads(parser.get_subsection_value_int(i,j));
+                        p.init_mesh_quads(parser.getSubsectionValueInt(i,j));
                         continue;
                     }
 
                     if(type=="quad_strip.count")
                     {
-                        p.init_mesh_quad_strip(parser.get_subsection_value_int(i,j));
+                        p.init_mesh_quad_strip(parser.getSubsectionValueInt(i,j));
                         continue;
                     }
 
                     if(type=="points.count")
                     {
-                        p.init_mesh_points(parser.get_subsection_value_int(i,j));
+                        p.init_mesh_points(parser.getSubsectionValueInt(i,j));
                         continue;
                     }
 
                     if(type=="line.count")
                     {
-                        p.init_mesh_line(parser.get_subsection_value_int(i,j));
+                        p.init_mesh_line(parser.getSubsectionValueInt(i,j));
                         continue;
                     }
 
@@ -1278,7 +1278,7 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
                     idx=p.mat.get_param_idx(type.c_str());
                     if(idx>=0)
                     {
-                        p.mat.set_param(idx,parser.get_subsection_value_vec4(i,j));
+                        p.mat.set_param(idx,parser.getSubsectionValueVec4(i,j));
                         continue;
                     }
                 }
@@ -1290,13 +1290,13 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
                 {
                     shared_particles::function::link(res.functions[p.update],p.mat,p.update_sh_binds);
 
-                    const char *sort=parser.get_subsection_value(i,"sort_asc");
+                    const char *sort=parser.getSubsectionValue(i,"sort_asc");
                     if(sort && sort[0])
                     {
                         p.sort_key_offset=res.functions[p.update].get_inout_idx(sort);
                         p.sort_ascending=true;
                     }
-                    else if((sort=parser.get_subsection_value(i,"sort_desc")) && sort[0])
+                    else if((sort=parser.getSubsectionValue(i,"sort_desc")) && sort[0])
                     {
                         p.sort_key_offset=res.functions[p.update].get_inout_idx(sort);
                         p.sort_ascending=false;
@@ -1307,13 +1307,13 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
                 for(int j=0;j<p.mat.get_params_count();++j)
                 {
                     p.params[j]=p.mat.get_param_array(j);
-                    if(p.params[j].is_valid())
+                    if(p.params[j].isValid())
                         continue;
 
                     p.params[j].create();
                     p.params[j]->set_count(1);
                     const material::param_proxy &pp=p.mat.get_param(j);
-                    if(pp.is_valid())
+                    if(pp.isValid())
                         p.params[j]->set(0,pp.get());
 
                     p.mat.set_param_array(j,p.params[j]);
@@ -1323,7 +1323,7 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
                 continue;
             }
 
-            if(parser.is_section_type(i,"emitter"))
+            if(parser.isSectionType(i,"emitter"))
             {
                 if(!sname || !sname[0])
                     continue;
@@ -1331,10 +1331,10 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
                 int idx=add_idx(res.emitters,sname);
                 shared_particles::emitter &e=res.emitters[idx];
 
-                for(int j=0;j<parser.get_subsections_count(i);++j)
+                for(int j=0;j<parser.getSubsectionsCount(i);++j)
                 {
-                    const std::string type(parser.get_subsection_type(i,j));
-                    const char *value=parser.get_subsection_value(i,j);
+                    const std::string type(parser.getSubsectionType(i,j));
+                    const char *value=parser.getSubsectionValue(i,j);
 
                     if(type=="init")
                     {
@@ -1360,7 +1360,7 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
 
                     if(type=="fixed_fps")
                     {
-                        e.fixed_fps=parser.get_subsection_value_int(i,j);
+                        e.fixed_fps=parser.getSubsectionValueInt(i,j);
                         continue;
                     }
                 }
@@ -1394,7 +1394,7 @@ bool particles::load_text(shared_particles &res,resource_data &data,const char* 
                 continue;
             }
 
-            if(parser.is_section_type(i,"spawn"))
+            if(parser.isSectionType(i,"spawn"))
             {
                 if(!sname || !sname[0])
                 {

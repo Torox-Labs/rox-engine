@@ -124,7 +124,7 @@ private:
 
     struct op_set_shader
     {
-        shader sh;
+        RoxShader sh;
         std::vector<int> params_map;
         std::vector<std::pair<int,RoxMath::Vector4> > params;
     };

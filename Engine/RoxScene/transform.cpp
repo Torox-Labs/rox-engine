@@ -43,7 +43,7 @@ RoxMath::Quaternion transform::transform_quat(const RoxMath::Quaternion &quat) c
 
 RoxMath::Vector3 transform::inverse_transform(const RoxMath::Vector3 &vec) const
 {
-    RoxMath::Vector3 out=m_rot.rotate_inv(vec-m_pos);
+    RoxMath::Vector3 out=m_rot.rotateInv(vec-m_pos);
     const float eps=0.0001f;
     out.x=fabsf(m_scale.x)>eps?out.x/m_scale.x:0.0f;
     out.y=fabsf(m_scale.y)>eps?out.y/m_scale.y:0.0f;
@@ -59,12 +59,12 @@ RoxMath::Quaternion transform::inverse_transform(const RoxMath::Quaternion &quat
 
 RoxMath::Vector3 transform::inverse_rot(const RoxMath::Vector3 &vec) const
 {
-    return m_rot.rotate_inv(vec);
+    return m_rot.rotateInv(vec);
 }
 
 RoxMath::Vector3 transform::inverse_rot_scale(const RoxMath::Vector3 &vec) const
 {
-    RoxMath::Vector3 out=m_rot.rotate_inv(vec);
+    RoxMath::Vector3 out=m_rot.rotateInv(vec);
     const float eps=0.0001f;
     out.x=fabsf(m_scale.x)>eps?out.x/m_scale.x:0.0f;
     out.y=fabsf(m_scale.y)>eps?out.y/m_scale.y:0.0f;
@@ -83,7 +83,7 @@ void transform::apply() const
     RoxMath::Matrix4 mat=get_camera().get_view_matrix();
     mat.translate(m_pos).rotate(m_rot).scale(m_scale.x,m_scale.y,m_scale.z);
 
-    RoxRender::set_modelview_matrix(mat);
+    RoxRender::setModelviewMatrix(mat);
 }
 
 void transform::set_rot(RoxMath::AngleDeg yaw,RoxMath::AngleDeg pitch,RoxMath::AngleDeg roll)

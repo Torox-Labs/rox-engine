@@ -115,7 +115,7 @@ public:
     virtual ~scene_shared<t>() {}
 
 protected:
-    typedef nya_resources::shared_resources<t,8> shared_resources;
+    typedef RoxResources::RoxSharedResources<t,8> shared_resources;
     typedef typename shared_resources::shared_resource_ref shared_resource_ref;
 
     class shared_resources_manager: public shared_resources
@@ -124,18 +124,18 @@ protected:
         {
             if(!name)
             {
-                nya_resources::log()<<"unable to load scene resource: invalid name\n";
+                RoxResources::log()<<"unable to load scene resource: invalid name\n";
                 return false;
             }
 
-            nya_resources::resource_data *file_data=nya_resources::get_resources_provider().access(name);
+            RoxResources::resource_data *file_data=RoxResources::get_resources_provider().access(name);
             if(!file_data)
             {
-                nya_resources::log()<<"unable to load scene resource: unable to access resource "<<name<<"\n";
+                RoxResources::log()<<"unable to load scene resource: unable to access resource "<<name<<"\n";
                 return false;
             }
 
-            const size_t data_size=file_data->get_size();
+            const size_t data_size=file_data->getSize();
             RoxMemory::RoxTmpBufferRef res_data(data_size);
             file_data->read_all(res_data.get_data());
             file_data->release();
@@ -153,7 +153,7 @@ protected:
 
             res_data.free();
             //res.free(),res=t();
-            nya_resources::log()<<"unable to load scene resource: unknown format or invalid data in "<<name<<"\n";
+            RoxResources::log()<<"unable to load scene resource: unknown format or invalid data in "<<name<<"\n";
             return false;
         }
 

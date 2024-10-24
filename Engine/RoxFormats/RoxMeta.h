@@ -4,7 +4,7 @@
 
 #include <vector>
 #include <string>
-#include <cstddef> // Replaced <stddef.h> with <cstddef>
+#include <cstddef>
 
 namespace RoxFormats
 {

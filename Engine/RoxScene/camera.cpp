@@ -108,7 +108,7 @@ const RoxMath::Vector3 camera::get_dir() const
 void set_camera(const camera_proxy &cam)
 {
     active_camera=cam;
-    if(cam.is_valid())
+    if(cam.isValid())
         RoxRender::setProjectionMatrix(cam->get_proj_matrix());
 }
 
@@ -116,7 +116,7 @@ camera_proxy &get_camera_proxy() { return active_camera; }
 
 camera &get_camera()
 {
-    if(!active_camera.is_valid())
+    if(!active_camera.isValid())
         return RoxMemory::invalidObject<camera>();
 
     return active_camera.get();

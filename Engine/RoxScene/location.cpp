@@ -10,38 +10,38 @@ namespace RoxScene
 bool location::load_text(shared_location &res,resource_data &data,const char* name)
 {
     RoxFormats::RTextParser parser;
-    if(!parser.load_from_data((char *)data.get_data(),data.get_size()))
+    if(!parser.loadFromData((char *)data.getData(),data.getSize()))
         return false;
 
     tags local_tags;
     std::string local_mesh_path;
-    for(int i=0;i<parser.get_sections_count();++i)
+    for(int i=0;i<parser.getSectionsCount();++i)
     {
-        const char *type=parser.get_section_type(i);
+        const char *type=parser.getSectionType(i);
         if(strcmp(type,"@object")==0)
         {
             shared_location::location_mesh m;
             m.tg=local_tags;
-            for(int j=0;j<parser.get_subsections_count(i);++j)
+            for(int j=0;j<parser.getSubsectionsCount(i);++j)
             {
-                const char *type=parser.get_subsection_type(i,j);
+                const char *type=parser.getSubsectionType(i,j);
                 if(strcmp(type,"mesh")==0)
-                    m.name=local_mesh_path+parser.get_subsection_value(i,j);
+                    m.name=local_mesh_path+parser.getSubsectionValue(i,j);
                 else if(strcmp(type,"tags")==0)
-                    m.tg.add(tags(parser.get_subsection_value(i,j)));
+                    m.tg.add(tags(parser.getSubsectionValue(i,j)));
                 else if(strcmp(type,"pos")==0)
                 {
-                    const RoxMath::Vector4 v=RoxFormats::vec4_from_string(parser.get_subsection_value(i,j));
+                    const RoxMath::Vector4 v=RoxFormats::vec4FromString(parser.getSubsectionValue(i,j));
                     m.tr.set_pos(v.xyz());
                 }
                 else if(strcmp(type,"rot")==0)
                 {
-                    const RoxMath::Vector4 v=RoxFormats::vec4_from_string(parser.get_subsection_value(i,j));
+                    const RoxMath::Vector4 v=RoxFormats::vec4FromString(parser.getSubsectionValue(i,j));
                     m.tr.set_rot(v.x,v.y,v.z);
                 }
                 else if(strcmp(type,"scale")==0)
                 {
-                    const RoxMath::Vector4 v=RoxFormats::vec4_from_string(parser.get_subsection_value(i,j));
+                    const RoxMath::Vector4 v=RoxFormats::vec4FromString(parser.getSubsectionValue(i,j));
                     m.tr.set_scale(v.x,v.y,v.z);
                 }
             }
@@ -50,17 +50,17 @@ bool location::load_text(shared_location &res,resource_data &data,const char* na
         }
         else if(strcmp(type,"@material_param")==0)
         {
-            RoxMath::Vector4 v=parser.get_section_value_vec4(i);
-            const char *opt=parser.get_section_option(i);
+            RoxMath::Vector4 v=parser.getSectionValueVec4(i);
+            const char *opt=parser.getSectionOption(i);
             if(strcmp(opt,"normalize")==0)
                 v.normalize();
 
-            res.material_params.push_back(std::make_pair(parser.get_section_name(i),v));
+            res.material_params.push_back(std::make_pair(parser.getSectionName(i),v));
         }
         else if(strcmp(type,"@tags")==0)
-            local_tags=parser.get_section_value(i);
+            local_tags=parser.getSectionValue(i);
         else if(strcmp(type,"@mesh_folder")==0)
-            local_mesh_path.assign(parser.get_section_value(i));
+            local_mesh_path.assign(parser.getSectionValue(i));
     }
 
     return true;
@@ -102,7 +102,7 @@ void location::unload()
 
 int location::add_mesh(const char *mesh_name,const tags &tg,const transform &tr)
 {
-    const int mesh_idx=m_meshes.get_count();
+    const int mesh_idx=m_meshes.getCount();
 
     std::vector<const char *> tp(tg.get_count());
     for(int i=0;i<tg.get_count();++i) tp[i]=tg.get(i);
@@ -127,14 +127,14 @@ mesh &location::modify_mesh(int idx,bool need_apply)
 
 mesh &location::modify_mesh(const char *tag,int idx,bool need_apply)
 {
-    return modify_mesh(m_meshes.get_idx(tag,idx),need_apply);
+    return modify_mesh(m_meshes.getIdx(tag,idx),need_apply);
 }
 
 void location::update(int dt)
 {
     if(m_need_apply)
     {
-        for(int i=0;i<m_meshes.get_count();++i)
+        for(int i=0;i<m_meshes.getCount();++i)
         {
             location_mesh &lm=m_meshes.get(i);
 
@@ -159,7 +159,7 @@ void location::update(int dt)
         m_need_apply=false;
     }
 
-    for(int i=0;i<m_meshes.get_count();++i)
+    for(int i=0;i<m_meshes.getCount();++i)
         m_meshes.get(i).m.update(dt);
 }
 
@@ -167,7 +167,7 @@ void location::draw(const char *pass,const tags &t) const
 {
     if(t.get_count()<=1)
     {
-        for(int i=0;i<m_meshes.get_count(t.get(0));++i)
+        for(int i=0;i<m_meshes.getCount(t.get(0));++i)
         {
             const location_mesh &lm=m_meshes.get(i);
             if(!lm.visible)
@@ -180,13 +180,13 @@ void location::draw(const char *pass,const tags &t) const
     }
 
     m_draw_cache.clear();
-    m_draw_cache.resize(m_meshes.get_count(),false);
+    m_draw_cache.resize(m_meshes.getCount(),false);
     for(int i=0;i<t.get_count();++i)
     {
         const char *tag=t.get(i);
-        for(int j=0;j<m_meshes.get_count(tag);++j)
+        for(int j=0;j<m_meshes.getCount(tag);++j)
         {
-            const int mesh_idx=m_meshes.get_idx(tag,j);
+            const int mesh_idx=m_meshes.getIdx(tag,j);
             if(m_draw_cache[mesh_idx])
                 continue;
 

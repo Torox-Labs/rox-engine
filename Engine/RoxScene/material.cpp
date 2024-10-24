@@ -144,9 +144,9 @@ material::param &material::param_array::get(int idx)
 
 void material_internal::param_holder::apply_to_shader(const RoxShader &RoxShader,int uniform_idx) const
 {
-    if(p.is_valid())
+    if(p.isValid())
         RoxShader.internal().set_uniform_value(uniform_idx,p->x,p->y,p->z,p->w);
-    else if(a.is_valid() && a->get_count()>0)
+    else if(a.isValid() && a->get_count()>0)
         RoxShader.internal().set_uniform4_array(uniform_idx,a->get_buf(),a->get_count());
     else
         RoxShader.internal().set_uniform_value(uniform_idx,0,0,0,0);
@@ -289,7 +289,7 @@ void material_internal::set(const char *pass_name) const
         if(texture_idx<0)
             continue;
 
-        if(m_textures[texture_idx].proxy.is_valid())
+        if(m_textures[texture_idx].proxy.isValid())
         {
             if(!m_textures[texture_idx].proxy->internal().set(slot_idx))
             {
@@ -310,7 +310,7 @@ void material_internal::set(const char *pass_name) const
         if(slot<0)
             continue;
 
-        if(!global_textures_replace[i].second.is_valid())
+        if(!global_textures_replace[i].second.isValid())
             continue;
 
         global_textures_replace[i].second->internal().set(slot);
@@ -337,7 +337,7 @@ void material_internal::unset() const
     for(int slot_idx=0;slot_idx<(int)p.m_textures_slots_map.size();++slot_idx)
     {
         const int texture_idx=(int)p.m_textures_slots_map[slot_idx];
-        if(texture_idx>=0 && texture_idx<(int)m_textures.size() && m_textures[texture_idx].proxy.is_valid())
+        if(texture_idx>=0 && texture_idx<(int)m_textures.size() && m_textures[texture_idx].proxy.isValid())
             m_textures[texture_idx].proxy->internal().unset();
     }
 
@@ -900,7 +900,7 @@ void material::global_texture_replace(const char *semantics,const texture_proxy 
         if(global_textures_replace[i].first!=semantics)
             continue;
 
-        if(!tex.is_valid())
+        if(!tex.isValid())
         {
             global_textures_replace.erase(global_textures_replace.begin()+i);
             return;
@@ -910,7 +910,7 @@ void material::global_texture_replace(const char *semantics,const texture_proxy 
         return;
     }
 
-    if(!tex.is_valid())
+    if(!tex.isValid())
         return;
 
     global_textures_replace.push_back(std::make_pair(semantics,tex));

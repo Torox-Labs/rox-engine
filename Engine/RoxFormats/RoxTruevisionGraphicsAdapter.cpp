@@ -315,7 +315,7 @@ namespace RoxFormats
         }
     }
 
-    void RTga::flipHorizontal(const void* fromData, void* toData)
+    void RTga::flipHorisontal(const void* fromData, void* toData)
     {
         if (!fromData || !toData)
             return;

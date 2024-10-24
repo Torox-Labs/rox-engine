@@ -44,7 +44,7 @@ namespace RoxFormats
     public:
         std::size_t decodeHeader(const void* data, std::size_t size); // Returns 0 if invalid
         bool decodeRle(void* decodedData) const; // decodedData must be allocated with uncompressedSize
-        void flipHorizontal(const void* fromData, void* toData); // toData must be allocated; can be equal to fromData
+        void flipHorisontal(const void* fromData, void* toData); // toData must be allocated; can be equal to fromData
         void flipVertical(const void* fromData, void* toData);
 
     public:
