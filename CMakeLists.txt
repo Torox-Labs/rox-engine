@@ -28,10 +28,12 @@ elseif(ANDROID)
 endif()
 
 # ====== Include Directories ======
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine)
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Engine")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Engine/RoxGraphics")
 
 # ====== Add Subdirectories ======
 add_subdirectory(Engine)
+add_subdirectory(Engine/RoxGraphics)
 
 # ======Link Directories ======
 # Prefer using full paths or imported targets in modern CMake

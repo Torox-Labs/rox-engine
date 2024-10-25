@@ -70,7 +70,7 @@ public:
             RoxRender::Scissor::disable();
 
         static RoxRender::State s,oldstate;
-        oldstate=RoxRender::get_state();
+        oldstate=RoxRender::getState();
         setState(s);
 
         const RoxRender::RoxShader &sh=dimention==3?m_sh3:m_sh4;
