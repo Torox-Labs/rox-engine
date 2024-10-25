@@ -28,9 +28,9 @@ namespace RoxInput
 
 	class RoxInput
 	{
-	public:
+	/*public:
 		RoxInput();
-		virtual ~RoxInput();
+		virtual ~RoxInput();*/
 
 	public:
 		virtual void onMouseMove(int x, int y) {}

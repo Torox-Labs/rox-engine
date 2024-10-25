@@ -22,7 +22,7 @@
 namespace RoxApp 
 {
 
-class RoxApp : public RoxInput::RoxInput
+	class RoxApp : public RoxInput::RoxInput
 {
 public:
     virtual bool onSplash() { return false; } //shown if true

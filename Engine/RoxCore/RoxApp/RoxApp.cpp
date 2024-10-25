@@ -16,7 +16,6 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxApp.h"
-#include "RoxInput/RoxInput.h"
 #include "RoxSystem/RoxSystem.h"
 #include "RoxRender/RoxRender.h"
 
@@ -52,10 +51,10 @@ namespace
 	{
 	public:
 		void startWindowed(int x,
-		                   int y,
-		                   unsigned int w,
-		                   unsigned int h,
-		                   int antialiasing,
+			int y,
+			unsigned int w,
+			unsigned int h,
+			int antialiasing,
 		                   RoxApp::RoxApp& app)
 		{
 			m_instance = GetModuleHandle(NULL);
@@ -72,7 +71,7 @@ namespace
 			                    IDI_APPLICATION);
 			wc.hInstance = m_instance;
 			wc.lpfnWndProc = wnd_proc;
-			wc.lpszClassName = TEXT("nya_engine");
+			wc.lpszClassName = TEXT("rox_engine");
 			wc.lpszMenuName = 0;
 			wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 
@@ -89,7 +88,7 @@ namespace
 			                 WS_OVERLAPPEDWINDOW,
 			                 false);
 
-			m_hwnd = CreateWindowA("nya_engine",
+			m_hwnd = CreateWindowA("rox_engine",
 			                       m_title
 			                       .c_str(),
 			                       WS_OVERLAPPEDWINDOW,
@@ -278,7 +277,7 @@ namespace
 				          m_hdc);
 				DestroyWindow(m_hwnd);
 
-				m_hwnd = CreateWindowA("nya_engine",
+				m_hwnd = CreateWindowA("rox_engine",
 				                       m_title
 				                       .c_str(),
 				                       WS_OVERLAPPEDWINDOW,
@@ -759,7 +758,7 @@ private:
 #else
 			m_hdc(0),
 #endif
-			m_title("Nya engine"), m_time(0)
+			m_title("Rox engine"), m_time(0)
 		{
 		}
 
