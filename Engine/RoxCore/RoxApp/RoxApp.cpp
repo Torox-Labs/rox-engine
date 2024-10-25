@@ -16,6 +16,7 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxApp.h"
+#include "RoxInput/RoxInput.h"
 #include "RoxSystem/RoxSystem.h"
 #include "RoxRender/RoxRender.h"
 
@@ -55,7 +56,7 @@ namespace
 		                   unsigned int w,
 		                   unsigned int h,
 		                   int antialiasing,
-		                   RoxSystem::RoxApp& app)
+		                   RoxApp::RoxApp& app)
 		{
 			m_instance = GetModuleHandle(NULL);
 			if (!m_instance)
@@ -396,7 +397,7 @@ namespace
 		void startFullscreen(unsigned int w,
 		                     unsigned int h,
 		                     int antialiasing,
-		                     RoxSystem::RoxApp& app)
+		                     RoxApp::RoxApp& app)
 		{
 			//ToDo
 
@@ -408,7 +409,7 @@ namespace
 			              app);
 		}
 
-		void finish(RoxSystem::RoxApp& app)
+		void finish(RoxApp::RoxApp& app)
 		{
 			if (!m_hwnd)
 				return;
@@ -533,43 +534,43 @@ private:
 		static unsigned int get_x11_key(unsigned int key)
 		{
 			if (key >= 'A' && key <= 'Z')
-				return RoxSystem::KEY_A + key - 'A';
+				return RoxInput::KEY_A + key - 'A';
 
 			if (key >= '0' && key <= '9')
-				return RoxSystem::KEY_0 + key - '0';
+				return RoxInput::KEY_0 + key - '0';
 
 			if (key >= VK_F1 && key <= VK_F12)
-				return RoxSystem::KEY_F1 + key - VK_F1;
+				return RoxInput::KEY_F1 + key - VK_F1;
 
 			switch (key)
 			{
-			case VK_SHIFT: return RoxSystem::KEY_SHIFT;
-			case VK_CONTROL: return RoxSystem::KEY_CONTROL;
-			case VK_MENU: return RoxSystem::KEY_ALT;
+			case VK_SHIFT: return RoxInput::KEY_SHIFT;
+			case VK_CONTROL: return RoxInput::KEY_CONTROL;
+			case VK_MENU: return RoxInput::KEY_ALT;
 
-			case VK_CAPITAL: return RoxSystem::KEY_CAPITAL;
-			case VK_ESCAPE: return RoxSystem::KEY_ESCAPE;
-			case VK_SPACE: return RoxSystem::KEY_SPACE;
-			case VK_RETURN: return RoxSystem::KEY_RETURN;
-			case VK_TAB: return RoxSystem::KEY_TAB;
+			case VK_CAPITAL: return RoxInput::KEY_CAPITAL;
+			case VK_ESCAPE: return RoxInput::KEY_ESCAPE;
+			case VK_SPACE: return RoxInput::KEY_SPACE;
+			case VK_RETURN: return RoxInput::KEY_RETURN;
+			case VK_TAB: return RoxInput::KEY_TAB;
 
-			case VK_PRIOR: return RoxSystem::KEY_PAGE_UP;
-			case VK_NEXT: return RoxSystem::KEY_PAGE_DOWN;
-			case VK_END: return RoxSystem::KEY_END;
-			case VK_HOME: return RoxSystem::KEY_HOME;
-			case VK_INSERT: return RoxSystem::KEY_INSERT;
-			case VK_DELETE: return RoxSystem::KEY_DELETE;
-			case VK_BACK: return RoxSystem::KEY_BACK;
+			case VK_PRIOR: return RoxInput::KEY_PAGE_UP;
+			case VK_NEXT: return RoxInput::KEY_PAGE_DOWN;
+			case VK_END: return RoxInput::KEY_END;
+			case VK_HOME: return RoxInput::KEY_HOME;
+			case VK_INSERT: return RoxInput::KEY_INSERT;
+			case VK_DELETE: return RoxInput::KEY_DELETE;
+			case VK_BACK: return RoxInput::KEY_BACK;
 
-			case VK_UP: return RoxSystem::KEY_UP;
-			case VK_DOWN: return RoxSystem::KEY_DOWN;
-			case VK_LEFT: return RoxSystem::KEY_LEFT;
-			case VK_RIGHT: return RoxSystem::KEY_RIGHT;
+			case VK_UP: return RoxInput::KEY_UP;
+			case VK_DOWN: return RoxInput::KEY_DOWN;
+			case VK_LEFT: return RoxInput::KEY_LEFT;
+			case VK_RIGHT: return RoxInput::KEY_RIGHT;
 
-			case VK_OEM_4: return RoxSystem::KEY_BRACKET_LEFT;
-			case VK_OEM_6: return RoxSystem::KEY_BRACKET_RIGHT;
-			case VK_OEM_COMMA: return RoxSystem::KEY_COMMA;
-			case VK_OEM_PERIOD: return RoxSystem::KEY_PERIOD;
+			case VK_OEM_4: return RoxInput::KEY_BRACKET_LEFT;
+			case VK_OEM_6: return RoxInput::KEY_BRACKET_RIGHT;
+			case VK_OEM_COMMA: return RoxInput::KEY_COMMA;
+			case VK_OEM_PERIOD: return RoxInput::KEY_PERIOD;
 			}
 
 			return 0;
@@ -580,7 +581,7 @@ private:
 		                                 WPARAM wparam,
 		                                 LPARAM lparam)
 		{
-			RoxSystem::RoxApp* app = (RoxSystem::RoxApp*)GetWindowLongPtr(hwnd,
+			RoxApp::RoxApp* app = (RoxApp::RoxApp*)GetWindowLongPtr(hwnd,
 			                                                              GWLP_USERDATA);
 			if (!app)
 				return DefWindowProc(hwnd,
@@ -641,22 +642,22 @@ private:
 				}
 				break;
 
-			case WM_LBUTTONDOWN: app->onMouseButton(RoxSystem::MouseLeft,
+			case WM_LBUTTONDOWN: app->onMouseButton(RoxInput::MOUSE_LEFT,
 			                                        true);
 				break;
-			case WM_LBUTTONUP: app->onMouseButton(RoxSystem::MouseLeft,
+			case WM_LBUTTONUP: app->onMouseButton(RoxInput::MOUSE_LEFT,
 			                                      false);
 				break;
-			case WM_MBUTTONDOWN: app->onMouseButton(RoxSystem::MouseMiddle,
+			case WM_MBUTTONDOWN: app->onMouseButton(RoxInput::MOUSE_MIDDLE,
 			                                        true);
 				break;
-			case WM_MBUTTONUP: app->onMouseButton(RoxSystem::MouseMiddle,
+			case WM_MBUTTONUP: app->onMouseButton(RoxInput::MOUSE_MIDDLE,
 			                                      false);
 				break;
-			case WM_RBUTTONDOWN: app->onMouseButton(RoxSystem::MouseRight,
+			case WM_RBUTTONDOWN: app->onMouseButton(RoxInput::MOUSE_RIGHT,
 			                                        true);
 				break;
-			case WM_RBUTTONUP: app->onMouseButton(RoxSystem::MouseRight,
+			case WM_RBUTTONUP: app->onMouseButton(RoxInput::MOUSE_RIGHT,
 			                                      false);
 				break;
 
@@ -791,7 +792,7 @@ private:
 
 #ifndef __APPLE__ //implemented in app.mm
 
-namespace RoxSystem
+namespace RoxApp
 {
 	void RoxApp::startWindowed(int x,
 	                           int y,
@@ -831,7 +832,7 @@ namespace RoxSystem
 			.getTitle();
 	}
 
-	void RoxApp::setVirtualKeyboard(VirtualKeyboardType type)
+	void RoxApp::setVirtualKeyboard(::RoxInput::VIRTUAL_KEYBOARD_TYPE type)
 	{
 		RoxSharedApp::getApp()
 			.setVirtualKeyboard(type);

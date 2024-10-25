@@ -16,33 +16,13 @@
 
 #pragma once
 
-#include "RoxInput/RoxButtonCodes.h"
 #include <string>
+#include "RoxInput/RoxInput.h"
 
-namespace RoxSystem
+namespace RoxApp 
 {
 
-enum MouseButton
-{
-    MouseLeft,
-    MouseMiddle,
-    MouseRight
-};
-
-enum VirtualKeyboardType
-{
-    KeyboardHidden = 'h',
-    KeyboardNumeric = 'n',
-    KeyboardDecimal = 'd',
-    KeyboardPhone = 'f',
-    KeyboardText = 't',
-    KeyboardPin = 'p',
-    KeyboardEmail = 'e',
-    KeyboardPassword  = 'w',
-    KeyboardUrl = 'u'
-};
-
-class RoxApp
+class RoxApp : public RoxInput::RoxInput
 {
 public:
     virtual bool onSplash() { return false; } //shown if true
@@ -55,15 +35,6 @@ public:
     virtual void onRestore() {}
 
 public:
-    virtual void onMouseMove(int x,int y) {}
-    virtual void onMouseButton(MouseButton button,bool pressed) {}
-    virtual void onMouseScroll(int dx,int dy) {}
-    virtual void onKeyboard(unsigned int key,bool pressed) {}
-    virtual void onCharcode(unsigned int key,bool pressed,bool autorepeat) {}
-    virtual void onTouch(int x,int y,unsigned int touch_idx,bool pressed) {}
-    virtual void onAcceleration(float x,float y, float z) {}
-
-public:
     virtual void onResize(unsigned int w,unsigned int h) {}
 
 public:
@@ -71,7 +42,7 @@ public:
     void startFullscreen(unsigned int w,unsigned int h,int antialiasing);
     void setTitle(const char *title);
     std::string getTitle();
-    void setVirtualKeyboard(VirtualKeyboardType type);
+    void setVirtualKeyboard(::RoxInput::VIRTUAL_KEYBOARD_TYPE type);
     void setMousePos(int x,int y);
     void finish();
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace RoxSystem
+namespace RoxInput
 {
 
 enum ButtonCode
