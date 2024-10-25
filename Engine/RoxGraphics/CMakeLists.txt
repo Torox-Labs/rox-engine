@@ -7,7 +7,6 @@ set(SOURCE_SUBDIRS
     RoxRender
     RoxResources
     RoxScene
-    RoxSystem
 )
 
 # ====== Collect Source Files ======
@@ -32,7 +31,6 @@ target_link_libraries(${PROJECT_NAME}
     RoxRender
     RoxResources
     RoxScene
-    RoxSystem
 
     # External Libraries
 )

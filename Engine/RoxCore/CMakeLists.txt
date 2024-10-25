@@ -1,12 +1,5 @@
 # ====== Define Source Subdirectories ======
 set(SOURCE_SUBDIRS
-    RoxFormats
-    RoxLogger
-    RoxMath
-    RoxMemory
-    RoxRender
-    RoxResources
-    RoxScene
     RoxSystem
 )
 
@@ -25,18 +18,10 @@ endforeach()
 # ====== Link Libraries ======
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
-    RoxFormats
-    RoxLogger
-    RoxMath
-    RoxMemory
-    RoxRender
-    RoxResources
-    RoxScene
     RoxSystem
-
     # External Libraries
 )
 
 # ====== Organize Sources in IDE ======
 # (Optional) You can remove or adjust this if not used
-source_group(TREE ${CMAKE_SOURCE_DIR} PREFIX "Graphics" FILES ${SRC_FILES})
+source_group(TREE ${CMAKE_SOURCE_DIR} PREFIX "Core" FILES ${SRC_FILES})

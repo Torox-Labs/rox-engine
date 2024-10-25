@@ -29,10 +29,12 @@ endif()
 
 # ====== Include Directories ======
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Engine")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Engine/RoxCore")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Engine/RoxGraphics")
 
 # ====== Add Subdirectories ======
 add_subdirectory(Engine)
+add_subdirectory(Engine/RoxCore)
 add_subdirectory(Engine/RoxGraphics)
 
 # ======Link Directories ======
