@@ -16,23 +16,12 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxApp.h"
-#include "RoxSystem/RoxSystem.h"
-#include "RoxRender/RoxRender.h"
-
 #include <string>
 
 //MARK: Windows
-#ifdef WIN32
+#ifdef _WIN32
 
 #include "RoxWindowsAdapter.cpp";
-
-#ifndef DIRECTX11
-#include <gl/gl.h>
-#include <gl/wglext.h>
-#include <gl/glext.h>
-#include "RoxRender/RoxRenderOpengl.h"
-#endif
-
 
 //MARK: Apple
 #elif defined __APPLE__ //implemented in app.mm

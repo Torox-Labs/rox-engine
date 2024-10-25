@@ -1,15 +1,19 @@
 ﻿#include "RoxPlatformAdapter.h"
-
 #include "RoxApp.h"
 #include "RoxSystem/RoxSystem.h"
 #include "RoxRender/RoxRender.h"
-#include "RoxRender/RoxRenderOpengl.h"
 
+
+#ifndef DIRECTX11
 #include <windows.h>
 #include <windowsx.h>
+
 #include <gl/gl.h>
-#include <gl/glext.h>
 #include <gl/wglext.h>
+#include <gl/glext.h>
+
+#include "RoxRender/RoxRenderOpengl.h"
+#endif
 
 
 #ifdef _WIN32
@@ -26,10 +30,12 @@
 
 namespace RoxApp
 {
+#ifdef _WIN32
 	// Todo: Inherit from IRoxPlatformAdapter and fix the problem
 	class RoxWindowsAdapter
 	{
-	public:
+
+		public:
 		void startWindowed(int x,
 			int y,
 			unsigned int w,
@@ -763,4 +769,5 @@ namespace RoxApp
 	};
 
 	bool RoxWindowsAdapter::m_suspended = false;
+#endif
 }
