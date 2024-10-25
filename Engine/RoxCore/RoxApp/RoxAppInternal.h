@@ -1,5 +1,5 @@
-// Copyright (C) 2024 Torox Project
-// Portions Copyright (C)) 2013 nyan.developer@gmail.com (nya-engine)
+// Copyright © 2024 Torox Project
+// Portions Copyright © 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
 // Drop iOS Platform support on the Rox-Engine
@@ -11,6 +11,7 @@
 // 1. Free Use License (for non-commercial and commercial use under specific conditions)
 // 2. Commercial License (for use on proprietary platforms)
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
+
 // could be extended externally at runtime via method_exchangeImplementations
 // to implement necessary behavior
 
