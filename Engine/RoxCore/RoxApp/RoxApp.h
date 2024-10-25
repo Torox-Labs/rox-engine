@@ -18,33 +18,54 @@
 
 #include <string>
 #include "RoxInput/RoxInput.h"
+#include "IRoxPlatformAdapter.h"
 
-namespace RoxApp 
+namespace RoxApp
 {
-
 	class RoxApp : public RoxInput::RoxInput
-{
-public:
-    virtual bool onSplash() { return false; } //shown if true
-    virtual void onInit() {}
-    virtual void onFrame(unsigned int dt) {}
-    virtual void onFree() {}
+	{
+	public:
+		RoxApp();
+		virtual ~RoxApp();
 
-public:
-    virtual void onSuspend() {}
-    virtual void onRestore() {}
+		virtual bool onSplash() { return false; } //shown if true
+		virtual void onInit()
+		{
+		}
 
-public:
-    virtual void onResize(unsigned int w,unsigned int h) {}
+		virtual void onFrame(unsigned int dt)
+		{
+		}
 
-public:
-    void startWindowed(int x,int y,unsigned int w,unsigned int h,int antialiasing);
-    void startFullscreen(unsigned int w,unsigned int h,int antialiasing);
-    void setTitle(const char *title);
-    std::string getTitle();
-    void setVirtualKeyboard(::RoxInput::VIRTUAL_KEYBOARD_TYPE type);
-    void setMousePos(int x,int y);
-    void finish();
-};
+		virtual void onFree()
+		{
+		}
+
+	public:
+		virtual void onSuspend()
+		{
+		}
+
+		virtual void onRestore()
+		{
+		}
+
+	public:
+		virtual void onResize(unsigned int w, unsigned int h)
+		{
+		}
+
+	public:
+		void startWindowed(int x, int y, unsigned int w, unsigned int h, int antialiasing);
+		void startFullscreen(unsigned int w, unsigned int h, int antialiasing);
+		void setTitle(const char* title);
+		std::string getTitle();
+		void setVirtualKeyboard(::RoxInput::VIRTUAL_KEYBOARD_TYPE type);
+		void setMousePos(int x, int y);
+		void finish();
+
+	private:
+		IRoxPlatformAdapter *platform_adapter;
+	};
 
 }

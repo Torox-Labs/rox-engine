@@ -16,12 +16,16 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxApp.h"
+
+#include <stdexcept>
+
+#include "RoxPlatformFactory.h"
+
 #include <string>
 
 //MARK: Windows
 #ifdef _WIN32
 
-#include "RoxWindowsAdapter.cpp";
 
 //MARK: Apple
 #elif defined __APPLE__ //implemented in app.mm
@@ -32,48 +36,64 @@
 // Todo: UPdate the code to work with the specific platform
 namespace RoxApp
 {
+	RoxApp::RoxApp()
+	{
+		platform_adapter = createPlatformAdapter();
+		if (!platform_adapter)
+		{
+			throw std::runtime_error("Unsupported platform");
+		}
+	}
+
+	RoxApp::~RoxApp()
+	{
+		delete platform_adapter;
+	}
+
 	void RoxApp::startWindowed(int x,
 	                           int y,
 	                           unsigned int w,
 	                           unsigned int h,
 	                           int antialiasing)
 	{
-		RoxWindowsAdapter::getApp()
+		/*RoxWindowsAdapter::getApp()
 			.startWindowed(x,
 			               y,
 			               w,
 			               h,
 			               antialiasing,
-			               *this);
+			               *this);*/
+		platform_adapter->startWindowed(x,
+			y,
+			w,
+			h,
+			antialiasing,
+			*this);
 	}
 
 	void RoxApp::startFullscreen(unsigned int w,
 	                             unsigned int h,
 	                             int aa)
 	{
-		RoxWindowsAdapter::getApp()
-			.startFullscreen(w,
-			                 h,
-			                 aa,
-			                 *this);
+		platform_adapter->startFullscreen(w,
+		                                  h,
+		                                  aa,
+		                                  *this);
 	}
 
 	void RoxApp::setTitle(const char* title)
 	{
-		RoxWindowsAdapter::getApp()
-			.setTitle(title);
+		platform_adapter->setTitle(title);
 	}
 
 	std::string RoxApp::getTitle()
 	{
-		return RoxWindowsAdapter::getApp()
-			.getTitle();
+		return platform_adapter->getTitle();
 	}
 
 	void RoxApp::setVirtualKeyboard(::RoxInput::VIRTUAL_KEYBOARD_TYPE type)
 	{
-		RoxWindowsAdapter::getApp()
-			.setVirtualKeyboard(type);
+		platform_adapter->setVirtualKeyboard(type);
 	}
 
 	void RoxApp::setMousePos(int x,
@@ -83,8 +103,7 @@ namespace RoxApp
 
 	void RoxApp::finish()
 	{
-		RoxWindowsAdapter::getApp()
-			.finish(*this);
+		platform_adapter->finish(*this);
 	}
 }
 
