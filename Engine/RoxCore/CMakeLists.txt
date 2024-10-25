@@ -1,6 +1,8 @@
 # ====== Define Source Subdirectories ======
 set(SOURCE_SUBDIRS
     RoxSystem
+    RoxApp
+    RoxInput
 )
 
 # ====== Collect Source Files ======
@@ -19,6 +21,8 @@ endforeach()
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
     RoxSystem
+    RoxApp
+    RoxInput
     # External Libraries
 )
 
