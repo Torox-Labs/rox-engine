@@ -24,7 +24,7 @@
 namespace RoxSystem
 {
 
-    bool RoxCompiledShadersProvider::get(const char* text, RoxRender::RoxCompiledShader& shader)
+bool RoxCompiledShadersProvider::get(const char* text, RoxRender::RoxCompiledShader& shader)
  {
     //shader = RoxRender::CompiledShader();
     shader = RoxRender::RoxCompiledShader();

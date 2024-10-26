@@ -1,39 +1,20 @@
-// Updated By the ROX_ENGINE
+// Updated by the Rox-engine
 // Copyright © 2024 Torox Project
-// Portions Copyright © 2013 nyan.developer@gmail.com (nya-engine)
 //
-// This file was modified by the Torox Project.
-// Drop support for METRO, FLUENT style.
-// Update the code to be compatible with the latest version of the engine.
-// Optimisation and code cleaning for a better performance.
+// This file is part of the Rox-engine, which is licensed under a dual-license system:
+// 1. Free Use License: for non-commercial and commercial use under specific conditions.
+// 2. Commercial License: for use on proprietary platforms.
 // 
-// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
-// See the LICENSE-MIT file in the root directory for more information.
-//
-// This file is also part of the Rox-engine, which is licensed under a dual-license system:
-// 1. Free Use License (for non-commercial and commercial use under specific conditions)
-// 2. Commercial License (for use on proprietary platforms)
-// See the LICENSE file in the root directory for the full Rox-engine license terms.
+// For full licensing terms, please refer to the LICENSE file in the root directory of this project.
 
 #include "RoxApp.h"
-
-#include <stdexcept>
-
 #include "RoxPlatformFactory.h"
 
+#include <stdexcept>
 #include <string>
-
-//MARK: Windows
-#ifdef _WIN32
-
-
-//MARK: Apple
-#elif defined __APPLE__ //implemented in app.mm
-#endif
 
 #ifndef __APPLE__ //implemented in app.mm
 
-// Todo: UPdate the code to work with the specific platform
 namespace RoxApp
 {
 	RoxApp::RoxApp()
@@ -56,13 +37,6 @@ namespace RoxApp
 	                           unsigned int h,
 	                           int antialiasing)
 	{
-		/*RoxWindowsAdapter::getApp()
-			.startWindowed(x,
-			               y,
-			               w,
-			               h,
-			               antialiasing,
-			               *this);*/
 		platform_adapter->startWindowed(x,
 			y,
 			w,
