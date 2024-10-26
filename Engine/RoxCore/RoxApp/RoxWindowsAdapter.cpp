@@ -49,24 +49,33 @@ namespace RoxApp
 
 	void RoxWindowsAdapter::startWindowed(int x, int y, unsigned int w, unsigned int h, int antialiasing, RoxApp& app)
 	{
+		// Set the pointer to the RoxApp object
+		m_app = &app;
+
+		// Initialize the window
 		m_instance = GetModuleHandle(nullptr);
 		if (!m_instance)
 			return;
 
-		WNDCLASS wc;
+		// Register the window class
+		WNDCLASSA wc = { 0 };
 		wc.cbClsExtra = 0;
 		wc.cbWndExtra = 0;
 		wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
-		wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-		wc.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+		wc.hCursor = LoadCursorA(nullptr, IDC_ARROW);
+		wc.hIcon = LoadIconA(nullptr, IDI_APPLICATION);
 		wc.hInstance = m_instance;
-		wc.lpfnWndProc = wnd_proc;
-		wc.lpszClassName = TEXT("rox_engine");
+		wc.lpfnWndProc = RoxWindowsAdapter::wnd_proc;
+		wc.lpszClassName = "rox_engine";
 		wc.lpszMenuName = nullptr;
 		wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 
-		if (!RegisterClass(&wc))
+		if (!RegisterClassA(&wc))
+		{
+			DWORD err = GetLastError();
+			RoxSystem::log() << "Failed to register window class. Error code: " << err << "\n";
 			return;
+		}
 
 		RECT rect = {
 			x,
@@ -89,7 +98,11 @@ namespace RoxApp
 			NULL);
 
 		if (!m_hwnd)
+		{
+			DWORD err = GetLastError();
+			RoxSystem::log() << "Failed to create window. Error code: " << err << "\n";
 			return;
+		}
 
 		ShowWindow(m_hwnd, SW_SHOW);
 
@@ -321,7 +334,7 @@ namespace RoxApp
 
 		SetWindowLongPtr(m_hwnd,
 			GWLP_USERDATA,
-			(LONG_PTR)&app);
+			(LONG_PTR)this);
 
 		// Set the viewport
 		RoxRender::setViewport(0,
@@ -528,20 +541,30 @@ namespace RoxApp
 		return 0;
 	}
 
+	// Messages Listener
 	LRESULT CALLBACK RoxWindowsAdapter::wnd_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 	{
-		auto app = (RoxApp*)GetWindowLongPtr(hwnd,
-			GWLP_USERDATA);
-		if (!app)
+		RoxWindowsAdapter* pThis = (RoxWindowsAdapter*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+		if (!pThis)
 			return DefWindowProc(hwnd,
 				message,
 				wparam,
 				lparam);
 
-		switch (message)
+
+		/*if (hwnd == pThis->m_hwnd)
+			RoxSystem::log() << "hwnd == m_hwnd\n";
+		else
+			RoxSystem::log() << "hwnd != m_hwnd\n";*/
+
+
+		if (hwnd == pThis->m_hwnd)
+		{
+			switch (message)
 		{
 		case WM_SIZE:
 		{
+			RoxSystem::log() << "Main- WM_SIZE received\n";
 			RECT rc;
 			GetClientRect(hwnd,
 				&rc);
@@ -550,8 +573,7 @@ namespace RoxApp
 			const int h = rc.bottom - rc.top;
 
 #ifdef DIRECTX11
-			getApp()
-				.recreate_targets(w,
+			pThis->recreate_targets(w,
 					h);
 #endif
 
@@ -559,13 +581,13 @@ namespace RoxApp
 				0,
 				w,
 				h);
-			app->onResize(w,
+			pThis->m_app->onResize(w,
 				h);
 		}
 		break;
 
 		case WM_CLOSE: getInstance()
-			.finish(*app);
+			.finish(*pThis->m_app);
 			break;
 
 		case WM_MOUSEWHEEL:
@@ -573,7 +595,7 @@ namespace RoxApp
 			const int x = GET_X_LPARAM(wparam);
 			const int y = GET_Y_LPARAM(wparam);
 
-			app->onMouseScroll(x / 60,
+			pThis->m_app->onMouseScroll(x / 60,
 				y / 60);
 		}
 		break;
@@ -587,36 +609,37 @@ namespace RoxApp
 			GetClientRect(hwnd,
 				&rc);
 
-			app->onMouseMove(x,
+			pThis->m_app->onMouseMove(x,
 				rc.bottom + rc.top - y);
 		}
 		break;
 
-		case WM_LBUTTONDOWN: app->onMouseButton(RoxInput::MOUSE_LEFT,
+		case WM_LBUTTONDOWN: pThis->m_app->onMouseButton(RoxInput::MOUSE_LEFT,
 			true);
 			break;
-		case WM_LBUTTONUP: app->onMouseButton(RoxInput::MOUSE_LEFT,
+		case WM_LBUTTONUP: pThis->m_app->onMouseButton(RoxInput::MOUSE_LEFT,
 			false);
 			break;
-		case WM_MBUTTONDOWN: app->onMouseButton(RoxInput::MOUSE_MIDDLE,
+		case WM_MBUTTONDOWN: pThis->m_app->onMouseButton(RoxInput::MOUSE_MIDDLE,
 			true);
 			break;
-		case WM_MBUTTONUP: app->onMouseButton(RoxInput::MOUSE_MIDDLE,
+		case WM_MBUTTONUP: pThis->m_app->onMouseButton(RoxInput::MOUSE_MIDDLE,
 			false);
 			break;
-		case WM_RBUTTONDOWN: app->onMouseButton(RoxInput::MOUSE_RIGHT,
+		case WM_RBUTTONDOWN: pThis->m_app->onMouseButton(RoxInput::MOUSE_RIGHT,
 			true);
 			break;
-		case WM_RBUTTONUP: app->onMouseButton(RoxInput::MOUSE_RIGHT,
+		case WM_RBUTTONUP: pThis->m_app->onMouseButton(RoxInput::MOUSE_RIGHT,
 			false);
 			break;
 
 		case WM_KEYDOWN:
 		{
+			RoxSystem::log() << "Main- WM_KEYDOWN received\n";
 			const unsigned int key = LOWORD(wparam);
 			const unsigned int x11key = get_x11_key(key);
 			if (x11key)
-				app->onKeyboard(x11key,
+				pThis->m_app->onKeyboard(x11key,
 					true);
 		}
 		break;
@@ -626,7 +649,7 @@ namespace RoxApp
 			const unsigned int key = LOWORD(wparam);
 			const unsigned int x11key = get_x11_key(key);
 			if (x11key)
-				app->onKeyboard(x11key,
+				pThis->m_app->onKeyboard(x11key,
 					false);
 		}
 		break;
@@ -636,7 +659,7 @@ namespace RoxApp
 			const unsigned int key = wparam;
 			const bool pressed = ((lparam & (1 << 31)) == 0);
 			const bool autorepeat = ((lparam & 0xff) != 0);
-			app->onCharcode(key,
+			pThis->m_app->onCharcode(key,
 				pressed,
 				autorepeat);
 		}
@@ -647,15 +670,16 @@ namespace RoxApp
 			if (wparam == SC_MINIMIZE && !m_suspended)
 			{
 				m_suspended = true;
-				app->onSuspend();
+				pThis->m_app->onSuspend();
 			}
 			else if (wparam == SC_RESTORE && m_suspended)
 			{
 				m_suspended = false;
-				app->onRestore();
+				pThis->m_app->onRestore();
 			}
 		}
 		break;
+		}
 		}
 
 		return DefWindowProc(hwnd,

@@ -46,6 +46,7 @@ namespace RoxApp
 #ifdef DIRECTX11
         // DirectX-specific members
 #else
+		RoxApp* m_app; // Pointer to the RoxApp object
 		HDC m_hdc; // Parent Window Device Context
         HWND m_child_hwnd; // Child Window Device Context
 		HGLRC m_hglrc; // OpenGL Rendering Context
