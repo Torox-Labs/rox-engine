@@ -30,7 +30,7 @@ namespace RoxApp
 #ifdef DIRECTX11
 		: m_device(nullptr), m_context(nullptr), m_swap_chain(nullptr), m_color_target(nullptr), m_depth_target(nullptr),
 #else
-		: m_hdc(nullptr),
+		: m_handle_draw_context_main(nullptr), m_handle_draw_context_child(nullptr),
 #endif
 		m_hwnd(nullptr), m_title("Rox engine"), m_time(0)
 	{
@@ -85,6 +85,7 @@ namespace RoxApp
 		};
 		AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
 
+		// Create the main window
 		m_hwnd = CreateWindowA("rox_engine",
 			m_title.c_str(),
 			WS_OVERLAPPEDWINDOW,
@@ -104,8 +105,37 @@ namespace RoxApp
 			return;
 		}
 
+		// Show the window
 		ShowWindow(m_hwnd, SW_SHOW);
 
+		// Create Child Components
+		// Get client area size of the main window
+		RECT clientRect;
+		GetClientRect(m_hwnd, &clientRect);
+
+		// Decide size and position of the child window
+		int child_width = (clientRect.right - clientRect.left) / 2;
+		int child_height = (clientRect.bottom - clientRect.top) / 2;
+
+		// Create the child window
+		m_child_hwnd = CreateWindowA("rox_engine",
+			"Child Window",
+			WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+			0,
+			0,
+			child_width,
+			child_height,
+			m_hwnd,
+			NULL,
+			m_instance,
+			NULL);
+
+		if(!m_child_hwnd)
+		{
+			DWORD err = GetLastError();
+			RoxSystem::log() << "Failed to create child window. Error code: " << err << "\n";
+			return;
+		}
 
 #ifdef DIRECTX11
 		UINT create_device_flags = 0;
@@ -175,7 +205,8 @@ namespace RoxApp
 #else
 
 		// OpenGl initialization
-		m_hdc = GetDC(m_hwnd); // Get the device context for the window
+		m_handle_draw_context_main = GetDC(m_child_hwnd);
+		//m_handle_draw_context_child = GetDC(m_child_hwnd); // <-- this line Added
 		PIXELFORMATDESCRIPTOR pfd = { 0 };
 
 		pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
@@ -186,19 +217,19 @@ namespace RoxApp
 		pfd.cAlphaBits = 8;
 		pfd.cDepthBits = 24;
 
-		int pf = ChoosePixelFormat(m_hdc, &pfd);
+		int pf = ChoosePixelFormat(m_handle_draw_context_main, &pfd);
 
 		if (!pf)
 			return;
 
-		if (!SetPixelFormat(m_hdc, pf, &pfd))
+		if (!SetPixelFormat(m_handle_draw_context_main, pf, &pfd))
 			return;
 
-		m_hglrc = wglCreateContext(m_hdc);
+		m_hglrc = wglCreateContext(m_handle_draw_context_main);
 		if (!m_hglrc)
 			return;
 
-		wglMakeCurrent(m_hdc,
+		wglMakeCurrent(m_handle_draw_context_main,
 			m_hglrc);
 
 		if (antialiasing > 0)
@@ -256,7 +287,7 @@ namespace RoxApp
 
 			RoxSystem::log() << "antialiasing init\n";
 
-			if (!wglChoosePixelFormatARB(m_hdc,
+			if (!wglChoosePixelFormatARB(m_handle_draw_context_main,
 				iAttributes,
 				nullptr,
 				1,
@@ -270,11 +301,14 @@ namespace RoxApp
 
 		if (antialiasing > 0)
 		{
-			wglMakeCurrent(m_hdc,
+			wglMakeCurrent(m_handle_draw_context_main,
 				nullptr);
+			//wglMakeCurrent(m_handle_draw_context_child, nullptr); // <-- this line Added
+
 			wglDeleteContext(m_hglrc);
-			ReleaseDC(m_hwnd,
-				m_hdc);
+
+			ReleaseDC(m_hwnd, m_handle_draw_context_main);
+			//ReleaseDC(m_child_hwnd, m_handle_draw_context_child); // <-- this line Added
 			DestroyWindow(m_hwnd);
 
 			m_hwnd = CreateWindowA("rox_engine",
@@ -292,9 +326,10 @@ namespace RoxApp
 
 			ShowWindow(m_hwnd,
 				SW_SHOW);
-			m_hdc = GetDC(m_hwnd);
+			m_handle_draw_context_main = GetDC(m_hwnd);
+			//m_handle_draw_context_child = GetDC(m_child_hwnd); // <-- this line Added
 
-			if (num_aa_formats >= 1 && SetPixelFormat(m_hdc,
+			if (num_aa_formats >= 1 && SetPixelFormat(m_handle_draw_context_main,
 				aa_pf,
 				&pfd))
 			{
@@ -305,22 +340,22 @@ namespace RoxApp
 				antialiasing = 0;
 				RoxSystem::log() << "unable to set antialiasiing " << aa_pf << " " << num_aa_formats << "\n";
 
-				int pf = ChoosePixelFormat(m_hdc,
+				int pf = ChoosePixelFormat(m_handle_draw_context_main,
 					&pfd);
 				if (!pf)
 					return;
 
-				if (!SetPixelFormat(m_hdc,
+				if (!SetPixelFormat(m_handle_draw_context_main,
 					pf,
 					&pfd))
 					return;
 			}
 
-			m_hglrc = wglCreateContext(m_hdc);
+			m_hglrc = wglCreateContext(m_handle_draw_context_main);
 			if (!m_hglrc)
 				return;
 
-			wglMakeCurrent(m_hdc,
+			wglMakeCurrent(m_handle_draw_context_main,
 				m_hglrc);
 		}
 
@@ -332,16 +367,38 @@ namespace RoxApp
 			m_title
 			.c_str());
 
+		// Set the user data
 		SetWindowLongPtr(m_hwnd,
 			GWLP_USERDATA,
 			(LONG_PTR)this);
+		SetWindowLongPtr(m_child_hwnd,
+			GWLP_USERDATA,
+			(LONG_PTR)this);
 
-		// Set the viewport
+		if(!SetWindowLongPtr(m_hwnd, GWLP_USERDATA, (LONG_PTR)this))
+		{
+			RoxSystem::log() << "Failed to set window user data\n";
+			return;
+		}
+		if (!SetWindowLongPtr(m_child_hwnd, GWLP_USERDATA, (LONG_PTR)this))
+		{
+			RoxSystem::log() << "Failed to set child window user data\n";
+			return;
+		}
+
+		// Get child window size
+		RECT childRect;
+		GetClientRect(m_child_hwnd, &childRect);
+		int child_w = childRect.right - childRect.left;
+		int child_h = childRect.bottom - childRect.top;
+
+		// Set the viewport and call onResize
 		RoxRender::setViewport(0,
-			0,
-			w,
-			h);
-		app.onResize(w, h);
+		                       0,
+		                       child_w,
+		                       child_h);
+
+		app.onResize(child_w, child_h);
 
 		m_time = RoxSystem::getTime();
 
@@ -351,7 +408,7 @@ namespace RoxApp
 			m_swap_chain->Present(0,
 				0);
 #else
-			SwapBuffers(m_hdc);
+			SwapBuffers(m_handle_draw_context_main);
 #endif
 		}
 
@@ -388,7 +445,7 @@ namespace RoxApp
 				m_swap_chain->Present(0,
 					0);
 #else
-				SwapBuffers(m_hdc); // Swap the buffers
+				SwapBuffers(m_handle_draw_context_main); // Swap the buffers
 #endif
 			}
 		}
@@ -483,11 +540,11 @@ namespace RoxApp
 		}
 #else
 
-		wglMakeCurrent(m_hdc,
+		wglMakeCurrent(m_handle_draw_context_main,
 			nullptr);
 		wglDeleteContext(m_hglrc);
 		ReleaseDC(m_hwnd,
-			m_hdc);
+			m_handle_draw_context_main);
 		DestroyWindow(m_hwnd);
 
 #endif
@@ -552,12 +609,6 @@ namespace RoxApp
 				lparam);
 
 
-		/*if (hwnd == pThis->m_hwnd)
-			RoxSystem::log() << "hwnd == m_hwnd\n";
-		else
-			RoxSystem::log() << "hwnd != m_hwnd\n";*/
-
-
 		if (hwnd == pThis->m_hwnd)
 		{
 			switch (message)
@@ -577,12 +628,16 @@ namespace RoxApp
 					h);
 #endif
 
-			RoxRender::setViewport(0,
+			/*RoxRender::setViewport(0,
 				0,
 				w,
-				h);
-			pThis->m_app->onResize(w,
-				h);
+				h);*/
+			/*pThis->m_app->onResize(w,
+				h);*/
+
+			// Move the child with the window
+				
+			MoveWindow(pThis->m_child_hwnd, 20, 20, LOWORD(lparam), HIWORD(lparam), TRUE);
 		}
 		break;
 
@@ -680,6 +735,128 @@ namespace RoxApp
 		}
 		break;
 		}
+		}
+		else if (hwnd == pThis->m_child_hwnd)
+		{
+			switch (message)
+			{
+			case WM_SIZE:
+			{
+				RoxSystem::log() << "Main- WM_SIZE received\n";
+
+				RECT childRect;
+				GetClientRect(hwnd, &childRect);
+				int child_w = childRect.right - childRect.left;
+				int child_h = childRect.bottom - childRect.top;
+
+#ifdef DIRECTX11
+				pThis->recreate_targets(w,
+					h);
+#endif
+
+				RoxRender::setViewport(0,
+					0,
+					child_w,
+					child_h);
+				pThis->m_app->onResize(child_w,
+					child_h);
+			}
+			break;
+
+			case WM_CLOSE: getInstance()
+				.finish(*pThis->m_app);
+				break;
+
+			case WM_MOUSEWHEEL:
+			{
+				const int x = GET_X_LPARAM(wparam);
+				const int y = GET_Y_LPARAM(wparam);
+
+				pThis->m_app->onMouseScroll(x / 60,
+					y / 60);
+			}
+			break;
+
+			case WM_MOUSEMOVE:
+			{
+				const int x = LOWORD(lparam);
+				const int y = HIWORD(lparam);
+
+				RECT rc;
+				GetClientRect(hwnd,
+					&rc);
+
+				pThis->m_app->onMouseMove(x,
+					rc.bottom + rc.top - y);
+			}
+			break;
+
+			case WM_LBUTTONDOWN: pThis->m_app->onMouseButton(RoxInput::MOUSE_LEFT,
+				true);
+				break;
+			case WM_LBUTTONUP: pThis->m_app->onMouseButton(RoxInput::MOUSE_LEFT,
+				false);
+				break;
+			case WM_MBUTTONDOWN: pThis->m_app->onMouseButton(RoxInput::MOUSE_MIDDLE,
+				true);
+				break;
+			case WM_MBUTTONUP: pThis->m_app->onMouseButton(RoxInput::MOUSE_MIDDLE,
+				false);
+				break;
+			case WM_RBUTTONDOWN: pThis->m_app->onMouseButton(RoxInput::MOUSE_RIGHT,
+				true);
+				break;
+			case WM_RBUTTONUP: pThis->m_app->onMouseButton(RoxInput::MOUSE_RIGHT,
+				false);
+				break;
+
+			case WM_KEYDOWN:
+			{
+				RoxSystem::log() << "Main- WM_KEYDOWN received\n";
+				const unsigned int key = LOWORD(wparam);
+				const unsigned int x11key = get_x11_key(key);
+				if (x11key)
+					pThis->m_app->onKeyboard(x11key,
+						true);
+			}
+			break;
+
+			case WM_KEYUP:
+			{
+				const unsigned int key = LOWORD(wparam);
+				const unsigned int x11key = get_x11_key(key);
+				if (x11key)
+					pThis->m_app->onKeyboard(x11key,
+						false);
+			}
+			break;
+
+			case WM_CHAR:
+			{
+				const unsigned int key = wparam;
+				const bool pressed = ((lparam & (1 << 31)) == 0);
+				const bool autorepeat = ((lparam & 0xff) != 0);
+				pThis->m_app->onCharcode(key,
+					pressed,
+					autorepeat);
+			}
+			break;
+
+			case WM_SYSCOMMAND:
+			{
+				if (wparam == SC_MINIMIZE && !m_suspended)
+				{
+					m_suspended = true;
+					pThis->m_app->onSuspend();
+				}
+				else if (wparam == SC_RESTORE && m_suspended)
+				{
+					m_suspended = false;
+					pThis->m_app->onRestore();
+				}
+			}
+			break;
+			}
 		}
 
 		return DefWindowProc(hwnd,

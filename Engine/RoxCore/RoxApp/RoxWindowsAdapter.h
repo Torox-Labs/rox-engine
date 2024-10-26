@@ -43,13 +43,15 @@ namespace RoxApp
         // Member variables
         HINSTANCE m_instance;
         HWND m_hwnd;
+    	HWND m_child_hwnd; // Child Window Device Context
 #ifdef DIRECTX11
         // DirectX-specific members
 #else
 		RoxApp* m_app; // Pointer to the RoxApp object
-		HDC m_hdc; // Parent Window Device Context
-        HWND m_child_hwnd; // Child Window Device Context
-		HGLRC m_hglrc; // OpenGL Rendering Context
+		HDC m_handle_draw_context_main; // Parent Window Device Context
+		HDC m_handle_draw_context_child; // Child Window Device Context
+        HGLRC m_hglrc; // OpenGL Rendering Context
+        HGLRC m_hglrc_child; // OpenGL Rendering Context
 #endif
         std::string m_title;
         unsigned long m_time;
