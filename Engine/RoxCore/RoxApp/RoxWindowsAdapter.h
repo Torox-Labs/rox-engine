@@ -47,7 +47,7 @@ namespace RoxApp
         // DirectX-specific members
 #else
 		HDC m_hdc; // Parent Window Device Context
-		HWND m_hwndChild; // Child Window Device Context
+        HWND m_child_hwnd; // Child Window Device Context
 		HGLRC m_hglrc; // OpenGL Rendering Context
 #endif
         std::string m_title;
