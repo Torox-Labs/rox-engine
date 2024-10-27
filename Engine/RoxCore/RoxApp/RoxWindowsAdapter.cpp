@@ -615,29 +615,6 @@ namespace RoxApp
 		{
 		case WM_SIZE:
 		{
-			RoxSystem::log() << "Main- WM_SIZE received\n";
-			RECT rc;
-			GetClientRect(hwnd,
-				&rc);
-
-			const int w = rc.right - rc.left;
-			const int h = rc.bottom - rc.top;
-
-#ifdef DIRECTX11
-			pThis->recreate_targets(w,
-					h);
-#endif
-
-			/*RoxRender::setViewport(0,
-				0,
-				w,
-				h);*/
-			/*pThis->m_app->onResize(w,
-				h);*/
-
-			// Move the child with the window
-				
-			MoveWindow(pThis->m_child_hwnd, 20, 20, LOWORD(lparam), HIWORD(lparam), TRUE);
 		}
 		break;
 
