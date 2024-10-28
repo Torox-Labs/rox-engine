@@ -30,9 +30,9 @@ namespace RoxRender
 namespace
 {
     RoxLogger::RoxLoggerBase *render_log=0;
-    RoxRender::RoxRenderApiInterface::State current_state;
+    RoxRender::IRoxRenderApi::State current_state;
 
-    RoxRenderApiInterface *availableRenderInterface()
+    IRoxRenderApi *availableRenderInterface()
     {
 
 #if __APPLE__
@@ -52,7 +52,7 @@ namespace
         return 0;
     }
 
-    RoxRenderApiInterface *render_interface = availableRenderInterface();
+    IRoxRenderApi *render_interface = availableRenderInterface();
 }
 
 void set_log(RoxLogger::RoxLoggerBase *l) { render_log=l; }
@@ -188,7 +188,7 @@ bool setRenderApi(RrenderApi api)
     return false;
 }
 
-bool setRenderApi(RoxRenderApiInterface *api)
+bool setRenderApi(IRoxRenderApi *api)
 {
     if (!api || !api->isAvailable())
         return false;
@@ -197,8 +197,8 @@ bool setRenderApi(RoxRenderApiInterface *api)
     return true;
 }
 
-RoxRenderApiInterface::State &getApiState() { return current_state; }
-RoxRenderApiInterface &getApiInterface() { return *render_interface; }
+IRoxRenderApi::State &getApiState() { return current_state; }
+IRoxRenderApi &getApiInterface() { return *render_interface; }
 
 namespace { bool ignorePlatformRestrictions=true; }
 void setIgnorePlatformRestrictions(bool ignore) { ignorePlatformRestrictions =ignore; }

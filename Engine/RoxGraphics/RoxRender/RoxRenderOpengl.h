@@ -15,12 +15,12 @@
 
 #pragma once
 
-#include "RoxRenderApi.h"
+#include "IRoxRenderApi.h"
 
 namespace RoxRender
 {
 
-class RoxRenderOpengl: public RoxRenderApiInterface
+class RoxRenderOpengl: public IRoxRenderApi
 {
 public:
     bool isAvailable() const override;

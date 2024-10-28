@@ -22,7 +22,7 @@
 
 namespace RoxRender
 {
-	class RoxRenderApiInterface
+	class IRoxRenderApi
 	{
 	public:
 		virtual bool isAvailable() const { return true; }
@@ -225,7 +225,7 @@ namespace RoxRender
 
 	RrenderApi getRenderApi();
 	bool setRenderApi(RrenderApi api);
-	bool setRenderApi(RoxRenderApiInterface* api);
-	RoxRenderApiInterface& getApiInterface();
-	RoxRenderApiInterface::State& getApiState();
+	bool setRenderApi(IRoxRenderApi* api);
+	IRoxRenderApi& getApiInterface();
+	IRoxRenderApi::State& getApiState();
 }

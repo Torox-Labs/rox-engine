@@ -15,12 +15,12 @@
 
 #pragma once
 
-#include "RoxRenderApi.h"
+#include "IRoxRenderApi.h"
 #include <queue>
 
 namespace RoxRender
 {
-	class RoxRenderBuffered : public RoxRenderApiInterface
+	class RoxRenderBuffered : public IRoxRenderApi
 	{
 	public:
 		int createShader(const char* vertex, const char* fragment) override;
@@ -82,7 +82,7 @@ namespace RoxRender
 		void execute(); //run processing
 
 	public:
-		RoxRenderBuffered(RoxRenderApiInterface& backend) : m_backend(backend)
+		RoxRenderBuffered(IRoxRenderApi& backend) : m_backend(backend)
 		{
 			m_max_texture_dimention = m_backend.getMaxTextureDimention();
 			m_max_target_attachments = m_backend.getMaxTargetAttachments();
@@ -97,7 +97,7 @@ namespace RoxRender
 		void remapState(State& s) const;
 
 	private:
-		RoxRenderApiInterface& m_backend;
+		IRoxRenderApi& m_backend;
 
 		uint m_max_texture_dimention, m_max_target_attachments, m_max_target_msaa;
 		bool m_tex_formats[64];

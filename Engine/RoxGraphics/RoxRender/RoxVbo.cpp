@@ -13,7 +13,7 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxVbo.h"
-#include "RoxRenderApi.h"
+#include "IRoxRenderApi.h"
 #include "RoxStatistics.h"
 #include "RoxMemory/RoxTmpBuffers.h"
 
@@ -49,7 +49,7 @@ void RoxVbo::draw(uint count) { draw(0,count,active_ElementType); }
 
 void RoxVbo::draw(uint offset,uint count, ELEMENT_TYPE el_type,uint instances)
 {
-    RoxRenderApiInterface::State &s=getApiState();
+    IRoxRenderApi::State &s=getApiState();
 
     if(offset+count>(s.index_buffer<0?active_vert_count:active_ind_count))
         return;
@@ -76,8 +76,8 @@ void RoxVbo::draw(uint offset,uint count, ELEMENT_TYPE el_type,uint instances)
 
 void RoxVbo::transformFeedback(RoxVbo &target)
 {
-    RoxRenderApiInterface::TfState s;
-    (RoxRenderApiInterface::RenderState&)s=(RoxRenderApiInterface::RenderState&)getApiState();
+    IRoxRenderApi::TfState s;
+    (IRoxRenderApi::RenderState&)s=(IRoxRenderApi::RenderState&)getApiState();
     s.vertex_buffer_out=target.m_verts;
     s.primitive=active_ElementType;
     s.index_offset=s.out_offset=0;
@@ -88,12 +88,12 @@ void RoxVbo::transformFeedback(RoxVbo &target)
 
 void RoxVbo::transformFeedback(RoxVbo &target,uint src_offset,uint dst_offset,uint count,ELEMENT_TYPE type)
 {
-    RoxRenderApiInterface::TfState s;
+    IRoxRenderApi::TfState s;
 
     if(src_offset+count>(s.index_buffer<0?active_vert_count:active_ind_count))
         return;
 
-    (RoxRenderApiInterface::RenderState &)s=(RoxRenderApiInterface::RenderState&)getApiState();
+    (IRoxRenderApi::RenderState &)s=(IRoxRenderApi::RenderState&)getApiState();
     s.vertex_buffer_out=target.m_verts;
     s.primitive=type;
     s.index_offset=src_offset;
@@ -105,7 +105,7 @@ void RoxVbo::transformFeedback(RoxVbo &target,uint src_offset,uint dst_offset,ui
 
 bool RoxVbo::setVertexData(const void*data,uint vert_stride,uint vert_count,USAGE_HINT usage)
 {
-    RoxRenderApiInterface &api=getApiInterface();
+    IRoxRenderApi &api=getApiInterface();
 
     if(m_verts>=0)
     {
@@ -134,7 +134,7 @@ bool RoxVbo::setVertexData(const void*data,uint vert_stride,uint vert_count,USAG
 
 bool RoxVbo::setIndexData(const void*data, INDEX_SIZE size,uint indices_count, USAGE_HINT usage)
 {
-    RoxRenderApiInterface &api=getApiInterface();
+    IRoxRenderApi &api=getApiInterface();
 
     if(m_indices>=0)
         releaseIndices();
@@ -272,7 +272,7 @@ void RoxVbo::releaseVerts()
     if(m_verts<0)
         return;
 
-    RoxRenderApiInterface::State &s=getApiState();
+    IRoxRenderApi::State &s=getApiState();
     getApiInterface().removeVertexBuffer(m_verts);
     if(s.vertex_buffer==m_verts)
         s.vertex_buffer=-1;
@@ -286,7 +286,7 @@ void RoxVbo::releaseIndices()
     if(m_indices<0)
         return;
 
-    RoxRenderApiInterface::State &s=getApiState();
+    IRoxRenderApi::State &s=getApiState();
     getApiInterface().removeIndexBuffer(m_indices);
     if(s.index_buffer==m_indices)
         s.index_buffer=-1;

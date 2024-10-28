@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "RoxRenderApi.h"
+#include "IRoxRenderApi.h"
 
 #if __APPLE__ && __OBJC__
   @protocol MTLDevice,CAMetalDrawable,MTLTexture;
@@ -24,7 +24,7 @@
 namespace RoxRender
 {
 
-class RoxRenderMetal: public RoxRenderApiInterface
+class RoxRenderMetal: public IRoxRenderApi
 {
 public:
     bool isAvailable() const override;

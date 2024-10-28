@@ -13,7 +13,7 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxFbo.h"
-#include "RoxRenderApi.h"
+#include "IRoxRenderApi.h"
 
 namespace RoxRender
 {

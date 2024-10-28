@@ -239,7 +239,7 @@ bool RoxTexture::copyRegion(const RoxTexture &src,uint src_x,uint src_y,uint wid
 
 void RoxTexture::bind(unsigned int layer) const
 {
-    if(layer>=RoxRenderApiInterface::State::max_layers)
+    if(layer>=IRoxRenderApi::State::max_layers)
         return;
 
     getApiState().textures[layer]=m_tex;
@@ -247,7 +247,7 @@ void RoxTexture::bind(unsigned int layer) const
 
 void RoxTexture::unbind(unsigned int layer)
 {
-    if(layer>=RoxRenderApiInterface::State::max_layers)
+    if(layer>=IRoxRenderApi::State::max_layers)
         return;
 
     getApiState().textures[layer]=-1;
@@ -427,7 +427,7 @@ void RoxTexture::release()
         return;
 
     getApiInterface().removeTexture(m_tex);
-    RoxRenderApiInterface::State &s=getApiState();
+    IRoxRenderApi::State &s=getApiState();
     for(int i=0;i<s.max_layers;++i)
     {
         if(s.textures[i]==m_tex)

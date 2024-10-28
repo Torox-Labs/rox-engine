@@ -402,6 +402,7 @@ namespace RoxApp
 
 		// Initialize the application
 		RoxRender::setViewport(0, 0, w, h);
+
 		app.onResize(w, h);
 
 		m_time = RoxSystem::getTime();

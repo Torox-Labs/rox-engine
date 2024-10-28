@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "RoxRenderApi.h"
+#include "IRoxRenderApi.h"
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -25,7 +25,7 @@ struct ID3D11DepthStencilView;
 namespace RoxRender
 {
 
-class RoxRenderDirectx11: public RoxRenderApiInterface
+class RoxRenderDirectx11: public IRoxRenderApi
 {
 public:
     bool isAvailable() const override;

@@ -30,7 +30,7 @@ bool RoxRenderOpengl::isAvailable() const
 
 namespace
 {
-    RoxRenderApiInterface::State applied_state;
+    IRoxRenderApi::State applied_state;
     bool ignore_cache = true;
 	bool ignore_cache_vp = true;
     RoxVbo::Layout applied_layout;
@@ -1352,7 +1352,7 @@ unsigned int RoxRenderOpengl::getMaxTargetMsaa()
     return max_ms>1?max_ms:1;
 }
 
-static void apply_viewport_state(RoxRenderApiInterface::ViewportState s)
+static void apply_viewport_state(IRoxRenderApi::ViewportState s)
 {
     if(ignore_cache_vp)
     {
@@ -1403,7 +1403,7 @@ static void apply_viewport_state(RoxRenderApiInterface::ViewportState s)
     if(s.scissor!=applied_state.scissor)
         glScissor(s.scissor.x,s.scissor.y,s.scissor.width,s.scissor.height);
 
-    *(RoxRenderApiInterface::ViewportState*)&applied_state=s;
+    *(IRoxRenderApi::ViewportState*)&applied_state=s;
 	ignore_cache_vp=false;
 }
 
@@ -1572,7 +1572,7 @@ void RoxRenderOpengl::applyState(const State &c)
     ignore_cache = false;
 }
 
-template<bool transform_feedback>void draw_(const RoxRender::RoxRenderApiInterface::State &s)
+template<bool transform_feedback>void draw_(const RoxRender::IRoxRenderApi::State &s)
 {
     if(s.vertex_buffer<0 || s.shader <0)
         return;

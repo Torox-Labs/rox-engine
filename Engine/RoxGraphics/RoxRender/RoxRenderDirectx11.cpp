@@ -29,7 +29,7 @@ bool RoxRenderDirectx11::isAvailable() const
 
 namespace
 {
-    RoxRenderApiInterface::State applied_state;
+    IRoxRenderApi::State applied_state;
     bool ignore_cache = true;
 }
 
