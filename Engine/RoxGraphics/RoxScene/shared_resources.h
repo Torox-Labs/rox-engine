@@ -8,7 +8,6 @@
 namespace RoxScene
 {
 
-//ToDo - Update this resource_data to the new RoxMemory::RoxTmpBufferRef
 typedef RoxMemory::RoxTmpBufferRef resource_data;
 
 template<typename t>

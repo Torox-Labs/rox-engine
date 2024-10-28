@@ -8,7 +8,7 @@
 namespace RoxScene
 {
 
-void set_log(RoxLogger::RoxLoggerBase *l);
+void setLog(RoxLogger::RoxLoggerBase *l);
 RoxLogger::RoxLoggerBase &log();
 
 }

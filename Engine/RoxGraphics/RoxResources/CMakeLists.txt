@@ -19,6 +19,3 @@ set_target_properties(RoxResources PROPERTIES
 # ====== Set Folder Properties for Visual Studio ======
 # This nests 'resources' under 'Graphics' in the solution
 set_target_properties(RoxResources PROPERTIES FOLDER "Graphics")
-
-# ====== Organize Sources in IDE ======
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${RESOURCES_SRC})

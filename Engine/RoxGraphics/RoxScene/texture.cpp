@@ -1,7 +1,7 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
 #include "texture.h"
-#include "scene.h"
+#include "RoxScene.h"
 #include "RoxMemory/RoxMemoryReader.h"
 #include "RoxMemory/RoxTmpBuffers.h"
 #include "RoxFormats/RoxTruevisionGraphicsAdapter.h"

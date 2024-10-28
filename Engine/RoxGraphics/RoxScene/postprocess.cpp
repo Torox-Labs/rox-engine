@@ -5,7 +5,7 @@
 #include "RoxFormats/RoxStringConvert.h"
 #include "RoxFormats/RoxMathExprParser.h"
 #include "RoxMemory/RoxInvalidObject.h"
-#include "scene.h"
+#include "RoxScene.h"
 #include "camera.h"
 #include <cstring>
 

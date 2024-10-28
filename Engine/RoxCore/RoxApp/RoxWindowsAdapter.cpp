@@ -109,33 +109,33 @@ namespace RoxApp
 		ShowWindow(m_hwnd, SW_SHOW);
 
 		// Create Child Components
-		// Get client area size of the main window
-		RECT clientRect;
-		GetClientRect(m_hwnd, &clientRect);
+		//// Get client area size of the main window
+		//RECT clientRect;
+		//GetClientRect(m_hwnd, &clientRect);
 
-		// Decide size and position of the child window
-		int child_width = (clientRect.right - clientRect.left) / 2;
-		int child_height = (clientRect.bottom - clientRect.top) / 2;
+		//// Decide size and position of the child window
+		//int child_width = (clientRect.right - clientRect.left) / 2;
+		//int child_height = (clientRect.bottom - clientRect.top) / 2;
 
-		// Create the child window
-		m_child_hwnd = CreateWindowA("rox_engine",
-			"Child Window",
-			WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-			0,
-			0,
-			child_width,
-			child_height,
-			m_hwnd,
-			NULL,
-			m_instance,
-			NULL);
+		//// Create the child window
+		//m_child_hwnd = CreateWindowA("rox_engine",
+		//	"Child Window",
+		//	WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+		//	0,
+		//	0,
+		//	child_width,
+		//	child_height,
+		//	m_hwnd,
+		//	NULL,
+		//	m_instance,
+		//	NULL);
 
-		if(!m_child_hwnd)
-		{
-			DWORD err = GetLastError();
-			RoxSystem::log() << "Failed to create child window. Error code: " << err << "\n";
-			return;
-		}
+		//if(!m_child_hwnd)
+		//{
+		//	DWORD err = GetLastError();
+		//	RoxSystem::log() << "Failed to create child window. Error code: " << err << "\n";
+		//	return;
+		//}
 
 #ifdef DIRECTX11
 		UINT create_device_flags = 0;
@@ -205,7 +205,7 @@ namespace RoxApp
 #else
 
 		// OpenGl initialization
-		m_handle_draw_context_main = GetDC(m_child_hwnd);
+		m_handle_draw_context_main = GetDC(m_hwnd);
 		//m_handle_draw_context_child = GetDC(m_child_hwnd); // <-- this line Added
 		PIXELFORMATDESCRIPTOR pfd = { 0 };
 
@@ -371,34 +371,38 @@ namespace RoxApp
 		SetWindowLongPtr(m_hwnd,
 			GWLP_USERDATA,
 			(LONG_PTR)this);
-		SetWindowLongPtr(m_child_hwnd,
-			GWLP_USERDATA,
-			(LONG_PTR)this);
-
 		if(!SetWindowLongPtr(m_hwnd, GWLP_USERDATA, (LONG_PTR)this))
 		{
 			RoxSystem::log() << "Failed to set window user data\n";
 			return;
 		}
-		if (!SetWindowLongPtr(m_child_hwnd, GWLP_USERDATA, (LONG_PTR)this))
+
+		/*SetWindowLongPtr(m_child_hwnd,
+			GWLP_USERDATA,
+			(LONG_PTR)this);*/
+	/*	if (!SetWindowLongPtr(m_child_hwnd, GWLP_USERDATA, (LONG_PTR)this))
 		{
 			RoxSystem::log() << "Failed to set child window user data\n";
 			return;
-		}
+		}*/
 
 		// Get child window size
-		RECT childRect;
+		/*RECT childRect;
 		GetClientRect(m_child_hwnd, &childRect);
 		int child_w = childRect.right - childRect.left;
-		int child_h = childRect.bottom - childRect.top;
+		int child_h = childRect.bottom - childRect.top;*/
 
 		// Set the viewport and call onResize
-		RoxRender::setViewport(0,
+		/*RoxRender::setViewport(0,
 		                       0,
 		                       child_w,
 		                       child_h);
 
-		app.onResize(child_w, child_h);
+		app.onResize(child_w, child_h);*/
+
+		// Initialize the application
+		RoxRender::setViewport(0, 0, w, h);
+		app.onResize(w, h);
 
 		m_time = RoxSystem::getTime();
 
@@ -612,227 +616,226 @@ namespace RoxApp
 		if (hwnd == pThis->m_hwnd)
 		{
 			switch (message)
-		{
-		case WM_SIZE:
-		{
-		}
-		break;
-
-		case WM_CLOSE: getInstance()
-			.finish(*pThis->m_app);
-			break;
-
-		case WM_MOUSEWHEEL:
-		{
-			const int x = GET_X_LPARAM(wparam);
-			const int y = GET_Y_LPARAM(wparam);
-
-			pThis->m_app->onMouseScroll(x / 60,
-				y / 60);
-		}
-		break;
-
-		case WM_MOUSEMOVE:
-		{
-			const int x = LOWORD(lparam);
-			const int y = HIWORD(lparam);
-
-			RECT rc;
-			GetClientRect(hwnd,
-				&rc);
-
-			pThis->m_app->onMouseMove(x,
-				rc.bottom + rc.top - y);
-		}
-		break;
-
-		case WM_LBUTTONDOWN: pThis->m_app->onMouseButton(RoxInput::MOUSE_LEFT,
-			true);
-			break;
-		case WM_LBUTTONUP: pThis->m_app->onMouseButton(RoxInput::MOUSE_LEFT,
-			false);
-			break;
-		case WM_MBUTTONDOWN: pThis->m_app->onMouseButton(RoxInput::MOUSE_MIDDLE,
-			true);
-			break;
-		case WM_MBUTTONUP: pThis->m_app->onMouseButton(RoxInput::MOUSE_MIDDLE,
-			false);
-			break;
-		case WM_RBUTTONDOWN: pThis->m_app->onMouseButton(RoxInput::MOUSE_RIGHT,
-			true);
-			break;
-		case WM_RBUTTONUP: pThis->m_app->onMouseButton(RoxInput::MOUSE_RIGHT,
-			false);
-			break;
-
-		case WM_KEYDOWN:
-		{
-			RoxSystem::log() << "Main- WM_KEYDOWN received\n";
-			const unsigned int key = LOWORD(wparam);
-			const unsigned int x11key = get_x11_key(key);
-			if (x11key)
-				pThis->m_app->onKeyboard(x11key,
-					true);
-		}
-		break;
-
-		case WM_KEYUP:
-		{
-			const unsigned int key = LOWORD(wparam);
-			const unsigned int x11key = get_x11_key(key);
-			if (x11key)
-				pThis->m_app->onKeyboard(x11key,
-					false);
-		}
-		break;
-
-		case WM_CHAR:
-		{
-			const unsigned int key = wparam;
-			const bool pressed = ((lparam & (1 << 31)) == 0);
-			const bool autorepeat = ((lparam & 0xff) != 0);
-			pThis->m_app->onCharcode(key,
-				pressed,
-				autorepeat);
-		}
-		break;
-
-		case WM_SYSCOMMAND:
-		{
-			if (wparam == SC_MINIMIZE && !m_suspended)
 			{
-				m_suspended = true;
-				pThis->m_app->onSuspend();
+			case WM_SIZE:
+				break;
+
+			case WM_CLOSE: getInstance()
+					.finish(*pThis->m_app);
+				break;
+
+			case WM_MOUSEWHEEL:
+				{
+					const int x = GET_X_LPARAM(wparam);
+					const int y = GET_Y_LPARAM(wparam);
+
+					pThis->m_app->onMouseScroll(x / 60,
+					                            y / 60);
+				}
+				break;
+
+			case WM_MOUSEMOVE:
+				{
+					const int x = LOWORD(lparam);
+					const int y = HIWORD(lparam);
+
+					RECT rc;
+					GetClientRect(hwnd,
+					              &rc);
+
+					pThis->m_app->onMouseMove(x,
+					                          rc.bottom + rc.top - y);
+				}
+				break;
+
+			case WM_LBUTTONDOWN: pThis->m_app->onMouseButton(RoxInput::MOUSE_LEFT,
+			                                                 true);
+				break;
+			case WM_LBUTTONUP: pThis->m_app->onMouseButton(RoxInput::MOUSE_LEFT,
+			                                               false);
+				break;
+			case WM_MBUTTONDOWN: pThis->m_app->onMouseButton(RoxInput::MOUSE_MIDDLE,
+			                                                 true);
+				break;
+			case WM_MBUTTONUP: pThis->m_app->onMouseButton(RoxInput::MOUSE_MIDDLE,
+			                                               false);
+				break;
+			case WM_RBUTTONDOWN: pThis->m_app->onMouseButton(RoxInput::MOUSE_RIGHT,
+			                                                 true);
+				break;
+			case WM_RBUTTONUP: pThis->m_app->onMouseButton(RoxInput::MOUSE_RIGHT,
+			                                               false);
+				break;
+
+			case WM_KEYDOWN:
+				{
+					const unsigned int key = LOWORD(wparam);
+					const unsigned int x11key = get_x11_key(key);
+					if (x11key)
+						pThis->m_app->onKeyDown(x11key,
+						                        true);
+				}
+				break;
+
+			case WM_KEYUP:
+				{
+					const unsigned int key = LOWORD(wparam);
+					const unsigned int x11key = get_x11_key(key);
+					if (x11key)
+						pThis->m_app->onKeyUp(x11key,
+						                      false);
+				}
+				break;
+
+			case WM_CHAR:
+				{
+					const unsigned int key = wparam;
+					const bool pressed = ((lparam & (1 << 31)) == 0);
+					const bool autorepeat = ((lparam & 0xff) != 0);
+					pThis->m_app->onCharcode(key,
+					                         pressed,
+					                         autorepeat);
+				}
+				break;
+
+			case WM_SYSCOMMAND:
+				{
+					if (wparam == SC_MINIMIZE && !m_suspended)
+					{
+						m_suspended = true;
+						pThis->m_app->onSuspend();
+					}
+					else if (wparam == SC_RESTORE && m_suspended)
+					{
+						m_suspended = false;
+						pThis->m_app->onRestore();
+					}
+				}
+				break;
 			}
-			else if (wparam == SC_RESTORE && m_suspended)
-			{
-				m_suspended = false;
-				pThis->m_app->onRestore();
-			}
-		}
-		break;
-		}
 		}
 		else if (hwnd == pThis->m_child_hwnd)
 		{
 			switch (message)
 			{
 			case WM_SIZE:
-			{
-				RoxSystem::log() << "Main- WM_SIZE received\n";
+				{
+					RoxSystem::log() << "Main- WM_SIZE received\n";
 
-				RECT childRect;
-				GetClientRect(hwnd, &childRect);
-				int child_w = childRect.right - childRect.left;
-				int child_h = childRect.bottom - childRect.top;
+					RECT childRect;
+					GetClientRect(hwnd, &childRect);
+					int child_w = childRect.right - childRect.left;
+					int child_h = childRect.bottom - childRect.top;
 
 #ifdef DIRECTX11
 				pThis->recreate_targets(w,
 					h);
 #endif
 
-				RoxRender::setViewport(0,
-					0,
-					child_w,
-					child_h);
-				pThis->m_app->onResize(child_w,
-					child_h);
-			}
-			break;
+					RoxRender::setViewport(0,
+					                       0,
+					                       child_w,
+					                       child_h);
+					pThis->m_app->onResize(child_w,
+					                       child_h);
+				}
+				break;
 
 			case WM_CLOSE: getInstance()
-				.finish(*pThis->m_app);
+					.finish(*pThis->m_app);
 				break;
 
 			case WM_MOUSEWHEEL:
-			{
-				const int x = GET_X_LPARAM(wparam);
-				const int y = GET_Y_LPARAM(wparam);
+				{
+					const int x = GET_X_LPARAM(wparam);
+					const int y = GET_Y_LPARAM(wparam);
 
-				pThis->m_app->onMouseScroll(x / 60,
-					y / 60);
-			}
-			break;
+					pThis->m_app->onMouseScroll(x / 60,
+					                            y / 60);
+				}
+				break;
 
 			case WM_MOUSEMOVE:
-			{
-				const int x = LOWORD(lparam);
-				const int y = HIWORD(lparam);
+				{
+					const int x = LOWORD(lparam);
+					const int y = HIWORD(lparam);
 
-				RECT rc;
-				GetClientRect(hwnd,
-					&rc);
+					RECT rc;
+					GetClientRect(hwnd,
+					              &rc);
 
-				pThis->m_app->onMouseMove(x,
-					rc.bottom + rc.top - y);
-			}
-			break;
+					pThis->m_app->onMouseMove(x,
+					                          rc.bottom + rc.top - y);
+				}
+				break;
 
-			case WM_LBUTTONDOWN: pThis->m_app->onMouseButton(RoxInput::MOUSE_LEFT,
-				true);
+			case WM_LBUTTONDOWN:
+				RoxSystem::log() << "Main- WM_LBUTTONDOWN received\n";
+				pThis->m_app->onMouseButton(RoxInput::MOUSE_LEFT,
+				                            true);
 				break;
 			case WM_LBUTTONUP: pThis->m_app->onMouseButton(RoxInput::MOUSE_LEFT,
-				false);
+			                                               false);
 				break;
 			case WM_MBUTTONDOWN: pThis->m_app->onMouseButton(RoxInput::MOUSE_MIDDLE,
-				true);
+			                                                 true);
 				break;
 			case WM_MBUTTONUP: pThis->m_app->onMouseButton(RoxInput::MOUSE_MIDDLE,
-				false);
+			                                               false);
 				break;
 			case WM_RBUTTONDOWN: pThis->m_app->onMouseButton(RoxInput::MOUSE_RIGHT,
-				true);
+			                                                 true);
 				break;
 			case WM_RBUTTONUP: pThis->m_app->onMouseButton(RoxInput::MOUSE_RIGHT,
-				false);
+			                                               false);
 				break;
 
 			case WM_KEYDOWN:
-			{
-				RoxSystem::log() << "Main- WM_KEYDOWN received\n";
-				const unsigned int key = LOWORD(wparam);
-				const unsigned int x11key = get_x11_key(key);
-				if (x11key)
-					pThis->m_app->onKeyboard(x11key,
-						true);
-			}
-			break;
+				{
+					RoxSystem::log() << "Main- WM_KEYDOWN received\n";
+					const unsigned int key = LOWORD(wparam);
+					const unsigned int x11key = get_x11_key(key);
+					if (x11key)
+						pThis->m_app->onKeyDown(x11key,
+						                        true);
+				}
+				break;
 
 			case WM_KEYUP:
-			{
-				const unsigned int key = LOWORD(wparam);
-				const unsigned int x11key = get_x11_key(key);
-				if (x11key)
-					pThis->m_app->onKeyboard(x11key,
-						false);
-			}
-			break;
+				{
+					const unsigned int key = LOWORD(wparam);
+					const unsigned int x11key = get_x11_key(key);
+					if (x11key)
+						pThis->m_app->onKeyUp(x11key,
+						                      false);
+				}
+				break;
 
 			case WM_CHAR:
-			{
-				const unsigned int key = wparam;
-				const bool pressed = ((lparam & (1 << 31)) == 0);
-				const bool autorepeat = ((lparam & 0xff) != 0);
-				pThis->m_app->onCharcode(key,
-					pressed,
-					autorepeat);
-			}
-			break;
+				{
+					const unsigned int key = wparam;
+					const bool pressed = ((lparam & (1 << 31)) == 0);
+					const bool autorepeat = ((lparam & 0xff) != 0);
+					pThis->m_app->onCharcode(key,
+					                         pressed,
+					                         autorepeat);
+				}
+				break;
 
 			case WM_SYSCOMMAND:
-			{
-				if (wparam == SC_MINIMIZE && !m_suspended)
 				{
-					m_suspended = true;
-					pThis->m_app->onSuspend();
+					if (wparam == SC_MINIMIZE && !m_suspended)
+					{
+						m_suspended = true;
+						pThis->m_app->onSuspend();
+					}
+					else if (wparam == SC_RESTORE && m_suspended)
+					{
+						m_suspended = false;
+						pThis->m_app->onRestore();
+					}
 				}
-				else if (wparam == SC_RESTORE && m_suspended)
-				{
-					m_suspended = false;
-					pThis->m_app->onRestore();
-				}
-			}
-			break;
+				break;
 			}
 		}
 

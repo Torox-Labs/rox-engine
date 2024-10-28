@@ -28,5 +28,3 @@ set_target_properties(RoxRender PROPERTIES
 # This nests 'render' under 'Graphics' in the solution
 set_target_properties(RoxRender PROPERTIES FOLDER "Graphics")
 
-# ====== Organize Sources in IDE ======
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${RENDER_SRC})

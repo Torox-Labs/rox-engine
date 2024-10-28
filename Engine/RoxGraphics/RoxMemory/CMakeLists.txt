@@ -20,5 +20,3 @@ set_target_properties(RoxMemory PROPERTIES
 # This nests 'memory' under 'Graphics' in the solution
 set_target_properties(RoxMemory PROPERTIES FOLDER "Graphics")
 
-# ====== Organize Sources in IDE ======
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MEMORY_SRC})

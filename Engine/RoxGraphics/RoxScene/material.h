@@ -3,7 +3,7 @@
 #pragma once
 
 #include "RoxRender/RoxRender.h"
-#include "scene.h"
+#include "RoxScene.h"
 #include "shader.h"
 #include "texture.h"
 

@@ -19,6 +19,3 @@ set_target_properties(RoxScene PROPERTIES
 # ====== Set Folder Properties for Visual Studio ======
 # This nests 'scene' under 'Graphics' in the solution
 set_target_properties(RoxScene PROPERTIES FOLDER "Graphics")
-
-# ====== Organize Sources in IDE ======
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SCENE_SRC})

@@ -1,7 +1,7 @@
 //nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
 #include "shader.h"
-#include "scene.h"
+#include "RoxScene.h"
 #include "camera.h"
 #include "RoxMemory/RoxInvalidObject.h"
 #include "transform.h"

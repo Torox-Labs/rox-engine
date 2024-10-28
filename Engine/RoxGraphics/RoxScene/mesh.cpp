@@ -9,7 +9,7 @@
 #include "RoxFormats/RoxMesh.h"
 #include "RoxFormats/RoxMesh.h"
 #include "RoxRender/RoxRender.h"
-#include "scene.h"
+#include "RoxScene.h"
 #include "shader.h"
 #include <cstdint>
 
