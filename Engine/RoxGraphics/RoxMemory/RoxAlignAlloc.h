@@ -58,7 +58,7 @@ template <typename t,size_t align> struct AlignedAllocator
     template<class u> struct rebind { typedef AlignedAllocator<u,align> other; };
 
     static t* allocate(size_t n) { t *r=(t*)alignAlloc(sizeof(t)*n,align);  for(size_t i=0;i<n;++i) new(r+i)t(); return r; }
-    static void deallocate(t* ptr,size_t n) { for(size_t i=0;i<n;++i) (ptr+i)->~t(); nya_memory::align_free(ptr); }
+    static void deallocate(t* ptr,size_t n) { for(size_t i=0;i<n;++i) (ptr+i)->~t(); RoxMemory::alignFree(ptr); }
 
     AlignedAllocator() {}
     template<typename a> AlignedAllocator(a &) {}
