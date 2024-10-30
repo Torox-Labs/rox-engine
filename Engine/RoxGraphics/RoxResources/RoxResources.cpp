@@ -47,7 +47,7 @@ namespace RoxResources
         res_provider = provider;
     }
 
-    RoxResourcesProvider& gresourcesProvider()
+    RoxResourcesProvider& getResourcesProvider()
     {
         if(!res_provider)
         {
@@ -60,7 +60,7 @@ namespace RoxResources
 
     RoxMemory::RoxTmpBufferRef readData(const char* name)
     {
-        RoxResourceData* r = gresourcesProvider().access(name);
+        RoxResourceData* r = getResourcesProvider().access(name);
         if(!r)
             return RoxMemory::RoxTmpBufferRef();
 

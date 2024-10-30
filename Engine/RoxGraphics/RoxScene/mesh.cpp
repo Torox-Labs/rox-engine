@@ -217,7 +217,7 @@ bool mesh::load_nms_general_section(shared_mesh &res,const void *data,size_t siz
 
 bool mesh::load_nms(shared_mesh &res,resource_data &data,const char* name)
 {
-    if(!data.getSize() || data.getSize()<8 || memcmp(data.getData(),"nya RoxFormats::RMesh",8)!=0)
+    if(!data.getSize() || data.getSize()<8 || memcmp(data.getData(),"rox mesh",8)!=0)
         return false;
 
     RoxFormats::RMesh m;

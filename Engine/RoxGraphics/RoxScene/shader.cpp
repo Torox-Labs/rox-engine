@@ -159,7 +159,7 @@ shared_shader::transform_type transform_from_string(const char *str)
 
 }
 
-bool load_nya_shader_internal(shared_shader &res, shader_description &desc, RoxScene::resource_data &data, const char* name, bool include)
+bool load_nya_shader_internal(shared_shader &res, shader_description &desc, resource_data &data, const char* name, bool include)
 {
     RoxFormats::RTextParser parser;
     parser.loadFromData((const char *)data.getData(),data.getSize());
@@ -414,6 +414,7 @@ bool RoxShader::load_nya_shader(shared_shader &res,resource_data &data,const cha
 {
     shader_description desc;
     return load_nya_shader_internal(res,desc,data,name,false);
+    return false;
 }
 
 bool RoxShader::load(const char *name)
