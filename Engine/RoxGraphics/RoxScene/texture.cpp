@@ -318,7 +318,7 @@ inline RoxRender::RoxTexture::WRAP get_wrap(const std::string &s)
     return RoxRender::RoxTexture::WRAP_CLAMP;
 }
 
-bool read_meta(shared_texture &res,resource_data &data)
+bool texture::read_meta(shared_texture &res,resource_data &data)
 {
     RoxFormats::Meta m;
     if(!m.read(data.getData(),data.getSize()))
