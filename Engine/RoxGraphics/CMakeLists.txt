@@ -1,11 +1,6 @@
 # ====== Define Source Subdirectories ======
 set(SOURCE_SUBDIRS
-    # RoxFormats
-    RoxLogger
-    RoxMath
-    RoxMemory
     RoxRender
-    RoxResources
     RoxScene
 )
 
@@ -24,14 +19,8 @@ endforeach()
 # ====== Link Libraries ======
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
-    # RoxFormats
-    RoxLogger
-    RoxMath
-    RoxMemory
     RoxRender
-    RoxResources
     RoxScene
-
     # External Libraries
 )
 

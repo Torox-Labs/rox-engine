@@ -19,4 +19,4 @@ set_target_properties(RoxMath PROPERTIES
 
 # ====== Set Folder Properties for Visual Studio ======
 # This nests 'math' under 'Graphics' in the solution
-set_target_properties(RoxMath PROPERTIES FOLDER "Graphics")
+set_target_properties(RoxMath PROPERTIES FOLDER "Core")

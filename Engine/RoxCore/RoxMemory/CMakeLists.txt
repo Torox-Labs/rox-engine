@@ -18,5 +18,5 @@ set_target_properties(RoxMemory PROPERTIES
 
 # ====== Set Folder Properties for Visual Studio ======
 # This nests 'memory' under 'Graphics' in the solution
-set_target_properties(RoxMemory PROPERTIES FOLDER "Graphics")
+set_target_properties(RoxMemory PROPERTIES FOLDER "Core")
 

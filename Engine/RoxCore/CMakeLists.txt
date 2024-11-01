@@ -3,7 +3,11 @@ set(SOURCE_SUBDIRS
     RoxSystem
     RoxApp
     RoxInput
+    RoxLogger
+    RoxMemory
+    RoxMath # This will be deleted on the future and send to RoxMath
     RoxFormats
+    RoxResources
 )
 
 # ====== Collect Source Files ======
@@ -23,7 +27,11 @@ target_link_libraries(${PROJECT_NAME}
     RoxSystem
     RoxApp
     RoxInput
+    RoxLogger
+    RoxMemory
+    RoxMath # This will be deleted on the future and send to RoxMath
     RoxFormats
+    RoxResources
     # External Libraries
 )
 
