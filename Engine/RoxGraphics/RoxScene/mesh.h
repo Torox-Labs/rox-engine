@@ -16,9 +16,9 @@ namespace RoxScene
 
 struct shared_mesh
 {
-    RoxRender::RoxVbo vbo;
+    RoxRender::RoxVbo vbo;  // Vertex Buffer Object containing vertex data
 
-    RoxMath::Aabb aabb;
+    RoxMath::Aabb aabb;  // Axis-Aligned Bounding Box of the mesh
 
     struct aabb_bone_extend
     {
@@ -29,27 +29,25 @@ struct shared_mesh
 
     struct group
     {
-        std::string name;
-        RoxMath::Aabb aabb;
-        unsigned int material_idx;
-        unsigned int offset;
-        unsigned int count;
-        RoxRender::RoxVbo::ELEMENT_TYPE elem_type;
-
-        group(): material_idx(0),offset(0),count(0),elem_type(RoxRender::RoxVbo::TRIANGLES) {}
+        std::string name;              // Name of the group (optional)
+        RoxMath::Aabb aabb;            // AABB for the group
+        unsigned int material_idx;     // Index into the materials vector
+        unsigned int offset;           // Offset into the vertex/index buffer
+        unsigned int count;            // Number of elements to render
+        RoxRender::RoxVbo::ELEMENT_TYPE elem_type; // Primitive type (e.g., triangles)
     };
 
-    std::vector<group> groups;
-    std::vector<material> materials;
-    RoxRender::RoxSkeleton skeleton;
+    std::vector<group> groups;          // Groups/submeshes within the mesh
+    std::vector<material> materials;    // Materials used by the mesh
+    RoxRender::RoxSkeleton skeleton;    // Skeleton for skeletal animation (optional)
 
     struct misc_info
     {
-        std::string name, type;
-        std::vector<std::pair<std::string, std::string> > string_params;
-        std::vector<std::pair<std::string, RoxMath::Vector4> > vec4_params;
+        std::string name, type;  // Miscellaneous info (optional)
+        std::vector<std::pair<std::string, std::string>> string_params;
+        std::vector<std::pair<std::string, RoxMath::Vector4>> vec4_params;
     };
-    std::vector<misc_info> misc;
+    std::vector<misc_info> misc;  // Miscellaneous data (optional)
 
     bool release()
     {

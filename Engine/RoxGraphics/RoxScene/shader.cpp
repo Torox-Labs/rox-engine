@@ -424,7 +424,7 @@ bool RoxShader::load(const char *name)
     return m_internal.load(name);
 }
 
-void RoxShader::unload()
+void RoxScene::RoxShader::unload()
 {
     m_internal.unload();
     if(skeleton_blit.isValid() && !m_internal.get_shared_resources().getFirstResource().isValid())
