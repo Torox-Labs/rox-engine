@@ -1,3 +1,0 @@
-@pass "default"
-shader="obj.nsh"
-blend="src_alpha:inv_src_alpha"
