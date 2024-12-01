@@ -40,7 +40,7 @@ bool mesh::load_nms_mesh_section(shared_mesh &res,const void *data,size_t size,i
     RoxFormats::nms_mesh_chunk c;
     if(!c.read_header(data,size,version))
     {
-        log()<<"nms load warning: invalid RoxFormats::RMesh chunk\n";
+        log()<<"nms load warning: invalid mesh chunk\n";
         return false;
     }
 
@@ -217,7 +217,7 @@ bool mesh::load_nms_general_section(shared_mesh &res,const void *data,size_t siz
 
 bool mesh::load_nms(shared_mesh &res,resource_data &data,const char* name)
 {
-    if(!data.getSize() || data.getSize()<8 || memcmp(data.getData(),"rox mesh",8)!=0)
+    if(!data.getSize() || data.getSize()<8 || memcmp(data.getData(),"nya mesh",8)!=0)
         return false;
 
     RoxFormats::RMesh m;
@@ -276,6 +276,7 @@ bool mesh_internal::init_from_shared()
 
 bool mesh::load(const char *name)
 {
+    RoxLogger::log() << name << "\n";
     mesh_internal::default_load_function(load_nms);
 
     if(!m_internal.load(name))
@@ -356,7 +357,7 @@ void mesh_internal::draw_group(int idx, const char *pass_name) const
     int mat_idx=get_mat_idx(idx);
     if(mat_idx<0)
     {
-        RoxLogger::warning()<<"invalid material for group'"<<idx<<"in RoxFormats::RMesh"<<get_name()<<"\n";
+        RoxLogger::warning()<<"invalid material for group'"<<idx<<"in mesh"<<get_name()<<"\n";
         return;
     }
 

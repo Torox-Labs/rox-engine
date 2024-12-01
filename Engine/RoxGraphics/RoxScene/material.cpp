@@ -177,11 +177,11 @@ bool material::load_text(shared_material &res,resource_data &data,const char* na
                 if(!subsection_type || !subsection_value)
                     continue;
 
-                if(strcmp(subsection_type,"RoxShader") == 0)
+                if(strcmp(subsection_type,"shader") == 0)
                 {
                     if(!p.m_shader.load(subsection_value))
                     {
-                        log()<<"can't load RoxShader when loding material '"<<name<<"'\n";
+                        log()<<"can't load shader when loading material '"<<name<<"'\n";
                         return false;
                     }
                     continue;

@@ -33,18 +33,18 @@ public:
 
         char text[1024];
 
-        sprintf(text,"varying float idx;"
-                     "void main(){"
-                     "idx=gl_MultiTexCoord0.x*%d.0;"
-                     "gl_Position=gl_Vertex;}",array_size);
+        sprintf(text,R"(varying float idx;
+                     void main(){
+                     idx=gl_MultiTexCoord0.x*%d.0;
+                     gl_Position=gl_Vertex;})",array_size);
 
         m_sh3.addProgram(RoxRender::RoxShader::VERTEX,text);
         m_sh4.addProgram(RoxRender::RoxShader::VERTEX,text);
 
-        const char ps[]="uniform vec%d data[%d];"
-                        "varying float idx;"
-                        "void main(){"
-                        "gl_FragColor=Vector4(data[int(idx)]%s);}";
+        const char ps[]=R"(uniform vec%d data[%d];
+                        varying float idx;
+                        void main(){
+                        gl_FragColor=Vector4(data[int(idx)]%s);})";
 
         sprintf(text,ps,3,array_size,",0.0");
         m_sh3.addProgram(RoxRender::RoxShader::PIXEL,text);
@@ -170,7 +170,7 @@ bool load_nya_shader_internal(shared_shader &res, shader_description &desc, reso
             const char *file=parser.getSectionName(section_idx);
             if(!file || !file[0])
             {
-                log()<<"unable to load include in RoxShader "<<name<<": invalid filename\n";
+                log()<<"unable to load include in shader "<<name<<": invalid filename\n";
                 return false;
             }
 
@@ -189,7 +189,7 @@ bool load_nya_shader_internal(shared_shader &res, shader_description &desc, reso
             RoxResources::RoxResourceData *file_data=RoxResources::getResourcesProvider().access(path.c_str());
             if(!file_data)
             {
-                log()<<"unable to load include resource in RoxShader "<<name<<": unable to access resource "<<path.c_str()<<"\n";
+                log()<<"unable to load include resource in shader "<<name<<": unable to access resource "<<path.c_str()<<"\n";
                 return false;
             }
 
@@ -200,7 +200,7 @@ bool load_nya_shader_internal(shared_shader &res, shader_description &desc, reso
 
             if(!load_nya_shader_internal(res,desc,include_data,path.c_str(),true))
             {
-                log()<<"unable to load include in RoxShader "<<name<<": unknown format or invalid data in "<<path.c_str()<<"\n";
+                log()<<"unable to load include in shader "<<name<<": unknown format or invalid data in "<<path.c_str()<<"\n";
                 include_data.free();
                 return false;
             }
@@ -222,7 +222,7 @@ bool load_nya_shader_internal(shared_shader &res, shader_description &desc, reso
             const char *semantics=parser.getSectionName(section_idx,1);
             if(!name || !semantics)
             {
-                log()<<"unable to load RoxShader "<<name<<": invalid sampler syntax\n";
+                log()<<"unable to load shader "<<name<<": invalid sampler syntax\n";
                 return false;
             }
 
@@ -246,7 +246,7 @@ bool load_nya_shader_internal(shared_shader &res, shader_description &desc, reso
             const char *semantics=parser.getSectionName(section_idx,1);
             if(!name || !semantics)
             {
-                log()<<"unable to load RoxShader "<<name<<": invalid predefined syntax\n";
+                log()<<"unable to load shader "<<name<<": invalid predefined syntax\n";
                 return false;
             }
 
@@ -299,7 +299,7 @@ bool load_nya_shader_internal(shared_shader &res, shader_description &desc, reso
             const char *semantics=parser.getSectionName(section_idx,1);
             if(!name || !semantics)
             {
-                log()<<"unable to load RoxShader "<<name<<": invalid uniform syntax\n";
+                log()<<"unable to load shader "<<name<<": invalid uniform syntax\n";
                 return false;
             }
 
@@ -315,14 +315,14 @@ bool load_nya_shader_internal(shared_shader &res, shader_description &desc, reso
             RoxFormats::RoxMathExprParser p;
             if(!name || !name[0] || !p.parse(parser.getSectionValue(section_idx)))
             {
-                log()<<"unable to load RoxShader "<<name<<": invalid procedural\n";
+                log()<<"unable to load shader "<<name<<": invalid procedural\n";
                 return false;
             }
 
             desc.procedural.push_back(std::make_pair(name,p));
         }
         else
-            log()<<"scene RoxShader load warning: unsupported RoxShader tag "<<parser.getSectionType(section_idx)<<" in "<<name<<"\n";
+            log()<<"scene shader load warning: unsupported shader tag "<<parser.getSectionType(section_idx)<<" in "<<name<<"\n";
     }
 
     if(include)
@@ -330,13 +330,13 @@ bool load_nya_shader_internal(shared_shader &res, shader_description &desc, reso
 
     if(desc.VERTEX.empty())
     {
-        log()<<"scene RoxShader load error: empty VERTEX RoxShader in "<<name<<"\n";
+        log()<<"scene shader load error: empty vertex shader in "<<name<<"\n";
         return false;
     }
 
     if(desc.PIXEL.empty())
     {
-        log()<<"scene RoxShader load error: empty PIXEL RoxShader in "<<name<<"\n";
+        log()<<"scene shader load error: empty pixel shader in "<<name<<"\n";
         return false;
     }
 

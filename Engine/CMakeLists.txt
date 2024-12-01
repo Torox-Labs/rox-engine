@@ -26,11 +26,11 @@ add_library(${PROJECT_NAME} SHARED rox_engine.cpp)
 target_include_directories(${PROJECT_NAME}
     PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
-    "D:/CLT/assimp/include/assimp"
-    "D:/CLT/zlib"
-    "D:/CLT/zlib/build"
-    "D:/CLT/bullet3/build/src"
-    "D:/CLT/OpenGL/glfw_3.3.9/include/GLFW"
+    "D:/CL/assimp/include/assimp"
+    "D:/CL/zlib"
+    "D:/CL/zlib/build"
+    "D:/CL/bullet3/build/src"
+    "D:/CL/OpenGL/glfw_3.3.9/include/GLFW"
 )
 
 # ====== Link Libraries ======
