@@ -19,7 +19,6 @@
 #include "RoxRenderObjects.h"
 #include "RoxBitmap.h"
 #include "RoxFbo.h"
-#include "glad/include/glad/glad.h"
 
 namespace RoxRender
 {
@@ -27,8 +26,11 @@ namespace RoxRender
 
 bool RoxRenderOpengl::isAvailable() const
 {
-    static bool gladInitialized = gladLoadGL();
-    return gladInitialized;
+    if (!gladLoadGLLoader((GLADloadproc)wglGetProcAddress))
+    {
+        log() << "Failed to initialize GLAD\n";
+        return false;
+    }
 }
 
 namespace
