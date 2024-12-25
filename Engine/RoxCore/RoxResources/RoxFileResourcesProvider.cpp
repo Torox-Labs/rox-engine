@@ -390,7 +390,7 @@ namespace RoxResources
 
         if (fread(data, 1, size, file) != size)
         {
-            RoxLogger::log() << "unable to read file data chunk: unexpected size of readen data\n";
+            RoxLogger::log() << "unable to read file data chunk: unexpected size of reader data\n";
             return false;
         }
 

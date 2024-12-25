@@ -19,13 +19,16 @@
 #include "RoxRenderObjects.h"
 #include "RoxBitmap.h"
 #include "RoxFbo.h"
+#include "glad/include/glad/glad.h"
 
 namespace RoxRender
 {
 
+
 bool RoxRenderOpengl::isAvailable() const
 {
-    return true; //ToDo
+    static bool gladInitialized = gladLoadGL();
+    return gladInitialized;
 }
 
 namespace
@@ -85,12 +88,12 @@ namespace
                 if(!objects[i])
                     continue;
 
-                glDetachShader(program,objects[i]);
-                glDeleteShader(objects[i]);
+                ::glDetachShader(program,objects[i]);
+                ::glDeleteShader(objects[i]);
             }
 
             if( program )
-                glDeleteShader(program);
+                ::glDeleteShader(program);
 
             *this= ShaderObj();
         }
@@ -104,13 +107,13 @@ namespace
 
         if(idx<0)
         {
-            glUseProgram(0);
+            ::glUseProgram(0);
             applied_state.shader = -1;
             return;
         }
 
         ShaderObj &shdr=shaders.get(idx);
-        glUseProgram(shdr.program);
+        ::glUseProgram(shdr.program);
         if(!shdr.program)
             applied_state.shader = -1;
         else
@@ -123,36 +126,36 @@ namespace
         if(idx==active_layer)
             return;
         active_layer=idx;
-        glActiveTexture(GL_TEXTURE0+idx);
+        ::glActiveTexture(GL_TEXTURE0+idx);
     }
 }
 
-GLuint compile_shader(RoxRender::RoxShader::PROGRAM_TYPE type,const char *src)
+GLuint CompileShader(RoxShader::PROGRAM_TYPE type,const char *src)
 {
     int gl_type;
     switch(type)
     {
-        case RoxRender::RoxShader::VERTEX:   gl_type=GL_VERTEX_SHADER; break;
-        case RoxRender::RoxShader::PIXEL:    gl_type=GL_FRAGMENT_SHADER; break;
-        case RoxRender::RoxShader::GEOMETRY: gl_type=GL_GEOMETRY_SHADER; break;
+        case RoxShader::VERTEX:   gl_type=GL_VERTEX_SHADER; break;
+        case RoxShader::PIXEL:    gl_type=GL_FRAGMENT_SHADER; break;
+        case RoxShader::GEOMETRY: gl_type=GL_GEOMETRY_SHADER; break;
         default: return 0;
     }
 
-    GLuint RoxShader=glCreateShader(gl_type);
-    glShaderSource(RoxShader,1,&src,0);
-    glCompileShader(RoxShader);
+    GLuint RoxShader= ::glCreateShader(gl_type);
+    ::glShaderSource(RoxShader,1,&src,0);
+    ::glCompileShader(RoxShader);
     GLint compiled=1;
-    glGetShaderiv(RoxShader,GL_COMPILE_STATUS,&compiled);
+    ::glGetShaderiv(RoxShader,GL_COMPILE_STATUS,&compiled);
     if(!compiled)
     {
         GLint log_len=0;
         const static char type_str[][12]={"VERTEX","PIXEL","geometry","tesselation"};
         log()<<"Can't compile "<<type_str[type]<<" RoxShader: \n";
-        glGetShaderiv(RoxShader,GL_INFO_LOG_LENGTH,&log_len);
+        ::glGetShaderiv(RoxShader,GL_INFO_LOG_LENGTH,&log_len);
         if(log_len>0)
         {
             std::string log_text(log_len,0);
-            glGetShaderInfoLog(RoxShader,log_len,&log_len,&log_text[0]);
+            ::glGetShaderInfoLog(RoxShader,log_len,&log_len,&log_text[0]);
             log()<<log_text.c_str()<<"\n";
         }
         return 0;
@@ -167,7 +170,7 @@ int RoxRenderOpengl::createShader(const char *VERTEX,const char *fragment)
     const int idx=shaders.add();
     ShaderObj &shdr=shaders.get(idx);
 
-    shdr.program=glCreateProgram();
+    shdr.program= ::glCreateProgram();
     if(!shdr.program)
     {
         log()<<"Unable to create RoxShader program object\n";
@@ -188,19 +191,6 @@ int RoxRenderOpengl::createShader(const char *VERTEX,const char *fragment)
                 ft_vars.push_back(parser.getOut(i).name);
         }
 
-  #ifdef OPENGL_ES
-    #ifndef __APPLE__
-        parser.fix_per_component_functions(); //some droids despise glsl specs
-    #endif
-
-        if(!parser.convert_to_glsl_es2())
-        {
-            log()<<"Unable to add RoxShader program: cannot convert RoxShader code to glsl for es2\n";
-            log()<<parser.getError()<<"\n";
-            shaders.remove(idx);
-            return -1;
-        }
-  #else
         if(!parser.convertToGlsl3())
         {
             log()<<"Unable to add RoxShader program: cannot convert RoxShader code to glsl3\n";
@@ -208,15 +198,15 @@ int RoxRenderOpengl::createShader(const char *VERTEX,const char *fragment)
             shaders.remove(idx);
             return -1;
         }
-  #endif
-        GLuint object=compile_shader(type,parser.getCode());
+
+    	GLuint object= CompileShader(type,parser.getCode());
         if(!object)
         {
             shaders.remove(idx);
             return -1;
         }
 
-        glAttachShader(shdr.program,object);
+        ::glAttachShader(shdr.program,object);
         shdr.objects[type]=object;
 
         if(i==0)
@@ -224,10 +214,10 @@ int RoxRenderOpengl::createShader(const char *VERTEX,const char *fragment)
             for(int i=0;i<parser.getAttributesCount();++i)
             {
                 const RoxShaderCodeParser::variable a=parser.getAttribute(i);
-                if(a.name=="_nya_Vertex") glBindAttribLocation(shdr.program,vertex_attribute,a.name.c_str());
-                else if(a.name=="_nya_Normal") glBindAttribLocation(shdr.program,normal_attribute,a.name.c_str());
-                else if(a.name=="_nya_Color") glBindAttribLocation(shdr.program,color_attribute,a.name.c_str());
-                else if(a.name.find("_nya_MultiTexCoord")==0) glBindAttribLocation(shdr.program,tc0_attribute+a.idx,a.name.c_str());
+                if(a.name=="_nya_Vertex") ::glBindAttribLocation(shdr.program,vertex_attribute,a.name.c_str());
+                else if(a.name=="_nya_Normal") ::glBindAttribLocation(shdr.program,normal_attribute,a.name.c_str());
+                else if(a.name=="_nya_Color") ::glBindAttribLocation(shdr.program,color_attribute,a.name.c_str());
+                else if(a.name.find("_nya_MultiTexCoord")==0) ::glBindAttribLocation(shdr.program,tc0_attribute+a.idx,a.name.c_str());
             }
         }
 
@@ -269,21 +259,21 @@ int RoxRenderOpengl::createShader(const char *VERTEX,const char *fragment)
         std::vector<const GLchar *> vars;
         for(int i=0;i<(int)ft_vars.size();++i)
             vars.push_back(ft_vars[i].c_str());
-        glTransformFeedbackVaryings(shdr.program,(GLsizei)vars.size(),vars.data(),GL_INTERLEAVED_ATTRIBS);
+        ::glTransformFeedbackVaryings(shdr.program,(GLsizei)vars.size(),vars.data(),GL_INTERLEAVED_ATTRIBS);
     }
 
-    glLinkProgram(shdr.program);
+    ::glLinkProgram(shdr.program);
     GLint result=1;
-    glGetProgramiv(shdr.program,GL_LINK_STATUS,&result);
+    ::glGetProgramiv(shdr.program,GL_LINK_STATUS,&result);
     if(!result)
     {
         log()<<"Can't link RoxShader\n";
         GLint log_len=0;
-        glGetProgramiv(shdr.program,GL_INFO_LOG_LENGTH,&log_len);
+        ::glGetProgramiv(shdr.program,GL_INFO_LOG_LENGTH,&log_len);
         if(log_len>0)
         {
             std::string log_text(log_len,0);
-            glGetProgramInfoLog(shdr.program,log_len,&log_len,&log_text[0]);
+            ::glGetProgramInfoLog(shdr.program,log_len,&log_len,&log_text[0]);
             log()<<log_text.c_str()<<"\n";
         }
 
@@ -299,9 +289,9 @@ int RoxRenderOpengl::createShader(const char *VERTEX,const char *fragment)
         if(u.type!=RoxShader::UNIFORM_SAMPLER2D && u.type!=RoxShader::UNIFORM_SAMPLER_CUBE)
             continue;
 
-        int handler=glGetUniformLocation(shdr.program,u.name.c_str());
+        int handler= ::glGetUniformLocation(shdr.program,u.name.c_str());
         if(handler>=0)
-            glUniform1i(handler,(int)layer);
+            ::glUniform1i(handler,(int)layer);
         else
             log()<<"Unable to set RoxShader sampler \'"<<u.name.c_str()<<"\': probably not found\n";
 
@@ -316,15 +306,15 @@ int RoxRenderOpengl::createShader(const char *VERTEX,const char *fragment)
 
     set_shader(idx);
 
-    if(shdr.mat_mvp>0)
-        shdr.mat_mvp=glGetUniformLocation(shdr.program,"_nya_ModelViewProjectionMatrix");
-    else if(shdr.mat_mv>0)
-        shdr.mat_mv=glGetUniformLocation(shdr.program,"_nya_ModelViewMatrix");
-    else if(shdr.mat_p>0)
-        shdr.mat_p=glGetUniformLocation(shdr.program,"_nya_ProjectionMatrix");
+    if (shdr.mat_mvp > 0)
+        shdr.mat_mvp = ::glGetUniformLocation(shdr.program, "_nya_ModelViewProjectionMatrix");
+    else if (shdr.mat_mv > 0)
+        shdr.mat_mv = ::glGetUniformLocation(shdr.program, "_nya_ModelViewMatrix");
+    else if (shdr.mat_p > 0)
+        shdr.mat_p = :: glGetUniformLocation(shdr.program, "_nya_ProjectionMatrix");
 
     for(int i=0;i<(int)shdr.uniforms.size();++i)
-        shdr.uniforms[i].handler=glGetUniformLocation(shdr.program,shdr.uniforms[i].name.c_str());
+        shdr.uniforms[i].handler= ::glGetUniformLocation(shdr.program,shdr.uniforms[i].name.c_str());
 
     int cache_size=0;
     for(int i=0;i<(int)shdr.uniforms.size();++i)
@@ -352,7 +342,7 @@ void RoxRenderOpengl::removeShader(int RoxShader)
 {
     if(applied_state.shader==RoxShader)
     {
-        glUseProgram(0);
+        ::glUseProgram(0);
         applied_state.shader=-1;
     }
     shaders.remove(RoxShader);
@@ -376,11 +366,11 @@ void RoxRenderOpengl::setUniform(int RoxShader,int idx,const float *buf,uint cou
     const int handler=s.uniforms[idx].handler;
     switch(s.uniforms[idx].type)
     {
-        case RoxShader::UNIFORM_MAT4: glUniformMatrix4fv(handler,count/16,false,buf); break;
-        case RoxShader::UNIFORM_VEC4: glUniform4fv(handler,count/4,buf); break;
-        case RoxShader::UNIFORM_VEC3: glUniform3fv(handler,count/3,buf); break;
-        case RoxShader::UNIFORM_VEC2: glUniform2fv(handler,count/2,buf); break;
-        case RoxShader::UNIFORM_FLOAT: glUniform1fv(handler,count,buf); break;
+        case RoxShader::UNIFORM_MAT4: ::glUniformMatrix4fv(handler,count/16,false,buf); break;
+        case RoxShader::UNIFORM_VEC4: ::glUniform4fv(handler,count/4,buf); break;
+        case RoxShader::UNIFORM_VEC3: ::glUniform3fv(handler,count/3,buf); break;
+        case RoxShader::UNIFORM_VEC2: ::glUniform2fv(handler,count/2,buf); break;
+        case RoxShader::UNIFORM_FLOAT: ::glUniform1fv(handler,count,buf); break;
         default: break;
     }
 }
@@ -452,7 +442,7 @@ namespace
             vertex_array_object=0;
 #endif
             if(id)
-                glDeleteBuffers(1,&id);
+                ::glDeleteBuffers(1,&id);
             id=0;
         }
     };
@@ -469,7 +459,7 @@ namespace
         void release()
         {
             if(id)
-                glDeleteBuffers(1,&id);
+                ::glDeleteBuffers(1,&id);
             id=0;
         }
     };
@@ -482,9 +472,9 @@ int RoxRenderOpengl::createVertexBuffer(const void *data,uint stride,uint count,
 
     const int idx=vert_bufs.add();
     vert_buf &v=vert_bufs.get(idx);
-    glGenBuffers(1,&v.id);
-    glBindBuffer(GL_ARRAY_BUFFER,v.id);
-    glBufferData(GL_ARRAY_BUFFER,count*stride,data,gl_usage(usage));
+    ::glGenBuffers(1,&v.id);
+    ::glBindBuffer(GL_ARRAY_BUFFER,v.id);
+    ::glBufferData(GL_ARRAY_BUFFER,count*stride,data,gl_usage(usage));
     v.count=count;
     v.stride=stride;
 #ifdef USE_VAO
@@ -517,11 +507,11 @@ void RoxRenderOpengl::updateVertexBuffer(int idx,const void *data)
 #ifdef USE_VAO
         glBindVertexArray(0);
 #endif
-        glBindBuffer(GL_ARRAY_BUFFER,v.id);
+        ::glBindBuffer(GL_ARRAY_BUFFER,v.id);
         applied_state.vertex_buffer=-1;
     }
-    glBufferData(GL_ARRAY_BUFFER,v.count*v.stride,0,gl_usage(v.usage)); //orphaning
-    glBufferSubData(GL_ARRAY_BUFFER,0,v.count*v.stride,data);
+    ::glBufferData(GL_ARRAY_BUFFER,v.count*v.stride,0,gl_usage(v.usage)); //orphaning
+    ::glBufferSubData(GL_ARRAY_BUFFER,0,v.count*v.stride,data);
 
 #ifdef USE_VAO
     //if(applied_state.vertex_buffer!=idx)
@@ -537,7 +527,7 @@ bool RoxRenderOpengl::getVertexData(int idx,void *data)
 #ifdef USE_VAO
         glBindVertexArray(0);
 #endif
-        glBindBuffer(GL_ARRAY_BUFFER,v.id);
+        ::glBindBuffer(GL_ARRAY_BUFFER,v.id);
         applied_state.vertex_buffer=-1;
     }
 
@@ -556,7 +546,7 @@ bool RoxRenderOpengl::getVertexData(int idx,void *data)
         return false;
   #endif
 #else
-    glGetBufferSubData(GL_ARRAY_BUFFER,0,v.stride*v.count,data);
+    ::glGetBufferSubData(GL_ARRAY_BUFFER,0,v.stride*v.count,data);
 #endif
 
 #ifdef USE_VAO
@@ -571,7 +561,7 @@ void RoxRenderOpengl::removeVertexBuffer(int idx)
     if(active_transform_feedback==idx)
     {
         active_transform_feedback=0;
-        glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER,0,0);
+        ::glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER,0,0);
     }
 
     if(applied_state.vertex_buffer==idx)
@@ -579,7 +569,7 @@ void RoxRenderOpengl::removeVertexBuffer(int idx)
 #ifdef USE_VAO
         glBindVertexArray(0);
 #endif
-        glBindBuffer(GL_ARRAY_BUFFER,0);
+        ::glBindBuffer(GL_ARRAY_BUFFER,0);
         applied_state.vertex_buffer=-1;
     }
     vert_bufs.remove(idx);
@@ -599,9 +589,9 @@ int RoxRenderOpengl::createIndexBuffer(const void *data,RoxVbo::INDEX_SIZE size,
     applied_state.index_buffer=-1;
 #endif
 
-    glGenBuffers(1,&i.id);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,i.id);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,size*indices_count,data,gl_usage(usage));
+    ::glGenBuffers(1,&i.id);
+    ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,i.id);
+    ::glBufferData(GL_ELEMENT_ARRAY_BUFFER,size*indices_count,data,gl_usage(usage));
     i.type=size;
     i.count=indices_count;
     i.usage=usage;
@@ -623,8 +613,8 @@ void RoxRenderOpengl::updateIndexBuffer(int idx,const void *data)
     applied_state.index_buffer=-1;
 #endif
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,i.id);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,i.count*i.type,data,gl_usage(i.usage));
+    ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,i.id);
+    ::glBufferData(GL_ELEMENT_ARRAY_BUFFER,i.count*i.type,data,gl_usage(i.usage));
 
 #ifdef USE_VAO
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
@@ -642,7 +632,7 @@ bool RoxRenderOpengl::getIndexData(int idx,void *data)
     applied_state.index_buffer=-1;
 #endif
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,i.id);
+    ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,i.id);
 
 #ifdef OPENGL_ES
   #ifdef __ANDROID__
@@ -659,7 +649,7 @@ bool RoxRenderOpengl::getIndexData(int idx,void *data)
         return false;
   #endif
 #else
-    glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER,0,i.type*i.count,data);
+    ::glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER,0,i.type*i.count,data);
 #endif
 
 #ifdef USE_VAO
@@ -672,7 +662,7 @@ void RoxRenderOpengl::removeIndexBuffer(int idx)
 {
     if(applied_state.index_buffer==idx)
     {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+        ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
         applied_state.index_buffer=-1;
     }
     ind_bufs.remove(idx);
@@ -726,7 +716,7 @@ namespace
 #if defined GL_GENERATE_MIPMAP && !defined OPENGL3
         glTexParameteri(gl_type,GL_GENERATE_MIPMAP,GL_FALSE);
 #else
-        glGenerateMipmap(gl_type);
+        ::glGenerateMipmap(gl_type);
 #endif
     }
 
@@ -912,7 +902,7 @@ namespace
                         else
                             size=(w>4?w:4)/4 * (h>4?h:4)/4 * source_bpp*2;
 
-                        glCompressedTexImage2D(gl_type,i,t.gl_format,w,h,0,size,data_pointer);
+                        ::glCompressedTexImage2D(gl_type,i,t.gl_format,w,h,0,size,data_pointer);
                     }
                     data_pointer+=size;
                 }
@@ -1042,8 +1032,8 @@ bool RoxRenderOpengl::getTextureData(int RoxTexture,uint x,uint y,uint w,uint h,
     glViewport(0,0,x+w,y+h);
 
     uint tmp_fbo;
-    glGenFramebuffers(1,&tmp_fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER,tmp_fbo);
+    ::glGenFramebuffers(1,&tmp_fbo);
+    ::glBindFramebuffer(GL_FRAMEBUFFER,tmp_fbo);
 
     if(t.gl_type==GL_TEXTURE_CUBE_MAP)
     {
@@ -1068,18 +1058,18 @@ bool RoxRenderOpengl::getTextureData(int RoxTexture,uint x,uint y,uint w,uint h,
 
         for(int i=0;i<6;++i)
         {
-            glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,gl_cube_type(i),t.tex_id,0);
+            ::glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,gl_cube_type(i),t.tex_id,0);
             glReadPixels(x,y,w,h,t.gl_format,t.gl_precision,(char *)data+size*i);
         }
     }
     else
     {
-        glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,t.gl_type,t.tex_id,0);
+        ::glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,t.gl_type,t.tex_id,0);
         glReadPixels(x,y,w,h,t.gl_format,t.gl_precision,data);
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER,default_fbo_idx);
-    glDeleteFramebuffers(1,&tmp_fbo);
+    ::glBindFramebuffer(GL_FRAMEBUFFER,default_fbo_idx);
+    ::glDeleteFramebuffers(1,&tmp_fbo);
 
     applied_state.target= -1;
     glViewport(applied_state.viewport.x,applied_state.viewport.y,applied_state.viewport.width,applied_state.viewport.height);
@@ -1131,7 +1121,7 @@ namespace
 
         void create(unsigned int w,unsigned int h,unsigned int f,unsigned int s)
         {
-            if(!glRenderbufferStorageMultisample)
+            if(!::glRenderbufferStorageMultisample)
                 return;
 
             if(!w || !h || s<1)
@@ -1147,11 +1137,11 @@ namespace
             if(f==GL_RGBA)
                 f=GL_RGB5_A1;
 #endif
-            glGenRenderbuffers(1,&buf);
-            glBindRenderbuffer(GL_RENDERBUFFER,buf);
-            glRenderbufferStorageMultisample(GL_RENDERBUFFER,s,f,w,h);
-            glBindRenderbuffer(GL_RENDERBUFFER,0);
-            glGenFramebuffers(1,&RoxFbo);
+            ::glGenRenderbuffers(1,&buf);
+            ::glBindRenderbuffer(GL_RENDERBUFFER,buf);
+            ::glRenderbufferStorageMultisample(GL_RENDERBUFFER,s,f,w,h);
+            ::glBindRenderbuffer(GL_RENDERBUFFER,0);
+            ::glGenFramebuffers(1,&RoxFbo);
 
             width=w,height=h,samples=s,format=f;
         }
@@ -1160,8 +1150,8 @@ namespace
 
         void release()
         {
-            if(buf) glDeleteRenderbuffers(1,&buf);
-            if(RoxFbo) glDeleteFramebuffers(1,&RoxFbo);
+            if(buf) ::glDeleteRenderbuffers(1,&buf);
+            if(RoxFbo) ::glDeleteFramebuffers(1,&RoxFbo);
             *this=ms_buffer();
         }
 
@@ -1190,7 +1180,7 @@ namespace
                 color_attachments[i].multisample.release();
             multisample_depth.release();
             if(id)
-                glDeleteFramebuffers(1,&id);
+                ::glDeleteFramebuffers(1,&id);
             *this=fbo_obj();
         }
     };
@@ -1202,9 +1192,9 @@ namespace
             return;
 
         const int gl_type=cubemap_side<0?tex.gl_type:gl_cube_type(cubemap_side);
-        glBindFramebuffer(GL_FRAMEBUFFER,RoxFbo);
-        glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,gl_type,tex.tex_id,0);
-        glBindFramebuffer(GL_FRAMEBUFFER,default_fbo_idx);
+        ::glBindFramebuffer(GL_FRAMEBUFFER,RoxFbo);
+        ::glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,gl_type,tex.tex_id,0);
+        ::glBindFramebuffer(GL_FRAMEBUFFER,default_fbo_idx);
 
 #if defined OPENGL_ES && defined __APPLE__
         if(attachment_idx!=0) //ToDo
@@ -1220,13 +1210,13 @@ namespace
         if(glBindFramebuffer)
     #endif
         {
-            glBindFramebuffer(GL_READ_FRAMEBUFFER,from);
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER,RoxFbo);
-            glReadBuffer(GL_COLOR_ATTACHMENT0+attachment_idx);
-            glBlitFramebuffer(0,0,width,height,0,0,width,height,GL_COLOR_BUFFER_BIT,GL_NEAREST);
-            glReadBuffer(GL_COLOR_ATTACHMENT0);
-            glBindFramebuffer(GL_READ_FRAMEBUFFER,default_fbo_idx);
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER,default_fbo_idx);
+            ::glBindFramebuffer(GL_READ_FRAMEBUFFER,from);
+            ::glBindFramebuffer(GL_DRAW_FRAMEBUFFER,RoxFbo);
+            ::glReadBuffer(GL_COLOR_ATTACHMENT0+attachment_idx);
+            ::glBlitFramebuffer(0,0,width,height,0,0,width,height,GL_COLOR_BUFFER_BIT,GL_NEAREST);
+            ::glReadBuffer(GL_COLOR_ATTACHMENT0);
+            ::glBindFramebuffer(GL_READ_FRAMEBUFFER,default_fbo_idx);
+            ::glBindFramebuffer(GL_DRAW_FRAMEBUFFER,default_fbo_idx);
         }
 
         applied_state.target= -1;
@@ -1245,8 +1235,8 @@ int RoxRenderOpengl::createTarget(uint width,uint height,uint samples,const int 
     int idx=fbos.add();
     fbo_obj &f=fbos.get(idx);
 
-    glGenFramebuffers(1,&f.id);
-    glBindFramebuffer(GL_FRAMEBUFFER,f.id);
+    ::glGenFramebuffers(1,&f.id);
+    ::glBindFramebuffer(GL_FRAMEBUFFER,f.id);
 
     bool has_color=false;
     f.color_attachments.resize(attachment_count);
@@ -1263,12 +1253,12 @@ int RoxRenderOpengl::createTarget(uint width,uint height,uint samples,const int 
         if(samples>1)
         {
             f.color_attachments[i].multisample.create(width,height,t.gl_format,samples);
-            glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0+i,GL_RENDERBUFFER,f.color_attachments[i].multisample.buf);
+            ::glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0+i,GL_RENDERBUFFER,f.color_attachments[i].multisample.buf);
         }
         else
         {
             const int gl_type=attachment_sides[i]<0?t.gl_type:gl_cube_type(attachment_sides[i]);
-            glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0+i,gl_type,t.tex_id,0);
+            ::glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0+i,gl_type,t.tex_id,0);
         }
     }
 
@@ -1278,10 +1268,10 @@ int RoxRenderOpengl::createTarget(uint width,uint height,uint samples,const int 
         if(samples>1)
         {
             f.multisample_depth.create(width,height,t.gl_format,samples);
-            glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER,f.multisample_depth.buf);
+            ::glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER,f.multisample_depth.buf);
         }
         else
-            glFramebufferTexture2D(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D,t.tex_id,0);
+            ::glFramebufferTexture2D(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D,t.tex_id,0);
         f.depth_tex_idx=depth_texture;
     }
     else
@@ -1289,7 +1279,7 @@ int RoxRenderOpengl::createTarget(uint width,uint height,uint samples,const int 
 
     f.depth_only=!has_color && depth_texture>=0;
 
-    glBindFramebuffer(GL_FRAMEBUFFER,applied_state.target>=0?fbos.get(applied_state.target).id:default_fbo_idx);
+    ::glBindFramebuffer(GL_FRAMEBUFFER,applied_state.target>=0?fbos.get(applied_state.target).id:default_fbo_idx);
     return idx;
 }
 
@@ -1310,7 +1300,7 @@ void RoxRenderOpengl::resolveTarget(int idx)
             gl_select_multitex_layer(0);
             glBindTexture(tex.gl_type, tex.tex_id);
             applied_state.textures[0]=tex.tex_id;
-            glGenerateMipmap(tex.gl_type);
+            ::glGenerateMipmap(tex.gl_type);
         }
     }
 }
@@ -1319,7 +1309,7 @@ void RoxRenderOpengl::removeTarget(int idx)
 {
     if(applied_state.target==idx)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER,default_fbo_idx);
+        ::glBindFramebuffer(GL_FRAMEBUFFER,default_fbo_idx);
         applied_state.target=-1;
     }
     return fbos.remove(idx);
@@ -1363,7 +1353,7 @@ static void apply_viewport_state(IRoxRenderApi::ViewportState s)
 
     if(s.target!=applied_state.target || ignore_cache_vp)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER,s.target>=0?fbos.get(s.target).id:default_fbo_idx);
+        ::glBindFramebuffer(GL_FRAMEBUFFER,s.target>=0?fbos.get(s.target).id:default_fbo_idx);
 
 #ifndef OPENGL_ES
         const bool no_color=s.target>=0 && fbos.get(s.target).depth_only;
@@ -1504,7 +1494,7 @@ void RoxRenderOpengl::applyState(const State &c)
 
     if(c.blend_src!=a.blend_src || c.blend_dst!=a.blend_dst || ignore_cache)
     {
-        glBlendFuncSeparate(gl_blend_mode(c.blend_src),gl_blend_mode(c.blend_dst),GL_ONE,GL_ONE);
+        ::glBlendFuncSeparate(gl_blend_mode(c.blend_src),gl_blend_mode(c.blend_dst),GL_ONE,GL_ONE);
         a.blend_src=c.blend_src,a.blend_dst=c.blend_dst;
     }
 
@@ -1726,9 +1716,9 @@ void RoxRenderOpengl::transformFeedback(const TfState &s)
     //glEnable(GL_RASTERIZER_DISCARD);
     const vert_buf &dst=vert_bufs.get(s.vertex_buffer_out);
     if(!s.out_offset)
-        glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER,0,dst.id);
+        ::glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER,0,dst.id);
     else
-        glBindBufferRange(GL_TRANSFORM_FEEDBACK_BUFFER,0,dst.id,s.out_offset*dst.stride,s.index_count*dst.stride);
+        ::glBindBufferRange(GL_TRANSFORM_FEEDBACK_BUFFER,0,dst.id,s.out_offset*dst.stride,s.index_count*dst.stride);
     active_transform_feedback=s.vertex_buffer_out;
 
     State ss=applied_state;
@@ -1747,7 +1737,7 @@ bool RoxRenderOpengl::isTransformFeedbackSupported()
 #ifdef NO_EXTENSIONS_INIT
     return true;
 #else
-    return glBeginTransformFeedback!=0;
+    return ::glBeginTransformFeedback!=0;
 #endif
 }
 
@@ -1756,16 +1746,16 @@ unsigned int RoxRenderOpengl::getGlTextureId(int idx)
     return textures.get(idx).tex_id;
 }
 
-void RoxRenderOpengl::glBindTexture2d(uint gl_tex,uint layer)
-{
-    glBindTexture(GL_TEXTURE_2D,gl_tex,layer);
-}
-
-void RoxRenderOpengl::glBindTexture(uint gl_type,uint gl_tex,uint layer)
+void RoxRenderOpengl::rglBindTexture(uint gl_type,uint gl_idx,uint layer)
 {
     set_texture(-1,layer);
     gl_select_multitex_layer((int)layer);
-    glBindTexture(gl_type, gl_tex);
+    glBindTexture(gl_type, gl_idx);
+}
+
+void RoxRenderOpengl::rglBindTexture2d(uint gl_tex, uint layer)
+{
+    rglBindTexture(GL_TEXTURE_2D, gl_tex, layer);
 }
 
 void RoxRenderOpengl::logErrors(const char *place)

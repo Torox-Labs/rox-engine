@@ -19,7 +19,7 @@
 #include <cstdint>
 #include <cstring>
 
-namespace { const char ran_sign[] = { 'r','o','x',' ','a','n','i','m' }; }
+namespace { const char ran_sign[] = { 'n','y','a',' ','a','n','i','m' }; }
 
 namespace RoxFormats
 {

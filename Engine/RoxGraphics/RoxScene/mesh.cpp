@@ -7,7 +7,6 @@
 #include "RoxMemory/RoxTmpBuffers.h"
 #include "RoxFormats/RoxStringConvert.h"
 #include "RoxFormats/RoxMesh.h"
-#include "RoxFormats/RoxMesh.h"
 #include "RoxRender/RoxRender.h"
 #include "RoxScene.h"
 #include "shader.h"
@@ -279,8 +278,15 @@ bool mesh::load(const char *name)
     RoxLogger::log() << name << "\n";
     mesh_internal::default_load_function(load_nms);
 
-    if(!m_internal.load(name))
-        return false;
+    try
+    {
+	    if (!m_internal.load(name))
+		    return false;
+    }
+    catch (const std::exception& e)
+    {
+	    RoxLogger::warning() << "Exception occurred while loading mesh: " << e.what() << "\n";
+    }
 
     return m_internal.init_from_shared();
 }

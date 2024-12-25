@@ -87,8 +87,8 @@ public:
     uint getGlTextureId(int idx);
 
     //for external textures
-    static void glBindTexture(uint gl_type,uint gl_idx,uint layer=0);
-    static void glBindTexture2d(uint gl_idx,uint layer=0);
+    static void rglBindTexture(uint gl_type, uint gl_idx, uint layer = 0);
+    static void rglBindTexture2d(uint gl_idx,uint layer=0);
 
 public:
     static RoxRenderOpengl &get();

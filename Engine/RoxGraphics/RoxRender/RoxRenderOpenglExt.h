@@ -16,38 +16,85 @@
 #pragma once
 
 #ifdef _WIN32
-    #define NOMINMAX
-    #include <windows.h>
-    #include <gl/gl.h>
-    #include <gl/glext.h>
-#elif defined __APPLE__
-    #include "TargetConditionals.h"
-    #define GL_SILENCE_DEPRECATION
-    #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-        #import <OpenGLES/ES2/gl.h>
-        #import <OpenGLES/ES2/glext.h>
-        #define OPENGL_ES
-        #define NO_EXTENSIONS_INIT
-    #else
-        #include <OpenGL/gl3.h>
-        #include <OpenGL/glext.h>
-        #define OPENGL3
-        #define NO_EXTENSIONS_INIT
-    #endif
-#elif __ANDROID__ || EMSCRIPTEN
-    #include <GLES2/gl2.h>
-    #define GL_GLEXT_PROTOTYPES
-    #include <GLES2/gl2ext.h>
-    #define OPENGL_ES
-    #define NO_EXTENSIONS_INIT
-#else
-    #include <GL/glx.h>
-    #include <GL/gl.h>
-    #include <GL/glext.h>
+#define NOMINMAX
+#include <windows.h>
+#include <glad/include/glad/glad.h>
+//#include <gl/gl.h>
+//#include <gl/glext.h>
+
+#pragma region From <wglext.h>
+
+#define WGL_CONTEXT_MAJOR_VERSION_ARB		0x2091
+#define WGL_CONTEXT_MINOR_VERSION_ARB		0x2092
+#define WGL_CONTEXT_FLAGS_ARB				0x2094
+#define WGL_CONTEXT_CORE_PROFILE_BIT_ARB	0x00000001
+#define WGL_CONTEXT_PROFILE_MASK_ARB		0x9126
+
+#define GL_RGB32F_ARB                     0x8815
+#define GL_RGBA32F_ARB                    0x8814
+
+#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT  0x83F1
+#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT  0x83F2
+#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT  0x83F3
+
+#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
+#define GL_TEXTURE_MAX_ANISOTROPY_EXT     0x84FE
+
+// Declare Create Context Attribs function pointer
+typedef HGLRC(WINAPI* PFNWGLCREATECONTEXTATTRIBSARBPROC)(
+    HDC,      			 // First parameter: Device Context
+    HGLRC,				// Second parameter: Share Context
+    const int* attribs // Third parameter: Context Attributes
+    );
+typedef void (APIENTRYP PFNGLBINDBUFFERBASEEXTPROC) (GLenum target, GLuint index, GLuint buffer);
+typedef void (APIENTRYP PFNGLBINDBUFFERRANGEEXTPROC) (GLenum target, GLuint index, GLuint buffer, GLintptr offset, GLsizeiptr size);
+typedef void (APIENTRYP PFNGLBEGINTRANSFORMFEEDBACKEXTPROC) (GLenum primitiveMode);
+typedef void (APIENTRYP PFNGLENDTRANSFORMFEEDBACKEXTPROC) (void);
+
+typedef void (APIENTRYP PFNGLGENBUFFERSARBPROC) (GLsizei n, GLuint* buffers);
+typedef void (APIENTRYP PFNGLBINDBUFFERARBPROC) (GLenum target, GLuint buffer);
+typedef void (APIENTRYP PFNGLBUFFERDATAARBPROC) (GLenum target, GLsizeiptrARB size, const GLvoid* data, GLenum usage);
+typedef void (APIENTRYP PFNGLBUFFERSUBDATAARBPROC) (GLenum target, GLintptrARB offset, GLsizeiptrARB size, const GLvoid* data);
+typedef void (APIENTRYP PFNGLGETBUFFERSUBDATAARBPROC) (GLenum target, GLintptrARB offset, GLsizeiptrARB size, GLvoid* data);
+typedef void (APIENTRYP PFNGLDELETEBUFFERSARBPROC) (GLsizei n, const GLuint* buffers);
+
+typedef void (APIENTRYP PFNGLDRAWELEMENTSINSTANCEDARBPROC) (GLenum mode, GLsizei count, GLenum type, const GLvoid* indices, GLsizei primcount);
+typedef void (APIENTRYP PFNGLDRAWARRAYSINSTANCEDARBPROC) (GLenum mode, GLint first, GLsizei count, GLsizei primcount);
+
+typedef void (APIENTRYP PFNGLACTIVETEXTUREARBPROC) (GLenum texture);
+typedef void (APIENTRYP PFNGLCOMPRESSEDTEXIMAGE2DARBPROC) (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const GLvoid* data);
+typedef void (APIENTRYP PFNGLDEBUGMESSAGECALLBACKARBPROC) (GLDEBUGPROCARB callback, const GLvoid* userParam);
+
+
+
+#pragma endregion
+
+#pragma region From <wgl.h>
+
+// 
+#define GL_LUMINANCE                      0x1909
+#define GL_LUMINANCE_ALPHA                0x190A
+
+#define GL_STACK_OVERFLOW                 0x0503
+#define GL_STACK_UNDERFLOW                0x0504
+
+// Extension string query function pointer type
+typedef const char* (WINAPI* PFNWGLGETEXTENSIONSSTRINGEXTPROC) (void);
+// VSync control function piointer types
+typedef BOOL(WINAPI* PFNWGLSWAPINTERVALEXTPROC) (int);
+typedef int (WINAPI* PFNWGLGETSWAPINTERVALEXTPROC) (void);
+
+#pragma endregion
+
+#else // Linux
+#include <GL/glx.h>    // GLX is Linux's system for connecting OpenGL to the X Window System
+#include <GL/gl.h>     // Core OpenGL header
+#include <GL/glext.h>  // OpenGL extensions
 #endif
 
 namespace
 {
+
 #ifndef GL_VERTEX_SHADER
     #define GL_VERTEX_SHADER GL_VERTEX_SHADER_ARB
 #endif
@@ -56,44 +103,12 @@ namespace
     #define GL_FRAGMENT_SHADER GL_FRAGMENT_SHADER_ARB
 #endif
 
-#ifdef NO_EXTENSIONS_INIT
-  #if !defined(OPENGL3) && !defined(OPENGL_ES)
-    #define glBindBufferBase glBindBufferBaseEXT
-    #define glBindBufferRange glBindBufferRangeEXT
-    #define glBeginTransformFeedback glBeginTransformFeedbackEXT
-    #define glEndTransformFeedback glEndTransformFeedbackEXT
-    #define glTransformFeedbackVaryings glTransformFeedbackVaryingsEXT
-  #endif
-#endif
-
 #ifndef GL_INTERLEAVED_ATTRIBS
     #define GL_INTERLEAVED_ATTRIBS GL_INTERLEAVED_ATTRIBS_EXT
 #endif
 
-#if defined OPENGL3 || defined __APPLE__
+#if defined OPENGL3
     #define USE_VAO
-#endif
-
-#if !defined OPENGL_ES || defined __APPLE__
-    #define USE_INSTANCING
-#endif
-
-#ifdef OPENGL_ES
-    #define glGenVertexArrays glGenVertexArraysOES
-    #define glBindVertexArray glBindVertexArrayOES
-    #define glDeleteVertexArrays glDeleteVertexArraysOES
-    #ifdef __APPLE__
-        #define glDrawElementsInstancedARB glDrawElementsInstancedEXT
-        #define glDrawArraysInstancedARB glDrawArraysInstancedEXT
-    #endif
-#elif defined __APPLE__ && !defined OPENGL3
-    #define glGenVertexArrays glGenVertexArraysAPPLE
-    #define glBindVertexArray glBindVertexArrayAPPLE
-    #define glDeleteVertexArrays glDeleteVertexArraysAPPLE
-#endif
-
-#ifdef OPENGL_ES
-    #define GL_HALF_FLOAT GL_HALF_FLOAT_OES
 #endif
 
 #ifndef GL_HALF_FLOAT
@@ -136,53 +151,8 @@ namespace
     #define GL_TEXTURE_SWIZZLE_RGBA 0x8E46
 #endif
 
-#ifdef OPENGL_ES
-    #define MANUAL_MIPMAP_GENERATION
-
-    #define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT 0x83F1
-    #define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT 0x83F2
-    #define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT 0x83F3
-
-  #ifndef GL_IMG_texture_compression_pvrtc
-    #define GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG 0x8c00
-    #define GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG 0x8c01
-    #define GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG 0x8c02
-    #define GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG 0x8c03
-  #endif
-
-    #define GL_COMPRESSED_RGB8_ETC2 0x9274
-    #define GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2 0x9276
-    #define GL_COMPRESSED_RGBA8_ETC2_EAC 0x9278
-
-  #ifdef __APPLE__
-    #define GL_ETC1_RGB8_OES GL_COMPRESSED_RGB8_ETC2
-  #else
-    #define GL_ETC1_RGB8_OES 0x8D64
-    #define GL_RED_EXT 0x1903
-  #endif
-#endif
-
-#if !defined OPENGL_ES || defined __APPLE__
-    #define USE_BGRA
-#endif
-
 #ifndef GL_MULTISAMPLE
     #define GL_MULTISAMPLE GL_MULTISAMPLE_ARB
-#endif
-
-#ifdef OPENGL_ES
-    #ifdef __APPLE__
-        #define glRenderbufferStorageMultisample glRenderbufferStorageMultisampleAPPLE
-    #else
-        typedef void (*PFNGLBLITFRAMEBUFFERPROC)(GLint,GLint,GLint,GLint,GLint,GLint,GLint,GLint,GLbitfield,GLenum);
-        typedef void (*PFNGLREADBUFFERPROC) (GLenum);
-        typedef void (*PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC)(GLenum,GLsizei,GLenum,GLsizei,GLsizei);
-        PFNGLBLITFRAMEBUFFERPROC glBlitFramebuffer=0;
-        PFNGLREADBUFFERPROC glReadBuffer=0;
-        PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC glRenderbufferStorageMultisample=0;
-        #define GL_READ_FRAMEBUFFER 0x8CA8
-        #define GL_DRAW_FRAMEBUFFER 0x8CA9
-    #endif
 #endif
 
 #ifndef GL_MAX_COLOR_ATTACHMENTS
@@ -207,17 +177,12 @@ namespace
         if(!ext_name)
             return 0;
 
-    #if defined __APPLE__
-        return 0;
-    #else
-      #if defined OPENGL_ES
-        return (void*)eglGetProcAddress(ext_name);
-      #elif defined _WIN32
+    
+      #if defined _WIN32
         return (void*)wglGetProcAddress(ext_name);
       #else
         return (void*)glXGetProcAddressARB((const GLubyte *)ext_name);
       #endif
-    #endif
     }
 
 #ifndef NO_EXTENSIONS_INIT
@@ -376,17 +341,6 @@ namespace
         glDeleteRenderbuffers=(PFNGLDELETERENDERBUFFERSPROC)get_extension("glDeleteRenderbuffers");
         glRenderbufferStorageMultisample=(PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC)get_extension("glRenderbufferStorageMultisample");
         glFramebufferRenderbuffer=(PFNGLFRAMEBUFFERRENDERBUFFERPROC)get_extension("glFramebufferRenderbuffer");
-    #endif
-
-    #if defined OPENGL_ES && !defined __APPLE__
-        const char *gl_version=(const char *)glGetString(GL_VERSION);
-        const bool es3=gl_version!=0 && strncmp(gl_version,"OpenGL ES 3.",12)==0;
-        if(es3)
-        {
-            glBlitFramebuffer=(PFNGLBLITFRAMEBUFFERPROC)get_extension("glBlitFramebuffer");
-            glReadBuffer=(PFNGLREADBUFFERPROC)get_extension("glReadBuffer");
-            glRenderbufferStorageMultisample=(PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC)get_extension("glRenderbufferStorageMultisample");
-        }
     #endif
     }
 }

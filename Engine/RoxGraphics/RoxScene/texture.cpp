@@ -148,7 +148,7 @@ bool texture::load_dds(shared_texture &res,resource_data &data,const char* name)
         {
             if(dds.mipmap_count!=1 || dds.type!=RoxFormats::DirectDrawSurface::TEXTURE_2D) //ToDo
             {
-                log()<<"unable to load dds: uncomplete palette8_rgba support, unable to load file "<<name<<"\n";
+                log()<<"unable to load dds: uncompleted palette8_rgba support, unable to load file "<<name<<"\n";
                 return false;
             }
 

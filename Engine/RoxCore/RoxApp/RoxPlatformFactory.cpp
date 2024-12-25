@@ -22,7 +22,7 @@ namespace RoxApp
 	IRoxPlatformAdapter* createPlatformAdapter()
 	{
 #ifdef _WIN32
-		return new RoxWindowsAdapter();
+	return new RoxWindowsAdapter();
 #elif defined(__ANDROID__)
     return new RoxAndroidAdapter();
 #else

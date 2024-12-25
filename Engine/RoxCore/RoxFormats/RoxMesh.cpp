@@ -20,7 +20,7 @@
 #include <cstdint>
 #include <cstring>
 
-namespace { const char rms_sign[] = { 'r','o','x',' ','m','e','s','h' }; } // Updated signature
+namespace { const char rms_sign[] = { 'n','y','a',' ','m','e','s','h' }; } // Updated signature
 
 namespace RoxFormats
 {
