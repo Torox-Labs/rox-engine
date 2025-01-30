@@ -15,11 +15,61 @@
 #ifdef _WIN32
 
 #ifndef DIRECTX11
-#include <gl/gl.h>
-#include <gl/wglext.h>
-#include <gl/glext.h>
+#include <glad/include/glad/glad.h>
 #include "RoxRender/RoxRenderOpengl.h"
 #endif
+
+using uint = unsigned int;
+
+#pragma region From <glext.h>
+#define GL_MULTISAMPLE_ARB                0x809D
+#pragma endregion
+
+
+#pragma region From <wglext.h>
+
+#define WGL_CONTEXT_MAJOR_VERSION_ARB		0x2091
+#define WGL_CONTEXT_MINOR_VERSION_ARB		0x2092
+#define WGL_CONTEXT_FLAGS_ARB				0x2094
+#define WGL_CONTEXT_CORE_PROFILE_BIT_ARB	0x00000001
+#define WGL_CONTEXT_PROFILE_MASK_ARB		0x9126
+
+//
+#define WGL_DRAW_TO_WINDOW_ARB            0x2001
+#define WGL_SUPPORT_OPENGL_ARB            0x2010
+#define WGL_ACCELERATION_ARB              0x2003
+#define WGL_FULL_ACCELERATION_ARB         0x2027
+#define WGL_COLOR_BITS_ARB                0x2014
+#define WGL_ALPHA_BITS_ARB                0x201B
+#define WGL_DEPTH_BITS_ARB                0x2022
+#define WGL_STENCIL_BITS_ARB              0x2023
+#define WGL_DOUBLE_BUFFER_ARB             0x2011
+#define WGL_SAMPLE_BUFFERS_ARB            0x2041
+#define WGL_SAMPLES_ARB                   0x2042
+
+// Declare Create Context Attribs function pointer
+typedef HGLRC(WINAPI* PFNWGLCREATECONTEXTATTRIBSARBPROC)(
+	HDC,      			 // First parameter: Device Context
+	HGLRC,				// Second parameter: Share Context
+	const int* attribs // Third parameter: Context Attributes
+	);
+typedef BOOL(WINAPI* PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int* piAttribIList, const FLOAT* pfAttribFList, UINT nMaxFormats, int* piFormats, UINT* nNumFormats);
+
+
+#pragma endregion
+
+#pragma region From <wgl.h>
+
+// Extension string query function pointer type
+typedef const char* (WINAPI* PFNWGLGETEXTENSIONSSTRINGEXTPROC) (void);
+// VSync control function piointer types
+typedef BOOL(WINAPI* PFNWGLSWAPINTERVALEXTPROC) (int);
+typedef int (WINAPI* PFNWGLGETSWAPINTERVALEXTPROC) (void);
+
+// Check if extension listed
+typedef const char* (WINAPI* PFNWGLGETEXTENSIONSSTRINGARBPROC) (HDC hdc);
+
+#pragma endregion
 
 namespace RoxApp
 {
@@ -202,21 +252,10 @@ namespace RoxApp
 		wglMakeCurrent(m_handle_draw_context_main,
 			m_hglrc);
 
-		if (antialiasing > 0)
-		{
-			if (!RoxRender::RoxRenderOpengl::hasExtension("GL_ARB_multisample"))
-			{
-				//antialiasing=0;
-				RoxSystem::log() << "GL_ARB_multisample not found\n";
-			}
-		}
-
 		PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = nullptr;
 		if (antialiasing > 0)
 		{
-			wglChoosePixelFormatARB =
-				static_cast<PFNWGLCHOOSEPIXELFORMATARBPROC>(RoxRender::RoxRenderOpengl::getExtension(
-					"wglChoosePixelFormatARB"));
+			wglChoosePixelFormatARB = reinterpret_cast<PFNWGLCHOOSEPIXELFORMATARBPROC>(wglGetProcAddress("wglChoosePixelFormatARB"));
 
 			if (!wglChoosePixelFormatARB)
 			{
@@ -499,6 +538,18 @@ namespace RoxApp
 #endif
 
 		m_hwnd = nullptr;
+	}
+
+	bool RoxWindowsAdapter::hasWGLExtension(const char* extension)
+	{
+		PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB =
+			reinterpret_cast<PFNWGLGETEXTENSIONSSTRINGARBPROC>(
+				wglGetProcAddress("wglGetExtensionsStringARB"));
+		if (!wglGetExtensionsStringARB)
+			return false;
+
+		const char* extensions = wglGetExtensionsStringARB(m_handle_draw_context_main);
+		return extensions && strstr(extensions, extension);
 	}
 
 	// Implement private helper functions

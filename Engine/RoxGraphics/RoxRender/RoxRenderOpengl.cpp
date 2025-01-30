@@ -3,7 +3,7 @@
 // Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
-// Update the render api intefrace to check Metal 1th.
+// Update the render api interface to check Metal, then Other APIs.
 //
 // This file incorporates code from the nya-engine project, which is licensed under the MIT License.
 // See the LICENSE-MIT file in the root directory for more information.
@@ -19,6 +19,7 @@
 #include "RoxRenderObjects.h"
 #include "RoxBitmap.h"
 #include "RoxFbo.h"
+#include "RoxLogger/RoxWarning.h"
 
 namespace RoxRender
 {
@@ -26,10 +27,16 @@ namespace RoxRender
 
 bool RoxRenderOpengl::isAvailable() const
 {
+    // Load GLAD
     if (!gladLoadGLLoader((GLADloadproc)wglGetProcAddress))
     {
-        log() << "Failed to initialize GLAD\n";
+        RoxLogger::log() << "Couldn't Load GLAD \n";
         return false;
+    }
+    else
+    {
+        RoxLogger::log() << "OpenGL Version " << GLVersion.major << "." << GLVersion.minor << "\n";
+        return true;
     }
 }
 
@@ -167,7 +174,7 @@ GLuint CompileShader(RoxShader::PROGRAM_TYPE type,const char *src)
 
 int RoxRenderOpengl::createShader(const char *VERTEX,const char *fragment)
 {
-    init_extensions();
+    
 
     const int idx=shaders.add();
     ShaderObj &shdr=shaders.get(idx);
@@ -470,7 +477,7 @@ namespace
 
 int RoxRenderOpengl::createVertexBuffer(const void *data,uint stride,uint count,RoxVbo::USAGE_HINT usage)
 {
-    init_extensions();
+    
 
     const int idx=vert_bufs.add();
     vert_buf &v=vert_bufs.get(idx);
@@ -579,7 +586,7 @@ void RoxRenderOpengl::removeVertexBuffer(int idx)
 
 int RoxRenderOpengl::createIndexBuffer(const void *data,RoxVbo::INDEX_SIZE size,uint indices_count,RoxVbo::USAGE_HINT usage)
 {
-    init_extensions();
+    
 
     const int idx=ind_bufs.add();
     ind_buf &i=ind_bufs.get(idx);
@@ -929,7 +936,7 @@ namespace
 
 int RoxRenderOpengl::createTexture(const void *data,uint width,uint height,RoxTexture::COLOR_FORMAT &format,int mip_count)
 {
-    init_extensions();
+    
 
     const void *data_a[6]={data};
     return create_texture_(data_a,false,width,height,format,mip_count);
@@ -937,7 +944,7 @@ int RoxRenderOpengl::createTexture(const void *data,uint width,uint height,RoxTe
 
 int RoxRenderOpengl::createCubemap(const void *data[6],uint width,RoxTexture::COLOR_FORMAT &format,int mip_count)
 {
-    init_extensions();
+    
 
     return create_texture_(data,true,width,width,format,mip_count);
 }
@@ -1229,7 +1236,7 @@ namespace
 int RoxRenderOpengl::createTarget(uint width,uint height,uint samples,const int *attachment_textures,
                                  const int *attachment_sides,uint attachment_count,int depth_texture)
 {
-    init_extensions();
+    
 
     if(default_fbo_idx<0)
         glGetIntegerv(GL_FRAMEBUFFER_BINDING,&default_fbo_idx);
@@ -1332,7 +1339,7 @@ unsigned int RoxRenderOpengl::getMaxTargetMsaa()
     static int max_ms=-1;
 
 #if defined OPENGL_ES && !defined __APPLE__
-    init_extensions();
+    
 
     if (!glBlitFramebuffer || !glReadBuffer || !glRenderbufferStorageMultisample)
         return 1;
@@ -1350,7 +1357,7 @@ static void apply_viewport_state(IRoxRenderApi::ViewportState s)
     {
         if(default_fbo_idx<0)
             glGetIntegerv(GL_FRAMEBUFFER_BINDING,&default_fbo_idx);
-        init_extensions();
+        
     }
 
     if(s.target!=applied_state.target || ignore_cache_vp)
@@ -1575,12 +1582,12 @@ template<bool transform_feedback>void draw_(const RoxRender::IRoxRenderApi::Stat
     if(shdr.mat_mvp>=0)
     {
         const RoxMath::Matrix4 mvp=modelview*projection;
-        glUniformMatrix4fv(shdr.mat_mvp,1,false,mvp[0]);
+        glad_glUniformMatrix4fv(shdr.mat_mvp,1,GL_FALSE,mvp[0]);
     }
     if(shdr.mat_mv>=0)
-        glUniformMatrix4fv(shdr.mat_mv,1,false,modelview[0]);
+        glad_glUniformMatrix4fv(shdr.mat_mv,1,GL_FALSE,modelview[0]);
     if(shdr.mat_p>=0)
-        glUniformMatrix4fv(shdr.mat_p,1,false,projection[0]);
+        glad_glUniformMatrix4fv(shdr.mat_p,1,GL_FALSE,projection[0]);
 
     vert_buf &v=vert_bufs.get(s.vertex_buffer);
 
@@ -1599,7 +1606,7 @@ template<bool transform_feedback>void draw_(const RoxRender::IRoxRenderApi::Stat
             applied_layout=RoxVbo::Layout();
             v.active_vao_ibuf=0;
 #endif
-            glBindBuffer(GL_ARRAY_BUFFER,v.id);
+            glad_glBindBuffer(GL_ARRAY_BUFFER,v.id);
 
             glEnableVertexAttribArray(vertex_attribute);
             glVertexAttribPointer(vertex_attribute,v.layout.pos.dimension,get_gl_element_type(v.layout.pos.type),true,
@@ -1787,9 +1794,6 @@ void RoxRenderOpengl::logErrors(const char *place)
     }
 }
 
-bool RoxRenderOpengl::hasExtension(const char *name) { return ::has_extension(name); }
-void *RoxRenderOpengl::getExtension(const char*name) { return ::get_extension(name); }
-
 namespace
 {
 #ifdef GL_DEBUG_OUTPUT
@@ -1851,7 +1855,7 @@ void RoxRenderOpengl::enableDebug(bool synchronous)
 
 #ifdef GL_DEBUG_OUTPUT
   #ifndef NO_EXTENSIONS_INIT
-    init_extensions();
+    
     if(!glDebugMessageCallback)
     {
         RoxLogger::log("unable to set opengl log\n");

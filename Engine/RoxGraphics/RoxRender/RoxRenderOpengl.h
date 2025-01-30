@@ -81,9 +81,6 @@ public:
     static void logErrors(const char *place=0);
     static void enableDebug(bool synchronous);
 
-    static bool hasExtension(const char *name);
-    static void *getExtension(const char *name);
-
     uint getGlTextureId(int idx);
 
     //for external textures

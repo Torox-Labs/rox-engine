@@ -40,6 +40,9 @@ namespace RoxApp
         void finish(RoxApp& app) override;
 
     private:
+        bool hasWGLExtension(const char* extension);
+
+    private:
         // Member variables
         HINSTANCE m_instance;
         HWND m_hwnd;
