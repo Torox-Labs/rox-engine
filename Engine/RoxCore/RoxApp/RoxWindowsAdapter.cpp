@@ -80,9 +80,9 @@ namespace RoxApp
 #ifdef DIRECTX11
 		: m_device(nullptr), m_context(nullptr), m_swap_chain(nullptr), m_color_target(nullptr), m_depth_target(nullptr),
 #else
-		: m_handle_draw_context_main(nullptr),
+		: m_hdc(nullptr),
 #endif
-		m_hwnd(nullptr), m_title("Rox engine"), m_time(0)
+		m_hWnd(nullptr), m_title("Rox engine"), m_time(0)
 	{
 	}
 
@@ -99,6 +99,7 @@ namespace RoxApp
 
 	void RoxWindowsAdapter::startWindowed(int x, int y, unsigned int w, unsigned int h, int antialiasing, RoxApp& app)
 	{
+		RoxLogger::log() << "Windows Creation\n";
 		// Set the pointer to the RoxApp object
 		m_app = &app;
 
@@ -107,56 +108,76 @@ namespace RoxApp
 		if (!m_instance)
 			return;
 
+		const char CLASS_NAME[] = "rox_engine";
+
+
 		// Register the window class
-		WNDCLASSA wc = { 0 };
-		wc.cbClsExtra = 0;
-		wc.cbWndExtra = 0;
-		wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
-		wc.hCursor = LoadCursorA(nullptr, IDC_ARROW);
-		wc.hIcon = LoadIconA(nullptr, IDI_APPLICATION);
+		WNDCLASS wc = {};
 		wc.hInstance = m_instance;
 		wc.lpfnWndProc = RoxWindowsAdapter::wnd_proc;
-		wc.lpszClassName = "rox_engine";
-		wc.lpszMenuName = nullptr;
-		wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+		wc.lpszClassName = CLASS_NAME;
 
-		if (!RegisterClassA(&wc))
+		if (!RegisterClass(&wc))
 		{
 			DWORD err = GetLastError();
 			RoxSystem::log() << "Failed to register window class. Error code: " << err << "\n";
 			return;
 		}
 
-		RECT rect = {
+		//Create Window Style
+		// To make the window resizable add WS_THICKFRAME
+		DWORD style = (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
+
+		// Client Area Rectangle
+		RECT windowRect = {
 			x,
 			y,
 			static_cast<int>(x + w),
 			static_cast<int>(y + h)
 		};
-		AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
 
 		// Create the main window
-		m_hwnd = CreateWindowA("rox_engine",
+		AdjustWindowRect(&windowRect, style, false);
+		m_hWnd = CreateWindowEx(
+			0,
+			CLASS_NAME,
 			m_title.c_str(),
-			WS_OVERLAPPEDWINDOW,
-			rect.left,
-			rect.top,
-			rect.right - rect.left,
-			rect.bottom - rect.top,
+			style,
+			
+			windowRect.left,
+			windowRect.top,
+			windowRect.right - windowRect.left,
+			windowRect.bottom - windowRect.top,
+			
 			NULL,
 			NULL,
 			m_instance,
 			NULL);
 
-		if (!m_hwnd)
+		if (!m_hWnd)
 		{
 			DWORD err = GetLastError();
 			RoxSystem::log() << "Failed to create window. Error code: " << err << "\n";
 			return;
 		}
 
-		// Show the window
-		ShowWindow(m_hwnd, SW_SHOW);
+		// Store Reference to the window Device Context
+		m_hdc = GetDC(m_hWnd);
+
+
+		// Pixel Format
+		PIXELFORMATDESCRIPTOR pfd;
+		memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
+		pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+		pfd.nVersion = 1;
+		pfd.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER;
+		pfd.iPixelType = PFD_TYPE_RGBA;
+		pfd.cColorBits = 32; // Original 24
+		pfd.cAlphaBits = 8;
+		pfd.cDepthBits = 32; // Original 24
+		pfd.cStencilBits = 8;
+		pfd.iLayerType = PFD_MAIN_PLANE;
+		int pixelFormat = ChoosePixelFormat(m_hdc, &pfd);
 
 #ifdef DIRECTX11
 		UINT create_device_flags = 0;
@@ -190,7 +211,7 @@ namespace RoxApp
 		sd.BufferDesc.RefreshRate.Numerator = 60;
 		sd.BufferDesc.RefreshRate.Denominator = 1;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		sd.OutputWindow = m_hwnd;
+		sd.OutputWindow = m_hWnd;
 		sd.SampleDesc.Count = 1;
 		sd.SampleDesc.Quality = 0;
 		sd.Windowed = TRUE;
@@ -225,32 +246,87 @@ namespace RoxApp
 			h);
 #else
 
-		// OpenGl initialization
-		m_handle_draw_context_main = GetDC(m_hwnd);
-		PIXELFORMATDESCRIPTOR pfd = { 0 };
+		if (!pixelFormat)
+		{
+			RoxSystem::log() << "Failed to create Pixel Format.\n";
+			return;
+		}
 
-		pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-		pfd.nVersion = 1;
-		pfd.dwFlags = PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER | PFD_DRAW_TO_WINDOW;
-		pfd.iPixelType = PFD_TYPE_RGBA;
-		pfd.cColorBits = 24;
-		pfd.cAlphaBits = 8;
-		pfd.cDepthBits = 24;
-
-		int pf = ChoosePixelFormat(m_handle_draw_context_main, &pfd);
-
-		if (!pf)
+		if (!SetPixelFormat(m_hdc, pixelFormat, &pfd))
 			return;
 
-		if (!SetPixelFormat(m_handle_draw_context_main, pf, &pfd))
+		// -----------------// OpenGL //----------------------
+		// Create temporary OpenGL context
+		m_tempRC = wglCreateContext(m_hdc);
+		if (!m_tempRC)
+		{
+			RoxSystem::log() << "Failed to create Temp Rendering Context.\n";
 			return;
+		}
 
-		m_hglrc = wglCreateContext(m_handle_draw_context_main);
-		if (!m_hglrc)
-			return;
+		wglMakeCurrent(m_hdc, m_tempRC);
 
-		wglMakeCurrent(m_handle_draw_context_main,
-			m_hglrc);
+		// Load the wglCreateContextAttribsARB function
+		PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = nullptr;
+		wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+
+		// Define attributes for OpenGL 3.3 core profile context
+		const int attribList[] = {
+			WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+			WGL_CONTEXT_MINOR_VERSION_ARB, 3,
+			WGL_CONTEXT_FLAGS_ARB, 0,
+			WGL_CONTEXT_PROFILE_MASK_ARB,
+			WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+			0, // Terminate the list
+		};
+
+		// Create modern OpenGL context
+		m_hglrc = wglCreateContextAttribsARB(m_hdc, nullptr, attribList);
+
+		// Cleanup the temporary context
+		wglMakeCurrent(nullptr, nullptr);
+		wglDeleteContext(m_tempRC);
+
+		// Assigning the modern OpenGL
+		wglMakeCurrent(m_hdc, m_hglrc);
+
+		// Load GLAD
+		if (!gladLoadGL())
+		{
+			RoxLogger::log() << "Couldn't Load GLAD \n";
+		}
+		else
+		{
+			RoxLogger::log() << "OpenGL Version " << GLVersion.major << "." << GLVersion.minor << "\n";
+		}
+
+		// Enable Vertical Synchronization using vSynch Extension
+		PFNWGLGETEXTENSIONSSTRINGEXTPROC _wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
+		bool swapControlSupported = strstr(_wglGetExtensionsStringEXT(), "WGL_EXT_swap_control") != 0;
+
+		int vSync = 0;
+		if (swapControlSupported)
+		{
+			PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+			PFNWGLGETSWAPINTERVALEXTPROC wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC)wglGetProcAddress("wglGetSwapIntervalEXT");
+			if (wglSwapIntervalEXT(1))
+			{
+				RoxLogger::log() << "Enabled vSynch\n";
+				vSync = wglGetSwapIntervalEXT();
+			}
+			else
+			{
+				RoxLogger::log() << "Couldn't enable vSynch\n";
+			}
+		}
+		else
+		{
+			RoxLogger::log() << "vSynch (WGL_EXT_swap_control) not supported\n";
+		}
+
+
+		// Show the window
+		ShowWindow(m_hWnd, SW_SHOW);
 
 		PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = nullptr;
 		if (antialiasing > 0)
@@ -296,7 +372,7 @@ namespace RoxApp
 
 			RoxSystem::log() << "antialiasing init\n";
 
-			if (!wglChoosePixelFormatARB(m_handle_draw_context_main,
+			if (!wglChoosePixelFormatARB(m_hdc,
 				iAttributes,
 				nullptr,
 				1,
@@ -310,32 +386,35 @@ namespace RoxApp
 
 		if (antialiasing > 0)
 		{
-			wglMakeCurrent(m_handle_draw_context_main,
+			wglMakeCurrent(m_hdc,
 				nullptr);
 
 			wglDeleteContext(m_hglrc);
 
-			ReleaseDC(m_hwnd, m_handle_draw_context_main);
-			DestroyWindow(m_hwnd);
+			ReleaseDC(m_hWnd, m_hdc);
+			DestroyWindow(m_hWnd);
 
-			m_hwnd = CreateWindowA("rox_engine",
+			m_hWnd = CreateWindowA(
+				"rox_engine",
 				m_title
 				.c_str(),
-				WS_OVERLAPPEDWINDOW,
-				rect.left,
-				rect.top,
-				rect.right - rect.left,
-				rect.bottom - rect.top,
+				style,
+				
+				windowRect.left,
+				windowRect.top,
+				windowRect.right - windowRect.left,
+				windowRect.bottom - windowRect.top,
+
 				NULL,
 				NULL,
 				m_instance,
 				NULL);
 
-			ShowWindow(m_hwnd,
+			ShowWindow(m_hWnd,
 				SW_SHOW);
-			m_handle_draw_context_main = GetDC(m_hwnd);
+			m_hdc = GetDC(m_hWnd);
 
-			if (num_aa_formats >= 1 && SetPixelFormat(m_handle_draw_context_main,
+			if (num_aa_formats >= 1 && SetPixelFormat(m_hdc,
 				aa_pf,
 				&pfd))
 			{
@@ -346,22 +425,22 @@ namespace RoxApp
 				antialiasing = 0;
 				RoxSystem::log() << "unable to set antialiasiing " << aa_pf << " " << num_aa_formats << "\n";
 
-				int pf = ChoosePixelFormat(m_handle_draw_context_main,
+				int pf = ChoosePixelFormat(m_hdc,
 					&pfd);
 				if (!pf)
 					return;
 
-				if (!SetPixelFormat(m_handle_draw_context_main,
+				if (!SetPixelFormat(m_hdc,
 					pf,
 					&pfd))
 					return;
 			}
 
-			m_hglrc = wglCreateContext(m_handle_draw_context_main);
+			m_hglrc = wglCreateContext(m_hdc);
 			if (!m_hglrc)
 				return;
 
-			wglMakeCurrent(m_handle_draw_context_main,
+			wglMakeCurrent(m_hdc,
 				m_hglrc);
 		}
 
@@ -369,15 +448,15 @@ namespace RoxApp
 			glEnable(GL_MULTISAMPLE_ARB);
 #endif
 
-		SetWindowTextA(m_hwnd,
+		SetWindowTextA(m_hWnd,
 			m_title
 			.c_str());
 
 		// Set the user data
-		SetWindowLongPtr(m_hwnd,
+		SetWindowLongPtr(m_hWnd,
 			GWLP_USERDATA,
 			(LONG_PTR)this);
-		if(!SetWindowLongPtr(m_hwnd, GWLP_USERDATA, (LONG_PTR)this))
+		if(!SetWindowLongPtr(m_hWnd, GWLP_USERDATA, (LONG_PTR)this))
 		{
 			RoxSystem::log() << "Failed to set window user data\n";
 			return;
@@ -396,7 +475,7 @@ namespace RoxApp
 			m_swap_chain->Present(0,
 				0);
 #else
-			SwapBuffers(m_handle_draw_context_main);
+			SwapBuffers(m_hdc);
 #endif
 		}
 
@@ -407,7 +486,7 @@ namespace RoxApp
 		MSG msg;
 
 		// Main loop
-		while (m_hwnd)
+		while (m_hWnd)
 		{
 			if (PeekMessage(&msg,
 				nullptr,
@@ -433,7 +512,7 @@ namespace RoxApp
 				m_swap_chain->Present(0,
 					0);
 #else
-				SwapBuffers(m_handle_draw_context_main); // Swap the buffers
+				SwapBuffers(m_hdc); // Swap the buffers
 #endif
 			}
 		}
@@ -463,8 +542,8 @@ namespace RoxApp
 
 		m_title.assign(title);
 
-		if (m_hwnd)
-			SetWindowTextA(m_hwnd, title);
+		if (m_hWnd)
+			SetWindowTextA(m_hWnd, title);
 	}
 
 	std::string RoxWindowsAdapter::getTitle()
@@ -482,13 +561,13 @@ namespace RoxApp
 
 	void RoxWindowsAdapter::setMousePos(int x, int y)
 	{
-		if (m_hwnd)
+		if (m_hWnd)
 			SetCursorPos(x, y);
 	}
 
 	void RoxWindowsAdapter::finish(RoxApp& app)
 	{
-		if (!m_hwnd)
+		if (!m_hWnd)
 			return;
 
 		app.onFree();
@@ -528,16 +607,16 @@ namespace RoxApp
 		}
 #else
 
-		wglMakeCurrent(m_handle_draw_context_main,
+		wglMakeCurrent(m_hdc,
 			nullptr);
 		wglDeleteContext(m_hglrc);
-		ReleaseDC(m_hwnd,
-			m_handle_draw_context_main);
-		DestroyWindow(m_hwnd);
+		ReleaseDC(m_hWnd,
+			m_hdc);
+		DestroyWindow(m_hWnd);
 
 #endif
 
-		m_hwnd = nullptr;
+		m_hWnd = nullptr;
 	}
 
 	bool RoxWindowsAdapter::hasWGLExtension(const char* extension)
@@ -548,7 +627,7 @@ namespace RoxApp
 		if (!wglGetExtensionsStringARB)
 			return false;
 
-		const char* extensions = wglGetExtensionsStringARB(m_handle_draw_context_main);
+		const char* extensions = wglGetExtensionsStringARB(m_hdc);
 		return extensions && strstr(extensions, extension);
 	}
 
@@ -609,7 +688,7 @@ namespace RoxApp
 				lparam);
 
 
-		if (hwnd == pThis->m_hwnd)
+		if (hwnd == pThis->m_hWnd)
 		{
 			switch (message)
 			{

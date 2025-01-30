@@ -27,17 +27,7 @@ namespace RoxRender
 
 bool RoxRenderOpengl::isAvailable() const
 {
-    // Load GLAD
-    if (!gladLoadGLLoader((GLADloadproc)wglGetProcAddress))
-    {
-        RoxLogger::log() << "Couldn't Load GLAD \n";
-        return false;
-    }
-    else
-    {
-        RoxLogger::log() << "OpenGL Version " << GLVersion.major << "." << GLVersion.minor << "\n";
-        return true;
-    }
+    return true;
 }
 
 namespace
