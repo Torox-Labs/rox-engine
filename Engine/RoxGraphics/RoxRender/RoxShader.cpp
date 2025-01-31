@@ -3,7 +3,7 @@
 // Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
-// Update the render api intefrace to check Metal 1th.
+// Update the render api interface to check Metal 1th.
 //
 // This file incorporates code from the nya-engine project, which is licensed under the MIT License.
 // See the LICENSE-MIT file in the root directory for more information.
@@ -20,39 +20,38 @@
 
 namespace RoxRender
 {
+	bool RoxShader::addProgram(PROGRAM_TYPE type, const char* code)
+	{
+		if (type >= PROGRAM_TYPES_COUNT)
+		{
+			log() << "Unable to add RoxShader program: invalid RoxShader type\n";
+			return false;
+		}
 
-bool RoxShader::addProgram(PROGRAM_TYPE type,const char*code)
-{
-    if(type>=PROGRAM_TYPES_COUNT)
-    {
-        log()<<"Unable to add RoxShader program: invalid RoxShader type\n";
-        return false;
-    }
+		if (!code || !code[0])
+		{
+			log() << "Unable to add RoxShader program: invalid code\n";
+			return false;
+		}
 
-    if(!code || !code[0])
-    {
-        log()<<"Unable to add RoxShader program: invalid code\n";
-        return false;
-    }
+		m_code[type] = code;
+		if (!m_code[VERTEX].empty() && !m_code[PIXEL].empty())
+		{
+			release();
+			m_shdr = getApiInterface().createShader(m_code[VERTEX].c_str(), m_code[PIXEL].c_str());
+			if (m_shdr < 0)
+				return false;
 
-    m_code[type]=code;
-    if(!m_code[VERTEX].empty() && !m_code[PIXEL].empty())
-    {
-        release();
-        m_shdr=getApiInterface().createShader(m_code[VERTEX].c_str(), m_code[PIXEL].c_str());
-        if(m_shdr<0)
-            return false;
+			m_buf = getApiInterface().createUniformBuffer(m_shdr);
 
-        m_buf=getApiInterface().createUniformBuffer(m_shdr);
+			m_uniforms.resize(getApiInterface().getUniformsCount(m_shdr));
+			for (int i = 0; i < (int)m_uniforms.size(); ++i)
+				m_uniforms[i] = getApiInterface().getUniform(m_shdr, i);
+			return true;
+		}
 
-        m_uniforms.resize(getApiInterface().getUniformsCount(m_shdr));
-        for(int i=0;i<(int)m_uniforms.size();++i)
-            m_uniforms[i]= getApiInterface().getUniform(m_shdr,i);
-        return true;
-    }
-
-    return true;
-}
+		return true;
+	}
 
 void RoxShader::bind() const { getApiState().shader= m_shdr; getApiState().uniform_buffer=m_buf; }
 void RoxShader::unbind() { getApiState().shader= -1; getApiState().uniform_buffer= -1; }

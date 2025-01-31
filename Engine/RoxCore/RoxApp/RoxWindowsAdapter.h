@@ -41,7 +41,8 @@ namespace RoxApp
 
     private:
         bool hasWGLExtension(const char* extension);
-
+        std::wstring stringToWString(const std::string& str);
+        
     private:
         // Member variables
         HINSTANCE m_instance;

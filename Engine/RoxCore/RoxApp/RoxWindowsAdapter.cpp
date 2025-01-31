@@ -108,19 +108,18 @@ namespace RoxApp
 		if (!m_instance)
 			return;
 
-		const char CLASS_NAME[] = "rox_engine";
+		const char  CLASS_NAME[] = "rox_engine";
 
 
 		// Register the window class
-		WNDCLASS wc = {};
+		WNDCLASS  wc = {};
 		wc.hInstance = m_instance;
 		wc.lpfnWndProc = RoxWindowsAdapter::wnd_proc;
 		wc.lpszClassName = CLASS_NAME;
 
 		if (!RegisterClass(&wc))
 		{
-			DWORD err = GetLastError();
-			RoxSystem::log() << "Failed to register window class. Error code: " << err << "\n";
+			RoxSystem::log() << "Failed to register window class. Error code: " << GetLastError() << "\n";
 			return;
 		}
 
@@ -631,6 +630,17 @@ namespace RoxApp
 		return extensions && strstr(extensions, extension);
 	}
 
+	std::wstring RoxWindowsAdapter::stringToWString(const std::string& str)
+	{
+		 if (str.empty())
+        return std::wstring();
+
+    int size_needed = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), nullptr, 0);
+    std::wstring wstrTo(size_needed, 0);
+    MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
+    return wstrTo;
+	}
+
 	// Implement private helper functions
 	unsigned int RoxWindowsAdapter::get_x11_key(unsigned int key)
 	{
@@ -701,11 +711,13 @@ namespace RoxApp
 
 			case WM_MOUSEWHEEL:
 				{
+					const int WHEEL_DELTA_SCALE = 60;
+
 					const int x = GET_X_LPARAM(wparam);
 					const int y = GET_Y_LPARAM(wparam);
 
-					pThis->m_app->onMouseScroll(x / 60,
-					                            y / 60);
+					pThis->m_app->onMouseScroll(x / WHEEL_DELTA_SCALE,
+					                            y / WHEEL_DELTA_SCALE);
 				}
 				break;
 
@@ -714,12 +726,13 @@ namespace RoxApp
 					const int x = LOWORD(lparam);
 					const int y = HIWORD(lparam);
 
+					POINT pt = { x, y };
+
 					RECT rc;
 					GetClientRect(hwnd,
 					              &rc);
 
-					pThis->m_app->onMouseMove(x,
-					                          rc.bottom + rc.top - y);
+					pThis->m_app->onMouseMove(pt.x, pt.y);
 				}
 				break;
 
