@@ -31,7 +31,6 @@ public:
 public:
     bool convertToHlsl();
     bool convertToGlsl();
-    bool convertToGlslEs2(const char *precision="mediump");
     bool convertToGlsl3();
     bool convertToMetal();
 

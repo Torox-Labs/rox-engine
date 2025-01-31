@@ -13,6 +13,7 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxShaderCodeParser.h"
+#include "RoxLogger/RoxLogger.h"
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
@@ -630,104 +631,62 @@ bool RoxShaderCodeParser::convertToGlsl()
     return true;
 }
 
-bool RoxShaderCodeParser::convertToGlslEs2(const char *precision)
-{
-    m_uniforms.clear();
-    m_attributes.clear();
-
-    if(!parsePredefinedUniforms(m_replace_str.c_str(),true))
-    {
-        m_error.append("unable to parse predefined uniforms\n");
-        return false;
-    }
-
-    if(!parseAttributes(m_replace_str.c_str(),m_replace_str.c_str()))
-    {
-        m_error.append("unable to parse predefined attributes\n");
-        return false;
-    }
-
-    std::string prefix="#define OPENGL_ES2 1\n";
-
-    if(replaceVariable("gl_InstanceID","gl_InstanceIDEXT"))
-        prefix.append("#extension GL_EXT_draw_instanced : enable\n");
-
-    if(replaceVariable("samplerExternal","samplerExternalOES"))
-        prefix.append("#extension GL_OES_EGL_image_external : require\n");
-
-    for(int i=0;i<(int)m_uniforms.size();++i)
-        prefix.append("uniform mat4 "+m_uniforms[i].name+";\n");
-
-    for(int i=0;i<(int)m_attributes.size();++i)
-    {
-        prefix.append("attribute ");
-        prefix.append(m_attributes[i].type==TYPE_VECTOR3?"vec3 ":"vec4 ");
-        prefix.append(m_attributes[i].name+";\n");
-    }
-
-    parseUniforms(false);
-
-    prefix.append("precision "+std::string(precision)+" float;\n");
-    m_code.insert(0,prefix);
-    return true;
-}
-
 bool RoxShaderCodeParser::convertToGlsl3()
 {
-    m_uniforms.clear();
-    m_attributes.clear();
+	m_uniforms.clear();
+	m_attributes.clear();
 
-    if(!parsePredefinedUniforms(m_replace_str.c_str(),true))
-    {
-        m_error.append("unable to parse predefined uniforms\n");
-        return false;
-    }
+	if (!parsePredefinedUniforms(m_replace_str.c_str(), true))
+	{
+		m_error.append("unable to parse predefined uniforms\n");
+		return false;
+	}
 
-    if(!parseAttributes(m_replace_str.c_str(),m_replace_str.c_str()))
-    {
-        m_error.append("unable to parse predefined attributes\n");
-        return false;
-    }
+	if (!parseAttributes(m_replace_str.c_str(), m_replace_str.c_str()))
+	{
+		m_error.append("unable to parse predefined attributes\n");
+		return false;
+	}
 
-    const bool require_gl4 = findVariable("textureQueryLod") || m_code.find("textureGather") != std::string::npos;
+	const bool require_gl4 = findVariable("textureQueryLod") || m_code.find("textureGather") != std::string::npos;
 
-    std::string prefix=require_gl4?"#version 400\n#define OPENGL3 1\n#define OPENGL4 1\n":
-                                   "#version 330\n#define OPENGL3 1\n";
+	std::string prefix = require_gl4 ? "#version 400 core\n" : "#version 330 core\n";
 
-    for(int i=0;i<(int)m_uniforms.size();++i)
-        prefix.append("uniform mat4 "+m_uniforms[i].name+";\n");
+	for (int i = 0; i < (int)m_uniforms.size(); ++i)
+		prefix.append("uniform mat4 " + m_uniforms[i].name + ";\n");
 
-    parseUniforms(false);
+	parseUniforms(false);
 
-    for(int i=0;i<(int)m_attributes.size();++i)
-    {
-        prefix.append("in ");
-        prefix.append(m_attributes[i].type==TYPE_VECTOR3?"vec3 ":"vec4 ");
-        prefix.append(m_attributes[i].name+";\n");
-    }
+	for (int i = 0; i < (int)m_attributes.size(); ++i)
+	{
+		prefix.append("in ");
+		prefix.append(m_attributes[i].type == TYPE_VECTOR3 ? "vec3 " : "vec4 ");
+		prefix.append(m_attributes[i].name + ";\n");
+	}
 
-    //prefix.append("precision highp float;\n");
+	//prefix.append("precision highp float;\n");
 
-    replaceVariable("texture2D","texture");
-    replaceVariable("texture2DProj","textureProj");
-    replaceVariable("textureCube","texture");
+	replaceVariable("texture2D", "texture");
+	replaceVariable("texture2DProj", "textureProj");
+	replaceVariable("textureCube", "texture");
 
-    const char *gl_ps_out="gl_FragColor";
-    std::string ps_out_var=m_replace_str+std::string(gl_ps_out+3);
-    const bool is_fragment=replaceVariable(gl_ps_out,ps_out_var.c_str());
-    if(is_fragment)
-    {
-        prefix.append("layout(location=0) out vec4 "+ps_out_var+";\n");
-        replaceVariable("varying","in");
-    }
-    else
-    {
-        //replaceVariable("attribute","in");
-        replaceVariable("varying","out");
-    }
-    
-    m_code.insert(0,prefix);
-    return true;
+	const char* gl_ps_out = "gl_FragColor";
+	std::string ps_out_var = m_replace_str + std::string(gl_ps_out + 3);
+	const bool is_fragment = replaceVariable(gl_ps_out, ps_out_var.c_str());
+	if (is_fragment)
+	{
+		prefix.append("layout(location=0) out vec4 " + ps_out_var + ";\n");
+		replaceVariable("varying", "in");
+	}
+	else
+	{
+		//replaceVariable("attribute","in");
+		replaceVariable("varying", "out");
+	}
+
+	m_code.insert(0, prefix);
+    RoxLogger::log() << "Rox Shader Code Pardser: " << m_code << "\n";
+	return true;
 }
 
 int RoxShaderCodeParser::getUniformsCount()

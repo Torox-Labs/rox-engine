@@ -23,7 +23,7 @@
 
 namespace RoxRender
 {
-
+#define USE_VAO
 
 bool RoxRenderOpengl::isAvailable() const
 {
@@ -88,12 +88,12 @@ namespace
                 if(!objects[i])
                     continue;
 
-                ::glDetachShader(program,objects[i]);
-                ::glDeleteShader(objects[i]);
+                glDetachShader(program,objects[i]);
+                glDeleteShader(objects[i]);
             }
 
             if( program )
-                ::glDeleteShader(program);
+                glDeleteShader(program);
 
             *this= ShaderObj();
         }
@@ -107,13 +107,13 @@ namespace
 
         if(idx<0)
         {
-            ::glUseProgram(0);
+            glUseProgram(0);
             applied_state.shader = -1;
             return;
         }
 
         ShaderObj &shdr=shaders.get(idx);
-        ::glUseProgram(shdr.program);
+        glUseProgram(shdr.program);
         if(!shdr.program)
             applied_state.shader = -1;
         else
@@ -143,6 +143,8 @@ GLuint CompileShader(RoxShader::PROGRAM_TYPE type, const char* src)
 		break;
 	default: return 0;
 	}
+
+    //log() << "Shader Data: " << src << "\n";
 
     // Create Shader
 	GLuint shader = glCreateShader(shader_type);
@@ -206,6 +208,8 @@ int RoxRenderOpengl::createShader(const char* VERTEX, const char* fragment)
 			return -1;
 		}
 
+        //log() << "OpenGL: " << fragment << "\n";
+        //return 0;
 		GLuint object = CompileShader(type, parser.getCode());
 		if (!object)
 		{
@@ -213,7 +217,7 @@ int RoxRenderOpengl::createShader(const char* VERTEX, const char* fragment)
 			return -1;
 		}
 
-		::glAttachShader(shdr.program, object);
+		glAttachShader(shdr.program, object);
 		shdr.objects[type] = object;
 
 		if (i == 0)
@@ -221,11 +225,11 @@ int RoxRenderOpengl::createShader(const char* VERTEX, const char* fragment)
 			for (int i = 0; i < parser.getAttributesCount(); ++i)
 			{
 				const RoxShaderCodeParser::variable a = parser.getAttribute(i);
-				if (a.name == "_nya_Vertex") ::glBindAttribLocation(shdr.program, vertex_attribute, a.name.c_str());
+				if (a.name == "_nya_Vertex") glBindAttribLocation(shdr.program, vertex_attribute, a.name.c_str());
 				else if (a.name == "_nya_Normal")
-					::glBindAttribLocation(shdr.program, normal_attribute, a.name.c_str());
-				else if (a.name == "_nya_Color") ::glBindAttribLocation(shdr.program, color_attribute, a.name.c_str());
-				else if (a.name.find("_nya_MultiTexCoord") == 0) ::glBindAttribLocation(
+					glBindAttribLocation(shdr.program, normal_attribute, a.name.c_str());
+				else if (a.name == "_nya_Color") glBindAttribLocation(shdr.program, color_attribute, a.name.c_str());
+				else if (a.name.find("_nya_MultiTexCoord") == 0) glBindAttribLocation(
 					shdr.program, tc0_attribute + a.idx, a.name.c_str());
 			}
 		}
@@ -275,21 +279,21 @@ int RoxRenderOpengl::createShader(const char* VERTEX, const char* fragment)
 		std::vector<const GLchar*> vars;
 		for (int i = 0; i < (int)ft_vars.size(); ++i)
 			vars.push_back(ft_vars[i].c_str());
-		::glTransformFeedbackVaryings(shdr.program, (GLsizei)vars.size(), vars.data(),GL_INTERLEAVED_ATTRIBS);
+		glTransformFeedbackVaryings(shdr.program, (GLsizei)vars.size(), vars.data(),GL_INTERLEAVED_ATTRIBS);
 	}
 
-	::glLinkProgram(shdr.program);
+	glLinkProgram(shdr.program);
 	GLint result = 1;
-	::glGetProgramiv(shdr.program,GL_LINK_STATUS, &result);
+	glGetProgramiv(shdr.program,GL_LINK_STATUS, &result);
 	if (!result)
 	{
 		log() << "Can't link RoxShader\n";
 		GLint log_len = 0;
-		::glGetProgramiv(shdr.program,GL_INFO_LOG_LENGTH, &log_len);
+		glGetProgramiv(shdr.program,GL_INFO_LOG_LENGTH, &log_len);
 		if (log_len > 0)
 		{
 			std::string log_text(log_len, 0);
-			::glGetProgramInfoLog(shdr.program, log_len, &log_len, &log_text[0]);
+			glGetProgramInfoLog(shdr.program, log_len, &log_len, &log_text[0]);
 			log() << log_text.c_str() << "\n";
 		}
 
@@ -305,9 +309,9 @@ int RoxRenderOpengl::createShader(const char* VERTEX, const char* fragment)
 		if (u.type != RoxShader::UNIFORM_SAMPLER2D && u.type != RoxShader::UNIFORM_SAMPLER_CUBE)
 			continue;
 
-		int handler = ::glGetUniformLocation(shdr.program, u.name.c_str());
+		int handler = glGetUniformLocation(shdr.program, u.name.c_str());
 		if (handler >= 0)
-			::glUniform1i(handler, (int)layer);
+			glUniform1i(handler, (int)layer);
 		else
 			log() << "Unable to set RoxShader sampler \'" << u.name.c_str() << "\': probably not found\n";
 
@@ -323,14 +327,14 @@ int RoxRenderOpengl::createShader(const char* VERTEX, const char* fragment)
 	set_shader(idx);
 
 	if (shdr.mat_mvp > 0)
-		shdr.mat_mvp = ::glGetUniformLocation(shdr.program, "_nya_ModelViewProjectionMatrix");
+		shdr.mat_mvp = glGetUniformLocation(shdr.program, "_nya_ModelViewProjectionMatrix");
 	else if (shdr.mat_mv > 0)
-		shdr.mat_mv = ::glGetUniformLocation(shdr.program, "_nya_ModelViewMatrix");
+		shdr.mat_mv = glGetUniformLocation(shdr.program, "_nya_ModelViewMatrix");
 	else if (shdr.mat_p > 0)
-		shdr.mat_p = ::glGetUniformLocation(shdr.program, "_nya_ProjectionMatrix");
+		shdr.mat_p = glGetUniformLocation(shdr.program, "_nya_ProjectionMatrix");
 
 	for (int i = 0; i < (int)shdr.uniforms.size(); ++i)
-		shdr.uniforms[i].handler = ::glGetUniformLocation(shdr.program, shdr.uniforms[i].name.c_str());
+		shdr.uniforms[i].handler = glGetUniformLocation(shdr.program, shdr.uniforms[i].name.c_str());
 
 	int cache_size = 0;
 	for (int i = 0; i < (int)shdr.uniforms.size(); ++i)
@@ -358,7 +362,7 @@ void RoxRenderOpengl::removeShader(int RoxShader)
 {
     if(applied_state.shader==RoxShader)
     {
-        ::glUseProgram(0);
+        glUseProgram(0);
         applied_state.shader=-1;
     }
     shaders.remove(RoxShader);
@@ -382,11 +386,11 @@ void RoxRenderOpengl::setUniform(int RoxShader,int idx,const float *buf,uint cou
     const int handler=s.uniforms[idx].handler;
     switch(s.uniforms[idx].type)
     {
-        case RoxShader::UNIFORM_MAT4: ::glUniformMatrix4fv(handler,count/16,false,buf); break;
-        case RoxShader::UNIFORM_VEC4: ::glUniform4fv(handler,count/4,buf); break;
-        case RoxShader::UNIFORM_VEC3: ::glUniform3fv(handler,count/3,buf); break;
-        case RoxShader::UNIFORM_VEC2: ::glUniform2fv(handler,count/2,buf); break;
-        case RoxShader::UNIFORM_FLOAT: ::glUniform1fv(handler,count,buf); break;
+        case RoxShader::UNIFORM_MAT4: glUniformMatrix4fv(handler,count/16,false,buf); break;
+        case RoxShader::UNIFORM_VEC4: glUniform4fv(handler,count/4,buf); break;
+        case RoxShader::UNIFORM_VEC3: glUniform3fv(handler,count/3,buf); break;
+        case RoxShader::UNIFORM_VEC2: glUniform2fv(handler,count/2,buf); break;
+        case RoxShader::UNIFORM_FLOAT: glUniform1fv(handler,count,buf); break;
         default: break;
     }
 }
