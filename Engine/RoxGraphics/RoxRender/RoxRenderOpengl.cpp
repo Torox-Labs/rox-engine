@@ -23,10 +23,13 @@
 
 namespace RoxRender
 {
+
+// TODO: Include VAO to be a default functionality
 #define USE_VAO
 
 bool RoxRenderOpengl::isAvailable() const
 {
+    // TODO: Will need more work on cross-platform support
     RoxLogger::log() << "OpenGL Active";
     return true;
 }
@@ -356,33 +359,31 @@ int RoxRenderOpengl::createShader(const char* VERTEX, const char* fragment)
 	return idx;
 }
 
-RoxRenderOpengl::uint RoxRenderOpengl::getUniformsCount(int RoxShader) { return (int)shaders.get(RoxShader).uniforms.size(); }
-RoxShader::Uniform RoxRenderOpengl::getUniform(int RoxShader,int idx) { return shaders.get(RoxShader).uniforms[idx]; }
+RoxRenderOpengl::uint RoxRenderOpengl::getUniformsCount(int shader) { return (int)shaders.get(shader).uniforms.size(); }
+RoxShader::Uniform RoxRenderOpengl::getUniform(int shader,int idx) { return shaders.get(shader).uniforms[idx]; }
 
-void RoxRenderOpengl::removeShader(int RoxShader)
+void RoxRenderOpengl::removeShader(int shader)
 {
-    if(applied_state.shader==RoxShader)
+    if(applied_state.shader== shader)
     {
         glUseProgram(0);
         applied_state.shader=-1;
     }
-    shaders.remove(RoxShader);
+    shaders.remove(shader);
 }
 
-//ToDo: uniform buffers
-
-int RoxRenderOpengl::createUniformBuffer(int RoxShader) { return RoxShader; }
-
-void RoxRenderOpengl::setUniform(int RoxShader,int idx,const float *buf,uint count)
+//ToDo: Uniform Buffers
+int RoxRenderOpengl::createUniformBuffer(int shader) { return shader; }
+void RoxRenderOpengl::setUniform(int shader,int idx,const float *buf,uint count)
 {
-    ShaderObj &s=shaders.get(RoxShader);
+    ShaderObj &s=shaders.get(shader);
 
     float *cache=&s.uniform_cache[s.uniforms[idx].cache_idx];
     if(memcmp(cache,buf,count*sizeof(float))==0)
         return;
     memcpy(cache,buf,count*sizeof(float));
 
-    set_shader(RoxShader);
+    set_shader(shader);
 
     const int handler=s.uniforms[idx].handler;
     switch(s.uniforms[idx].type)
@@ -395,7 +396,6 @@ void RoxRenderOpengl::setUniform(int RoxShader,int idx,const float *buf,uint cou
         default: break;
     }
 }
-
 void RoxRenderOpengl::removeUniformBuffer(int uniform_buffer) {}
 
 namespace
@@ -548,14 +548,12 @@ bool RoxRenderOpengl::getVertexData(int idx,void *data)
 #ifdef USE_VAO
         glBindVertexArray(0);
 #endif
-        ::glBindBuffer(GL_ARRAY_BUFFER,v.id);
+        glBindBuffer(GL_ARRAY_BUFFER,v.id);
         applied_state.vertex_buffer=-1;
     }
 
 #ifdef OPENGL_ES
   #ifdef __ANDROID__
-    //ToDo
-    return false;
   #else
     //apple hasn't GL_READ_ONLY_OES
     const GLvoid *buf=glMapBufferOES(GL_ARRAY_BUFFER,GL_WRITE_ONLY_OES);
@@ -567,7 +565,7 @@ bool RoxRenderOpengl::getVertexData(int idx,void *data)
         return false;
   #endif
 #else
-    ::glGetBufferSubData(GL_ARRAY_BUFFER,0,v.stride*v.count,data);
+    glGetBufferSubData(GL_ARRAY_BUFFER,0,v.stride*v.count,data);
 #endif
 
 #ifdef USE_VAO
