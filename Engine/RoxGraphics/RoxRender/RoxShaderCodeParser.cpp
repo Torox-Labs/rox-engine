@@ -113,6 +113,7 @@ bool RoxShaderCodeParser::convertToHlsl()
         const char *types[]={"Texture2D","TextureCube"};
 
         char buf[512];
+        // TODO: CONVERTED FROM _nya_ to _rox_
         printf(buf,"%s %s: register(t%d); SamplerState %s_nya_st: register(s%d);\n",
                 types[v.type-TYPE_SAMPLER2D],v.name.c_str(),samplers_count,v.name.c_str(),samplers_count);
         prefix.append(buf);
@@ -685,7 +686,7 @@ bool RoxShaderCodeParser::convertToGlsl3()
 	}
 
 	m_code.insert(0, prefix);
-    RoxLogger::log() << "Rox Shader Code Pardser: " << m_code << "\n";
+    RoxLogger::log() << "Rox Shader Code Parser: " << m_code << "\n";
 	return true;
 }
 

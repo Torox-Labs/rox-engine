@@ -18,7 +18,6 @@
 #include "RoxShader.h"
 #include "RoxTexture.h"
 #include "RoxVbo.h"
-#include <cstring>
 
 namespace RoxRender
 {
@@ -31,8 +30,8 @@ namespace RoxRender
 
 		struct ViewportState
 		{
-			RoxRender::Rectangle viewport;
-			RoxRender::Rectangle scissor;
+			Rectangle viewport;
+			Rectangle scissor;
 			bool scissor_enabled;
 			float clear_color[4];
 			float clear_depth;
@@ -161,13 +160,13 @@ namespace RoxRender
 		{
 		}
 
-		virtual bool getTextureData(int RoxTexture, uint x, uint y, uint w, uint h, void* data) { return false; }
+		virtual bool getTextureData(int texture, uint x, uint y, uint w, uint h, void* data) { return false; }
 
-		virtual void removeTexture(int RoxTexture)
+		virtual void removeTexture(int texture)
 		{
 		}
 
-		virtual uint getMaxTextureDimention() { return 0; }
+		virtual uint getMaxTextureDimension() { return 0; }
 		virtual bool isTextureFormatSupported(RoxRender::RoxTexture::COLOR_FORMAT format) { return false; }
 
 	public:
@@ -186,7 +185,7 @@ namespace RoxRender
 		virtual uint getMaxTargetMsaa() { return 0; }
 
 	public:
-		virtual void setCamera(const RoxMath::Matrix4& modelview, const RoxMath::Matrix4& projection)
+		virtual void setCamera(const RoxMath::Matrix4& model_view, const RoxMath::Matrix4& projection)
 		{
 		}
 

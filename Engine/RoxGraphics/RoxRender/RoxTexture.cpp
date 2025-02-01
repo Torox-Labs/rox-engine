@@ -358,7 +358,7 @@ void RoxTexture::getDefaultFilter(FILTER &minification,FILTER &magnification,FIL
 }
 
 unsigned int RoxTexture::getDefaultAniso() { return default_aniso; }
-unsigned int RoxTexture::getMaxDimension() { return getApiInterface().getMaxTextureDimention(); }
+unsigned int RoxTexture::getMaxDimension() { return getApiInterface().getMaxTextureDimension(); }
 bool RoxTexture::isDxtSupported() { return getApiInterface().isTextureFormatSupported(DXT1); }
 
 unsigned int RoxTexture::getFormatBpp(RoxTexture::COLOR_FORMAT format)

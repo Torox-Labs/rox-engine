@@ -55,7 +55,7 @@ namespace RoxRender
 		bool getTextureData(int RoxTexture, uint x, uint y, uint w, uint h, void* data) override;
 
 		void removeTexture(int RoxTexture) override;
-		uint getMaxTextureDimention() override { return m_max_texture_dimention; }
+		uint getMaxTextureDimension() override { return m_max_texture_dimention; }
 		bool isTextureFormatSupported(RoxTexture::COLOR_FORMAT format) override;
 
 	public:
@@ -84,7 +84,7 @@ namespace RoxRender
 	public:
 		RoxRenderBuffered(IRoxRenderApi& backend) : m_backend(backend)
 		{
-			m_max_texture_dimention = m_backend.getMaxTextureDimention();
+			m_max_texture_dimention = m_backend.getMaxTextureDimension();
 			m_max_target_attachments = m_backend.getMaxTargetAttachments();
 			m_max_target_msaa = m_backend.getMaxTargetMsaa();
 			for (int i = 0; i < int(sizeof(m_tex_formats) / sizeof(m_tex_formats[0])); ++i)

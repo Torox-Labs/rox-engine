@@ -74,7 +74,7 @@ public:
     bool fixPerComponentFunctions();
 
 public:
-    RoxShaderCodeParser(const char *text,const char *replace_prefix_str="_nya_",const char *flip_y_uniform=0):
+    RoxShaderCodeParser(const char *text,const char *replace_prefix_str="_rox_",const char *flip_y_uniform=0):
                        m_code(text?text:""),m_replace_str(replace_prefix_str?replace_prefix_str:""),
                        m_flip_y_uniform(flip_y_uniform?flip_y_uniform:"") { removeComments(); }
 private:

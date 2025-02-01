@@ -57,9 +57,9 @@ public:
     void updateTexture(int idx,const void *data,uint x,uint y,uint width,uint height,int mip) override;
     void setTextureWrap(int idx,RoxTexture::WRAP s,RoxTexture::WRAP t) override;
     void setTextureFilter(int idx,RoxTexture::FILTER minification,RoxTexture::FILTER magnification,RoxTexture::FILTER mipmap,uint aniso) override;
-    bool getTextureData(int RoxTexture,uint x,uint y,uint w,uint h,void *data) override;
-    void removeTexture(int RoxTexture) override;
-    uint getMaxTextureDimention() override;
+    bool getTextureData(int texture,uint x,uint y,uint w,uint h,void *data) override;
+    void removeTexture(int texture) override;
+    uint getMaxTextureDimension() override;
     bool isTextureFormatSupported(RoxTexture::COLOR_FORMAT format) override;
 
 public:

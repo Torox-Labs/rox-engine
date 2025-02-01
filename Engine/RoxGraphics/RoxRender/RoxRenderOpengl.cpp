@@ -210,6 +210,7 @@ int RoxRenderOpengl::createShader(const char* VERTEX, const char* fragment)
 
         //log() << "OpenGL: " << fragment << "\n";
         //return 0;
+
 		GLuint object = CompileShader(type, parser.getCode());
 		if (!object)
 		{
@@ -225,11 +226,11 @@ int RoxRenderOpengl::createShader(const char* VERTEX, const char* fragment)
 			for (int i = 0; i < parser.getAttributesCount(); ++i)
 			{
 				const RoxShaderCodeParser::variable a = parser.getAttribute(i);
-				if (a.name == "_nya_Vertex") glBindAttribLocation(shdr.program, vertex_attribute, a.name.c_str());
-				else if (a.name == "_nya_Normal")
+				if (a.name == "_rox_Vertex") glBindAttribLocation(shdr.program, vertex_attribute, a.name.c_str());
+				else if (a.name == "_rox_Normal")
 					glBindAttribLocation(shdr.program, normal_attribute, a.name.c_str());
-				else if (a.name == "_nya_Color") glBindAttribLocation(shdr.program, color_attribute, a.name.c_str());
-				else if (a.name.find("_nya_MultiTexCoord") == 0) glBindAttribLocation(
+				else if (a.name == "_rox_Color") glBindAttribLocation(shdr.program, color_attribute, a.name.c_str());
+				else if (a.name.find("_rox_MultiTexCoord") == 0) glBindAttribLocation(
 					shdr.program, tc0_attribute + a.idx, a.name.c_str());
 			}
 		}
@@ -244,17 +245,17 @@ int RoxRenderOpengl::createShader(const char* VERTEX, const char* fragment)
 
 			if (to.type == RoxShader::UNIFORM_MAT4)
 			{
-				if (to.name == "_nya_ModelViewProjectionMatrix")
+				if (to.name == "_rox_ModelViewProjectionMatrix")
 				{
 					shdr.mat_mvp = 1;
 					continue;
 				}
-				if (to.name == "_nya_ModelViewMatrix")
+				if (to.name == "_rox_ModelViewMatrix")
 				{
 					shdr.mat_mv = 1;
 					continue;
 				}
-				if (to.name == "_nya_ProjectionMatrix")
+				if (to.name == "_rox_ProjectionMatrix")
 				{
 					shdr.mat_p = 1;
 					continue;
@@ -327,11 +328,11 @@ int RoxRenderOpengl::createShader(const char* VERTEX, const char* fragment)
 	set_shader(idx);
 
 	if (shdr.mat_mvp > 0)
-		shdr.mat_mvp = glGetUniformLocation(shdr.program, "_nya_ModelViewProjectionMatrix");
+		shdr.mat_mvp = glGetUniformLocation(shdr.program, "_rox_ModelViewProjectionMatrix");
 	else if (shdr.mat_mv > 0)
-		shdr.mat_mv = glGetUniformLocation(shdr.program, "_nya_ModelViewMatrix");
+		shdr.mat_mv = glGetUniformLocation(shdr.program, "_rox_ModelViewMatrix");
 	else if (shdr.mat_p > 0)
-		shdr.mat_p = glGetUniformLocation(shdr.program, "_nya_ProjectionMatrix");
+		shdr.mat_p = glGetUniformLocation(shdr.program, "_rox_ProjectionMatrix");
 
 	for (int i = 0; i < (int)shdr.uniforms.size(); ++i)
 		shdr.uniforms[i].handler = glGetUniformLocation(shdr.program, shdr.uniforms[i].name.c_str());
@@ -1023,9 +1024,9 @@ void RoxRenderOpengl::setTextureFilter(int idx,RoxTexture::FILTER minification,R
     gl_setup_filtration(t.gl_type,t.has_mip,minification,magnification,mipmap);
 }
 
-bool RoxRenderOpengl::getTextureData(int RoxTexture,uint x,uint y,uint w,uint h,void *data)
+bool RoxRenderOpengl::getTextureData(int texture,uint x,uint y,uint w,uint h,void *data)
 {
-    const tex_obj &t=textures.get(RoxTexture);
+    const tex_obj &t=textures.get(texture);
 
     //compressed formats are not supported
     switch(t.gl_format)
@@ -1096,22 +1097,22 @@ bool RoxRenderOpengl::getTextureData(int RoxTexture,uint x,uint y,uint w,uint h,
     return true;
 }
 
-void RoxRenderOpengl::removeTexture(int idx)
+void RoxRenderOpengl::removeTexture(int texture)
 {
     for(int i=0;i<State::max_layers;++i)
     {
-        if(applied_state.textures[i]!=idx)
+        if(applied_state.textures[i]!= texture)
             continue;
 
         applied_state.textures[i]=-1;
         gl_select_multitex_layer(i);
-        const tex_obj &t=textures.get(idx);
+        const tex_obj &t=textures.get(texture);
         glBindTexture(t.gl_type,0);
     }
-    textures.remove(idx);
+    textures.remove(texture);
 }
 
-unsigned int RoxRenderOpengl::getMaxTextureDimention()
+unsigned int RoxRenderOpengl::getMaxTextureDimension()
 {
     static unsigned int max_tex_size=0;
     if(!max_tex_size)
