@@ -3,7 +3,7 @@
 // Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
-// Update the render api intefrace to check Metal 1th.
+// Dropping Metal graphic API support, and by this we are dropping Mac support for now.
 //
 // This file incorporates code from the nya-engine project, which is licensed under the MIT License.
 // See the LICENSE-MIT file in the root directory for more information.
@@ -16,7 +16,6 @@
 #include "RoxRenderDirectx11.h"
 #include "RoxLogger/RoxLogger.h"
 #include "RoxRenderOpengl.h"
-#include "RoxRenderMetal.h"
 
 #include "RoxTexture.h"
 #include "RoxTransform.h"
@@ -36,9 +35,7 @@ namespace
     {
 
 #if __APPLE__
-        // Add to support the Metal Render ROX_ENGINE UPDATE
-        if(RoxRender::RoxRenderMetal::get().isAvailable())
-            return &RoxRender::RoxRenderMetal::get();
+        //TODO: Add Metal Support
 #endif
 
         if (RoxRenderOpengl::get().isAvailable())
@@ -162,6 +159,7 @@ void applyState(bool ignore_cache)
     render_interface->applyState(current_state);
 }
 
+    // TODO: Add support to Metal,DirectX, and Vulkan
 RrenderApi getRenderApi()
 {
     if (render_interface == &RoxRenderOpengl::get())
@@ -170,19 +168,16 @@ RrenderApi getRenderApi()
     if (render_interface == &RoxRenderDirectx11::get())
         return RENDER_API_DIRECTX11;
 
-    if (render_interface == &RoxRenderMetal::get())
-        return RENDER_API_METAL;
-
     return RENDER_API_CUSTOM;
 }
 
+// TODO: Add support to Metal,DirectX, and Vulkan
 bool setRenderApi(RrenderApi api)
 {
     switch(api)
     {
         case RENDER_API_DIRECTX11: return setRenderApi(&RoxRenderDirectx11::get());
         case RENDER_API_OPENGL: return setRenderApi(&RoxRenderOpengl::get());
-        case RENDER_API_METAL: return setRenderApi(&RoxRenderMetal::get());
         case RENDER_API_CUSTOM: return false;
     }
     return false;

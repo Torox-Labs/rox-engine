@@ -1,6 +1,6 @@
 // Updated By the ROX_ENGINE
-// Copyright (C) 2024 Torox Project
-// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+// Copyright © 2024 Torox Project
+// Portions Copyright © 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
 // Drop support for METRO, FLUENT style.
@@ -21,10 +21,6 @@
 #include <iomanip>
 
 #if defined __APPLE__
-    #include <mach-o/dyld.h>
-    #include "TargetConditionals.h"
-    #include <string>
-
 #elif defined _WIN32
     #include <windows.h>
     #include <cstring>
@@ -75,20 +71,6 @@ const char *getAppPath()
     if(!has_path)
     {
 #ifdef __APPLE__
-        uint32_t path_length=max_path;
-        _NSGetExecutablePath(path,
-                             &path_length);
-        
-        std::string path_str(path);
-        size_t p=path_str.rfind(".app");
-        
-        size_t p2=path_str.rfind("/",
-                                 p);
-        
-        if(p2!=std::string::npos)
-            path[p2+1]='\0';
-        else
-            path[0]='\0';
 #elif defined _WIN32
 
         GetModuleFileNameA(0,
@@ -107,17 +89,7 @@ const char *getAppPath()
         }
 
 #elif EMSCRIPTEN
-        strcpy(path,
-               "/");
 #else
-        readlink("/proc/self/exe",
-                 path,
-                 max_path);
-        
-        char *last_slash=strrchr(path,
-                                 '/');
-        if(last_slash)
-            *(last_slash+1)=0;
 #endif
         has_path=true;
     }
@@ -150,19 +122,6 @@ const char *getUserPath()
         }
 
 #elif TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-        if(!get_ios_user_path(path))
-            return 0;
-#else
-        const char *p=getenv("HOME");
-        if (!p)
-            p=getpwuid(getuid())->pw_dir;
-        if(!p)
-            return 0;
-        
-        strcpy(path,
-               p);
-        strcat(path,
-               "/");
 #endif
         has_path=true;
     }
@@ -182,18 +141,6 @@ unsigned long getTime()
 }
 
 #else
-
-#include <sys/time.h>
-
-unsigned long getTime()
-{
-    timeval tim;
-    gettimeofday(&tim,
-                 0);
-    unsigned long sec=(unsigned long)tim.tv_sec;
-    return (sec*1000+(tim.tv_usec/1000));
-}
-
 #endif
 
 }
