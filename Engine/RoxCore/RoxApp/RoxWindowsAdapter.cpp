@@ -14,9 +14,9 @@
 
 #ifdef _WIN32
 
-#ifndef DIRECTX11
 #include <glad/include/glad/glad.h>
-#include "RoxRender/RoxRenderOpengl.h"
+
+#ifndef DIRECTX11
 #endif
 
 using uint = unsigned int;
@@ -24,7 +24,6 @@ using uint = unsigned int;
 #pragma region From <glext.h>
 #define GL_MULTISAMPLE_ARB                0x809D
 #pragma endregion
-
 
 #pragma region From <wglext.h>
 
@@ -78,7 +77,6 @@ namespace RoxApp
 
 	RoxWindowsAdapter::RoxWindowsAdapter()
 #ifdef DIRECTX11
-		: m_device(nullptr), m_context(nullptr), m_swap_chain(nullptr), m_color_target(nullptr), m_depth_target(nullptr),
 #else
 		: m_hdc(nullptr),
 #endif
@@ -179,70 +177,6 @@ namespace RoxApp
 		int pixelFormat = ChoosePixelFormat(m_hdc, &pfd);
 
 #ifdef DIRECTX11
-		UINT create_device_flags = 0;
-#ifdef _DEBUG
-		//create_device_flags|=D3D11_CREATE_DEVICE_DEBUG;
-#endif
-
-		D3D_DRIVER_TYPE driver_types[] =
-		{
-			D3D_DRIVER_TYPE_HARDWARE,
-			D3D_DRIVER_TYPE_WARP,
-			D3D_DRIVER_TYPE_REFERENCE,
-		};
-
-		D3D_FEATURE_LEVEL feature_levels[] =
-		{
-			D3D_FEATURE_LEVEL_11_0,
-			D3D_FEATURE_LEVEL_10_1,
-			D3D_FEATURE_LEVEL_10_0,
-		};
-
-		D3D_FEATURE_LEVEL feature_level = D3D_FEATURE_LEVEL_11_0;
-
-		DXGI_SWAP_CHAIN_DESC sd;
-		ZeroMemory(&sd,
-			sizeof(sd));
-		sd.BufferCount = 1;
-		sd.BufferDesc.Width = w;
-		sd.BufferDesc.Height = h;
-		sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		sd.BufferDesc.RefreshRate.Numerator = 60;
-		sd.BufferDesc.RefreshRate.Denominator = 1;
-		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		sd.OutputWindow = m_hWnd;
-		sd.SampleDesc.Count = 1;
-		sd.SampleDesc.Quality = 0;
-		sd.Windowed = TRUE;
-
-		HRESULT hr = S_OK;
-
-		for (int i = 0; i < ARRAYSIZE(driver_types); ++i)
-		{
-			D3D_DRIVER_TYPE driver_type = driver_types[i];
-			hr = D3D11CreateDeviceAndSwapChain(0,
-				driver_type,
-				0,
-				create_device_flags,
-				feature_levels,
-				ARRAYSIZE(feature_levels),
-				D3D11_SDK_VERSION,
-				&sd,
-				&m_swap_chain,
-				&m_device,
-				&feature_level,
-				&m_context);
-			if (SUCCEEDED(hr))
-				break;
-		}
-		if (FAILED(hr))
-			return;
-
-		RoxRender::set_context(m_context);
-		RoxRender::set_device(m_device);
-		RoxRender::cull_face::disable();
-		recreate_targets(w,
-			h);
 #else
 
 		if (!pixelFormat)
@@ -471,8 +405,6 @@ namespace RoxApp
 		if (app.onSplash())
 		{
 #ifdef DIRECTX11
-			m_swap_chain->Present(0,
-				0);
 #else
 			SwapBuffers(m_hdc);
 #endif
@@ -508,8 +440,6 @@ namespace RoxApp
 				app.onFrame(dt);
 
 #ifdef DIRECTX11
-				m_swap_chain->Present(0,
-					0);
 #else
 				SwapBuffers(m_hdc); // Swap the buffers
 #endif
@@ -572,38 +502,6 @@ namespace RoxApp
 		app.onFree();
 
 #ifdef DIRECTX11
-		if (m_context)
-			m_context->ClearState();
-
-		if (m_color_target)
-		{
-			m_color_target->Release();
-			m_color_target = 0;
-		}
-
-		if (m_depth_target)
-		{
-			m_depth_target->Release();
-			m_depth_target = 0;
-		}
-
-		if (m_swap_chain)
-		{
-			m_swap_chain->Release();
-			m_swap_chain = 0;
-		}
-
-		if (m_context)
-		{
-			m_context->Release();
-			m_context = 0;
-		}
-
-		if (m_device)
-		{
-			m_device->Release();
-			m_device = 0;
-		}
 #else
 
 		wglMakeCurrent(m_hdc,

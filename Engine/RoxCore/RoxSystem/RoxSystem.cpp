@@ -6,7 +6,7 @@
 // Drop support for METRO, FLUENT style.
 // Drop Support for Android, iOS
 // Update the code to be compatible with the latest version of the engine.
-// Optimasation and code cleaning for a better performance.
+// Optimisation and code cleaning for a better performance.
 // 
 // This file incorporates code from the nya-engine project, which is licensed under the MIT License.
 // See the LICENSE-MIT file in the root directory for more information.
@@ -24,7 +24,6 @@
 #elif defined _WIN32
     #include <windows.h>
     #include <cstring>
-	#include <ctime>
 
     #if defined(_MSC_VER) && _MSC_VER >= 1900
 		#if _WIN32_WINNT >= _WIN32_WINNT_WIN10
@@ -131,7 +130,6 @@ const char *getUserPath()
 
 #ifdef _WIN32
 
-//#pragma comment ( lib, "WINMM.LIB" )
 #pragma comment( lib, "winmm.lib")   
 
 unsigned long getTime()

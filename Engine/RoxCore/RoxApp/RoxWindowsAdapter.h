@@ -18,7 +18,6 @@
 #include <windowsx.h>
 
 #ifndef DIRECTX11
-#include "RoxRender/RoxRenderOpengl.h"
 #endif
 
 namespace RoxApp
@@ -48,7 +47,6 @@ namespace RoxApp
         HINSTANCE m_instance;
         HWND m_hWnd;
 #ifdef DIRECTX11
-        // DirectX-specific members
 #else
 		RoxApp* m_app; // RoxApp object pointer
         HDC m_hdc; // Main window device context

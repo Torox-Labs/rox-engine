@@ -13,7 +13,6 @@
 // 2. Commercial License (for use on proprietary platforms)
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
-#include "RoxRenderDirectx11.h"
 #include "RoxLogger/RoxLogger.h"
 #include "RoxRenderOpengl.h"
 
@@ -29,7 +28,7 @@ namespace RoxRender
 namespace
 {
     RoxLogger::RoxLoggerBase *render_log=0;
-    RoxRender::IRoxRenderApi::State current_state;
+    IRoxRenderApi::State current_state;
 
     IRoxRenderApi *availableRenderInterface()
     {
@@ -38,13 +37,12 @@ namespace
         //TODO: Add Metal Support
 #endif
 
+#if WIN32
+		//TODO: Add DirectX Support
+#endif
+
         if (RoxRenderOpengl::get().isAvailable())
             return &RoxRenderOpengl::get();
-
-#if WIN32
-        if (RoxRenderDirectx11::get().isAvailable())
-            return &RoxRenderDirectx11::get();
-#endif
 
         return 0;
     }
@@ -165,9 +163,6 @@ RrenderApi getRenderApi()
     if (render_interface == &RoxRenderOpengl::get())
         return RENDER_API_OPENGL;
 
-    if (render_interface == &RoxRenderDirectx11::get())
-        return RENDER_API_DIRECTX11;
-
     return RENDER_API_CUSTOM;
 }
 
@@ -176,7 +171,6 @@ bool setRenderApi(RrenderApi api)
 {
     switch(api)
     {
-        case RENDER_API_DIRECTX11: return setRenderApi(&RoxRenderDirectx11::get());
         case RENDER_API_OPENGL: return setRenderApi(&RoxRenderOpengl::get());
         case RENDER_API_CUSTOM: return false;
     }
