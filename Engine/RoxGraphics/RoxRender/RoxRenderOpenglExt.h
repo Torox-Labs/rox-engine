@@ -20,6 +20,7 @@
 #include <windows.h>
 #include <glad/include/glad/glad.h>
 
+// wglExt
 #pragma region From <wglext.h>
 
 #define WGL_CONTEXT_MAJOR_VERSION_ARB		0x2091
@@ -28,15 +29,15 @@
 #define WGL_CONTEXT_CORE_PROFILE_BIT_ARB	0x00000001
 #define WGL_CONTEXT_PROFILE_MASK_ARB		0x9126
 
-#define GL_RGB32F_ARB                     0x8815
-#define GL_RGBA32F_ARB                    0x8814
+#define GL_RGB32F_ARB                       0x8815
+#define GL_RGBA32F_ARB                      0x8814
 
-#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT  0x83F1
-#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT  0x83F2
-#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT  0x83F3
+#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT    0x83F1
+#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT    0x83F2
+#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT    0x83F3
 
-#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
-#define GL_TEXTURE_MAX_ANISOTROPY_EXT     0x84FE
+#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT   0x84FF
+#define GL_TEXTURE_MAX_ANISOTROPY_EXT       0x84FE
 
 // Declare Create Context Attribs function pointer
 typedef HGLRC(WINAPI* PFNWGLCREATECONTEXTATTRIBSARBPROC)(
@@ -65,6 +66,7 @@ typedef void (APIENTRYP PFNGLDEBUGMESSAGECALLBACKARBPROC) (GLDEBUGPROCARB callba
 
 #pragma endregion
 
+// wgl
 #pragma region From <wgl.h>
 
 // 

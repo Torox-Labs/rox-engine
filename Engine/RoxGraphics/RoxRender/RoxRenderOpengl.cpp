@@ -14,7 +14,11 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxRenderOpengl.h"
+
+#ifdef _WIN32
 #include "RoxRenderOpenglExt.h"
+#endif
+
 #include "RoxMemory/RoxTmpBuffers.h"
 #include "RoxRenderObjects.h"
 #include "RoxBitmap.h"
