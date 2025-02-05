@@ -39,11 +39,11 @@ namespace
 
 #if WIN32
 		//TODO: Add DirectX Support
-#endif
+#endif  
 
         if (RoxRenderOpengl::get().isAvailable())
             return &RoxRenderOpengl::get();
-
+		
         return 0;
     }
 
