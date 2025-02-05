@@ -58,49 +58,49 @@ void RoxFbo::release()
 	if(m_fbo_idx<0)
 		return;
 
-    getApiInterface().removeTarget(m_fbo_idx);
-    if(getApiState().target==m_fbo_idx)
-        getApiState().target=-1;
+    getAPIInterface().removeTarget(m_fbo_idx);
+    if(getAPIState().target==m_fbo_idx)
+        getAPIState().target=-1;
 
     *this=RoxFbo();
 }
 
 void RoxFbo::bind() const
 {
-    if(getApiState().target>=0 && getApiState().target!=m_fbo_idx)
-        getApiInterface().resolveTarget(getApiState().target);
+    if(getAPIState().target>=0 && getAPIState().target!=m_fbo_idx)
+        getAPIInterface().resolveTarget(getAPIState().target);
 
     if(m_update)
     {
-        const int idx=getApiInterface().createTarget(m_width,m_height,m_samples,m_attachment_textures.data(),
+        const int idx=getAPIInterface().createTarget(m_width,m_height,m_samples,m_attachment_textures.data(),
                                                         m_attachment_sides.data(),(int)m_attachment_textures.size(),m_depth_texture);
         if(m_fbo_idx>=0)
         {
-            if(getApiState().target==m_fbo_idx)
+            if(getAPIState().target==m_fbo_idx)
             {
-                getApiInterface().resolveTarget(m_fbo_idx);
-                getApiState().target=idx;
+                getAPIInterface().resolveTarget(m_fbo_idx);
+                getAPIState().target=idx;
             }
-            getApiInterface().removeTarget(m_fbo_idx);
+            getAPIInterface().removeTarget(m_fbo_idx);
         }
         m_fbo_idx=idx;
         m_update=false;
     }
 
-    getApiState().target=m_fbo_idx;
+    getAPIState().target=m_fbo_idx;
 }
 
 void RoxFbo::unbind()
 {
-    if(getApiState().target>=0)
-        getApiInterface().resolveTarget(getApiState().target);
+    if(getAPIState().target>=0)
+        getAPIInterface().resolveTarget(getAPIState().target);
 
-    getApiState().target=-1;
+    getAPIState().target=-1;
 }
 
-const RoxFbo RoxFbo::getCurrent() { RoxFbo f; f.m_fbo_idx=getApiState().target; return f; }
+const RoxFbo RoxFbo::getCurrent() { RoxFbo f; f.m_fbo_idx=getAPIState().target; return f; }
 
-unsigned int RoxFbo::getMaxColorAttachments() { return getApiInterface().getMaxTargetAttachments(); }
-unsigned int RoxFbo::getMaxMsaa() { return getApiInterface().getMaxTargetMsaa(); }
+unsigned int RoxFbo::getMaxColorAttachments() { return getAPIInterface().getMaxTargetAttachments(); }
+unsigned int RoxFbo::getMaxMsaa() { return getAPIInterface().getMaxTargetMsaa(); }
 
 }

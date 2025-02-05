@@ -80,7 +80,7 @@ bool RoxTexture::buildTexture(const void *data_a[6],bool is_cubemap,unsigned int
 
     if(!is_cubemap && !m_is_cubemap && m_width==width && m_height==height && m_format==format && data)
     {
-        getApiInterface().updateTexture(m_tex,data,0,0,width,height,-1);
+        getAPIInterface().updateTexture(m_tex,data,0,0,width,height,-1);
         return true;
     }
     else
@@ -93,7 +93,7 @@ bool RoxTexture::buildTexture(const void *data_a[6],bool is_cubemap,unsigned int
 
     RoxMemory::RoxTmpBufferRef tmp_buf;
 
-    if(!getApiInterface().isTextureFormatSupported(format))
+    if(!getAPIInterface().isTextureFormatSupported(format))
     {
         if(format==DEPTH24)
         {
@@ -104,7 +104,7 @@ bool RoxTexture::buildTexture(const void *data_a[6],bool is_cubemap,unsigned int
         }
         else if(format==COLOR_RGBA || format==COLOR_RGB)
         {
-            if(!getApiInterface().isTextureFormatSupported(COLOR_BGRA))
+            if(!getAPIInterface().isTextureFormatSupported(COLOR_BGRA))
                 return false;
 
             if(data)
@@ -149,9 +149,9 @@ bool RoxTexture::buildTexture(const void *data_a[6],bool is_cubemap,unsigned int
     }
 
     if(is_cubemap)
-        m_tex=getApiInterface().createCubemap(data_a,width,format,mip_count);
+        m_tex=getAPIInterface().createCubemap(data_a,width,format,mip_count);
     else
-        m_tex=getApiInterface().createTexture(data,width,height,format,mip_count);
+        m_tex=getAPIInterface().createTexture(data,width,height,format,mip_count);
 
     tmp_buf.free();
 
@@ -169,12 +169,12 @@ bool RoxTexture::buildTexture(const void *data_a[6],bool is_cubemap,unsigned int
     }
     if(!m_aniso_set)
         m_aniso=default_aniso;
-    getApiInterface().setTextureFilter(m_tex,m_filter_min,m_filter_mag,m_filter_mip,m_aniso);
+    getAPIInterface().setTextureFilter(m_tex,m_filter_min,m_filter_mag,m_filter_mip,m_aniso);
 
     if(!is_cubemap)
     {
         const bool force_clamp=!pot && !isPlatformRestrictionsIgnored();
-        getApiInterface().setTextureWrap(m_tex,force_clamp? WRAP_CLAMP:default_wrap_s,force_clamp?WRAP_CLAMP:default_wrap_t);
+        getAPIInterface().setTextureWrap(m_tex,force_clamp? WRAP_CLAMP:default_wrap_s,force_clamp?WRAP_CLAMP:default_wrap_t);
     }
     return true;
 }
@@ -205,7 +205,7 @@ bool RoxTexture::updateRegion(const void *data,unsigned int x,unsigned int y,uns
     if(m_format>=DEPTH16)
         return false;
 
-    getApiInterface().updateTexture(m_tex,data,x,y,width,height,-1);
+    getAPIInterface().updateTexture(m_tex,data,x,y,width,height,-1);
     return true;
 }
 
@@ -242,7 +242,7 @@ void RoxTexture::bind(unsigned int layer) const
     if(layer>=IRoxRenderAPI::State::max_layers)
         return;
 
-    getApiState().textures[layer]=m_tex;
+    getAPIState().textures[layer]=m_tex;
 }
 
 void RoxTexture::unbind(unsigned int layer)
@@ -250,7 +250,7 @@ void RoxTexture::unbind(unsigned int layer)
     if(layer>=IRoxRenderAPI::State::max_layers)
         return;
 
-    getApiState().textures[layer]=-1;
+    getAPIState().textures[layer]=-1;
 }
 
 bool RoxTexture::getData(RoxMemory::RoxTmpBufferRef &data) const
@@ -280,7 +280,7 @@ bool RoxTexture::getData(RoxMemory::RoxTmpBufferRef&data,unsigned int x,unsigned
     }
 
     data.allocate(size);
-    if(!getApiInterface().getTextureData(m_tex,x,y,w,h,data.getData()))
+    if(!getAPIInterface().getTextureData(m_tex,x,y,w,h,data.getData()))
     {
         data.free();
         return false;
@@ -302,7 +302,7 @@ void RoxTexture::setWrap(WRAP s,WRAP t)
     if(!pot)
         s=t=WRAP_CLAMP;
 
-    getApiInterface().setTextureWrap(m_tex,s,t);
+    getAPIInterface().setTextureWrap(m_tex,s,t);
 }
 
 void RoxTexture::setAniso(unsigned int level)
@@ -313,7 +313,7 @@ void RoxTexture::setAniso(unsigned int level)
     if(m_tex<0)
         return;
 
-    getApiInterface().setTextureFilter(m_tex,m_filter_min,m_filter_mag,m_filter_mip,m_aniso);
+    getAPIInterface().setTextureFilter(m_tex,m_filter_min,m_filter_mag,m_filter_mip,m_aniso);
 }
 
 void RoxTexture::setFilter(FILTER minification,FILTER magnification,FILTER mipmap)
@@ -326,7 +326,7 @@ void RoxTexture::setFilter(FILTER minification,FILTER magnification,FILTER mipma
     if(m_tex<0)
         return;
 
-    getApiInterface().setTextureFilter(m_tex,m_filter_min,m_filter_mag,m_filter_mip,m_aniso);
+    getAPIInterface().setTextureFilter(m_tex,m_filter_min,m_filter_mag,m_filter_mip,m_aniso);
 }
 
 void RoxTexture::setDefaultWrap(WRAP s,WRAP t)
@@ -358,8 +358,8 @@ void RoxTexture::getDefaultFilter(FILTER &minification,FILTER &magnification,FIL
 }
 
 unsigned int RoxTexture::getDefaultAniso() { return default_aniso; }
-unsigned int RoxTexture::getMaxDimension() { return getApiInterface().getMaxTextureDimension(); }
-bool RoxTexture::isDxtSupported() { return getApiInterface().isTextureFormatSupported(DXT1); }
+unsigned int RoxTexture::getMaxDimension() { return getAPIInterface().getMaxTextureDimension(); }
+bool RoxTexture::isDxtSupported() { return getAPIInterface().isTextureFormatSupported(DXT1); }
 
 unsigned int RoxTexture::getFormatBpp(RoxTexture::COLOR_FORMAT format)
 {
@@ -406,7 +406,7 @@ unsigned int RoxTexture::getGlTexId() const
     if(m_tex<0)
         return 0;
 
-    if(getRenderApi()==RENDER_API_OPENGL)
+    if(getRenderAPI()==RENDER_API_OPENGL)
         return RoxRenderOpengl::get().getGlTextureId(m_tex);
     
     //renderapi
@@ -426,8 +426,8 @@ void RoxTexture::release()
     if(m_tex<0)
         return;
 
-    getApiInterface().removeTexture(m_tex);
-    IRoxRenderAPI::State &s=getApiState();
+    getAPIInterface().removeTexture(m_tex);
+    IRoxRenderAPI::State &s=getAPIState();
     for(int i=0;i<s.max_layers;++i)
     {
         if(s.textures[i]==m_tex)

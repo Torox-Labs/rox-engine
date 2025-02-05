@@ -42,23 +42,23 @@ namespace RoxRender
         if (!m_code[VERTEX].empty() && !m_code[PIXEL].empty())
 		{
 			release();
-			m_shdr = getApiInterface().createShader(m_code[VERTEX].c_str(), m_code[PIXEL].c_str());
+			m_shdr = getAPIInterface().createShader(m_code[VERTEX].c_str(), m_code[PIXEL].c_str());
 			if (m_shdr < 0)
 				return false;
 
-			m_buf = getApiInterface().createUniformBuffer(m_shdr);
+			m_buf = getAPIInterface().createUniformBuffer(m_shdr);
 
-			m_uniforms.resize(getApiInterface().getUniformsCount(m_shdr));
+			m_uniforms.resize(getAPIInterface().getUniformsCount(m_shdr));
 			for (int i = 0; i < (int)m_uniforms.size(); ++i)
-				m_uniforms[i] = getApiInterface().getUniform(m_shdr, i);
+				m_uniforms[i] = getAPIInterface().getUniform(m_shdr, i);
 			return true;
 		}
 
 		return true;
 	}
 
-void RoxShader::bind() const { getApiState().shader= m_shdr; getApiState().uniform_buffer=m_buf; }
-void RoxShader::unbind() { getApiState().shader= -1; getApiState().uniform_buffer= -1; }
+void RoxShader::bind() const { getAPIState().shader= m_shdr; getAPIState().uniform_buffer=m_buf; }
+void RoxShader::unbind() { getAPIState().shader= -1; getAPIState().uniform_buffer= -1; }
 
 int RoxShader::getSamplerLayer(const char *name) const
 {
@@ -100,7 +100,7 @@ void RoxShader::setUniform(int i,float f0,float f1,float f2,float f3) const
         return;
 
     const float f[]={f0,f1,f2,f3};
-    getApiInterface().setUniform(m_shdr,i,f,4);
+    getAPIInterface().setUniform(m_shdr,i,f,4);
 }
 
 void RoxShader::setUniform3Array(int i,const float *f,unsigned int count) const
@@ -115,7 +115,7 @@ void RoxShader::setUniform3Array(int i,const float *f,unsigned int count) const
     if(!count)
         return;
 
-    getApiInterface().setUniform(m_shdr,i,f,count*3);
+    getAPIInterface().setUniform(m_shdr,i,f,count*3);
 }
 
 void RoxShader::setUniform4Array(int i,const float *f,unsigned int count) const
@@ -132,7 +132,7 @@ void RoxShader::setUniform4Array(int i,const float *f,unsigned int count) const
         if(count>=u.array_size)
             count=u.array_size;
 
-        getApiInterface().setUniform(m_shdr,i,f,count*4);
+        getAPIInterface().setUniform(m_shdr,i,f,count*4);
     }
     else if(u.type==UNIFORM_MAT4)
     {
@@ -140,7 +140,7 @@ void RoxShader::setUniform4Array(int i,const float *f,unsigned int count) const
         if(count>=u.array_size)
             count=u.array_size;
 
-        getApiInterface().setUniform(m_shdr,i,f,count*16);
+        getAPIInterface().setUniform(m_shdr,i,f,count*16);
     }
 }
 
@@ -159,7 +159,7 @@ void RoxShader::setUniform16Array(int i,const float *f,unsigned int count) const
     if(!count)
         return;
 
-    getApiInterface().setUniform(m_shdr,i,f,count*16);
+    getAPIInterface().setUniform(m_shdr,i,f,count*16);
 }
 
 int RoxShader::getUniformsCount() const { return (int)m_uniforms.size(); }
@@ -183,16 +183,16 @@ void RoxShader::release()
 {
     if(m_shdr>=0)
     {
-        if(getApiState().shader ==m_shdr)
-            getApiState().shader =-1;
-        getApiInterface().removeShader(m_shdr);
+        if(getAPIState().shader ==m_shdr)
+            getAPIState().shader =-1;
+        getAPIInterface().removeShader(m_shdr);
     }
 
     if(m_buf>=0)
     {
-        if(getApiState().uniform_buffer==m_buf)
-            getApiState().uniform_buffer=-1;
-        getApiInterface().removeUniformBuffer(m_buf);
+        if(getAPIState().uniform_buffer==m_buf)
+            getAPIState().uniform_buffer=-1;
+        getAPIInterface().removeUniformBuffer(m_buf);
     }
 
     m_shdr=m_buf=-1;
