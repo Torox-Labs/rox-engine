@@ -13,7 +13,7 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxVbo.h"
-#include "IRoxRenderApi.h"
+#include "IRoxRenderAPI.h"
 #include "RoxStatistics.h"
 #include "RoxMemory/RoxTmpBuffers.h"
 
@@ -52,7 +52,7 @@ namespace RoxRender
 
 	void RoxVbo::draw(uint offset, uint count, ELEMENT_TYPE el_type, uint instances)
 	{
-		IRoxRenderApi::State& s = getApiState();
+		IRoxRenderAPI::State& s = getApiState();
 
 		if (offset + count > (s.index_buffer < 0 ? active_vert_count : active_ind_count))
 			return;
@@ -81,8 +81,8 @@ namespace RoxRender
 
 	void RoxVbo::transformFeedback(RoxVbo& target)
 	{
-		IRoxRenderApi::TfState s;
-		(IRoxRenderApi::RenderState&)s = (IRoxRenderApi::RenderState&)getApiState();
+		IRoxRenderAPI::TfState s;
+		(IRoxRenderAPI::RenderState&)s = (IRoxRenderAPI::RenderState&)getApiState();
 		s.vertex_buffer_out = target.m_verts;
 		s.primitive = active_ElementType;
 		s.index_offset = s.out_offset = 0;
@@ -93,12 +93,12 @@ namespace RoxRender
 
 	void RoxVbo::transformFeedback(RoxVbo& target, uint src_offset, uint dst_offset, uint count, ELEMENT_TYPE type)
 	{
-		IRoxRenderApi::TfState s;
+		IRoxRenderAPI::TfState s;
 
 		if (src_offset + count > (s.index_buffer < 0 ? active_vert_count : active_ind_count))
 			return;
 
-		(IRoxRenderApi::RenderState&)s = (IRoxRenderApi::RenderState&)getApiState();
+		(IRoxRenderAPI::RenderState&)s = (IRoxRenderAPI::RenderState&)getApiState();
 		s.vertex_buffer_out = target.m_verts;
 		s.primitive = type;
 		s.index_offset = src_offset;
@@ -110,7 +110,7 @@ namespace RoxRender
 
 	bool RoxVbo::setVertexData(const void* data, uint vert_stride, uint vert_count, USAGE_HINT usage)
 	{
-		IRoxRenderApi& api = getApiInterface();
+		IRoxRenderAPI& api = getApiInterface();
 
 		if (m_verts >= 0)
 		{
@@ -138,7 +138,7 @@ namespace RoxRender
 
 	bool RoxVbo::setIndexData(const void* data, INDEX_SIZE size, uint indices_count, USAGE_HINT usage)
 	{
-		IRoxRenderApi& api = getApiInterface();
+		IRoxRenderAPI& api = getApiInterface();
 
 		if (m_indices >= 0)
 			releaseIndices();
@@ -276,7 +276,7 @@ namespace RoxRender
 		if (m_verts < 0)
 			return;
 
-		IRoxRenderApi::State& s = getApiState();
+		IRoxRenderAPI::State& s = getApiState();
 		getApiInterface().removeVertexBuffer(m_verts);
 		if (s.vertex_buffer == m_verts)
 			s.vertex_buffer = -1;
@@ -290,7 +290,7 @@ namespace RoxRender
 		if (m_indices < 0)
 			return;
 
-		IRoxRenderApi::State& s = getApiState();
+		IRoxRenderAPI::State& s = getApiState();
 		getApiInterface().removeIndexBuffer(m_indices);
 		if (s.index_buffer == m_indices)
 			s.index_buffer = -1;

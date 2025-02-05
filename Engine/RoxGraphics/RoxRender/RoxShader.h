@@ -112,5 +112,4 @@ public:
 };
 
 void set_compiled_shaders_provider(RoxCompiledShadersProvider *provider);
-
 }

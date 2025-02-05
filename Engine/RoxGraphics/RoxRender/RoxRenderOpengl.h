@@ -20,7 +20,7 @@
 namespace RoxRender
 {
 
-class RoxRenderOpengl: public IRoxRenderApi
+class RoxRenderOpengl: public IRoxRenderAPI
 {
 public:
     bool isAvailable() const override;

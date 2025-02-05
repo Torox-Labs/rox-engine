@@ -1,9 +1,8 @@
 // Updated By the ROX_ENGINE
-// Copyright (C) 2024 Torox Project
-// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+// Copyright © 2024 Torox Project
+// Portions Copyright © 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
-// Update the render api intefrace to check Metal 1th.
 //
 // This file incorporates code from the nya-engine project, which is licensed under the MIT License.
 // See the LICENSE-MIT file in the root directory for more information.
@@ -59,8 +58,10 @@ const RoxMath::Matrix4 &getOrientationMatrix();
 void setClearColor(float r,float g,float b,float a);
 void setClearColor(const RoxMath::Vector4 &c);
 RoxMath::Vector4 getClearColor();
-void setClearDepth(float value);
+
 float getClearDepth();
+void setClearDepth(float value);
+
 void clear(bool clear_color,bool clear_depth,bool clear_stencil=false);
 
 struct Blend

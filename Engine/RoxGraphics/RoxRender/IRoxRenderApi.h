@@ -21,7 +21,7 @@
 
 namespace RoxRender
 {
-	class IRoxRenderApi
+	class IRoxRenderAPI
 	{
 	public:
 		virtual bool isAvailable() const { return true; }
@@ -212,19 +212,17 @@ namespace RoxRender
 		}
 	};
 
-	enum RrenderApi
+	// 
+	enum RenderAPI
 	{
 		RENDER_API_OPENGL,
-		RENDER_API_DIRECTX11,
-		RENDER_API_DIRECTX12,
-		RENDER_API_METAL,
-		//RENDER_API_VULCAN,
 		RENDER_API_CUSTOM
 	};
 
-	RrenderApi getRenderApi();
-	bool setRenderApi(RrenderApi api);
-	bool setRenderApi(IRoxRenderApi* api);
-	IRoxRenderApi& getApiInterface();
-	IRoxRenderApi::State& getApiState();
+	RenderAPI getRenderAPI();
+	bool setRenderAPI(RenderAPI api);
+	bool setRenderAPI(IRoxRenderAPI* api);
+
+	IRoxRenderAPI& getAPIInterface();
+	IRoxRenderAPI::State& getAPIState();
 }
