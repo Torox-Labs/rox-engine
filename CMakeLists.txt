@@ -40,10 +40,8 @@ add_subdirectory(Engine/RoxGraphics)
 # ======Link Directories ======
 # Prefer using full paths or imported targets in modern CMake
 link_directories(
-    "D:/CL/assimp/lib"
-    "D:/CL/zlib/build/Release"
-    "D:/CL/bullet3/build/lib/Release"
-    
+    # Link Directories of External Libraries
+    # Link Directories of Subdirectories
 )
 
 # ====== Platform-Specific Configurations ======

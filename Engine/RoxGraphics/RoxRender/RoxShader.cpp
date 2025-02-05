@@ -14,6 +14,9 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxShader.h"
+
+#include <iostream>
+
 #include "RoxShaderCodeParser.h"
 #include "RoxRender.h"
 #include "IRoxRenderApi.h"
@@ -24,18 +27,19 @@ namespace RoxRender
 	{
 		if (type >= PROGRAM_TYPES_COUNT)
 		{
-			log() << "Unable to add RoxShader program: invalid RoxShader type\n";
+			log() << "Unable to add shader program: invalid shader type\n";
 			return false;
 		}
 
 		if (!code || !code[0])
 		{
-			log() << "Unable to add RoxShader program: invalid code\n";
+			log() << "Unable to add shader program: invalid code\n";
 			return false;
 		}
 
 		m_code[type] = code;
-		if (!m_code[VERTEX].empty() && !m_code[PIXEL].empty())
+     
+        if (!m_code[VERTEX].empty() && !m_code[PIXEL].empty())
 		{
 			release();
 			m_shdr = getApiInterface().createShader(m_code[VERTEX].c_str(), m_code[PIXEL].c_str());
