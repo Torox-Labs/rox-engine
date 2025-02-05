@@ -72,23 +72,23 @@ const Rectangle &getViewport() { return current_state.viewport; }
 void setProjectionMatrix(const RoxMath::Matrix4 &mat)
 {
     RoxTransform::get().setProjectionMatrix(mat);
-    getApiInterface().setCamera(getModelviewMatrix(),getProjectionMatrix());
+    getApiInterface().setCamera(getModelViewMatrix(),getProjectionMatrix());
 }
 
-void setModelviewMatrix(const RoxMath::Matrix4 &mat)
+void setModelViewMatrix(const RoxMath::Matrix4 &mat)
 {
     RoxTransform::get().setModelviewMatrix(mat);
-    getApiInterface().setCamera(getModelviewMatrix(),getProjectionMatrix());
+    getApiInterface().setCamera(getModelViewMatrix(),getProjectionMatrix());
 }
 
-void set_orientation_matrix(const RoxMath::Matrix4 &mat)
+void setOrientationMatrix(const RoxMath::Matrix4 &mat)
 {
     RoxTransform::get().setOrientationMatrix(mat);
-    getApiInterface().setCamera(getModelviewMatrix(),getProjectionMatrix());
+    getApiInterface().setCamera(getModelViewMatrix(),getProjectionMatrix());
 }
 
 const RoxMath::Matrix4 &getProjectionMatrix() { return RoxTransform::get().getProjectionMatrix(); }
-const RoxMath::Matrix4 &getModelviewMatrix() { return RoxTransform::get().getModelviewMatrix(); }
+const RoxMath::Matrix4 &getModelViewMatrix() { return RoxTransform::get().getModelviewMatrix(); }
 const RoxMath::Matrix4 &getOrientationMatrix() { return RoxTransform::get().getOrientationMatrix(); }
 
 RoxMath::Vector4 getClearColor() { return RoxMath::Vector4(current_state.clear_color); }
@@ -123,15 +123,15 @@ void CullFace::disable() { current_state.cull_face=false; }
 void DepthTest::enable(COMPARISON MODE)
 {
     current_state.depth_test=true;
-    current_state.depth_comparsion=MODE;
+    current_state.depth_comparison=MODE;
 }
 void DepthTest::disable() { current_state.depth_test =false; }
 
 void Zwrite::enable() { current_state.zwrite=true; }
 void Zwrite::disable() { current_state.zwrite=false; }
 
-void Color_Write::enable() { current_state.color_write=true; }
-void Color_Write::disable() { current_state.color_write=false; }
+void ColorWrite::enable() { current_state.color_write=true; }
+void ColorWrite::disable() { current_state.color_write=false; }
 
 void Scissor::enable(const Rectangle &r) { current_state.scissor_enabled=true; current_state.scissor=r; }
 void Scissor::enable(int x,int y,int w,int h)

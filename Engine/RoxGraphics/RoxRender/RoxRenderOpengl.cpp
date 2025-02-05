@@ -1548,9 +1548,9 @@ void RoxRenderOpengl::applyState(const State &c)
         a.depth_test =c.depth_test;
     }
 
-    if(c.depth_comparsion!=a.depth_comparsion || ignore_cache)
+    if(c.depth_comparison!=a.depth_comparison || ignore_cache)
     {
-        switch(c.depth_comparsion)
+        switch(c.depth_comparison)
         {
             case DepthTest::NEVER: glDepthFunc(GL_NEVER); break;
             case DepthTest::LESS: glDepthFunc(GL_LESS); break;
@@ -1561,7 +1561,7 @@ void RoxRenderOpengl::applyState(const State &c)
             case DepthTest::NOT_GREATER: glDepthFunc(GL_LEQUAL); break;
             case DepthTest::ALLWAYS: glDepthFunc(GL_ALWAYS); break;
         }
-        a.depth_comparsion=c.depth_comparsion;
+        a.depth_comparison=c.depth_comparison;
     }
 
     if(c.zwrite!=a.zwrite || ignore_cache)

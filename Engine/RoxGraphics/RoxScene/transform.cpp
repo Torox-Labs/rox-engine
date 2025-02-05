@@ -83,7 +83,7 @@ void transform::apply() const
     RoxMath::Matrix4 mat=get_camera().get_view_matrix();
     mat.translate(m_pos).rotate(m_rot).scale(m_scale.x,m_scale.y,m_scale.z);
 
-    RoxRender::setModelviewMatrix(mat);
+    RoxRender::setModelViewMatrix(mat);
 }
 
 void transform::set_rot(RoxMath::AngleDeg yaw,RoxMath::AngleDeg pitch,RoxMath::AngleDeg roll)

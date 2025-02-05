@@ -332,7 +332,7 @@ void material_internal::unset() const
         RoxRender::Zwrite::enable();
 
     if(!p.m_render_state.color_write)
-        RoxRender::Color_Write::enable();
+        RoxRender::ColorWrite::enable();
 
     for(int slot_idx=0;slot_idx<(int)p.m_textures_slots_map.size();++slot_idx)
     {

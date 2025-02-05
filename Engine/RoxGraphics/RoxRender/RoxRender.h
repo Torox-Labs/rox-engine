@@ -49,11 +49,11 @@ struct Scissor
 };
 
 void setProjectionMatrix(const RoxMath::Matrix4 &mat);
-void setModelviewMatrix(const RoxMath::Matrix4 &mat);
+void setModelViewMatrix(const RoxMath::Matrix4 &mat);
 void setOrientationMatrix(const RoxMath::Matrix4 &mat);
 
 const RoxMath::Matrix4 &getProjectionMatrix();
-const RoxMath::Matrix4 &getModelviewMatrix();
+const RoxMath::Matrix4 &getModelViewMatrix();
 const RoxMath::Matrix4 &getOrientationMatrix();
 
 void setClearColor(float r,float g,float b,float a);
@@ -109,7 +109,7 @@ struct DepthTest
 		ALLWAYS
 	};
 
-    static void enable(COMPARISON MODE);
+    static void enable(COMPARISON mode);
     static void disable();
 };
 
@@ -119,7 +119,7 @@ struct Zwrite
     static void disable();
 };
 
-struct Color_Write
+struct ColorWrite
 {
     static void enable();
     static void disable();
@@ -146,7 +146,7 @@ struct State
     }
 
     bool depth_test;
-    DepthTest::COMPARISON depth_comparsion;
+    DepthTest::COMPARISON depth_comparison;
 
     bool zwrite;
     bool color_write;
@@ -160,7 +160,7 @@ struct State
         cull_order(CullFace::CCW),
 
         depth_test(true),
-        depth_comparsion(DepthTest::NOT_GREATER),
+        depth_comparison(DepthTest::NOT_GREATER),
 
         zwrite(true),
         color_write(true)

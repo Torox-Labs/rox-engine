@@ -165,7 +165,7 @@ void postprocess::draw(int dt)
             case type_draw_quad:
                 if(!material_set)
                     RoxRender::setState(state);
-                RoxRender::setModelviewMatrix(get_camera().get_view_matrix());
+                RoxRender::setModelViewMatrix(get_camera().get_view_matrix());
                 m_quad->draw();
                 break;
         }
