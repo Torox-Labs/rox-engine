@@ -7,7 +7,7 @@
 #include "transform.h"
 #include "RoxRender/RoxRender.h"
 #include "RoxRender/RoxScreenQuad.h"
-#include "RoxRender/RoxFbo.h"
+#include "RoxRender/RoxFBO.h"
 #include "RoxFormats/RoxTextParser.h"
 #include "RoxFormats/RoxMathExprParser.h"
 
@@ -60,7 +60,7 @@ public:
 
     void blit(RoxRender::RoxTexture &dst,const float *data,int count,int dimention)
     {
-        const RoxRender::RoxFbo prev_fbo=RoxRender::RoxFbo::getCurrent();
+        const RoxRender::RoxFBO prev_fbo=RoxRender::RoxFBO::getCurrent();
         m_fbo.setColorTarget(dst);
         m_fbo.bind();
         const RoxRender::Rectangle oldvp=RoxRender::getViewport();
@@ -113,7 +113,7 @@ public:
     
 private:
     RoxRender::RoxShader m_sh3,m_sh4;
-    RoxRender::RoxFbo m_fbo;
+    RoxRender::RoxFBO m_fbo;
     RoxRender::RoxScreenQuad m_quad;
     int m_data_uniform;
     static const int array_size=17;

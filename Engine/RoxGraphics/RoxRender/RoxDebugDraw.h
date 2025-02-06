@@ -56,7 +56,7 @@ public:
     RoxDebugDraw(): m_initialised(false),m_point_size(1.0f),m_line_width(1.0f) {}
 
 private:
-    mutable RoxVbo m_vbo;
+    mutable RoxVBO m_vbo;
     mutable RoxShader m_shader;
 
     struct vert { RoxMath::Vector3 pos; RoxMath::Vector4 color; };

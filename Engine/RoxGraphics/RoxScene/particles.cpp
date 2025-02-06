@@ -633,7 +633,7 @@ void shared_particles::particle::init_mesh_points(int count)
         verts[i*2]=float(i);
 
     mesh.setVertices(0,2);
-    mesh.setElementType(RoxRender::RoxVbo::POINTS);
+    mesh.setElementType(RoxRender::RoxVBO::POINTS);
     mesh.setVertexData(&verts[0],sizeof(float)*2,(unsigned int)prim_count);
 }
 
@@ -641,7 +641,7 @@ void shared_particles::particle::init_mesh_line(int count)
 {
     init_mesh_points(count);
     prim_looped=true;
-    mesh.setElementType(RoxRender::RoxVbo::LINE_STRIP);
+    mesh.setElementType(RoxRender::RoxVBO::LINE_STRIP);
 }
 
 namespace { struct quad_vert { float x,y,i,u,v; }; }
@@ -679,7 +679,7 @@ void shared_particles::particle::init_mesh_quads(int count)
 
     mesh.setTc(0,sizeof(float)*3,2);
     mesh.setVertexData(&verts[0],sizeof(quad_vert),(unsigned int)verts.size());
-    mesh.setIndexData(&inds[0],RoxRender::RoxVbo::INDEX_2D,(unsigned int)inds.size());
+    mesh.setIndexData(&inds[0],RoxRender::RoxVBO::INDEX_2D,(unsigned int)inds.size());
 }
 
 void shared_particles::particle::init_mesh_quad_strip(int count)
@@ -698,7 +698,7 @@ void shared_particles::particle::init_mesh_quad_strip(int count)
         verts[i].set(i%2?-1.0f:1.0f,float(i/2));
 
     mesh.setVertices(0,2);
-    mesh.setElementType(RoxRender::RoxVbo::TRIANGLE_STRIP);
+    mesh.setElementType(RoxRender::RoxVBO::TRIANGLE_STRIP);
     mesh.setVertexData(&verts[0],sizeof(RoxMath::Vector2),(unsigned int)verts.size());
 }
 

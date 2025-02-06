@@ -64,7 +64,7 @@ void postprocess::draw(int dt)
         return;
 
     RoxRender::Rectangle prev_rect=RoxRender::getViewport();
-    RoxRender::RoxFbo prev_fbo=RoxRender::RoxFbo::getCurrent();
+    RoxRender::RoxFBO prev_fbo=RoxRender::RoxFBO::getCurrent();
 
     if(m_auto_resize && (prev_rect.width != m_width || prev_rect.height != m_height))
     {

@@ -90,7 +90,7 @@ struct shared_particles
         short sort_key_offset;
         bool sort_ascending;
 
-        RoxRender::RoxVbo mesh;
+        RoxRender::RoxVBO mesh;
         short prim_count;
         short element_per_prim;
         bool prim_looped;

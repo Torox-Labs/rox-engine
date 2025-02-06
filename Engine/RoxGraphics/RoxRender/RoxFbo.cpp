@@ -12,13 +12,13 @@
 // 2. Commercial License (for use on proprietary platforms)
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
-#include "RoxFbo.h"
+#include "RoxFBO.h"
 #include "IRoxRenderApi.h"
 
 namespace RoxRender
 {
 
-void RoxFbo::setColorTarget(const RoxTexture &tex,CUBEMAP_SIDE side,unsigned int attachment_idx,unsigned int samples)
+void RoxFBO::setColorTarget(const RoxTexture &tex,CUBEMAP_SIDE side,unsigned int attachment_idx,unsigned int samples)
 {
     if(attachment_idx>=getMaxColorAttachments())
         return;
@@ -40,12 +40,12 @@ void RoxFbo::setColorTarget(const RoxTexture &tex,CUBEMAP_SIDE side,unsigned int
     m_update=true;
 }
 
-void RoxFbo::setColorTarget(const RoxTexture &tex,unsigned int attachment_idx,unsigned int samples)
+void RoxFBO::setColorTarget(const RoxTexture &tex,unsigned int attachment_idx,unsigned int samples)
 {
     setColorTarget(tex,CUBEMAP_SIDE(-1),attachment_idx,samples);
 }
 
-void RoxFbo::setDepthTarget(const RoxTexture &tex)
+void RoxFBO::setDepthTarget(const RoxTexture& tex)
 {
     m_depth_texture=tex.m_tex;
     if(tex.m_tex>=0)
@@ -53,7 +53,7 @@ void RoxFbo::setDepthTarget(const RoxTexture &tex)
     m_update=true;
 }
 
-void RoxFbo::release()
+void RoxFBO::release()
 {
 	if(m_fbo_idx<0)
 		return;
@@ -62,10 +62,10 @@ void RoxFbo::release()
     if(getAPIState().target==m_fbo_idx)
         getAPIState().target=-1;
 
-    *this=RoxFbo();
+    *this= RoxFBO();
 }
 
-void RoxFbo::bind() const
+void RoxFBO::bind() const
 {
     if(getAPIState().target>=0 && getAPIState().target!=m_fbo_idx)
         getAPIInterface().resolveTarget(getAPIState().target);
@@ -90,7 +90,7 @@ void RoxFbo::bind() const
     getAPIState().target=m_fbo_idx;
 }
 
-void RoxFbo::unbind()
+void RoxFBO::unbind()
 {
     if(getAPIState().target>=0)
         getAPIInterface().resolveTarget(getAPIState().target);
@@ -98,9 +98,9 @@ void RoxFbo::unbind()
     getAPIState().target=-1;
 }
 
-const RoxFbo RoxFbo::getCurrent() { RoxFbo f; f.m_fbo_idx=getAPIState().target; return f; }
+const RoxFBO RoxFBO::getCurrent() { RoxFBO f; f.m_fbo_idx=getAPIState().target; return f; }
 
-unsigned int RoxFbo::getMaxColorAttachments() { return getAPIInterface().getMaxTargetAttachments(); }
-unsigned int RoxFbo::getMaxMsaa() { return getAPIInterface().getMaxTargetMsaa(); }
+unsigned int RoxFBO::getMaxColorAttachments() { return getAPIInterface().getMaxTargetAttachments(); }
+unsigned int RoxFBO::getMaxMsaa() { return getAPIInterface().getMaxTargetMsaa(); }
 
 }

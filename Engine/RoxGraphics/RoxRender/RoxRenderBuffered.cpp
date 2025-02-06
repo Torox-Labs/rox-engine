@@ -126,7 +126,7 @@ namespace RoxRender
 
     void RoxRenderBuffered::removeUniformBuffer(int uniform_buffer) { m_current.write(CMD_UBUF_REMOVE, uniform_buffer); }
 
-    int RoxRenderBuffered::createVertexBuffer(const void* data, uint stride, uint count, RoxVbo::USAGE_HINT usage)
+    int RoxRenderBuffered::createVertexBuffer(const void* data, uint stride, uint count, RoxVBO::USAGE_HINT usage)
     {
         vbuf_create_data d;
         d.idx = newIdx();
@@ -139,7 +139,7 @@ namespace RoxRender
         return d.idx;
     }
 
-    void RoxRenderBuffered::setVertexLayout(int idx, RoxVbo::Layout Layout)
+    void RoxRenderBuffered::setVertexLayout(int idx, RoxVBO::Layout Layout)
     {
         vbuf_layout d;
         d.idx = idx;
@@ -158,7 +158,7 @@ namespace RoxRender
 
     void RoxRenderBuffered::removeVertexBuffer(int idx) { m_current.write(CMD_VBUF_REMOVE, idx); }
 
-    int RoxRenderBuffered::createIndexBuffer(const void* data, RoxVbo::INDEX_SIZE type, uint count, RoxVbo::USAGE_HINT usage)
+    int RoxRenderBuffered::createIndexBuffer(const void* data, RoxVBO::INDEX_SIZE type, uint count, RoxVBO::USAGE_HINT usage)
     {
         ibuf_create_data d;
         d.idx = newIdx();

@@ -25,7 +25,7 @@ namespace RoxRender
 {
 	class RoxTexture
 	{
-		friend class RoxFbo;
+		friend class RoxFBO;
 
 	public:
 		enum COLOR_FORMAT

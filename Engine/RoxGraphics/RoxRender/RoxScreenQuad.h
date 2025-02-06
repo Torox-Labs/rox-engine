@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "RoxVbo.h"
+#include "RoxVBO.h"
 #include "RoxRender.h"
 
 namespace RoxRender
@@ -40,7 +40,7 @@ public:
     void draw(unsigned int instances_count=1) const
     {
         m_mesh.bind();
-        RoxVbo::draw(0,m_mesh.getVertsCount(), RoxVbo::TRIANGLE_STRIP,instances_count);
+        RoxVBO::draw(0,m_mesh.getVertsCount(), RoxVBO::TRIANGLE_STRIP,instances_count);
         m_mesh.unbind();
     }
 
@@ -49,7 +49,7 @@ public:
     void release() { m_mesh.release(); }
 
 private:
-    RoxVbo m_mesh;
+    RoxVBO m_mesh;
 };
 
 }

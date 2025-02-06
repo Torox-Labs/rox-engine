@@ -20,7 +20,7 @@
 namespace RoxRender
 {
 
-class RoxFbo
+class RoxFBO
 {
 public:
     enum CUBEMAP_SIDE
@@ -50,10 +50,10 @@ public:
     static void unbind();
 
 public:
-    static const RoxFbo getCurrent();
+    static const RoxFBO getCurrent();
 
 public:
-    RoxFbo(): m_fbo_idx(-1),m_width(0),m_height(0),m_samples(0),m_depth_texture(-1),m_update(false) {}
+    RoxFBO(): m_fbo_idx(-1),m_width(0),m_height(0),m_samples(0),m_depth_texture(-1),m_update(false) {}
 
 private:
     mutable int m_fbo_idx;

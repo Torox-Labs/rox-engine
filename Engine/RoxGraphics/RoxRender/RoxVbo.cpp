@@ -12,7 +12,7 @@
 // 2. Commercial License (for use on proprietary platforms)
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
-#include "RoxVbo.h"
+#include "RoxVBO.h"
 #include "IRoxRenderAPI.h"
 #include "RoxStatistics.h"
 #include "RoxMemory/RoxTmpBuffers.h"
@@ -25,32 +25,32 @@ namespace RoxRender
 	{
 		uint active_vert_count = 0;
 		uint active_ind_count = 0;
-		RoxVbo::ELEMENT_TYPE active_ElementType = RoxVbo::TRIANGLES;
+		RoxVBO::ELEMENT_TYPE active_ElementType = RoxVBO::TRIANGLES;
 	}
 
-	void RoxVbo::bindVerts() const
+	void RoxVBO::bindVerts() const
 	{
 		getAPIState().vertex_buffer = m_verts;
 		active_ElementType = m_ElementType;
 		active_vert_count = m_vert_count;
 	}
 
-	void RoxVbo::bindIndices() const
+	void RoxVBO::bindIndices() const
 	{
 		getAPIState().index_buffer = m_indices;
 		active_ind_count = m_ind_count;
 	}
 
-	void RoxVbo::unbind() { getAPIState().vertex_buffer = getAPIState().index_buffer = -1; }
+	void RoxVBO::unbind() { getAPIState().vertex_buffer = getAPIState().index_buffer = -1; }
 
-	void RoxVbo::draw()
+	void RoxVBO::draw()
 	{
 		draw(0, getAPIState().index_buffer < 0 ? active_vert_count : active_ind_count, active_ElementType);
 	}
 
-	void RoxVbo::draw(uint count) { draw(0, count, active_ElementType); }
+	void RoxVBO::draw(uint count) { draw(0, count, active_ElementType); }
 
-	void RoxVbo::draw(uint offset, uint count, ELEMENT_TYPE el_type, uint instances)
+	void RoxVBO::draw(uint offset, uint count, ELEMENT_TYPE el_type, uint instances)
 	{
 		IRoxRenderAPI::State& s = getAPIState();
 
@@ -69,9 +69,9 @@ namespace RoxRender
 			++Statistics::get().draw_count;
 			Statistics::get().verts_count += count * instances;
 
-			const uint tri_count = (el_type == RoxVbo::TRIANGLES
+			const uint tri_count = (el_type == RoxVBO::TRIANGLES
 				                        ? count / 3
-				                        : (el_type == RoxVbo::TRIANGLE_STRIP ? count - 2 : 0)) * instances;
+				                        : (el_type == RoxVBO::TRIANGLE_STRIP ? count - 2 : 0)) * instances;
 			if (getState().blend)
 				Statistics::get().transparent_poly_count += tri_count;
 			else
@@ -79,7 +79,7 @@ namespace RoxRender
 		}
 	}
 
-	void RoxVbo::transformFeedback(RoxVbo& target)
+	void RoxVBO::transformFeedback(RoxVBO& target)
 	{
 		IRoxRenderAPI::TfState s;
 		(IRoxRenderAPI::RenderState&)s = (IRoxRenderAPI::RenderState&)getAPIState();
@@ -91,7 +91,7 @@ namespace RoxRender
 		getAPIInterface().transformFeedback(s);
 	}
 
-	void RoxVbo::transformFeedback(RoxVbo& target, uint src_offset, uint dst_offset, uint count, ELEMENT_TYPE type)
+	void RoxVBO::transformFeedback(RoxVBO& target, uint src_offset, uint dst_offset, uint count, ELEMENT_TYPE type)
 	{
 		IRoxRenderAPI::TfState s;
 
@@ -108,7 +108,7 @@ namespace RoxRender
 		getAPIInterface().transformFeedback(s);
 	}
 
-	bool RoxVbo::setVertexData(const void* data, uint vert_stride, uint vert_count, USAGE_HINT usage)
+	bool RoxVBO::setVertexData(const void* data, uint vert_stride, uint vert_count, USAGE_HINT usage)
 	{
 		IRoxRenderAPI& api = getAPIInterface();
 
@@ -136,7 +136,7 @@ namespace RoxRender
 		return true;
 	}
 
-	bool RoxVbo::setIndexData(const void* data, INDEX_SIZE size, uint indices_count, USAGE_HINT usage)
+	bool RoxVBO::setIndexData(const void* data, INDEX_SIZE size, uint indices_count, USAGE_HINT usage)
 	{
 		IRoxRenderAPI& api = getAPIInterface();
 
@@ -152,7 +152,7 @@ namespace RoxRender
 		return true;
 	}
 
-	void RoxVbo::setVertices(uint offset, uint dimension, VERTEX_ATRIB_TYPE type)
+	void RoxVBO::setVertices(uint offset, uint dimension, VERTEX_ATRIB_TYPE type)
 	{
 		if (dimension > 4)
 			return;
@@ -163,7 +163,7 @@ namespace RoxRender
 		setLayout(m_layout);
 	}
 
-	void RoxVbo::setNormals(uint offset, VERTEX_ATRIB_TYPE type)
+	void RoxVBO::setNormals(uint offset, VERTEX_ATRIB_TYPE type)
 	{
 		m_layout.normal.offset = offset;
 		m_layout.normal.dimension = 3;
@@ -171,7 +171,7 @@ namespace RoxRender
 		setLayout(m_layout);
 	}
 
-	void RoxVbo::setTc(uint tc_idx, uint offset, uint dimension, VERTEX_ATRIB_TYPE type)
+	void RoxVBO::setTc(uint tc_idx, uint offset, uint dimension, VERTEX_ATRIB_TYPE type)
 	{
 		if (tc_idx >= max_tex_coord || dimension > 4)
 			return;
@@ -182,7 +182,7 @@ namespace RoxRender
 		setLayout(m_layout);
 	}
 
-	void RoxVbo::setColors(uint offset, uint dimension, VERTEX_ATRIB_TYPE type)
+	void RoxVBO::setColors(uint offset, uint dimension, VERTEX_ATRIB_TYPE type)
 	{
 		if (dimension > 4)
 			return;
@@ -193,21 +193,21 @@ namespace RoxRender
 		setLayout(m_layout);
 	}
 
-	void RoxVbo::setLayout(const Layout& l)
+	void RoxVBO::setLayout(const Layout& l)
 	{
 		m_layout = l;
 		if (m_verts >= 0)
 			getAPIInterface().setVertexLayout(m_verts, m_layout);
 	}
 
-	void RoxVbo::setElementType(ELEMENT_TYPE type)
+	void RoxVBO::setElementType(ELEMENT_TYPE type)
 	{
 		if (m_verts >= 0 && getAPIState().vertex_buffer == m_verts)
 			active_ElementType = type;
 		m_ElementType = type;
 	}
 
-	bool RoxVbo::getVertexData(RoxMemory::RoxTmpBufferRef& data) const
+	bool RoxVBO::getVertexData(RoxMemory::RoxTmpBufferRef& data) const
 	{
 		if (m_verts < 0)
 		{
@@ -225,7 +225,7 @@ namespace RoxRender
 		return true;
 	}
 
-	bool RoxVbo::getIndexData(RoxMemory::RoxTmpBufferRef& data) const
+	bool RoxVBO::getIndexData(RoxMemory::RoxTmpBufferRef& data) const
 	{
 		if (m_indices < 0)
 		{
@@ -243,35 +243,35 @@ namespace RoxRender
 		return true;
 	}
 
-	const RoxVbo::Layout& RoxVbo::getLayout() const { return m_layout; }
-	RoxVbo::INDEX_SIZE RoxVbo::getIndexSize() const { return m_ind_size; }
-	RoxVbo::ELEMENT_TYPE RoxVbo::getElementType() const { return m_ElementType; }
-	uint RoxVbo::getVertStride() const { return m_stride; }
-	uint RoxVbo::getVertOffset() const { return m_layout.pos.offset; }
-	uint RoxVbo::getVertDimension() const { return m_layout.pos.dimension; }
-	uint RoxVbo::getNormalsOffset() const { return m_layout.normal.offset; }
-	uint RoxVbo::getTcOffset(uint idx) const { return idx < max_tex_coord ? m_layout.tc[idx].offset : 0; }
-	uint RoxVbo::getTcDimension(uint idx) const { return idx < max_tex_coord ? m_layout.tc[idx].dimension : 0; }
-	uint RoxVbo::getColorsOffset() const { return m_layout.color.offset; }
-	uint RoxVbo::getColorsDimension() const { return m_layout.color.dimension; }
-	uint RoxVbo::getVertsCount() const { return m_vert_count; }
-	uint RoxVbo::getIndicesCount() const { return m_ind_count; }
+	const RoxVBO::Layout& RoxVBO::getLayout() const { return m_layout; }
+	RoxVBO::INDEX_SIZE RoxVBO::getIndexSize() const { return m_ind_size; }
+	RoxVBO::ELEMENT_TYPE RoxVBO::getElementType() const { return m_ElementType; }
+	uint RoxVBO::getVertStride() const { return m_stride; }
+	uint RoxVBO::getVertOffset() const { return m_layout.pos.offset; }
+	uint RoxVBO::getVertDimension() const { return m_layout.pos.dimension; }
+	uint RoxVBO::getNormalsOffset() const { return m_layout.normal.offset; }
+	uint RoxVBO::getTcOffset(uint idx) const { return idx < max_tex_coord ? m_layout.tc[idx].offset : 0; }
+	uint RoxVBO::getTcDimension(uint idx) const { return idx < max_tex_coord ? m_layout.tc[idx].dimension : 0; }
+	uint RoxVBO::getColorsOffset() const { return m_layout.color.offset; }
+	uint RoxVBO::getColorsDimension() const { return m_layout.color.dimension; }
+	uint RoxVBO::getVertsCount() const { return m_vert_count; }
+	uint RoxVBO::getIndicesCount() const { return m_ind_count; }
 
-	uint RoxVbo::getUsedVmemSize()
+	uint RoxVBO::getUsedVmemSize()
 	{
 		//ToDo
 
 		return 0;
 	}
 
-	void RoxVbo::release()
+	void RoxVBO::release()
 	{
 		releaseVerts();
 		releaseIndices();
 		m_layout = Layout();
 	}
 
-	void RoxVbo::releaseVerts()
+	void RoxVBO::releaseVerts()
 	{
 		if (m_verts < 0)
 			return;
@@ -285,7 +285,7 @@ namespace RoxRender
 		m_stride = 0;
 	}
 
-	void RoxVbo::releaseIndices()
+	void RoxVBO::releaseIndices()
 	{
 		if (m_indices < 0)
 			return;
@@ -299,5 +299,5 @@ namespace RoxRender
 		m_ind_count = 0;
 	}
 
-	bool RoxVbo::isTransformFeedbackSupported() { return getAPIInterface().isTransformFeedbackSupported(); }
+	bool RoxVBO::isTransformFeedbackSupported() { return getAPIInterface().isTransformFeedbackSupported(); }
 }

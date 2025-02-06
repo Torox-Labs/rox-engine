@@ -4,7 +4,7 @@
 
 #include "RoxScene/material.h"
 #include "RoxRender/RoxScreenQuad.h"
-#include "RoxRender/RoxFbo.h"
+#include "RoxRender/RoxFBO.h"
 #include "RoxRender/RoxRender.h"
 #include "tags.h"
 
@@ -147,7 +147,7 @@ private:
 
     struct op_target
     {
-        RoxScene::proxy<RoxRender::RoxFbo> fbo;
+        RoxScene::proxy<RoxRender::RoxFBO> fbo;
         RoxRender::Rectangle rect;
         int color_idx, depth_idx;
         int samples;

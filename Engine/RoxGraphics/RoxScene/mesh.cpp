@@ -48,7 +48,7 @@ bool mesh::load_nms_mesh_section(shared_mesh &res,const void *data,size_t size,i
     for(size_t i=0;i<c.elements.size();++i)
     {
         const RoxFormats::nms_mesh_chunk::element &e=c.elements[i];
-        const RoxRender::RoxVbo::VERTEX_ATRIB_TYPE type=RoxRender::RoxVbo::VERTEX_ATRIB_TYPE(e.data_type);
+        const RoxRender::RoxVBO::VERTEX_ATRIB_TYPE type=RoxRender::RoxVBO::VERTEX_ATRIB_TYPE(e.data_type);
         switch(e.type)
         {
             case RoxFormats::nms_mesh_chunk::pos: res.vbo.setVertices(e.offset,e.dimension,type); break;
@@ -63,8 +63,8 @@ bool mesh::load_nms_mesh_section(shared_mesh &res,const void *data,size_t size,i
     switch(c.index_size)
     {
         case 0: break; //to indices
-        case 2: res.vbo.setIndexData(c.indices_data,RoxRender::RoxVbo::INDEX_2D,c.indices_count); break;
-        case 4: res.vbo.setIndexData(c.indices_data,RoxRender::RoxVbo::INDEX_4D,c.indices_count); break;
+        case 2: res.vbo.setIndexData(c.indices_data,RoxRender::RoxVBO::INDEX_2D,c.indices_count); break;
+        case 4: res.vbo.setIndexData(c.indices_data,RoxRender::RoxVBO::INDEX_4D,c.indices_count); break;
         default: log()<<"nms load warning: invalid index size\n"; return false;
     }
 
@@ -84,7 +84,7 @@ bool mesh::load_nms_mesh_section(shared_mesh &res,const void *data,size_t size,i
             to.offset=from.offset;
             to.count=from.count;
 
-            to.elem_type=RoxRender::RoxVbo::ELEMENT_TYPE(from.element_type);
+            to.elem_type=RoxRender::RoxVBO::ELEMENT_TYPE(from.element_type);
         }
 
         break; //ToDo: load all lods

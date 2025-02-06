@@ -33,13 +33,13 @@ namespace RoxRender
 		void removeUniformBuffer(int uniform_buffer) override;
 
 	public:
-		int createVertexBuffer(const void* data, uint stride, uint count, RoxVbo::USAGE_HINT usage) override;
-		void setVertexLayout(int idx, RoxVbo::Layout layout) override;
+		int createVertexBuffer(const void* data, uint stride, uint count, RoxVBO::USAGE_HINT usage) override;
+		void setVertexLayout(int idx, RoxVBO::Layout layout) override;
 		void updateVertexBuffer(int idx, const void* data) override;
 		bool getVertexData(int idx, void* data) override;
 		void removeVertexBuffer(int idx) override;
 
-		int createIndexBuffer(const void* data, RoxVbo::INDEX_SIZE type, uint count, RoxVbo::USAGE_HINT usage) override;
+		int createIndexBuffer(const void* data, RoxVBO::INDEX_SIZE type, uint count, RoxVBO::USAGE_HINT usage) override;
 		void updateIndexBuffer(int idx, const void* data) override;
 		bool getIndexData(int idx, void* data) override;
 		void removeIndexBuffer(int idx) override;
@@ -234,13 +234,13 @@ namespace RoxRender
 		{
 			int idx;
 			uint stride, count;
-			RoxVbo::USAGE_HINT usage;
+			RoxVBO::USAGE_HINT usage;
 		};
 
 		struct vbuf_layout
 		{
 			int idx;
-			RoxVbo::Layout layout;
+			RoxVBO::Layout layout;
 		};
 
 		struct buf_update
@@ -252,9 +252,9 @@ namespace RoxRender
 		struct ibuf_create_data
 		{
 			int idx;
-			RoxVbo::INDEX_SIZE type;
+			RoxVBO::INDEX_SIZE type;
 			uint count;
-			RoxVbo::USAGE_HINT usage;
+			RoxVBO::USAGE_HINT usage;
 		};
 
 		struct tex_create_data

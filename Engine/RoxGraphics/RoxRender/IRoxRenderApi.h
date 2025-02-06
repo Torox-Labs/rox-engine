@@ -17,7 +17,7 @@
 #include "RoxRender.h"
 #include "RoxShader.h"
 #include "RoxTexture.h"
-#include "RoxVbo.h"
+#include "RoxVBO.h"
 
 namespace RoxRender
 {
@@ -50,7 +50,7 @@ namespace RoxRender
 		{
 			int vertex_buffer;
 			int index_buffer;
-			RoxVbo::ELEMENT_TYPE primitive;
+			RoxVBO::ELEMENT_TYPE primitive;
 			uint index_offset;
 			uint index_count;
 			uint instances_count;
@@ -64,7 +64,7 @@ namespace RoxRender
 			RenderState()
 			{
 				vertex_buffer = index_buffer = -1;
-				primitive = RoxVbo::TRIANGLES;
+				primitive = RoxVBO::TRIANGLES;
 				index_offset = index_count = instances_count = 0;
 				shader = uniform_buffer = -1;
 				for (int i = 0; i < max_layers; ++i)
@@ -107,9 +107,9 @@ namespace RoxRender
 
 	public:
 		virtual int createVertexBuffer(const void* data, uint stride, uint count,
-		                                 RoxVbo::USAGE_HINT usage = RoxVbo::STATIC_DRAW) { return -1; }
+		                                 RoxVBO::USAGE_HINT usage = RoxVBO::STATIC_DRAW) { return -1; }
 
-		virtual void setVertexLayout(int idx, RoxVbo::Layout layout)
+		virtual void setVertexLayout(int idx, RoxVBO::Layout layout)
 		{
 		}
 
@@ -123,8 +123,8 @@ namespace RoxRender
 		{
 		}
 
-		virtual int createIndexBuffer(const void* data, RoxVbo::INDEX_SIZE type, uint count,
-		                                RoxVbo::USAGE_HINT usage = RoxVbo::STATIC_DRAW) { return -1; }
+		virtual int createIndexBuffer(const void* data, RoxVBO::INDEX_SIZE type, uint count,
+		                                RoxVBO::USAGE_HINT usage = RoxVBO::STATIC_DRAW) { return -1; }
 
 		virtual void updateIndexBuffer(int idx, const void* data)
 		{

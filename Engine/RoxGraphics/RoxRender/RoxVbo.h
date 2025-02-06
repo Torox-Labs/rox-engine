@@ -21,7 +21,7 @@ namespace RoxMemory
 
 namespace RoxRender
 {
-	class RoxVbo
+	class RoxVBO
 	{
 	public:
 		enum ELEMENT_TYPE
@@ -118,8 +118,8 @@ namespace RoxRender
 		static void draw();
 		static void draw(uint count);
 		static void draw(uint offset, uint count, ELEMENT_TYPE type = TRIANGLES, uint instances = 1);
-		static void transformFeedback(RoxVbo& target);
-		static void transformFeedback(RoxVbo& target, uint src_offset, uint dst_offset, uint count,
+		static void transformFeedback(RoxVBO& target);
+		static void transformFeedback(RoxVBO& target, uint src_offset, uint dst_offset, uint count,
 		                              ELEMENT_TYPE type = POINTS);
 
 	public:
@@ -136,7 +136,7 @@ namespace RoxRender
 		static bool isTransformFeedbackSupported();
 
 	public:
-		RoxVbo(): m_verts(-1), m_indices(-1), m_vert_count(0), m_ind_count(0),
+		RoxVBO(): m_verts(-1), m_indices(-1), m_vert_count(0), m_ind_count(0),
 		          m_stride(0), m_ind_size(INDEX_2D), m_ElementType(TRIANGLES)
 		{
 		}

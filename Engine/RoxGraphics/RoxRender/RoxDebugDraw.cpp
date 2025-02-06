@@ -118,7 +118,7 @@ void RoxDebugDraw::draw() const
 //#ifndef OPENGL_ES
         //glPointSize(m_point_size);
 //#endif
-        m_vbo.setElementType(RoxVbo::POINTS);
+        m_vbo.setElementType(RoxVBO::POINTS);
         m_vbo.setVertexData(&m_point_verts[0],sizeof(vert),int(m_point_verts.size()));
         m_vbo.bind();
         m_vbo.draw();
@@ -128,7 +128,7 @@ void RoxDebugDraw::draw() const
     if(!m_line_verts.empty())
     {
         //glLineWidth(m_line_width);
-        m_vbo.setElementType(RoxVbo::LINES);
+        m_vbo.setElementType(RoxVBO::LINES);
         m_vbo.setVertexData(&m_line_verts[0],sizeof(vert),int(m_line_verts.size()));
         m_vbo.bind();
         m_vbo.draw();
@@ -137,7 +137,7 @@ void RoxDebugDraw::draw() const
 
     if(!m_tri_verts.empty())
     {
-        m_vbo.setElementType(RoxVbo::TRIANGLES);
+        m_vbo.setElementType(RoxVBO::TRIANGLES);
         m_vbo.setVertexData(&m_tri_verts[0],sizeof(vert),int(m_tri_verts.size()));
         m_vbo.bind();
         m_vbo.draw();

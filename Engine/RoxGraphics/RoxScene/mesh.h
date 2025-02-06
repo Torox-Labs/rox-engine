@@ -6,7 +6,7 @@
 #include "material.h"
 #include "animation.h"
 #include "RoxMemory/RoxMemoryReader.h"
-#include "RoxRender/RoxVbo.h"
+#include "RoxRender/RoxVBO.h"
 #include "RoxRender/RoxSkeleton.h"
 #include "RoxMath/RoxAabb.h"
 #include "transform.h"
@@ -16,7 +16,7 @@ namespace RoxScene
 
 struct shared_mesh
 {
-    RoxRender::RoxVbo vbo;  // Vertex Buffer Object containing vertex data
+    RoxRender::RoxVBO vbo;  // Vertex Buffer Object containing vertex data
 
     RoxMath::Aabb aabb;  // Axis-Aligned Bounding Box of the mesh
 
@@ -34,7 +34,7 @@ struct shared_mesh
         unsigned int material_idx;     // Index into the materials vector
         unsigned int offset;           // Offset into the vertex/index buffer
         unsigned int count;            // Number of elements to render
-        RoxRender::RoxVbo::ELEMENT_TYPE elem_type; // Primitive type (e.g., triangles)
+        RoxRender::RoxVBO::ELEMENT_TYPE elem_type; // Primitive type (e.g., triangles)
     };
 
     std::vector<group> groups;          // Groups/submeshes within the mesh
