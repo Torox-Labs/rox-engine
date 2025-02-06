@@ -203,13 +203,8 @@ namespace RoxRender
 
 		virtual bool isTransformFeedbackSupported() { return false; }
 
-		virtual void invalidateCachedState()
-		{
-		}
-
-		virtual void applyState(const State& s)
-		{
-		}
+		virtual void invalidateCachedState(){}
+		virtual void applyState(const State& s){}
 	};
 
 	// 
