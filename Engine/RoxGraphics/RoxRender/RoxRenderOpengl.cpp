@@ -47,11 +47,11 @@ namespace RoxRender
 
 		enum
 		{
-			vertex_attribute = 0,
-			normal_attribute = 1,
-			color_attribute = 2,
-			tc0_attribute = 3,
-			max_attributes = tc0_attribute + 16
+			VERTEX_ATTRIBUTE = 0,
+			NORMAL_ATTRIBUTE = 1,
+			COLOR_ATTRIBUTE = 2,
+			TC0_ATTRIBUTE = 3,
+			MAX_ATTRIBUTES = TC0_ATTRIBUTE + 16
 		};
 
 		int glCubeType(int side)
@@ -139,48 +139,49 @@ namespace RoxRender
 			active_layer = idx;
 			::glActiveTexture(GL_TEXTURE0 + idx);
 		}
-	}
 
-	GLuint compileShader(RoxShader::PROGRAM_TYPE type, const char* src)
-	{
-		GLenum shader_type;
-		switch (type)
+		GLuint compileShader(RoxShader::PROGRAM_TYPE type, const char* src)
 		{
-		case RoxShader::VERTEX: shader_type = GL_VERTEX_SHADER;
-			break;
-		case RoxShader::PIXEL: shader_type = GL_FRAGMENT_SHADER;
-			break;
-		case RoxShader::GEOMETRY: shader_type = GL_GEOMETRY_SHADER;
-			break;
-		default: return 0;
-		}
-
-		// Create Shader
-		GLuint shader = glCreateShader(shader_type);
-		glShaderSource(shader, 1, &src, 0);
-		glCompileShader(shader);
-
-		// Debug Shader
-		int success = 1;
-		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-		if (!success)
-		{
-			// Display the Compiler Error
-			GLint log_length = 0;
-			const static char shader_type_name[][12] = {"VERTEX", "FRAGMENT", "GEOMETRY", "TESSELATION"};
-			log() << "ERROR::" << shader_type_name[type] << "::SHADER::COMPILATION_FAILED\n";
-
-			// Check the Log Length, and Display Message
-			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
-			if (log_length > 0)
+			GLenum shader_type;
+			switch (type)
 			{
-				std::string log_info(log_length, 0);
-				glGetShaderInfoLog(shader, log_length, &log_length, &log_info[0]);
-				log() << "Error: " << log_info.c_str() << "\n";
+			case RoxShader::VERTEX: shader_type = GL_VERTEX_SHADER;
+				break;
+			case RoxShader::PIXEL: shader_type = GL_FRAGMENT_SHADER;
+				break;
+			case RoxShader::GEOMETRY: shader_type = GL_GEOMETRY_SHADER;
+				break;
+			default: return 0;
 			}
-			return 0;
+
+			// Create Shader
+			GLuint shader = glCreateShader(shader_type);
+			glShaderSource(shader, 1, &src, 0);
+			glCompileShader(shader);
+
+			// Debug Shader
+			int success = 1;
+			glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+			if (!success)
+			{
+				// Display the Compiler Error
+				GLint log_length = 0;
+				const static char shader_type_name[][12] = { "VERTEX", "FRAGMENT", "GEOMETRY", "TESSELATION" };
+				log() << "ERROR::" << shader_type_name[type] << "::SHADER::COMPILATION_FAILED\n";
+
+				// Check the Log Length, and Display Message
+				glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
+				if (log_length > 0)
+				{
+					std::string log_info(log_length, 0);
+					glGetShaderInfoLog(shader, log_length, &log_length, &log_info[0]);
+					log() << "Error: " << log_info.c_str() << "\n";
+				}
+				return 0;
+			}
+			return shader;
 		}
-		return shader;
+
 	}
 
 	int RoxRenderOpengl::createShader(const char* VERTEX, const char* fragment)
@@ -236,14 +237,14 @@ namespace RoxRender
 				{
 					const RoxShaderCodeParser::variable a = parser.getAttribute(i);
 					if (a.name == "_rox_Vertex")
-						glBindAttribLocation(shdr.program, vertex_attribute, a.name.c_str());
+						glBindAttribLocation(shdr.program, VERTEX_ATTRIBUTE, a.name.c_str());
 					else if (a.name == "_rox_Normal")
-						glBindAttribLocation(shdr.program, normal_attribute, a.name.c_str());
+						glBindAttribLocation(shdr.program, NORMAL_ATTRIBUTE, a.name.c_str());
 					else if (a.name == "_rox_Color")
-						glBindAttribLocation(shdr.program, color_attribute, a.name.c_str());
+						glBindAttribLocation(shdr.program, COLOR_ATTRIBUTE, a.name.c_str());
 					else if (a.name.find("_rox_MultiTexCoord") == 0)
 						glBindAttribLocation(
-							shdr.program, tc0_attribute + a.idx, a.name.c_str());
+							shdr.program, TC0_ATTRIBUTE + a.idx, a.name.c_str());
 				}
 			}
 
@@ -1691,8 +1692,8 @@ namespace RoxRender
 #endif
 				glad_glBindBuffer(GL_ARRAY_BUFFER, v.id);
 
-				glEnableVertexAttribArray(vertex_attribute);
-				glVertexAttribPointer(vertex_attribute, v.layout.pos.dimension, get_gl_element_type(v.layout.pos.type),
+				glEnableVertexAttribArray(VERTEX_ATTRIBUTE);
+				glVertexAttribPointer(VERTEX_ATTRIBUTE, v.layout.pos.dimension, get_gl_element_type(v.layout.pos.type),
 				                      true,
 				                      v.stride, (void*)(ptrdiff_t)(v.layout.pos.offset));
 				for (unsigned int i = 0; i < RoxVBO::max_tex_coord; ++i)
@@ -1703,13 +1704,13 @@ namespace RoxRender
 						//if(vobj.vertex_stride!=active_attributes.vertex_stride || !tc.compare(active_attributes.tcs[i]))
 						{
 							if (!applied_layout.tc[i].dimension)
-								glEnableVertexAttribArray(tc0_attribute + i);
-							glVertexAttribPointer(tc0_attribute + i, tc.dimension, get_gl_element_type(tc.type), true,
+								glEnableVertexAttribArray(TC0_ATTRIBUTE + i);
+							glVertexAttribPointer(TC0_ATTRIBUTE + i, tc.dimension, get_gl_element_type(tc.type), true,
 							                      v.stride, (void*)(ptrdiff_t)(tc.offset));
 						}
 					}
 					else if (applied_layout.tc[i].dimension > 0)
-						glDisableVertexAttribArray(tc0_attribute + i);
+						glDisableVertexAttribArray(TC0_ATTRIBUTE + i);
 				}
 
 				if (v.layout.normal.dimension > 0)
@@ -1717,27 +1718,27 @@ namespace RoxRender
 					//if(vobj.vertex_stride!=active_attributes.vertex_stride || !vobj.normals.compare(active_attributes.normals))
 					{
 						if (!applied_layout.normal.dimension)
-							glEnableVertexAttribArray(normal_attribute);
-						glVertexAttribPointer(normal_attribute, 3, get_gl_element_type(v.layout.normal.type), true,
+							glEnableVertexAttribArray(NORMAL_ATTRIBUTE);
+						glVertexAttribPointer(NORMAL_ATTRIBUTE, 3, get_gl_element_type(v.layout.normal.type), true,
 						                      v.stride, (void*)(ptrdiff_t)(v.layout.normal.offset));
 					}
 				}
 				else if (applied_layout.normal.dimension > 0)
-					glDisableVertexAttribArray(normal_attribute);
+					glDisableVertexAttribArray(NORMAL_ATTRIBUTE);
 
 				if (v.layout.color.dimension > 0)
 				{
 					//if(vobj.vertex_stride!=active_attributes.vertex_stride || !vobj.colors.compare(active_attributes.colors))
 					{
 						if (!applied_layout.color.dimension)
-							glEnableVertexAttribArray(color_attribute);
-						glVertexAttribPointer(color_attribute, v.layout.color.dimension,
+							glEnableVertexAttribArray(COLOR_ATTRIBUTE);
+						glVertexAttribPointer(COLOR_ATTRIBUTE, v.layout.color.dimension,
 						                      get_gl_element_type(v.layout.color.type), true,
 						                      v.stride, (void*)(ptrdiff_t)(v.layout.color.offset));
 					}
 				}
 				else if (applied_layout.color.dimension > 0)
-					glDisableVertexAttribArray(color_attribute);
+					glDisableVertexAttribArray(COLOR_ATTRIBUTE);
 				applied_layout = v.layout;
 #ifdef USE_VAO
 			}

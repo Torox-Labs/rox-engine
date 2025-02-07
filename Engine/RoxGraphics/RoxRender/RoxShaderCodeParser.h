@@ -79,7 +79,7 @@ public:
                        m_flip_y_uniform(flip_y_uniform?flip_y_uniform:"") { removeComments(); }
 private:
     void removeComments();
-
+	
     bool parseUniforms(bool remove);
     bool parsePredefinedUniforms(const char *replace_prefix_str,bool replace);
     bool parseAttributes(const char *info_replace_str,const char *code_replace_str);

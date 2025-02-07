@@ -137,10 +137,10 @@ namespace RoxRender
 		}
 
 	public:
-		virtual int createTexture(const void* data, uint width, uint height, RoxRender::RoxTexture::COLOR_FORMAT & format,
+		virtual int createTexture(const void* data, uint width, uint height, RoxTexture::COLOR_FORMAT & format,
 		                           int mip_count) { return -1; }
 
-		virtual int createCubemap(const void* data[6], uint width, RoxRender::RoxTexture::COLOR_FORMAT & format,
+		virtual int createCubemap(const void* data[6], uint width, RoxTexture::COLOR_FORMAT & format,
 		                           int mip_count)
 		{
 			return -1;
@@ -150,13 +150,13 @@ namespace RoxRender
 		{
 		}
 
-		virtual void setTextureWrap(int idx, RoxRender::RoxTexture::WRAP s, RoxRender::RoxTexture::WRAP t)
+		virtual void setTextureWrap(int idx, RoxTexture::WRAP s, RoxTexture::WRAP t)
 		{
 		}
 
-		virtual void setTextureFilter(int idx, RoxRender::RoxTexture::FILTER minification,
-		                                RoxRender::RoxTexture::FILTER magnification,
-		                                RoxRender::RoxTexture::FILTER mipmap, uint aniso)
+		virtual void setTextureFilter(int idx, RoxTexture::FILTER minification,
+		                                RoxTexture::FILTER magnification,
+		                                RoxTexture::FILTER mipmap, uint aniso)
 		{
 		}
 
@@ -167,7 +167,7 @@ namespace RoxRender
 		}
 
 		virtual uint getMaxTextureDimension() { return 0; }
-		virtual bool isTextureFormatSupported(RoxRender::RoxTexture::COLOR_FORMAT format) { return false; }
+		virtual bool isTextureFormatSupported(RoxTexture::COLOR_FORMAT format) { return false; }
 
 	public:
 		virtual int createTarget(uint width, uint height, uint samples, const int* attachment_textures,
