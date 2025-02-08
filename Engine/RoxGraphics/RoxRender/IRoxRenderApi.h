@@ -208,14 +208,14 @@ namespace RoxRender
 	};
 
 	// 
-	enum RenderAPI
+	enum RENDER_API
 	{
 		RENDER_API_OPENGL,
 		RENDER_API_CUSTOM
 	};
 
-	RenderAPI getRenderAPI();
-	bool setRenderAPI(RenderAPI api);
+	RENDER_API getRenderAPI();
+	bool setRenderAPI(RENDER_API api);
 	bool setRenderAPI(IRoxRenderAPI* api);
 
 	IRoxRenderAPI& getAPIInterface();

@@ -3,7 +3,6 @@
 // Portions Copyright © 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
-// Update the render api intefrace to check Metal 1th.
 //
 // This file incorporates code from the nya-engine project, which is licensed under the MIT License.
 // See the LICENSE-MIT file in the root directory for more information.
@@ -25,7 +24,6 @@ namespace RoxSystem
 {
 	bool RoxCompiledShadersProvider::get(const char* text, RoxRender::RoxCompiledShader& shader)
 	{
-		//shader = RoxRender::CompiledShader();
 		shader = RoxRender::RoxCompiledShader();
 
 		if (!text)

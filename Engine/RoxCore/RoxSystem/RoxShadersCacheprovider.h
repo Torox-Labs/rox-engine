@@ -20,7 +20,7 @@ namespace RoxRender{ class CompiledShader; }
 
 namespace RoxSystem
 {
-    class RoxCompiledShadersProvider: public RoxRender::RoxCompiledShadersProvider
+    class RoxCompiledShadersProvider: public RoxRender::IRoxCompiledShadersProvider
     {
     public:
         void setLoadPath(const char *path) { m_load_path.assign(path?path:""); }
@@ -34,8 +34,8 @@ namespace RoxSystem
         }
 
     public:
-        bool get(const char *text,RoxRender::RoxCompiledShader &shader);
-        bool set(const char *text,const RoxRender::RoxCompiledShader &shader);
+        bool get(const char *text,RoxRender::RoxCompiledShader &shader) override;
+        bool set(const char *text,const RoxRender::RoxCompiledShader &shader) override;
 
     private:
         std::string crc(const char *text);

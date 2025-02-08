@@ -168,7 +168,7 @@ namespace RoxRender
 	}
 
 	// TODO: Add support to Metal,DirectX, and Vulkan
-	RenderAPI getRenderAPI()
+	RENDER_API getRenderAPI()
 	{
 		if (render_interface == &RoxRenderOpengl::get())
 			return RENDER_API_OPENGL;
@@ -177,7 +177,7 @@ namespace RoxRender
 	}
 
 	// TODO: Add support to Metal,DirectX, and Vulkan
-	bool setRenderAPI(RenderAPI api)
+	bool setRenderAPI(RENDER_API api)
 	{
 		switch (api)
 		{
