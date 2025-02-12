@@ -12,7 +12,7 @@
 // 2. Commercial License (for use on proprietary platforms)
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
-#include "RoxShadersCacheprovider.h"
+#include "RoxShadersCacheProvider.h"
 #include "RoxResources/RoxResources.h"
 
 #include <cstring>
@@ -22,7 +22,7 @@
 
 namespace RoxSystem
 {
-	bool RoxCompiledShadersProvider::get(const char* text, RoxRender::RoxCompiledShader& shader)
+	bool RoxShaderCacheProvider::get(const char* text, RoxRender::RoxCompiledShader& shader)
 	{
 		shader = RoxRender::RoxCompiledShader();
 
@@ -42,7 +42,7 @@ namespace RoxSystem
 		return true;
 	}
 
-	bool RoxCompiledShadersProvider::set(const char* text, const RoxRender::RoxCompiledShader& shader)
+	bool RoxShaderCacheProvider::set(const char* text, const RoxRender::RoxCompiledShader& shader)
 	{
 		if (!text)
 			return false;
@@ -61,7 +61,7 @@ namespace RoxSystem
 		return true;
 	}
 
-	std::string RoxCompiledShadersProvider::crc(const char* text)
+	std::string RoxShaderCacheProvider::crc(const char* text)
 	{
 		if (!text)
 			return "";

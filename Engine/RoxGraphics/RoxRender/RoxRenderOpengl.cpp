@@ -1,6 +1,6 @@
 // Updated By the ROX_ENGINE
-// Copyright (C) 2024 Torox Project
-// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+// Copyright � 2024 Torox Project
+// Portions Copyright � 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
 //
@@ -177,8 +177,10 @@ namespace RoxRender
 					glGetShaderInfoLog(shader, log_length, &log_length, &log_info[0]);
 					log() << "Error: " << log_info.c_str() << "\n";
 				}
+
 				return 0;
 			}
+
 			return shader;
 		}
 
@@ -192,7 +194,7 @@ namespace RoxRender
 		shdr.program = glCreateProgram();
 		if (!shdr.program)
 		{
-			log() << "Unable to create RoxShader program object\n";
+			log() << "Unable to create shader program object\n";
 			shaders.remove(idx);
 			return -1;
 		}
@@ -212,13 +214,13 @@ namespace RoxRender
 
 			if (!parser.convertToGlsl3())
 			{
-				log() << "Unable to add RoxShader program: cannot convert RoxShader code to glsl3\n";
+				log() << "Unable to add shader program: cannot convert shader code to glsl3\n";
 				log() << parser.getError() << "\n";
 				shaders.remove(idx);
 				return -1;
 			}
 
-			//log() << "OpenGL: " << fragment << "\n";
+			log() << "Shader: " << parser.getCode() << "\n";
 			//return 0;
 
 			GLuint object = compileShader(type, parser.getCode());
@@ -235,7 +237,7 @@ namespace RoxRender
 			{
 				for (int i = 0; i < parser.getAttributesCount(); ++i)
 				{
-					const RoxShaderCodeParser::variable a = parser.getAttribute(i);
+					const RoxShaderCodeParser::Variable a = parser.getAttribute(i);
 					if (a.name == "_rox_Vertex")
 						glBindAttribLocation(shdr.program, VERTEX_ATTRIBUTE, a.name.c_str());
 					else if (a.name == "_rox_Normal")
@@ -250,7 +252,7 @@ namespace RoxRender
 
 			for (int j = 0; j < parser.getUniformsCount(); ++j)
 			{
-				const RoxShaderCodeParser::variable from = parser.getUniform(j);
+				const RoxShaderCodeParser::Variable from = parser.getUniform(j);
 				ShaderObj::uniform to;
 				to.name = from.name;
 				to.type = (RoxShader::UNIFORM_TYPE)from.type;
@@ -301,7 +303,7 @@ namespace RoxRender
 		glGetProgramiv(shdr.program,GL_LINK_STATUS, &result);
 		if (!result)
 		{
-			log() << "Can't link RoxShader\n";
+			log() << "Can't link shader\n";
 			GLint log_len = 0;
 			glGetProgramiv(shdr.program,GL_INFO_LOG_LENGTH, &log_len);
 			if (log_len > 0)
@@ -327,7 +329,7 @@ namespace RoxRender
 			if (handler >= 0)
 				glUniform1i(handler, (int)layer);
 			else
-				log() << "Unable to set RoxShader sampler \'" << u.name.c_str() << "\': probably not found\n";
+				log() << "Unable to set shader sampler \'" << u.name.c_str() << "\': probably not found\n";
 
 			++layer;
 		}
@@ -335,7 +337,7 @@ namespace RoxRender
 		setShader(-1);
 
 #if !defined OPENGL_ES || defined __ANDROID__ //some android and desktop vendors ignore the standart
-		setShader(idx);
+		//setShader(idx);
 #endif
 
 		setShader(idx);

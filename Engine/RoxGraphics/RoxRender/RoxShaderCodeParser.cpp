@@ -1,6 +1,6 @@
 // Updated By the ROX_ENGINE
-// Copyright (C) 2024 Torox Project
-// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
+// Copyright © 2024 Torox Project
+// Portions Copyright © 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
 // 
@@ -22,7 +22,7 @@
 namespace RoxRender
 {
 	template <typename t>
-	static void push_unique_to_vec(std::vector<t>& v, const t& e)
+	static void pushUniqueToVector(std::vector<t>& v, const t& e)
 	{
 		for (size_t i = 0; i < v.size(); ++i)
 		{
@@ -36,7 +36,7 @@ namespace RoxRender
 		v.push_back(e);
 	}
 
-	inline int type_regsize(RoxShaderCodeParser::VARIABLE_TYPE type)
+	inline int typeRegsize(RoxShaderCodeParser::VARIABLE_TYPE type)
 	{
 		if (type == RoxShaderCodeParser::TYPE_MATRIX2) return 2;
 		if (type == RoxShaderCodeParser::TYPE_MATRIX3) return 3;
@@ -44,7 +44,7 @@ namespace RoxRender
 		return 1;
 	}
 
-	static bool is_name_char(char c) { return isalnum(c) || c == '_'; }
+	static bool isNameChar(char c) { return isalnum(c) || c == '_'; }
 
 	bool RoxShaderCodeParser::convertToHlsl()
 	{
@@ -106,7 +106,7 @@ namespace RoxRender
 		int samplers_count = 0;
 		for (size_t i = predefined_count; i < m_uniforms.size(); ++i)
 		{
-			const variable& v = m_uniforms[i];
+			const Variable& v = m_uniforms[i];
 			if (v.type != TYPE_SAMPLER2D && v.type != TYPE_SAMPLER_CUBE)
 				continue;
 
@@ -143,7 +143,7 @@ namespace RoxRender
 		prefix.append("struct " + m_replace_str + "vsout{float4 " + vs_pos_out + ":SV_POSITION;");
 		for (int i = 0, idx = 0; i < (int)m_varying.size(); ++i)
 		{
-			const variable& v = m_varying[i];
+			const Variable& v = m_varying[i];
 			if (v.type == TYPE_INVALID)
 				return false;
 
@@ -153,7 +153,7 @@ namespace RoxRender
 			char buf[255];
 			printf(buf, "%s %s:TEXCOORD%d;", type_names[v.type], m_varying[i].name.c_str(), idx);
 			prefix.append(buf);
-			idx += type_regsize(v.type);
+			idx += typeRegsize(v.type);
 		}
 		prefix.append("};\n");
 
@@ -174,7 +174,7 @@ namespace RoxRender
 			std::string in_var_assign;
 			for (int i = 0; i < (int)m_varying.size(); ++i)
 			{
-				const variable& v = m_varying[i];
+				const Variable& v = m_varying[i];
 				if (v.type == TYPE_INVALID)
 				{
 					m_error.append("invalid variable \'" + v.name + "\' type\n");
@@ -205,7 +205,7 @@ namespace RoxRender
 				prefix.append("struct " + m_replace_str + "vsin{");
 				for (int i = 0, idx = 0; i < (int)m_attributes.size(); ++i)
 				{
-					variable& a = m_attributes[i];
+					Variable& a = m_attributes[i];
 					a.name = a.name.substr(m_replace_str.size());
 					if (a.name == "Vertex")
 						prefix.append("float4 Vertex:POSITION;");
@@ -218,7 +218,7 @@ namespace RoxRender
 						char buf[255];
 						printf(buf, "float4 %s:TEXCOORD%d;", a.name.c_str(), idx);
 						prefix.append(buf);
-						idx += type_regsize(a.type);
+						idx += typeRegsize(a.type);
 					}
 				}
 
@@ -243,7 +243,7 @@ namespace RoxRender
 			out_var_assign.append(out_var + "." + vs_pos_out + "=" + vs_pos_out + ";");
 			for (int i = 0; i < (int)m_varying.size(); ++i)
 			{
-				const variable& v = m_varying[i];
+				const Variable& v = m_varying[i];
 				if (v.type == TYPE_INVALID)
 					return false;
 
@@ -272,7 +272,7 @@ namespace RoxRender
 
 			for (size_t i = predefined_count; i < m_uniforms.size(); ++i)
 			{
-				const variable& v = m_uniforms[i];
+				const Variable& v = m_uniforms[i];
 				if (v.type == TYPE_INVALID)
 					return false;
 
@@ -297,7 +297,7 @@ namespace RoxRender
 		return true;
 	}
 
-	inline bool has_args(std::string& code, size_t pos)
+	inline bool hasArgs(std::string& code, size_t pos)
 	{
 		for (size_t j = pos; j < code.size(); ++j)
 		{
@@ -345,7 +345,7 @@ namespace RoxRender
 			prefix.append("struct " + uniforms_type + '{');
 			for (size_t i = 0; i < m_uniforms.size(); ++i)
 			{
-				const variable& v = m_uniforms[i];
+				const Variable& v = m_uniforms[i];
 				if (v.type == TYPE_INVALID)
 					return false;
 
@@ -380,10 +380,10 @@ namespace RoxRender
 
 			for (int i = 0; i < (int)m_varying.size(); ++i)
 			{
-				const variable& v = m_varying[i];
+				const Variable& v = m_varying[i];
 				if (v.type == TYPE_INVALID)
 				{
-					m_error.append("invalid variable \'" + v.name + "\' type\n");
+					m_error.append("invalid Variable \'" + v.name + "\' type\n");
 					return false;
 				}
 
@@ -419,7 +419,7 @@ namespace RoxRender
 		int samplers_count = 0;
 		for (size_t i = 0; i < m_uniforms.size(); ++i)
 		{
-			const variable& v = m_uniforms[i];
+			const Variable& v = m_uniforms[i];
 			if (v.type != TYPE_SAMPLER2D && v.type != TYPE_SAMPLER_CUBE)
 				continue;
 
@@ -483,7 +483,7 @@ namespace RoxRender
 			prefix.append("struct " + vertex_type + "{ ");
 			for (int i = 0; i < (int)m_attributes.size(); ++i)
 			{
-				variable& a = m_attributes[i];
+				Variable& a = m_attributes[i];
 				a.name = a.name.substr(m_replace_str.size());
 				if (a.name == "Vertex")
 					prefix.append("float4 Vertex[[attribute(0)]];");
@@ -542,14 +542,14 @@ namespace RoxRender
 						for (size_t pos = m_code.find(functions[j].c_str(), func_start); pos < i; pos = m_code.find(
 							     functions[j].c_str(), pos + 1))
 						{
-							if (is_name_char(m_code[pos - 1]) || is_name_char(m_code[pos + functions[j].length()]))
+							if (isNameChar(m_code[pos - 1]) || isNameChar(m_code[pos + functions[j].length()]))
 								continue;
 
 							size_t arg_start = m_code.find('(', pos);
 							if (arg_start > i)
 								continue;
 
-							const bool add_comma = has_args(m_code, ++arg_start);
+							const bool add_comma = hasArgs(m_code, ++arg_start);
 							m_code.insert(arg_start, args.call);
 							i += args.call.size();
 							pos = arg_start + args.call.size();
@@ -585,7 +585,7 @@ namespace RoxRender
 				++name_start;
 				const std::string name = m_code.substr(name_start, name_end - name_start);
 
-				const bool add_comma = has_args(m_code, ++arg_start);
+				const bool add_comma = hasArgs(m_code, ++arg_start);
 				is_main = (name == "main");
 				if (is_main)
 				{
@@ -713,10 +713,10 @@ namespace RoxRender
 		return (int)m_uniforms.size();
 	}
 
-	RoxShaderCodeParser::variable RoxShaderCodeParser::getUniform(int idx) const
+	RoxShaderCodeParser::Variable RoxShaderCodeParser::getUniform(int idx) const
 	{
 		if (idx < 0 || idx >= (int)m_uniforms.size())
-			return RoxShaderCodeParser::variable();
+			return RoxShaderCodeParser::Variable();
 
 		return m_uniforms[idx];
 	}
@@ -729,10 +729,10 @@ namespace RoxRender
 		return (int)m_attributes.size();
 	}
 
-	RoxShaderCodeParser::variable RoxShaderCodeParser::getAttribute(int idx) const
+	RoxShaderCodeParser::Variable RoxShaderCodeParser::getAttribute(int idx) const
 	{
 		if (idx < 0 || idx >= (int)m_attributes.size())
-			return RoxShaderCodeParser::variable();
+			return RoxShaderCodeParser::Variable();
 
 		return m_attributes[idx];
 	}
@@ -745,10 +745,10 @@ namespace RoxRender
 		return (int)m_out.size();
 	}
 
-	RoxShaderCodeParser::variable RoxShaderCodeParser::getOut(int idx) const
+	RoxShaderCodeParser::Variable RoxShaderCodeParser::getOut(int idx) const
 	{
 		if (idx < 0 || idx >= (int)m_out.size())
-			return RoxShaderCodeParser::variable();
+			return RoxShaderCodeParser::Variable();
 
 		return m_out[idx];
 	}
@@ -812,7 +812,7 @@ namespace RoxRender
 	}
 
 	template <typename t>
-	static bool parse_vars(std::string& code, std::string& error, t& vars, const char* str, bool remove)
+	static bool parseVars(std::string& code, std::string& error, t& vars, const char* str, bool remove)
 	{
 		const size_t str_len = strlen(str);
 		for (size_t i = code.find(str); i != std::string::npos; i = code.find(str, i))
@@ -855,13 +855,13 @@ namespace RoxRender
 				switch (dim)
 				{
 				case '2': vars.push_back(
-						RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_VECTOR2, name.c_str(), count));
+						RoxShaderCodeParser::Variable(RoxShaderCodeParser::TYPE_VECTOR2, name.c_str(), count));
 					break;
 				case '3': vars.push_back(
-						RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_VECTOR3, name.c_str(), count));
+						RoxShaderCodeParser::Variable(RoxShaderCodeParser::TYPE_VECTOR3, name.c_str(), count));
 					break;
 				case '4': vars.push_back(
-						RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_VECTOR4, name.c_str(), count));
+						RoxShaderCodeParser::Variable(RoxShaderCodeParser::TYPE_VECTOR4, name.c_str(), count));
 					break;
 				default: return false;
 				};
@@ -872,24 +872,24 @@ namespace RoxRender
 				switch (dim)
 				{
 				case '2': vars.push_back(
-						RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_MATRIX2, name.c_str(), count));
+						RoxShaderCodeParser::Variable(RoxShaderCodeParser::TYPE_MATRIX2, name.c_str(), count));
 					break;
 				case '3': vars.push_back(
-						RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_MATRIX3, name.c_str(), count));
+						RoxShaderCodeParser::Variable(RoxShaderCodeParser::TYPE_MATRIX3, name.c_str(), count));
 					break;
 				case '4': vars.push_back(
-						RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_MATRIX4, name.c_str(), count));
+						RoxShaderCodeParser::Variable(RoxShaderCodeParser::TYPE_MATRIX4, name.c_str(), count));
 					break;
 				default: return false;
 				};
 			}
 			else if (type_name == "float")
-				vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_FLOAT, name.c_str(), count));
+				vars.push_back(RoxShaderCodeParser::Variable(RoxShaderCodeParser::TYPE_FLOAT, name.c_str(), count));
 			else if (type_name == "sampler2D")
-				vars.push_back(RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_SAMPLER2D, name.c_str(), count));
+				vars.push_back(RoxShaderCodeParser::Variable(RoxShaderCodeParser::TYPE_SAMPLER2D, name.c_str(), count));
 			else if (type_name == "samplerCube")
 				vars.push_back(
-					RoxShaderCodeParser::variable(RoxShaderCodeParser::TYPE_SAMPLER_CUBE, name.c_str(), count));
+					RoxShaderCodeParser::Variable(RoxShaderCodeParser::TYPE_SAMPLER_CUBE, name.c_str(), count));
 			else
 				return false;
 
@@ -904,15 +904,15 @@ namespace RoxRender
 
 	bool RoxShaderCodeParser::parseUniforms(bool remove)
 	{
-		return parse_vars(m_code, m_error, m_uniforms, "uniform", remove);
+		return parseVars(m_code, m_error, m_uniforms, "uniform", remove);
 	}
 
 	bool RoxShaderCodeParser::parseVarying(bool remove)
 	{
-		return parse_vars(m_code, m_error, m_varying, "varying", remove);
+		return parseVars(m_code, m_error, m_varying, "varying", remove);
 	}
 
-	bool RoxShaderCodeParser::parseOut(bool remove) { return parse_vars(m_code, m_error, m_out, "out", remove); }
+	bool RoxShaderCodeParser::parseOut(bool remove) { return parseVars(m_code, m_error, m_out, "out", remove); }
 
 	bool RoxShaderCodeParser::parsePredefinedUniforms(const char* replace_prefix_str, bool replace)
 	{
@@ -927,14 +927,14 @@ namespace RoxRender
 			if (replace)
 			{
 				if (replaceVariable(gl_matrix_names[i], to.c_str()))
-					push_unique_to_vec(m_uniforms, variable(TYPE_MATRIX4, to.c_str(), 1));
+					pushUniqueToVector(m_uniforms, Variable(TYPE_MATRIX4, to.c_str(), 1));
 			}
 			else if (findVariable(gl_matrix_names[i]))
-				push_unique_to_vec(m_uniforms, variable(TYPE_MATRIX4, to.c_str(), 1));
+				pushUniqueToVector(m_uniforms, Variable(TYPE_MATRIX4, to.c_str(), 1));
 		}
 
 		if (!m_flip_y_uniform.empty())
-			push_unique_to_vec(m_uniforms, variable(TYPE_FLOAT, m_flip_y_uniform.c_str(), 1));
+			pushUniqueToVector(m_uniforms, Variable(TYPE_FLOAT, m_flip_y_uniform.c_str(), 1));
 
 		return true;
 	}
@@ -955,12 +955,12 @@ namespace RoxRender
 				const std::string replace = std::string(code_replace_str) + std::string(gl_attr_names[i] + 3);
 				//strlen("gl_")
 				if (replaceVariable(gl_attr_names[i], replace.c_str()))
-					push_unique_to_vec(m_attributes, variable(gl_attr_types[i], info.c_str(), 0));
+					pushUniqueToVector(m_attributes, Variable(gl_attr_types[i], info.c_str(), 0));
 			}
 			else
 			{
 				if (m_code.find(gl_attr_names[i], 0) != std::string::npos)
-					push_unique_to_vec(m_attributes, variable(gl_attr_types[i], info.c_str(), 0));
+					pushUniqueToVector(m_attributes, Variable(gl_attr_types[i], info.c_str(), 0));
 			}
 		}
 
@@ -978,7 +978,7 @@ namespace RoxRender
 
 			char buf[255];
 			printf(buf, "%s%s%d", info_replace_str, tc_atr_name + 3, idx);
-			push_unique_to_vec(m_attributes, variable(TYPE_VECTOR4, buf, idx));
+			pushUniqueToVector(m_attributes, Variable(TYPE_VECTOR4, buf, idx));
 		}
 
 		return true;
@@ -996,7 +996,7 @@ namespace RoxRender
 		return true;
 	}
 
-	static size_t get_var_pos(const std::string& code, size_t pos, int add)
+	static size_t getVarPos(const std::string& code, size_t pos, int add)
 	{
 		int brace_count = 0;
 		char lbrace = add > 0 ? '(' : ')';
@@ -1036,13 +1036,13 @@ namespace RoxRender
 		return pos;
 	}
 
-	static bool is_numeric_only_var(const std::string& s)
+	static bool isNumericOnlyVar(const std::string& s)
 	{
 		for (size_t i = 0; i < s.size(); ++i) if (isalpha(s[i]) || s[i] == '_') return false;
 		return true;
 	}
 
-	static void remove_var_spaces(std::string& s)
+	static void removeVarSpaces(std::string& s)
 	{
 		if (s.empty())
 			return;
@@ -1071,7 +1071,7 @@ namespace RoxRender
 		size_t start_pos = 0;
 		while ((start_pos = m_code.find("mat", start_pos)) != std::string::npos)
 		{
-			if (start_pos != 0 && is_name_char(m_code[start_pos - 1]))
+			if (start_pos != 0 && isNameChar(m_code[start_pos - 1]))
 			{
 				start_pos += 3; //strlen("mat")
 				continue;
@@ -1084,7 +1084,7 @@ namespace RoxRender
 			if (!strchr("234", m_code[start_pos]))
 				continue;
 
-			if (is_name_char(m_code[++start_pos]))
+			if (isNameChar(m_code[++start_pos]))
 				continue;
 
 			const size_t end_pos = m_code.find(';', start_pos);
@@ -1095,7 +1095,7 @@ namespace RoxRender
 			const size_t end_pos2 = var.find('=');
 			if (end_pos2 < end_pos)
 				var.resize(end_pos2);
-			remove_var_spaces(var);
+			removeVarSpaces(var);
 			matrices[var] = std::make_pair(end_pos, std::string::npos); //ToDo: find right scope border
 		}
 
@@ -1103,8 +1103,8 @@ namespace RoxRender
 		start_pos = 0;
 		while ((start_pos = m_code.find('*', start_pos)) != std::string::npos)
 		{
-			const size_t left = get_var_pos(m_code, start_pos, -1);
-			const size_t right = get_var_pos(m_code, start_pos, 1);
+			const size_t left = getVarPos(m_code, start_pos, -1);
+			const size_t right = getVarPos(m_code, start_pos, 1);
 			if (left == start_pos || right == start_pos)
 			{
 				m_error.append("unable to parse variables in '*' to 'mul' replacement\n");
@@ -1114,17 +1114,17 @@ namespace RoxRender
 			std::string left_var = m_code.substr(left, start_pos - left);
 			std::string right_var = m_code.substr(start_pos + 1, right - start_pos - 1);
 
-			remove_var_spaces(right_var);
+			removeVarSpaces(right_var);
 			if (right_var.empty()) // *=
 			{
 				++start_pos;
 				continue;
 			}
 
-			remove_var_spaces(left_var);
+			removeVarSpaces(left_var);
 
 			//ToDo: not sure if matrix*scalar don't need mul, in case of fail replace || with &&
-			if (is_numeric_only_var(left_var) || is_numeric_only_var(right_var))
+			if (isNumericOnlyVar(left_var) || isNumericOnlyVar(right_var))
 			{
 				++start_pos;
 				continue;
@@ -1161,7 +1161,7 @@ namespace RoxRender
 		size_t start_pos = 0;
 		while ((start_pos = m_code.find("vec", start_pos)) != std::string::npos)
 		{
-			if (start_pos > 0 && is_name_char(m_code[start_pos - 1]))
+			if (start_pos > 0 && isNameChar(m_code[start_pos - 1]))
 			{
 				start_pos += 3;
 				continue;
@@ -1169,7 +1169,7 @@ namespace RoxRender
 
 			if (start_pos + 4 > m_code.size()) //strlen("vec")+1
 			{
-				m_error.append("incomplite vec declaration: code end spotted\n");
+				m_error.append("incomplete vec declaration: code end spotted\n");
 				return false;
 			}
 
@@ -1279,8 +1279,8 @@ namespace RoxRender
 		const size_t from_len = strlen(from);
 		while ((start_pos = m_code.find(from, start_pos)) != std::string::npos)
 		{
-			if ((start_pos != 0 && is_name_char(m_code[start_pos - 1])) ||
-				(start_pos + from_len < m_code.size() && is_name_char(m_code[start_pos + from_len])))
+			if ((start_pos != 0 && isNameChar(m_code[start_pos - 1])) ||
+				(start_pos + from_len < m_code.size() && isNameChar(m_code[start_pos + from_len])))
 			{
 				start_pos += from_len;
 				continue;
@@ -1302,8 +1302,8 @@ namespace RoxRender
 		const size_t str_len = strlen(str);
 		while ((start_pos = m_code.find(str, start_pos)) != std::string::npos)
 		{
-			if ((start_pos != 0 && is_name_char(m_code[start_pos - 1])) ||
-				(start_pos + str_len < m_code.size() && is_name_char(m_code[start_pos + str_len])))
+			if ((start_pos != 0 && isNameChar(m_code[start_pos - 1])) ||
+				(start_pos + str_len < m_code.size() && isNameChar(m_code[start_pos + str_len])))
 			{
 				start_pos += str_len;
 				continue;

@@ -20,16 +20,16 @@ namespace RoxRender{ class CompiledShader; }
 
 namespace RoxSystem
 {
-    class RoxCompiledShadersProvider: public RoxRender::IRoxCompiledShadersProvider
+    class RoxShaderCacheProvider: public RoxRender::IRoxCompiledShadersProvider
     {
     public:
         void setLoadPath(const char *path) { m_load_path.assign(path?path:""); }
         void setSavePath(const char *path) { m_save_path.assign(path?path:""); }
 
     public:
-        static RoxCompiledShadersProvider &get()
+        static RoxShaderCacheProvider&get()
         {
-            static RoxCompiledShadersProvider csp;
+            static RoxShaderCacheProvider csp;
             return csp;
         }
 

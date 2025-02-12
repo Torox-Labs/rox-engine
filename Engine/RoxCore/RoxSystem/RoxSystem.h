@@ -13,7 +13,7 @@
 // 1. Free Use License (for non-commercial and commercial use under specific conditions)
 // 2. Commercial License (for use on proprietary platforms)
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
-
+ 
 #pragma once
 
 #include "RoxLogger/RoxLogger.h"
@@ -27,5 +27,6 @@ RoxLogger::RoxLoggerBase &log();
 const char *getAppPath();
 const char *getUserPath();
 unsigned long getTime();
+//const char* getPlatformName();
 
 }

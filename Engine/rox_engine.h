@@ -9,7 +9,7 @@
 #endif
 #elif defined(__GNU__)
 #ifdef ROX_ENGINE_EXPORTS
-#define ROX_ENGINE_API __attribute__((visibility("default"))
+#define ROX_ENGINE_API __attribute__((visibility("default")))
 #else
 #define ROX_ENGINE_API
 #endif

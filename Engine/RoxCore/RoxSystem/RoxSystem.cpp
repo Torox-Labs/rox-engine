@@ -19,6 +19,7 @@
 #include "RoxSystem.h"
 
 #include <iomanip>
+#include <iostream>
 
 #if defined __APPLE__
 #elif defined _WIN32
@@ -40,7 +41,6 @@
     #include <unistd.h>
     #include <sys/types.h>
     #include <pwd.h>
-
 #endif
 
 namespace
@@ -50,7 +50,7 @@ namespace
 
 namespace RoxSystem
 {
-void setLog(RoxLogger::RoxLoggerBase *l) {
+void setLogger(RoxLogger::RoxLoggerBase *l) {
     system_log=l;
 }
 
@@ -92,7 +92,7 @@ const char *getAppPath()
 #endif
         has_path=true;
     }
-    
+
     return path;
 }
 
@@ -124,7 +124,7 @@ const char *getUserPath()
 #endif
         has_path=true;
     }
-    
+
     return path;
 }
 
@@ -134,7 +134,6 @@ const char *getUserPath()
 
 unsigned long getTime()
 {
-
     return timeGetTime();
 }
 

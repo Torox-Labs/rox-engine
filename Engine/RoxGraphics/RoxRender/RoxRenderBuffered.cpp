@@ -73,7 +73,7 @@ namespace RoxRender
             RoxShaderCodeParser p(!i ? vertex : fragment);
             for (int i = 0; i < p.getUniformsCount(); ++i)
             {
-                const RoxShaderCodeParser::variable& v = p.getUniform(i);
+                const RoxShaderCodeParser::Variable& v = p.getUniform(i);
                 if (v.type == RoxShaderCodeParser::TYPE_MATRIX4 &&
                     (v.name == "_nya_ModelViewMatrix" || v.name == "_nya_ProjectionMatrix" || v.name == "_nya_ModelViewProjectionMatrix"))
                     continue;

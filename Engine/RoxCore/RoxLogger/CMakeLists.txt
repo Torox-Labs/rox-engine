@@ -10,9 +10,6 @@ target_include_directories(RoxLogger
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-# ====== Organize Sources in IDE ======
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${LOGGER_SRC})
-
 set_target_properties(RoxLogger PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
