@@ -186,7 +186,7 @@ namespace RoxRender
 
 	}
 
-	int RoxRenderOpengl::createShader(const char* VERTEX, const char* fragment)
+	int RoxRenderOpengl::createShader(const char* vertex, const char* fragment)
 	{
 		const int idx = shaders.add();
 		ShaderObj& shdr = shaders.get(idx);
@@ -203,10 +203,11 @@ namespace RoxRender
 
 		for (int i = 0; i < 2; ++i)
 		{
-			RoxShaderCodeParser parser(i == 0 ? VERTEX : fragment);
+			RoxShaderCodeParser parser(i == 0 ? vertex : fragment);
+			log() << "Shader " << (i == 0 ? "vertex" : "fragment") << " :" << parser.getCode() << "\n";
 			RoxShader::PROGRAM_TYPE type = i == 0 ? RoxShader::VERTEX : RoxShader::PIXEL;
 
-			if (i == 0 && strstr(VERTEX, "gl_Position") == 0)
+			if (i == 0 && strstr(vertex, "gl_Position") == 0)
 			{
 				for (int i = 0; i < parser.getOutCount(); ++i)
 					ft_vars.push_back(parser.getOut(i).name);
@@ -220,7 +221,7 @@ namespace RoxRender
 				return -1;
 			}
 
-			log() << "Shader: " << parser.getCode() << "\n";
+			//log() << "Shader: " << parser.getCode() << "\n";
 			//return 0;
 
 			GLuint object = compileShader(type, parser.getCode());
@@ -336,8 +337,7 @@ namespace RoxRender
 
 		setShader(-1);
 
-#if !defined OPENGL_ES || defined __ANDROID__ //some android and desktop vendors ignore the standart
-		//setShader(idx);
+#if defined __ANDROID__ //some android and desktop vendors ignore the standard
 #endif
 
 		setShader(idx);
@@ -427,7 +427,7 @@ namespace RoxRender
 	{
 		int active_transform_feedback = 0;
 
-		int get_gl_element_type(RoxVBO::ELEMENT_TYPE type)
+		int getGLElementType(RoxVBO::ELEMENT_TYPE type)
 		{
 			switch (type)
 			{
@@ -442,7 +442,7 @@ namespace RoxRender
 			return -1;
 		}
 
-		int get_gl_element_type(RoxVBO::VERTEX_ATRIB_TYPE type)
+		int getGLElementType(RoxVBO::VERTEX_ATRIB_TYPE type)
 		{
 			switch (type)
 			{
@@ -454,7 +454,7 @@ namespace RoxRender
 			return GL_FLOAT;
 		}
 
-		int gl_usage(RoxVBO::USAGE_HINT usage)
+		int glUsage(RoxVBO::USAGE_HINT usage)
 		{
 			switch (usage)
 			{
@@ -466,7 +466,7 @@ namespace RoxRender
 			return GL_DYNAMIC_DRAW;
 		}
 
-		struct vert_buf
+		struct VertexBuffer
 		{
 			unsigned int id;
 
@@ -488,14 +488,14 @@ namespace RoxRender
 				vertex_array_object = 0;
 #endif
 				if (id)
-					::glDeleteBuffers(1, &id);
+					glDeleteBuffers(1, &id);
 				id = 0;
 			}
 		};
 
-		RoxRenderObjects<vert_buf> vert_bufs;
+		RoxRenderObjects<VertexBuffer> vert_bufs;
 
-		struct ind_buf
+		struct IndexBuffer
 		{
 			unsigned int id;
 			RoxVBO::INDEX_SIZE type;
@@ -511,16 +511,16 @@ namespace RoxRender
 			}
 		};
 
-		RoxRenderObjects<ind_buf> ind_bufs;
+		RoxRenderObjects<IndexBuffer> ind_bufs;
 	}
 
 	int RoxRenderOpengl::createVertexBuffer(const void* data, uint stride, uint count, RoxVBO::USAGE_HINT usage)
 	{
 		const int idx = vert_bufs.add();
-		vert_buf& v = vert_bufs.get(idx);
+		VertexBuffer& v = vert_bufs.get(idx);
 		::glGenBuffers(1, &v.id);
 		::glBindBuffer(GL_ARRAY_BUFFER, v.id);
-		::glBufferData(GL_ARRAY_BUFFER, count * stride, data, gl_usage(usage));
+		::glBufferData(GL_ARRAY_BUFFER, count * stride, data, glUsage(usage));
 		v.count = count;
 		v.stride = stride;
 #ifdef USE_VAO
@@ -533,7 +533,7 @@ namespace RoxRender
 
 	void RoxRenderOpengl::setVertexLayout(int idx, RoxVBO::Layout layout)
 	{
-		vert_buf& v = vert_bufs.get(idx);
+		VertexBuffer& v = vert_bufs.get(idx);
 		v.layout = layout;
 
 #ifdef USE_VAO
@@ -547,7 +547,7 @@ namespace RoxRender
 
 	void RoxRenderOpengl::updateVertexBuffer(int idx, const void* data)
 	{
-		vert_buf& v = vert_bufs.get(idx);
+		VertexBuffer& v = vert_bufs.get(idx);
 		//if(applied_state.vertex_buffer!=idx)
 		{
 #ifdef USE_VAO
@@ -556,7 +556,7 @@ namespace RoxRender
 			::glBindBuffer(GL_ARRAY_BUFFER, v.id);
 			applied_state.vertex_buffer = -1;
 		}
-		::glBufferData(GL_ARRAY_BUFFER, v.count * v.stride, 0, gl_usage(v.usage)); //orphaning
+		::glBufferData(GL_ARRAY_BUFFER, v.count * v.stride, 0, glUsage(v.usage)); //orphaning
 		::glBufferSubData(GL_ARRAY_BUFFER, 0, v.count * v.stride, data);
 
 #ifdef USE_VAO
@@ -567,7 +567,7 @@ namespace RoxRender
 
 	bool RoxRenderOpengl::getVertexData(int idx, void* data)
 	{
-		const vert_buf& v = vert_bufs.get(idx);
+		const VertexBuffer& v = vert_bufs.get(idx);
 		//if(applied_state.vertex_buffer!=idx)
 		{
 #ifdef USE_VAO
@@ -623,7 +623,7 @@ namespace RoxRender
 	                                       RoxVBO::USAGE_HINT usage)
 	{
 		const int idx = ind_bufs.add();
-		ind_buf& i = ind_bufs.get(idx);
+		IndexBuffer& i = ind_bufs.get(idx);
 
 #ifdef USE_VAO
 		glBindVertexArray(0);
@@ -632,9 +632,9 @@ namespace RoxRender
     applied_state.index_buffer=-1;
 #endif
 
-		::glGenBuffers(1, &i.id);
-		::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i.id);
-		::glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * indices_count, data, gl_usage(usage));
+		glGenBuffers(1, &i.id);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i.id);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * indices_count, data, glUsage(usage));
 		i.type = size;
 		i.count = indices_count;
 		i.usage = usage;
@@ -647,7 +647,7 @@ namespace RoxRender
 
 	void RoxRenderOpengl::updateIndexBuffer(int idx, const void* data)
 	{
-		const ind_buf& i = ind_bufs.get(idx);
+		const IndexBuffer& i = ind_bufs.get(idx);
 
 #ifdef USE_VAO
 		glBindVertexArray(0);
@@ -657,7 +657,7 @@ namespace RoxRender
 #endif
 
 		::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i.id);
-		::glBufferData(GL_ELEMENT_ARRAY_BUFFER, i.count * i.type, data, gl_usage(i.usage));
+		::glBufferData(GL_ELEMENT_ARRAY_BUFFER, i.count * i.type, data, glUsage(i.usage));
 
 #ifdef USE_VAO
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -666,7 +666,7 @@ namespace RoxRender
 
 	bool RoxRenderOpengl::getIndexData(int idx, void* data)
 	{
-		const ind_buf& i = ind_bufs.get(idx);
+		const IndexBuffer& i = ind_bufs.get(idx);
 
 #ifdef USE_VAO
 		glBindVertexArray(0);
@@ -675,7 +675,7 @@ namespace RoxRender
     applied_state.index_buffer=-1;
 #endif
 
-		::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i.id);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i.id);
 
 #ifdef OPENGL_ES
 #ifdef __ANDROID__
@@ -692,7 +692,7 @@ namespace RoxRender
         return false;
 #endif
 #else
-		::glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, i.type * i.count, data);
+		glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, i.type * i.count, data);
 #endif
 
 #ifdef USE_VAO
@@ -705,7 +705,7 @@ namespace RoxRender
 	{
 		if (applied_state.index_buffer == idx)
 		{
-			::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 			applied_state.index_buffer = -1;
 		}
 		ind_bufs.remove(idx);
@@ -1107,8 +1107,8 @@ namespace RoxRender
 		glViewport(0, 0, x + w, y + h);
 
 		uint tmp_fbo;
-		::glGenFramebuffers(1, &tmp_fbo);
-		::glBindFramebuffer(GL_FRAMEBUFFER, tmp_fbo);
+		glGenFramebuffers(1, &tmp_fbo);
+		glBindFramebuffer(GL_FRAMEBUFFER, tmp_fbo);
 
 		if (t.gl_type == GL_TEXTURE_CUBE_MAP)
 		{
@@ -1134,18 +1134,18 @@ namespace RoxRender
 
 			for (int i = 0; i < 6; ++i)
 			{
-				::glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0, glCubeType(i), t.tex_id, 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0, glCubeType(i), t.tex_id, 0);
 				glReadPixels(x, y, w, h, t.gl_format, t.gl_precision, (char*)data + size * i);
 			}
 		}
 		else
 		{
-			::glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0, t.gl_type, t.tex_id, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0, t.gl_type, t.tex_id, 0);
 			glReadPixels(x, y, w, h, t.gl_format, t.gl_precision, data);
 		}
 
-		::glBindFramebuffer(GL_FRAMEBUFFER, default_fbo_idx);
-		::glDeleteFramebuffers(1, &tmp_fbo);
+		glBindFramebuffer(GL_FRAMEBUFFER, default_fbo_idx);
+		glDeleteFramebuffers(1, &tmp_fbo);
 
 		applied_state.target = -1;
 		glViewport(applied_state.viewport.x, applied_state.viewport.y, applied_state.viewport.width,
@@ -1198,7 +1198,7 @@ namespace RoxRender
 
 			void create(unsigned int w, unsigned int h, unsigned int f, unsigned int s)
 			{
-				if (!::glRenderbufferStorageMultisample)
+				if (!glRenderbufferStorageMultisample)
 					return;
 
 				if (!w || !h || s < 1)
@@ -1214,11 +1214,11 @@ namespace RoxRender
             if(f==GL_RGBA)
                 f=GL_RGB5_A1;
 #endif
-				::glGenRenderbuffers(1, &buf);
-				::glBindRenderbuffer(GL_RENDERBUFFER, buf);
-				::glRenderbufferStorageMultisample(GL_RENDERBUFFER, s, f, w, h);
-				::glBindRenderbuffer(GL_RENDERBUFFER, 0);
-				::glGenFramebuffers(1, &RoxFbo);
+				glGenRenderbuffers(1, &buf);
+				glBindRenderbuffer(GL_RENDERBUFFER, buf);
+				glRenderbufferStorageMultisample(GL_RENDERBUFFER, s, f, w, h);
+				glBindRenderbuffer(GL_RENDERBUFFER, 0);
+				glGenFramebuffers(1, &RoxFbo);
 
 				width = w, height = h, samples = s, format = f;
 			}
@@ -1261,7 +1261,7 @@ namespace RoxRender
 					color_attachments[i].multisample.release();
 				multisample_depth.release();
 				if (id)
-					::glDeleteFramebuffers(1, &id);
+					glDeleteFramebuffers(1, &id);
 				*this = fbo_obj();
 			}
 		};
@@ -1274,9 +1274,9 @@ namespace RoxRender
 				return;
 
 			const int gl_type = cubemap_side < 0 ? tex.gl_type : glCubeType(cubemap_side);
-			::glBindFramebuffer(GL_FRAMEBUFFER, RoxFbo);
-			::glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0, gl_type, tex.tex_id, 0);
-			::glBindFramebuffer(GL_FRAMEBUFFER, default_fbo_idx);
+			glBindFramebuffer(GL_FRAMEBUFFER, RoxFbo);
+			glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0, gl_type, tex.tex_id, 0);
+			glBindFramebuffer(GL_FRAMEBUFFER, default_fbo_idx);
 
 #if defined OPENGL_ES && defined __APPLE__
         if(attachment_idx!=0) //ToDo
@@ -1292,13 +1292,13 @@ namespace RoxRender
         if(glBindFramebuffer)
 #endif
 			{
-				::glBindFramebuffer(GL_READ_FRAMEBUFFER, from);
-				::glBindFramebuffer(GL_DRAW_FRAMEBUFFER, RoxFbo);
-				::glReadBuffer(GL_COLOR_ATTACHMENT0 + attachment_idx);
-				::glBlitFramebuffer(0, 0, width, height, 0, 0, width, height,GL_COLOR_BUFFER_BIT,GL_NEAREST);
-				::glReadBuffer(GL_COLOR_ATTACHMENT0);
-				::glBindFramebuffer(GL_READ_FRAMEBUFFER, default_fbo_idx);
-				::glBindFramebuffer(GL_DRAW_FRAMEBUFFER, default_fbo_idx);
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, from);
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, RoxFbo);
+				glReadBuffer(GL_COLOR_ATTACHMENT0 + attachment_idx);
+				glBlitFramebuffer(0, 0, width, height, 0, 0, width, height,GL_COLOR_BUFFER_BIT,GL_NEAREST);
+				glReadBuffer(GL_COLOR_ATTACHMENT0);
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, default_fbo_idx);
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, default_fbo_idx);
 			}
 
 			applied_state.target = -1;
@@ -1315,8 +1315,8 @@ namespace RoxRender
 		int idx = fbos.add();
 		fbo_obj& f = fbos.get(idx);
 
-		::glGenFramebuffers(1, &f.id);
-		::glBindFramebuffer(GL_FRAMEBUFFER, f.id);
+		glGenFramebuffers(1, &f.id);
+		glBindFramebuffer(GL_FRAMEBUFFER, f.id);
 
 		bool has_color = false;
 		f.color_attachments.resize(attachment_count);
@@ -1333,13 +1333,13 @@ namespace RoxRender
 			if (samples > 1)
 			{
 				f.color_attachments[i].multisample.create(width, height, t.gl_format, samples);
-				::glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0 + i,GL_RENDERBUFFER,
+				glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0 + i,GL_RENDERBUFFER,
 				                            f.color_attachments[i].multisample.buf);
 			}
 			else
 			{
 				const int gl_type = attachment_sides[i] < 0 ? t.gl_type : glCubeType(attachment_sides[i]);
-				::glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0 + i, gl_type, t.tex_id, 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0 + i, gl_type, t.tex_id, 0);
 			}
 		}
 
@@ -1349,11 +1349,11 @@ namespace RoxRender
 			if (samples > 1)
 			{
 				f.multisample_depth.create(width, height, t.gl_format, samples);
-				::glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER,
+				glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER,
 				                            f.multisample_depth.buf);
 			}
 			else
-				::glFramebufferTexture2D(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D, t.tex_id, 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D, t.tex_id, 0);
 			f.depth_tex_idx = depth_texture;
 		}
 		else
@@ -1361,7 +1361,7 @@ namespace RoxRender
 
 		f.depth_only = !has_color && depth_texture >= 0;
 
-		::glBindFramebuffer(GL_FRAMEBUFFER, applied_state.target >= 0
+		glBindFramebuffer(GL_FRAMEBUFFER, applied_state.target >= 0
 			                                    ? fbos.get(applied_state.target).id
 			                                    : default_fbo_idx);
 		return idx;
@@ -1384,7 +1384,7 @@ namespace RoxRender
 				glSelectMultitexLayer(0);
 				glBindTexture(tex.gl_type, tex.tex_id);
 				applied_state.textures[0] = tex.tex_id;
-				::glGenerateMipmap(tex.gl_type);
+				glGenerateMipmap(tex.gl_type);
 			}
 		}
 	}
@@ -1393,7 +1393,7 @@ namespace RoxRender
 	{
 		if (applied_state.target == idx)
 		{
-			::glBindFramebuffer(GL_FRAMEBUFFER, default_fbo_idx);
+			glBindFramebuffer(GL_FRAMEBUFFER, default_fbo_idx);
 			applied_state.target = -1;
 		}
 		return fbos.remove(idx);
@@ -1436,7 +1436,7 @@ namespace RoxRender
 
 		if (s.target != applied_state.target || ignore_cache_vp)
 		{
-			::glBindFramebuffer(GL_FRAMEBUFFER, s.target >= 0 ? fbos.get(s.target).id : default_fbo_idx);
+			glBindFramebuffer(GL_FRAMEBUFFER, s.target >= 0 ? fbos.get(s.target).id : default_fbo_idx);
 
 #ifndef OPENGL_ES
 			const bool no_color = s.target >= 0 && fbos.get(s.target).depth_only;
@@ -1580,7 +1580,7 @@ namespace RoxRender
 
 		if (s.blend_src != a.blend_src || s.blend_dst != a.blend_dst || ignore_cache)
 		{
-			::glBlendFuncSeparate(gl_blend_mode(s.blend_src), gl_blend_mode(s.blend_dst),GL_ONE,GL_ONE);
+			glBlendFuncSeparate(gl_blend_mode(s.blend_src), gl_blend_mode(s.blend_dst),GL_ONE,GL_ONE);
 			a.blend_src = s.blend_src, a.blend_dst = s.blend_dst;
 		}
 
@@ -1675,7 +1675,7 @@ namespace RoxRender
 		if (shdr.mat_p >= 0)
 			glad_glUniformMatrix4fv(shdr.mat_p, 1,GL_FALSE, projection[0]);
 
-		vert_buf& v = vert_bufs.get(s.vertex_buffer);
+		VertexBuffer& v = vert_bufs.get(s.vertex_buffer);
 
 		if (s.vertex_buffer != applied_state.vertex_buffer)
 		{
@@ -1695,7 +1695,7 @@ namespace RoxRender
 				glad_glBindBuffer(GL_ARRAY_BUFFER, v.id);
 
 				glEnableVertexAttribArray(VERTEX_ATTRIBUTE);
-				glVertexAttribPointer(VERTEX_ATTRIBUTE, v.layout.pos.dimension, get_gl_element_type(v.layout.pos.type),
+				glVertexAttribPointer(VERTEX_ATTRIBUTE, v.layout.pos.dimension, getGLElementType(v.layout.pos.type),
 				                      true,
 				                      v.stride, (void*)(ptrdiff_t)(v.layout.pos.offset));
 				for (unsigned int i = 0; i < RoxVBO::max_tex_coord; ++i)
@@ -1707,7 +1707,7 @@ namespace RoxRender
 						{
 							if (!applied_layout.tc[i].dimension)
 								glEnableVertexAttribArray(TC0_ATTRIBUTE + i);
-							glVertexAttribPointer(TC0_ATTRIBUTE + i, tc.dimension, get_gl_element_type(tc.type), true,
+							glVertexAttribPointer(TC0_ATTRIBUTE + i, tc.dimension, getGLElementType(tc.type), true,
 							                      v.stride, (void*)(ptrdiff_t)(tc.offset));
 						}
 					}
@@ -1721,7 +1721,7 @@ namespace RoxRender
 					{
 						if (!applied_layout.normal.dimension)
 							glEnableVertexAttribArray(NORMAL_ATTRIBUTE);
-						glVertexAttribPointer(NORMAL_ATTRIBUTE, 3, get_gl_element_type(v.layout.normal.type), true,
+						glVertexAttribPointer(NORMAL_ATTRIBUTE, 3, getGLElementType(v.layout.normal.type), true,
 						                      v.stride, (void*)(ptrdiff_t)(v.layout.normal.offset));
 					}
 				}
@@ -1735,7 +1735,7 @@ namespace RoxRender
 						if (!applied_layout.color.dimension)
 							glEnableVertexAttribArray(COLOR_ATTRIBUTE);
 						glVertexAttribPointer(COLOR_ATTRIBUTE, v.layout.color.dimension,
-						                      get_gl_element_type(v.layout.color.type), true,
+						                      getGLElementType(v.layout.color.type), true,
 						                      v.stride, (void*)(ptrdiff_t)(v.layout.color.offset));
 					}
 				}
@@ -1748,10 +1748,10 @@ namespace RoxRender
 			applied_state.vertex_buffer = s.vertex_buffer;
 		}
 
-		const int gl_elem = get_gl_element_type(s.primitive);
+		const int gl_elem = getGLElementType(s.primitive);
 		if (s.index_buffer >= 0)
 		{
-			ind_buf& i = ind_bufs.get(s.index_buffer);
+			IndexBuffer& i = ind_bufs.get(s.index_buffer);
 
 #ifdef USE_VAO
 			if (i.id != v.active_vao_ibuf)
@@ -1774,7 +1774,7 @@ namespace RoxRender
 #endif
 			if (transform_feedback)
 			{
-				glBeginTransformFeedback(get_gl_element_type(s.primitive));
+				glBeginTransformFeedback(getGLElementType(s.primitive));
 				glDrawElements(gl_elem, s.index_count, gl_elem_type, (void*)(ptrdiff_t)(s.index_offset * i.type));
 				glEndTransformFeedback();
 			}
@@ -1790,7 +1790,7 @@ namespace RoxRender
 #endif
 			if (transform_feedback)
 			{
-				glBeginTransformFeedback(get_gl_element_type(s.primitive));
+				glBeginTransformFeedback(getGLElementType(s.primitive));
 				glDrawArrays(gl_elem, s.index_offset, s.index_count);
 				glEndTransformFeedback();
 			}
@@ -1811,11 +1811,11 @@ namespace RoxRender
 			return;
 
 		//glEnable(GL_RASTERIZER_DISCARD);
-		const vert_buf& dst = vert_bufs.get(s.vertex_buffer_out);
+		const VertexBuffer& dst = vert_bufs.get(s.vertex_buffer_out);
 		if (!s.out_offset)
-			::glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, dst.id);
+			glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, dst.id);
 		else
-			::glBindBufferRange(GL_TRANSFORM_FEEDBACK_BUFFER, 0, dst.id, s.out_offset * dst.stride,
+			glBindBufferRange(GL_TRANSFORM_FEEDBACK_BUFFER, 0, dst.id, s.out_offset * dst.stride,
 			                    s.index_count * dst.stride);
 		active_transform_feedback = s.vertex_buffer_out;
 
@@ -1835,7 +1835,7 @@ namespace RoxRender
 #ifdef NO_EXTENSIONS_INIT
     return true;
 #else
-		return ::glBeginTransformFeedback != 0;
+		return glBeginTransformFeedback != 0;
 #endif
 	}
 
