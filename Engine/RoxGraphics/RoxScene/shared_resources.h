@@ -127,7 +127,7 @@ protected:
                 return false;
             }
 
-            RoxResources::RoxResourceData *file_data=RoxResources::getResourcesProvider().access(name);
+            RoxResources::IRoxResourceData *file_data=RoxResources::getResourcesProvider().access(name);
             if(!file_data)
             {
                 RoxLogger::log()<<"unable to load scene resource: unable to access resource "<<name<<"\n";

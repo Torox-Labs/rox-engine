@@ -21,18 +21,18 @@
 namespace RoxResources
 {
 
-    class RoxFileResourcesProvider : public RoxResourcesProvider
+    class RoxFileResourcesProvider : public IRoxResourcesProvider
     {
     public:
-        RoxResourceData* access(const char* resourceName);
-        bool has(const char* resourceName);
+        IRoxResourceData* access(const char* resourceName) override;
+        bool has(const char* resourceName) override;
 
     public:
-        bool setFolder(const char* folder, bool recursive = true, bool ignoreNonexistent = false);
+        bool setFolder(const char* folder, bool recursive = true, bool ignore_non_existent = false);
 
     public:
-        int getResourcesCount();
-        const char* getResourceName(int idx);
+        int getResourcesCount() override;
+        const char* getResourceName(int idx) override;
 
     public:
         virtual void lock();

@@ -1,6 +1,6 @@
 // Updated By the ROX_ENGINE
-// Copyright � 2024 Torox Project
-// Portions Copyright � 2013 nyan.developer@gmail.com (nya-engine)
+// Copyright © 2024 Torox Project
+// Portions Copyright © 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
 //
@@ -137,7 +137,7 @@ namespace RoxRender
 			if (idx == active_layer)
 				return;
 			active_layer = idx;
-			::glActiveTexture(GL_TEXTURE0 + idx);
+			glActiveTexture(GL_TEXTURE0 + idx);
 		}
 
 		GLuint compileShader(RoxShader::PROGRAM_TYPE type, const char* src)
@@ -165,11 +165,11 @@ namespace RoxRender
 			if (!success)
 			{
 				// Display the Compiler Error
-				GLint log_length = 0;
 				const static char shader_type_name[][12] = { "VERTEX", "FRAGMENT", "GEOMETRY", "TESSELATION" };
 				log() << "ERROR::" << shader_type_name[type] << "::SHADER::COMPILATION_FAILED\n";
 
 				// Check the Log Length, and Display Message
+				GLint log_length = 0;
 				glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
 				if (log_length > 0)
 				{
@@ -204,7 +204,7 @@ namespace RoxRender
 		for (int i = 0; i < 2; ++i)
 		{
 			RoxShaderCodeParser parser(i == 0 ? vertex : fragment);
-			log() << "Shader " << (i == 0 ? "vertex" : "fragment") << " :" << parser.getCode() << "\n";
+			//log() << "Shader " << (i == 0 ? "vertex" : "fragment") << " :" << parser.getCode() << "\n";
 			RoxShader::PROGRAM_TYPE type = i == 0 ? RoxShader::VERTEX : RoxShader::PIXEL;
 
 			if (i == 0 && strstr(vertex, "gl_Position") == 0)
@@ -300,18 +300,20 @@ namespace RoxRender
 		}
 
 		glLinkProgram(shdr.program);
-		GLint result = 1;
-		glGetProgramiv(shdr.program,GL_LINK_STATUS, &result);
-		if (!result)
+
+		int success = 1;
+		glGetProgramiv(shdr.program,GL_LINK_STATUS, &success);
+		if (!success)
 		{
 			log() << "Can't link shader\n";
-			GLint log_len = 0;
-			glGetProgramiv(shdr.program,GL_INFO_LOG_LENGTH, &log_len);
-			if (log_len > 0)
+
+			GLint log_length = 0;
+			glGetProgramiv(shdr.program,GL_INFO_LOG_LENGTH, &log_length);
+			if (log_length > 0)
 			{
-				std::string log_text(log_len, 0);
-				glGetProgramInfoLog(shdr.program, log_len, &log_len, &log_text[0]);
-				log() << log_text.c_str() << "\n";
+				std::string log_info(log_length, 0);
+				glGetProgramInfoLog(shdr.program, log_length, &log_length, &log_info[0]);
+				log() << "ERROR: " << log_info.c_str() << "\n";
 			}
 
 			shaders.remove(idx);
@@ -335,7 +337,7 @@ namespace RoxRender
 			++layer;
 		}
 
-		setShader(-1);
+		// TODO: Unbind the shader setShader(-1); before bind it for ANDROID
 
 #if defined __ANDROID__ //some android and desktop vendors ignore the standard
 #endif
@@ -388,7 +390,7 @@ namespace RoxRender
 		shaders.remove(shader);
 	}
 
-	//ToDo: Uniform Buffers
+	//TODO: Uniform Buffers
 	int RoxRenderOpengl::createUniformBuffer(int shader) { return shader; }
 
 	void RoxRenderOpengl::setUniform(int shader, int idx, const float* buf, uint count)

@@ -22,24 +22,27 @@
 namespace RoxResources
 {
 
-    class RoxResourceData
+    void setLog(RoxLogger::RoxLoggerBase* l);
+    RoxLogger::RoxLoggerBase& log();
+
+    class IRoxResourceData
     {
     public:
         virtual size_t getSize() { return 0; }
 
     public:
         virtual bool readAll(void* data) { return false; }
-        virtual bool readChunk(void* data, size_t size, size_t OFFSET = 0) { return false; }
+        virtual bool readChunk(void* data, size_t size, size_t offset = 0) { return false; }
 
     public:
         virtual void release() {}
     };
 
-    class RoxResourcesProvider
+    class IRoxResourcesProvider
     {
         //thread-safe
     public:
-        virtual RoxResourceData* access(const char* resource_name) { return 0; }
+        virtual IRoxResourceData* access(const char* resource_name) { return 0; }
         virtual bool has(const char* resource_name) { return false; }
 
         //requires lock
@@ -57,13 +60,10 @@ namespace RoxResources
     };
 
     void setResourcesPath(const char* path); //sets default provider with path
-    void setResourcesProvider(RoxResourcesProvider* provider); //custom provider
-    RoxResourcesProvider& getResourcesProvider();
+    void setResourcesProvider(IRoxResourcesProvider* provider); //custom provider
+    IRoxResourcesProvider& getResourcesProvider();
 
     RoxMemory::RoxTmpBufferRef readData(const char* name);
-
-    void setLog(RoxLogger::RoxLoggerBase* l);
-    RoxLogger::RoxLoggerBase& l();
 
     bool checkExtension(const char* name, const char* ext);
 

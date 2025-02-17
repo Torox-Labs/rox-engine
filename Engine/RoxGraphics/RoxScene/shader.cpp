@@ -186,7 +186,7 @@ bool load_nya_shader_internal(shared_shader &res, shader_description &desc, reso
 
             path.append(file);
 
-            RoxResources::RoxResourceData *file_data=RoxResources::getResourcesProvider().access(path.c_str());
+            RoxResources::IRoxResourceData *file_data=RoxResources::getResourcesProvider().access(path.c_str());
             if(!file_data)
             {
                 log()<<"unable to load include resource in shader "<<name<<": unable to access resource "<<path.c_str()<<"\n";

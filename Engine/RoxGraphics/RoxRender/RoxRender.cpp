@@ -44,7 +44,7 @@ namespace RoxRender
 		IRoxRenderAPI* render_interface = availableRenderInterface();
 	}
 
-	void set_log(RoxLogger::RoxLoggerBase* l) { render_log = l; }
+	void setLog(RoxLogger::RoxLoggerBase* l) { render_log = l; }
 
 	RoxLogger::RoxLoggerBase& log()
 	{

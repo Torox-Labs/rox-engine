@@ -29,7 +29,7 @@ namespace RoxSystem
 		if (!text)
 			return false;
 
-		RoxResources::RoxResourceData* data =
+		RoxResources::IRoxResourceData* data =
 			RoxResources::getResourcesProvider().access((m_load_path + crc(text) + ".nsc").c_str());
 
 		if (!data)

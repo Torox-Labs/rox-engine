@@ -18,129 +18,131 @@
 
 namespace RoxResources
 {
+	namespace
+	{
+		struct Resource : public IRoxResourceData
+		{
 
-bool RoxMemoryResourcesProvider::has(const char *name)
-{
-    if(!name)
-        return false;
+			const char* data;
+			size_t size;
 
-    RoxMemory::RoxLockGuardRead lock(m_mutex);
+			Resource(const char* data, size_t size) : data(data), size(size)
+			{
+			}
 
-    for(int i=0;i<(int)m_entries.size();++i)
-    {
-        if(m_entries[i].name==name)
-            return true;
-    }
+			size_t getSize() override { return size; }
 
-    return false;
-}
+			bool readAll(void* out_data) override
+			{
+				if (!out_data)
+					return false;
 
-int RoxMemoryResourcesProvider::getResourcesCount() { return (int)m_entries.size(); }
+				memcpy(out_data, data, size);
+				return true;
+			}
 
-const char *RoxMemoryResourcesProvider::getResourceName(int idx)
-{
-    if(idx<0 || idx>=(int)m_entries.size())
-        return 0;
+			bool readChunk(void* out_data, size_t out_size, size_t offset) override
+			{
+				if (!out_data)
+					return false;
 
-    return m_entries[idx].name.c_str();
-}
+				if (out_size + offset > size || out_size > size)
+					return false;
 
-bool RoxMemoryResourcesProvider::add(const char *name,const void *data,size_t size)
-{
-    if(!name)
-        return false;
+				memcpy(out_data, data + offset, size);
+				return true;
+			}
 
-    if(!data && size>0)
-        return false;
+			void release() override { delete this; }
+		};
+	}
 
-    if(has(name))
-        return false;
+	IRoxResourceData* RoxMemoryResourcesProvider::access(const char* name)
+	{
+		if (!name)
+			return 0;
 
-    void *new_data=RoxMemory::alignAlloc(size,16);
-    memcpy(new_data,data,size);
+		RoxMemory::RoxLockGuardRead lock(m_mutex);
 
-    entry e;
-    e.name=name;
-    e.data=(char *)new_data;
-    e.size=size;
+		for (int i = 0; i < (int)m_entries.size(); ++i)
+		{
+			if (m_entries[i].name != name)
+				continue;
 
-    RoxMemory::RoxLockGuardWrite lock(m_mutex);
+			return new Resource(m_entries[i].data, m_entries[i].size);
+		}
 
-    m_entries.push_back(e);
-    return true;
-}
+		return 0;
+	}
 
-bool RoxMemoryResourcesProvider::remove(const char *name)
-{
-    if(!name)
-        return false;
+	bool RoxMemoryResourcesProvider::has(const char* name)
+	{
+		if (!name)
+			return false;
 
-    RoxMemory::RoxLockGuardWrite lock(m_mutex);
+		RoxMemory::RoxLockGuardRead lock(m_mutex);
 
-    for(int i=0;i<(int)m_entries.size();++i)
-    {
-        if(m_entries[i].name!=name)
-            continue;
+		for (int i = 0; i < (int)m_entries.size(); ++i)
+		{
+			if (m_entries[i].name == name)
+				return true;
+		}
 
-        m_entries.erase(m_entries.begin()+i);
-        return true;
-    }
+		return false;
+	}
 
-    return false;
-}
+	int RoxMemoryResourcesProvider::getResourcesCount() { return (int)m_entries.size(); }
 
-namespace
-{
-    struct resource: public RoxResourceData
-    {
-        const char *data;
-        size_t size;
+	const char* RoxMemoryResourcesProvider::getResourceName(int idx)
+	{
+		if (idx < 0 || idx >= (int)m_entries.size())
+			return 0;
 
-        resource(const char *data,size_t size): data(data),size(size) {}
+		return m_entries[idx].name.c_str();
+	}
 
-        size_t get_size() { return size; }
+	bool RoxMemoryResourcesProvider::add(const char* name, const void* data, size_t size)
+	{
+		if (!name)
+			return false;
 
-        virtual bool read_all(void *out_data)
-        {
-            if(!out_data)
-                return false;
+		if (!data && size > 0)
+			return false;
 
-            memcpy(out_data,data,size);
-            return true;
-        }
+		if (has(name))
+			return false;
 
-        virtual bool read_chunk(void *out_data,size_t out_size,size_t offset)
-        {
-            if(!out_data)
-                return false;
+		void* new_data = RoxMemory::alignAlloc(size, 16);
+		memcpy(new_data, data, size);
 
-            if(out_size+offset>size || out_size>size)
-                return false;
+		Entry e;
+		e.name = name;
+		e.data = (char*)new_data;
+		e.size = size;
 
-            memcpy(out_data,data+offset,size);
-            return true;
-        }
+		RoxMemory::RoxLockGuardWrite lock(m_mutex);
 
-        void release() { delete this; }
-    };
-}
+		m_entries.push_back(e);
+		return true;
+	}
 
-RoxResourceData *RoxMemoryResourcesProvider::access(const char *name)
-{
-    if(!name)
-        return 0;
+	bool RoxMemoryResourcesProvider::remove(const char* name)
+	{
+		if (!name)
+			return false;
 
-    RoxMemory::RoxLockGuardRead lock(m_mutex);
+		RoxMemory::RoxLockGuardWrite lock(m_mutex);
 
-    for(int i=0;i<(int)m_entries.size();++i)
-    {
-        if(m_entries[i].name!=name)
-            continue;
+		for (int i = 0; i < (int)m_entries.size(); ++i)
+		{
+			if (m_entries[i].name != name)
+				continue;
 
-        return new resource(m_entries[i].data,m_entries[i].size);
-    }
+			m_entries.erase(m_entries.begin() + i);
+			return true;
+		}
 
-    return 0;
-}
+		return false;
+	}
 
 }

@@ -26,33 +26,44 @@ namespace RoxResources
 
     namespace
     {
-        RoxResourcesProvider* res_provider= 0;
+        IRoxResourcesProvider* res_provider= 0;
         RoxLogger::RoxLoggerBase* resources_log= 0;
 
-        RoxFileResourcesProvider& default_provider()
+        RoxFileResourcesProvider& defaultProvider()
         {
             static RoxFileResourcesProvider* file_provider = new RoxFileResourcesProvider();
             return *file_provider;
         }
     }
 
-    void setResourcesPath(const char* path)
+
+    void setLog(RoxLogger::RoxLoggerBase* l) { resources_log = l; }
+
+    RoxLogger::RoxLoggerBase& log()
     {
-        res_provider = &default_provider();
-        default_provider().setFolder(path);
+        if (!resources_log)
+            return RoxLogger::log();
+
+        return *resources_log;
     }
 
-    void setResourcesProvider(RoxResourcesProvider* provider)
+    void setResourcesPath(const char* path)
+    {
+        res_provider = &defaultProvider();
+        defaultProvider().setFolder(path);
+    }
+
+    void setResourcesProvider(IRoxResourcesProvider* provider)
     {
         res_provider = provider;
     }
 
-    RoxResourcesProvider& getResourcesProvider()
+    IRoxResourcesProvider& getResourcesProvider()
     {
         if(!res_provider)
         {
-            res_provider = &default_provider();
-            //default_provider().sfolder(nya_system::gappPath());
+            res_provider = &defaultProvider();
+            //defaultProvider().sfolder(nya_system::gappPath());
         }
 
         return *res_provider;
@@ -60,7 +71,7 @@ namespace RoxResources
 
     RoxMemory::RoxTmpBufferRef readData(const char* name)
     {
-        RoxResourceData* r = getResourcesProvider().access(name);
+        IRoxResourceData* r = getResourcesProvider().access(name);
         if(!r)
             return RoxMemory::RoxTmpBufferRef();
 
@@ -70,16 +81,6 @@ namespace RoxResources
             result.free();
         r->release();
         return result;
-    }
-
-    void setLog(RoxLogger::RoxLoggerBase* l) { resources_log = l; }
-
-    RoxLogger::RoxLoggerBase& l()
-    {
-        if(!resources_log)
-            return RoxLogger::log();
-
-        return *resources_log;
     }
 
     bool checkExtension(const char* name, const char* ext)

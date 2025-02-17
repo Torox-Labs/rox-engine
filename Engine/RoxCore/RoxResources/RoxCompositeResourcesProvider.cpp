@@ -22,7 +22,7 @@
 namespace RoxResources
 {
 
-inline std::string fix_name(const std::string &name)
+inline std::string fixName(const std::string &name)
 {
     std::string name_str(name);
     for(size_t i=0;i<name_str.size();++i)
@@ -45,7 +45,7 @@ inline std::string fix_name(const std::string &name)
     return out;
 }
 
-void RoxCompositeResourcesProvider::addProvider(RoxResourcesProvider *provider,const char *folder)
+void RoxCompositeResourcesProvider::addProvider(IRoxResourcesProvider *provider,const char *folder)
 {
     if(!provider)
     {
@@ -66,7 +66,7 @@ void RoxCompositeResourcesProvider::addProvider(RoxResourcesProvider *provider,c
     }
 
     m_update_names=true;
-    m_providers.push_back(std::make_pair(provider,(folder && folder[0])?fix_name(std::string(folder)+"/"):""));
+    m_providers.push_back(std::make_pair(provider,(folder && folder[0])?fixName(std::string(folder)+"/"):""));
     if(m_cache_entries)
         cacheProvider((int)m_providers.size()-1);
 }
@@ -80,7 +80,7 @@ void RoxCompositeResourcesProvider::removeProviders()
     m_cached_entries.clear();
 }
 
-RoxResourceData *RoxCompositeResourcesProvider::access(const char *resource_name)
+IRoxResourceData *RoxCompositeResourcesProvider::access(const char *resource_name)
 {
     if(!resource_name)
     {
@@ -113,13 +113,13 @@ RoxResourceData *RoxCompositeResourcesProvider::access(const char *resource_name
 
     if(m_ignore_case)
     {
-        std::string res_str=fix_name(resource_name);
+        std::string res_str=fixName(resource_name);
         std::transform(res_str.begin(),res_str.end(),res_str.begin(),::tolower);
 
         it=m_cached_entries.find(res_str);
     }
     else
-        it=m_cached_entries.find(fix_name(resource_name));
+        it=m_cached_entries.find(fixName(resource_name));
 
     if(it==m_cached_entries.end())
     {
@@ -160,13 +160,13 @@ bool RoxCompositeResourcesProvider::has(const char *resource_name)
 
     if(m_ignore_case)
     {
-        std::string res_str=fix_name(resource_name);
+        std::string res_str=fixName(resource_name);
         std::transform(res_str.begin(),res_str.end(),res_str.begin(),::tolower);
 
         return m_cached_entries.find(res_str)!=m_cached_entries.end();
     }
 
-    return m_cached_entries.find(fix_name(resource_name))!=m_cached_entries.end();
+    return m_cached_entries.find(fixName(resource_name))!=m_cached_entries.end();
 }
 
 void RoxCompositeResourcesProvider::enableCache()
@@ -216,11 +216,11 @@ const char *RoxCompositeResourcesProvider::getResourceName(int idx)
 
 void RoxCompositeResourcesProvider::lock()
 {
-    RoxResourcesProvider::lock();
+    IRoxResourcesProvider::lock();
 
     if(m_update_names)
     {
-        RoxResourcesProvider::unlock();
+        IRoxResourcesProvider::unlock();
         m_mutex.lockWrite();
         if(m_update_names)
             updateNames();
@@ -260,7 +260,7 @@ void RoxCompositeResourcesProvider::cacheProvider(int idx)
     if(idx<0 || idx>=(int)m_providers.size())
         return;
 
-    RoxResourcesProvider *provider=m_providers[idx].first;
+    IRoxResourcesProvider *provider=m_providers[idx].first;
     provider->lock();
     for(int i=0;i<provider->getResourcesCount();++i)
     {
@@ -268,12 +268,12 @@ void RoxCompositeResourcesProvider::cacheProvider(int idx)
         if(!name)
             continue;
 
-        std::string name_str=fix_name(m_providers[idx].second+name);
+        std::string name_str=fixName(m_providers[idx].second+name);
 
         if(m_ignore_case)
             std::transform(name_str.begin(),name_str.end(),name_str.begin(),::tolower);
 
-        entry &e=m_cached_entries[name_str];
+        Entry& e=m_cached_entries[name_str];
         e.original_name.assign(name);
         e.prov_idx=idx;
     }
@@ -296,7 +296,7 @@ void RoxCompositeResourcesProvider::updateNames()
         std::set<std::string> already_has;
         for(size_t i=0;i<m_providers.size();++i)
         {
-            RoxResourcesProvider *provider=m_providers[i].first;
+            IRoxResourcesProvider *provider=m_providers[i].first;
             provider->lock();
             for(int j=0;j<provider->getResourcesCount();++j)
             {
@@ -304,7 +304,7 @@ void RoxCompositeResourcesProvider::updateNames()
                 if(!name)
                     continue;
 
-                std::string name_str=fix_name(m_providers[i].second+name);
+                std::string name_str=fixName(m_providers[i].second+name);
                 
                 if(already_has.find(name_str)!=already_has.end())
                     continue;

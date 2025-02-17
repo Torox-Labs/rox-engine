@@ -79,7 +79,7 @@ namespace RoxResources
         RoxMemory::RoxMutex m_mutex;
     };
 
-    class file_resource : public RoxResourceData
+    class file_resource : public IRoxResourceData
     {
     public:
         size_t get_size() { return m_size; }
@@ -104,7 +104,7 @@ namespace RoxResources
 namespace RoxResources
 {
 
-    RoxResourceData* RoxFileResourcesProvider::access(const char* resource_name)
+    IRoxResourceData* RoxFileResourcesProvider::access(const char* resource_name)
     {
         if (!resource_name)
         {
@@ -316,11 +316,11 @@ namespace RoxResources
 
     void RoxFileResourcesProvider::lock()
     {
-        RoxResourcesProvider::lock();
+        IRoxResourcesProvider::lock();
 
         if (m_update_names)
         {
-            RoxResourcesProvider::unlock();
+            IRoxResourcesProvider::unlock();
             m_mutex.lockWrite();
             if (m_update_names)
                 updateNames();

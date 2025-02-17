@@ -1,6 +1,6 @@
 // Updated By the ROX_ENGINE
-// Copyright � 2024 Torox Project
-// Portions Copyright � 2013 nyan.developer@gmail.com (nya-engine)
+// Copyright © 2024 Torox Project
+// Portions Copyright © 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
 //
@@ -20,7 +20,7 @@
 namespace RoxRender
 {
 
-void set_log(RoxLogger::RoxLoggerBase *l);
+void setLog(RoxLogger::RoxLoggerBase *l);
 RoxLogger::RoxLoggerBase &log();
 
 struct Rectangle

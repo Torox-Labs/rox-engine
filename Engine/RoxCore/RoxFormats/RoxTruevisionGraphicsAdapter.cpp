@@ -369,7 +369,7 @@ namespace RoxFormats
     {
         release();
 
-        RoxResources::RoxResourceData* inData = RoxResources::getResourcesProvider().access(fileName);
+        RoxResources::IRoxResourceData* inData = RoxResources::getResourcesProvider().access(fileName);
         if (!inData)
         {
             std::printf("Unable to open texture %s\n", fileName);

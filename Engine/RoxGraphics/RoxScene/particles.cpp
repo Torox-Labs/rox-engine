@@ -962,7 +962,7 @@ static bool load_includes(parsers_list &list,parsers_list::iterator current,cons
 
             path.append(sname);
 
-            RoxResources::RoxResourceData *file_data=RoxResources::getResourcesProvider().access(path.c_str());
+            RoxResources::IRoxResourceData *file_data=RoxResources::getResourcesProvider().access(path.c_str());
             if(!file_data)
             {
                 log()<<"unable to load include resource in particles "<<name<<": unable to access resource "<<path.c_str()<<"\n";

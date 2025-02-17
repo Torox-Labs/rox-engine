@@ -1,6 +1,6 @@
 // Updated By the ROX_ENGINE
-// Copyright © 2024 Torox Project
-// Portions Copyright © 2013 nyan.developer@gmail.com (nya-engine)
+// Copyright Â© 2024 Torox Project
+// Portions Copyright Â© 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
 //
@@ -13,6 +13,8 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxShader.h"
+
+#include <iostream> // Delete this on release
 
 #include "RoxShaderCodeParser.h"
 #include "RoxRender.h"
