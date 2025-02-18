@@ -4,7 +4,7 @@
 
 #include "RoxNonCopyable.h"
 
-//ToDo: support RoxMutexRw in Emscripten
+//TODO: support RoxMutexRw in Emscripten
 
 #ifdef _MSC_VER
     #include <mutex>

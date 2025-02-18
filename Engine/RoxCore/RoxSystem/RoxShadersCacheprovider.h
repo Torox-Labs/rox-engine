@@ -20,28 +20,28 @@ namespace RoxRender{ class CompiledShader; }
 
 namespace RoxSystem
 {
-    class RoxShaderCacheProvider: public RoxRender::IRoxCompiledShadersProvider
-    {
-    public:
-        void setLoadPath(const char *path) { m_load_path.assign(path?path:""); }
-        void setSavePath(const char *path) { m_save_path.assign(path?path:""); }
+	class RoxShaderCacheProvider : public RoxRender::IRoxCompiledShadersProvider
+	{
+	public:
+		void setLoadPath(const char* path) { m_load_path.assign(path ? path : ""); }
+		void setSavePath(const char* path) { m_save_path.assign(path ? path : ""); }
 
-    public:
-        static RoxShaderCacheProvider&get()
-        {
-            static RoxShaderCacheProvider csp;
-            return csp;
-        }
+	public:
+		static RoxShaderCacheProvider& get()
+		{
+			static RoxShaderCacheProvider csp;
+			return csp;
+		}
 
-    public:
-        bool get(const char *text,RoxRender::RoxCompiledShader &shader) override;
-        bool set(const char *text,const RoxRender::RoxCompiledShader &shader) override;
+	public:
+		bool get(const char* text, RoxRender::RoxCompiledShader& shader) override;
+		bool set(const char* text, const RoxRender::RoxCompiledShader& shader) override;
 
-    private:
-        std::string crc(const char *text);
+	private:
+		std::string crc(const char* text);
 
-    private:
-        std::string m_load_path;
-        std::string m_save_path;
-    };
+	private:
+		std::string m_load_path;
+		std::string m_save_path;
+	};
 }

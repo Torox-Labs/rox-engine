@@ -72,7 +72,8 @@ public:
         m_map.clear();
     }
 
-public: RoxLru(){}
+public:
+	RoxLru(){}
 
 private:
     typedef std::pair<std::string,t> entry;

@@ -29,8 +29,11 @@ namespace RoxSystem
 		if (!text)
 			return false;
 
+
 		RoxResources::IRoxResourceData* data =
 			RoxResources::getResourcesProvider().access((m_load_path + crc(text) + ".nsc").c_str());
+
+		RoxLogger::log() << "Loading Path: " << m_load_path.c_str() << "\n";
 
 		if (!data)
 			return false;

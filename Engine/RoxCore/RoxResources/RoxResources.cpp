@@ -26,8 +26,8 @@ namespace RoxResources
 
     namespace
     {
-        IRoxResourcesProvider* res_provider= 0;
-        RoxLogger::RoxLoggerBase* resources_log= 0;
+        IRoxResourcesProvider* res_provider= nullptr;
+        RoxLogger::RoxLoggerBase* resources_log= nullptr;
 
         RoxFileResourcesProvider& defaultProvider()
         {

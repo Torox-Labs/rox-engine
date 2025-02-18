@@ -24,24 +24,24 @@ namespace RoxResources
     class RoxFileResourcesProvider : public IRoxResourcesProvider
     {
     public:
-        IRoxResourceData* access(const char* resourceName) override;
-        bool has(const char* resourceName) override;
+        IRoxResourceData* access(const char* resource_name) override;
+        bool has(const char* resource_name) override;
 
     public:
-        bool setFolder(const char* folder, bool recursive = true, bool ignore_non_existent = false);
+        bool setFolder(const char* folder_name, bool recursive = true, bool ignore_non_existent = false);
 
     public:
         int getResourcesCount() override;
         const char* getResourceName(int idx) override;
 
     public:
-        virtual void lock();
+    	void lock() override;
 
     public:
         RoxFileResourcesProvider(const char* folder = "") { setFolder(folder); }
 
     private:
-        void enumerateFolder(const char* folderName);
+        void enumerateFolder(const char* folder_name);
         void updateNames();
 
     private:
