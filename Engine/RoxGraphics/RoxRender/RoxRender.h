@@ -62,6 +62,7 @@ RoxMath::Vector4 getClearColor();
 float getClearDepth();
 void setClearDepth(float value);
 
+
 void clear(bool clear_color,bool clear_depth,bool clear_stencil=false);
 
 struct Blend

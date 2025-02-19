@@ -29,11 +29,8 @@ namespace RoxSystem
 		if (!text)
 			return false;
 
-
 		RoxResources::IRoxResourceData* data =
 			RoxResources::getResourcesProvider().access((m_load_path + crc(text) + ".nsc").c_str());
-
-		RoxLogger::log() << "Loading Path: " << m_load_path.c_str() << "\n";
 
 		if (!data)
 			return false;
@@ -92,7 +89,8 @@ namespace RoxSystem
 			crc = crc_table[(crc ^ *buf++) & 0xFF] ^ (crc >> 8);
 
 		char tmp[256];
-		printf(tmp, "%ud", crc);
+		//sprintf(tmp, "%u", crc);
+		snprintf(tmp, sizeof(tmp), "%u", crc);
 
 		return std::string(tmp);
 	}
