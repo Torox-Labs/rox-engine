@@ -109,18 +109,15 @@ Rox-Engine's architecture is modular and extensible, consisting of the following
 
 - **Operating System:**
   - Windows 10 or higher
-  - macOS Catalina or higher
-  - Linux (Ubuntu 18.04+)
 
 - **Compiler:**
-  - A modern C++ compiler (e.g., GCC 9+, Clang 9+, MSVC 2015+)
+  - A modern C++ compiler (e.g., MSVC 2015+)
 
 - **Build System:**
-  - CMake 3.16 or higher
+  - CMake 3.21 or higher
 
 - **Dependencies:**
   - **OpenGL:** For rendering graphics. [Installation Guide](https://www.opengl.org/wiki/Getting_Started)
-  - **GLFW:** A library for OpenGL, window, and input management. [Installation Guide](https://www.glfw.org/docs/latest/compile.html)
   - **Boost Libraries:** [Installation Guide](https://www.boost.org/doc/libs/1_76_0/more/getting_started/index.html)
   - **OpenSSL:** For cryptographic functions. [Installation Guide](https://www.openssl.org/source/)
   - **[Torox-Math Library](https://github.com/Torox-Lab/torox-math):** For advanced mathematical functions.
