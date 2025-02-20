@@ -123,7 +123,7 @@ Rox-Engine's architecture is modular and extensible, consisting of the following
   - **[Torox-Math Library](https://github.com/Torox-Lab/torox-math):** For advanced mathematical functions.
   - **[Orox-Token Library](https://github.com/Torox-Lab/orox-token):** For token and blockchain interactions.
 
-*Note:* Torox-Math, Torox-Token, SDL3 and Assimp are under consideration for future integration and are not required at this stage.
+*Note:* Torox-Math, Torox-Token are under consideration for future integration and are not required at this stage.
 
 ### Installation
 
@@ -151,7 +151,6 @@ Rox-Engine's architecture is modular and extensible, consisting of the following
    ```bash
    mkdir build && cd build
    cmake ..
-   make
    ```
 
 ### Basic Usage
@@ -171,21 +170,41 @@ After building the engine, you can start creating your game project:
    In your C++ source files:
 
    ```cpp
-   #include <rox/app.hpp>
+   #include <RoxApp/RoxApp.h>
    ```
 
-   *Note:* Currently, to use the engine, you need to include `rox/app.hpp`. We plan to update this to `rox/rox.hpp` in future releases for consistency.
+   *Note:* Currently, to use the engine, you need to include `RoxApp/RoxApp.h`. We plan to update this to `Rox/Rox.h` in future releases for consistency.
 
 3. **Initialize the Engine**
 
-   ```cpp
-   int main() {
-       Rox::Engine engine;
-       engine.initialize();
-       // Your game logic here
-       engine.run();
+  ```cpp 
+  class MyGame : public RoxApp::RoxApp
+  {
+   // Your game logic here
+  
+  private:
+    bool onSplash() override
+    {
+      ...
+    }
+    bool onInit() override
+    {
+      ...
+    }
+    void onFrame(unsigned int dt) override
+    {
+      ...
+    }
+
+    ...
+  };
+   
+  int main() {
+       MyGame my_game;
+       RoxLogger::log() << "My Game\n";
+       app.startWindow(100, 100, 640, 480, 0);
        return 0;
-   }
+   };
    ```
 
 4. **Build and Run Your Game**
