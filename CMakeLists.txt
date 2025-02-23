@@ -33,6 +33,9 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Engine/RoxCore")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Engine/RoxGraphics")
 
 # ====== Add Subdirectories ======
+add_subdirectory(Dependencies)
+
+# ====== Add Subdirectories ======
 add_subdirectory(Engine)
 add_subdirectory(Engine/RoxCore)
 add_subdirectory(Engine/RoxGraphics)
@@ -82,7 +85,7 @@ endif()
 # ====== Organize Sources in IDE ======
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SRC_FILES})
 
-#
+# 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # ====== Set Output Directories ======
@@ -93,7 +96,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 # ====== Organize Folders in IDE ======
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-# ====== Add Subdirectories (Scoped by Folder) ======
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

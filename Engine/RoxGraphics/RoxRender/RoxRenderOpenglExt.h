@@ -18,7 +18,7 @@
 #ifdef _WIN32
 #define NOMINMAX
 #include <windows.h>
-#include <glad/include/glad/glad.h>
+#include <glad/glad.h>
 
 // wglExt
 #pragma region From <wglext.h>

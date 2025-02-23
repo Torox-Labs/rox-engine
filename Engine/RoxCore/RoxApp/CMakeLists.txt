@@ -14,6 +14,10 @@ target_include_directories(RoxApp
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+# ====== Link Interface Libraries ======
+target_link_libraries(RoxApp PRIVATE GLAD GLADInterface)
+
+# ====== Set Output Directories ======
 set_target_properties(RoxApp PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"

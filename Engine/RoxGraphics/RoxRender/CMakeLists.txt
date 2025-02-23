@@ -10,14 +10,18 @@ target_include_directories(RoxRender
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-# ======  ======
+# ====== Link Interface Libraries ======
+target_link_libraries(RoxRender PRIVATE GLAD GLADInterface)
+
+
+# ====== Set File Language To Objective C++ ======
 if(APPLE)
     set_source_files_properties(${RENDER_SRC} PROPERTIES
         LANGUAGE OBJCXX
     )
 endif()
 
-# ======  ======
+# ====== Set Output Directories ======
 set_target_properties(RoxRender PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"

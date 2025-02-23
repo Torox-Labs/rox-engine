@@ -14,7 +14,7 @@
 
 #ifdef _WIN32
 
-#include <glad/include/glad/glad.h>
+#include <glad/glad.h>
 
 #ifndef DIRECTX11
 #endif
