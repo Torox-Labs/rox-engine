@@ -1896,9 +1896,9 @@ namespace RoxRender
 	{
 #ifdef GL_DEBUG_OUTPUT
 #ifdef _WIN32
-    void CALLBACK debug_log(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,GLvoid *userParam)
+    void GLAPIENTRY debug_log(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,const void* userParam)
 #else
-    void debug_log(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,const GLvoid *userParam)
+    void debug_log(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar* message,const void* userParam)
 #endif
     {
         const char* source_str;
