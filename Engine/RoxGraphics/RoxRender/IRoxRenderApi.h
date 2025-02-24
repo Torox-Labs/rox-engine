@@ -185,6 +185,10 @@ namespace RoxRender
 		virtual uint getMaxTargetMsaa() { return 0; }
 
 	public:
+		virtual bool setProgramBinaryShader(RoxCompiledShader& prm_shdr) { return false; }
+		virtual const RoxCompiledShader& getProgramBinaryShader() const = 0;
+
+	public:
 		virtual void setCamera(const RoxMath::Matrix4& model_view, const RoxMath::Matrix4& projection)
 		{
 		}

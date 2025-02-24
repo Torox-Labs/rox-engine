@@ -1554,6 +1554,87 @@ namespace RoxRender
 #endif
 	}
 
+	bool RoxRenderOpengl::setProgramBinaryShader(RoxCompiledShader& prm_shdr)
+	{
+		if (applied_state.shader < 0)
+		{
+			log() << "ERROR: No active shader program to load binary.\n";
+			return false;
+		}
+
+		ShaderObj& current_shader = shaders.get(applied_state.shader);
+
+		const void* binary_data = prm_shdr.getData();
+		size_t binary_size = prm_shdr.getSize();
+
+		if (!binary_data || binary_size < sizeof(GLenum))
+		{
+			log() << "ERROR: Invalid shader binary data format or size.\n";
+			return false;
+		}
+
+		GLenum binary_format = *reinterpret_cast<const GLenum*>(binary_data);
+		const void* program_binary = reinterpret_cast<const char*>(binary_data) + sizeof(GLenum);
+		GLint program_binary_size = static_cast<GLint>(binary_size - sizeof(GLenum));
+
+		glProgramBinary(current_shader.program, binary_format, program_binary, program_binary_size);
+
+		GLint success = 1;
+		glGetProgramiv(current_shader.program, GL_LINK_STATUS, &success);
+		if (!success)
+		{
+			log() << "Can't link program shader binary";
+
+			GLint log_length = 0;
+			glGetProgramiv(current_shader.program, GL_INFO_LOG_LENGTH, &log_length);
+			if (log_length> 0)
+			{
+				std::string log_info(log_length, 0);
+				glGetProgramInfoLog(current_shader.program, log_length, nullptr, &log_info[0]);
+				log() << "ERROR: " << log_info.c_str() << "\n";
+			}
+
+			return false;
+		}
+
+		//TODO: Delete on production
+		log() << "Shader binary loaded successfully.\n";
+		return true;
+	}
+
+	const RoxCompiledShader& RoxRenderOpengl::getProgramBinaryShader() const
+	{
+		// TODO: Update this to work Dynamically not Manually
+		setShader(0);
+
+		if (applied_state.shader < 0)
+		{
+			log() << "ERROR: No active shader program to save binary.\n";
+			return -1;
+		}
+
+		ShaderObj& current_shader = shaders.get(applied_state.shader);
+
+		glProgramParameteri(current_shader.program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
+
+		GLint binary_length;
+		glGetProgramiv(current_shader.program, GL_PROGRAM_BINARY_LENGTH, &binary_length);
+
+		RoxCompiledShader shader = RoxCompiledShader(binary_length);
+
+		GLenum binary_format;
+		glGetProgramBinary(current_shader.program, binary_length, nullptr, &binary_format, shader.getData());
+		if (!shader.getData())
+		{
+			log() << "ERROR::PROGRAM::SHADER::BINARY::FAILED\n";
+			return -1;
+		}
+
+		return shader;
+	}
+
+
+
 	namespace
 	{
 		RoxMath::Matrix4 modelview, projection;

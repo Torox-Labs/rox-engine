@@ -72,6 +72,10 @@ namespace RoxRender
 		uint getMaxTargetMsaa() override;
 
 	public:
+		bool setProgramBinaryShader(RoxCompiledShader& prm_shdr) override;
+		const RoxCompiledShader& getProgramBinaryShader() const override;
+
+	public:
 		void setCamera(const RoxMath::Matrix4& modelview, const RoxMath::Matrix4& projection) override;
 		void clear(const ViewportState& s, bool color, bool depth, bool stencil) override;
 		void draw(const State& s) override;

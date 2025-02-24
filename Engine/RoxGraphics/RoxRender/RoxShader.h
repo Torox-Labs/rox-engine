@@ -20,6 +20,8 @@
 
 namespace RoxRender
 {
+	class RoxCompiledShader;
+
 	class RoxShader
 	{
 	public:
@@ -75,6 +77,9 @@ namespace RoxRender
 		void setUniform3Array(int idx, const float* f, unsigned int count) const;
 		void setUniform4Array(int idx, const float* f, unsigned int count) const;
 		void setUniform16Array(int idx, const float* f, unsigned int count) const;
+
+	public:
+		const RoxCompiledShader& getProgramBinaryShader() const;
 
 	public:
 		void release();
