@@ -15,7 +15,7 @@ target_include_directories(RoxApp
 )
 
 # ====== Link Interface Libraries ======
-target_link_libraries(RoxApp PRIVATE GLAD GLADInterface)
+target_link_libraries(RoxApp PRIVATE GLAD)
 
 # ====== Set Output Directories ======
 set_target_properties(RoxApp PROPERTIES

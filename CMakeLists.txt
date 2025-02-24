@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(rox_engine VERSION 0.1 LANGUAGES CXX)
+project(rox_engine VERSION 0.1 LANGUAGES C CXX)
 
 # ====== Set C++ Standard ======
 set(CMAKE_CXX_STANDARD 17)

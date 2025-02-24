@@ -11,7 +11,7 @@ target_include_directories(RoxRender
 )
 
 # ====== Link Interface Libraries ======
-target_link_libraries(RoxRender PRIVATE GLAD GLADInterface)
+target_link_libraries(RoxRender PRIVATE GLAD)
 
 
 # ====== Set File Language To Objective C++ ======
