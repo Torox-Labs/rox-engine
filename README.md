@@ -159,7 +159,7 @@ After building the engine, you can start creating your game project:
 
 1. **Create a New Project**
 
-   Use the provided project generator script << Not avaible yet. you will need to go to (Peer to Peer Games)[https://github.com/Torox-Labs/p2p-game-sample] >>:
+   Use the provided project generator script << Not avaible yet. you will need to go to [Peer to Peer Games](https://github.com/Torox-Labs/p2p-game-sample) >>:
 
    ```bash
    ./tools/create_project.sh MyGameProject
