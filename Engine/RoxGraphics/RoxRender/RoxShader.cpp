@@ -189,7 +189,8 @@ namespace RoxRender
 
 	const RoxCompiledShader& RoxShader::getProgramBinaryShader() const
 	{
-		return getAPIInterface().getProgramBinaryShader();
+
+		return getAPIInterface().getProgramBinaryShader(m_shdr);
 	}
 
 	void RoxShader::release()

@@ -186,7 +186,8 @@ namespace RoxRender
 
 	public:
 		virtual bool setProgramBinaryShader(RoxCompiledShader& prm_shdr) { return false; }
-		virtual const RoxCompiledShader& getProgramBinaryShader() const = 0;
+		virtual const RoxCompiledShader& getProgramBinaryShader(int idx) const = 0;
+		virtual void clearShaderBinaryCach(int idx){};
 
 	public:
 		virtual void setCamera(const RoxMath::Matrix4& model_view, const RoxMath::Matrix4& projection)

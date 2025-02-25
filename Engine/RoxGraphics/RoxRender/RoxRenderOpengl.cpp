@@ -18,6 +18,9 @@
 #include "RoxRenderOpenglExt.h"
 #endif
 
+// TODO: Delete on production
+#include <iostream>
+
 #include "RoxMemory/RoxTmpBuffers.h"
 #include "RoxRenderObjects.h"
 #include "RoxBitmap.h"
@@ -80,6 +83,8 @@ namespace RoxRender
 			}
 
 			GLuint program, objects[RoxShader::PROGRAM_TYPES_COUNT];
+			RoxCompiledShader binaryShader;
+			bool binaryCached = false;
 
 			struct uniform : public RoxShader::Uniform
 			{
@@ -103,6 +108,9 @@ namespace RoxRender
 
 				if (program)
 					glDeleteShader(program);
+
+				binaryShader = RoxCompiledShader();
+				binaryCached = false;
 
 				*this = ShaderObj();
 			}
@@ -189,7 +197,9 @@ namespace RoxRender
 	int RoxRenderOpengl::createShader(const char* vertex, const char* fragment)
 	{
 		const int idx = shaders.add();
+		std::cout << "============= Compile Shader" << " | " << idx << "\n";
 		ShaderObj& shdr = shaders.get(idx);
+
 
 		shdr.program = glCreateProgram();
 		if (!shdr.program)
@@ -198,6 +208,8 @@ namespace RoxRender
 			shaders.remove(idx);
 			return -1;
 		}
+
+		glProgramParameteri(shdr.program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
 
 		std::vector<std::string> ft_vars;
 
@@ -1556,6 +1568,8 @@ namespace RoxRender
 
 	bool RoxRenderOpengl::setProgramBinaryShader(RoxCompiledShader& prm_shdr)
 	{
+		// TODO: Refactor the code
+
 		if (applied_state.shader < 0)
 		{
 			log() << "ERROR: No active shader program to load binary.\n";
@@ -1602,38 +1616,87 @@ namespace RoxRender
 		return true;
 	}
 
-	const RoxCompiledShader& RoxRenderOpengl::getProgramBinaryShader() const
+	// This may be updated to `Output Parameter` Depend on performance Or Even deleted.
+	const RoxCompiledShader& RoxRenderOpengl::getProgramBinaryShader(int idx) const
 	{
+		// TODO: Refactor the code
 		// TODO: Update this to work Dynamically not Manually
-		setShader(0);
+		static RoxCompiledShader empty;
+
+		if (idx < 0 || idx >= shaders.getCount())
+		{
+			log() << "ERROR: Invalid shader index\n";
+			return empty;
+		}
+
+		std::cout << "Index: " << idx << "\n"; // Delete
+		setShader(idx);
 
 		if (applied_state.shader < 0)
 		{
 			log() << "ERROR: No active shader program to save binary.\n";
-			return -1;
+			return empty;
 		}
 
 		ShaderObj& current_shader = shaders.get(applied_state.shader);
 
-		glProgramParameteri(current_shader.program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
+		if (current_shader.binaryCached)
+			return current_shader.binaryShader;
+
+		GLint linked;
+		glGetProgramiv(current_shader.program, GL_LINK_STATUS, &linked);
+		if (!linked)
+		{
+			log() << "ERROR: Shader program not linked.\n";
+			return empty;
+		}
 
 		GLint binary_length;
 		glGetProgramiv(current_shader.program, GL_PROGRAM_BINARY_LENGTH, &binary_length);
-
-		RoxCompiledShader shader = RoxCompiledShader(binary_length);
-
-		GLenum binary_format;
-		glGetProgramBinary(current_shader.program, binary_length, nullptr, &binary_format, shader.getData());
-		if (!shader.getData())
+		if (binary_length <= 0)
 		{
-			log() << "ERROR::PROGRAM::SHADER::BINARY::FAILED\n";
-			return -1;
+			log() << "ERROR: No binary data available.\n";
+			return empty;
 		}
 
-		return shader;
+		size_t total_size = binary_length + sizeof(GLenum);
+		current_shader.binaryShader = RoxCompiledShader(total_size);
+
+		GLenum binary_format;
+		glGetProgramBinary(
+			current_shader.program, 
+			binary_length, 
+			nullptr, 
+			&binary_format, 
+			static_cast<char*>(current_shader.binaryShader.getData()) + sizeof(GLenum)
+		);
+		if (!current_shader.binaryShader.getData())
+		{
+			log() << "ERROR::PROGRAM::SHADER::BINARY::FAILED\n";
+			return empty;
+		}
+
+		// Store the binary format at the start of the binary data
+		//memcpy(current_shader.binaryShader.getData(), &binary_format, sizeof(GLenum));
+		*reinterpret_cast<GLenum*>(current_shader.binaryShader.getData()) = binary_format;
+
+		current_shader.binaryCached = true;
+
+		return current_shader.binaryShader;
 	}
 
+	void RoxRenderOpengl::clearProgramShaderBinaryCache(int idx)
+	{
+		if (idx < 0 && idx >= shaders.getCount())
+		{
+			log() << "ERROR: Invalid shader index\n";
+			return;
+		}
 
+		ShaderObj& shdr = shaders.get(idx);
+		shdr.binaryShader = RoxCompiledShader();
+		shdr.binaryCached = false;
+	}
 
 	namespace
 	{

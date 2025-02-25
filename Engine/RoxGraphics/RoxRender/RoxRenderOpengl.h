@@ -73,8 +73,8 @@ namespace RoxRender
 
 	public:
 		bool setProgramBinaryShader(RoxCompiledShader& prm_shdr) override;
-		const RoxCompiledShader& getProgramBinaryShader() const override;
-
+		const RoxCompiledShader& getProgramBinaryShader(int idx) const override;
+		void clearProgramShaderBinaryCache(int idx) override;
 	public:
 		void setCamera(const RoxMath::Matrix4& modelview, const RoxMath::Matrix4& projection) override;
 		void clear(const ViewportState& s, bool color, bool depth, bool stencil) override;
