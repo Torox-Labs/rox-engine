@@ -30,7 +30,7 @@ namespace RoxSystem
 			return false;
 
 		RoxResources::IRoxResourceData* data =
-			RoxResources::getResourcesProvider().access((m_load_path + crc(text) + ".nsc").c_str());
+			RoxResources::getResourcesProvider().access((m_load_path + crc(text) + ".rsc").c_str());
 
 		if (!data)
 			return false;
@@ -51,7 +51,7 @@ namespace RoxSystem
 		if (!data)
 			return false;
 
-		FILE* f = fopen((m_save_path + crc(text) + ".nsc").c_str(), "wb");
+		FILE* f = fopen((m_save_path + crc(text) + ".rsc").c_str(), "wb");
 		if (!f)
 			return false;
 

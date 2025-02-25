@@ -83,8 +83,6 @@ namespace RoxRender
 			}
 
 			GLuint program, objects[RoxShader::PROGRAM_TYPES_COUNT];
-			RoxCompiledShader binaryShader;
-			bool binaryCached = false;
 
 			struct uniform : public RoxShader::Uniform
 			{
@@ -108,9 +106,6 @@ namespace RoxRender
 
 				if (program)
 					glDeleteShader(program);
-
-				binaryShader = RoxCompiledShader();
-				binaryCached = false;
 
 				*this = ShaderObj();
 			}
@@ -1616,17 +1611,15 @@ namespace RoxRender
 		return true;
 	}
 
-	// This may be updated to `Output Parameter` Depend on performance Or Even deleted.
-	const RoxCompiledShader& RoxRenderOpengl::getProgramBinaryShader(int idx) const
+	bool RoxRenderOpengl::getProgramBinaryShader(int idx, RoxCompiledShader& compiled_shader)
 	{
 		// TODO: Refactor the code
 		// TODO: Update this to work Dynamically not Manually
-		static RoxCompiledShader empty;
 
 		if (idx < 0 || idx >= shaders.getCount())
 		{
 			log() << "ERROR: Invalid shader index\n";
-			return empty;
+			return false;
 		}
 
 		std::cout << "Index: " << idx << "\n"; // Delete
@@ -1635,20 +1628,17 @@ namespace RoxRender
 		if (applied_state.shader < 0)
 		{
 			log() << "ERROR: No active shader program to save binary.\n";
-			return empty;
+			return false;
 		}
 
 		ShaderObj& current_shader = shaders.get(applied_state.shader);
-
-		if (current_shader.binaryCached)
-			return current_shader.binaryShader;
 
 		GLint linked;
 		glGetProgramiv(current_shader.program, GL_LINK_STATUS, &linked);
 		if (!linked)
 		{
 			log() << "ERROR: Shader program not linked.\n";
-			return empty;
+			return false;
 		}
 
 		GLint binary_length;
@@ -1656,11 +1646,11 @@ namespace RoxRender
 		if (binary_length <= 0)
 		{
 			log() << "ERROR: No binary data available.\n";
-			return empty;
+			return false;
 		}
 
 		size_t total_size = binary_length + sizeof(GLenum);
-		current_shader.binaryShader = RoxCompiledShader(total_size);
+		compiled_shader = RoxCompiledShader(total_size);
 
 		GLenum binary_format;
 		glGetProgramBinary(
@@ -1668,34 +1658,19 @@ namespace RoxRender
 			binary_length, 
 			nullptr, 
 			&binary_format, 
-			static_cast<char*>(current_shader.binaryShader.getData()) + sizeof(GLenum)
+			static_cast<char*>(compiled_shader.getData()) + sizeof(GLenum)
 		);
-		if (!current_shader.binaryShader.getData())
+		if (!compiled_shader.getData())
 		{
 			log() << "ERROR::PROGRAM::SHADER::BINARY::FAILED\n";
-			return empty;
+			return false;
 		}
 
 		// Store the binary format at the start of the binary data
 		//memcpy(current_shader.binaryShader.getData(), &binary_format, sizeof(GLenum));
-		*reinterpret_cast<GLenum*>(current_shader.binaryShader.getData()) = binary_format;
+		*reinterpret_cast<GLenum*>(compiled_shader.getData()) = binary_format;
 
-		current_shader.binaryCached = true;
-
-		return current_shader.binaryShader;
-	}
-
-	void RoxRenderOpengl::clearProgramShaderBinaryCache(int idx)
-	{
-		if (idx < 0 && idx >= shaders.getCount())
-		{
-			log() << "ERROR: Invalid shader index\n";
-			return;
-		}
-
-		ShaderObj& shdr = shaders.get(idx);
-		shdr.binaryShader = RoxCompiledShader();
-		shdr.binaryCached = false;
+		return true;
 	}
 
 	namespace
