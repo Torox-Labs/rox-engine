@@ -187,9 +187,20 @@ namespace RoxRender
 		return idx >= 0 && idx < (int)m_uniforms.size() ? m_uniforms[idx].array_size : 0;
 	}
 
-	bool RoxShader::setProgramBinaryShader(RoxCompiledShader& compiled_shader) const
+	bool RoxShader::setProgramBinaryShader(RoxCompiledShader& compiled_shader)
 	{
-		return getAPIInterface().setProgramBinaryShader(compiled_shader);
+		release();
+		m_shdr = getAPIInterface().setProgramBinaryShader(compiled_shader);
+		if (m_shdr < 0)
+				return false;
+
+		size_t uniform_size = getAPIInterface().getUniformsCount(m_shdr);
+
+		m_uniforms.resize(uniform_size);
+		for (unsigned int i = 0; i < (int)m_uniforms.size(); i++)
+			m_uniforms[i] = getAPIInterface().getUniform(m_shdr, i);
+
+		return true;
 	}
 
 	bool RoxShader::getProgramBinaryShader(RoxCompiledShader& compiled_shader) const

@@ -29,7 +29,7 @@ namespace RoxRender
 
 	public:
 		int createShader(const char* vertex, const char* fragment) override;
-		uint getUniformsCount(int shader) override;
+		uint getUniformsCount(int shdr) override;
 		RoxShader::Uniform getUniform(int shader, int idx) override;
 		void removeShader(int shader) override;
 
@@ -72,7 +72,7 @@ namespace RoxRender
 		uint getMaxTargetMsaa() override;
 
 	public:
-		bool setProgramBinaryShader(RoxCompiledShader& prm_shdr) override;
+		int setProgramBinaryShader(RoxCompiledShader& prm_shdr) override;
 		bool getProgramBinaryShader(int idx, RoxCompiledShader& compiled_shader) override;
 	public:
 		void setCamera(const RoxMath::Matrix4& modelview, const RoxMath::Matrix4& projection) override;

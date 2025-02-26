@@ -185,7 +185,7 @@ namespace RoxRender
 		virtual uint getMaxTargetMsaa() { return 0; }
 
 	public:
-		virtual bool setProgramBinaryShader(RoxCompiledShader& prm_shdr) { return false; }
+		virtual int setProgramBinaryShader(RoxCompiledShader& prm_shdr) { return 0; }
 		virtual bool getProgramBinaryShader(int idx, RoxCompiledShader& compiled_shader) { return false; };
 
 	public:

@@ -192,7 +192,7 @@ namespace RoxRender
 	int RoxRenderOpengl::createShader(const char* vertex, const char* fragment)
 	{
 		const int idx = shaders.add();
-		std::cout << "============= Compile Shader" << " | " << idx << "\n";
+		std::cout << "============= Compile Shader" << " | " << idx << "\n"; // Delete
 		ShaderObj& shdr = shaders.get(idx);
 
 
@@ -211,7 +211,7 @@ namespace RoxRender
 		for (int i = 0; i < 2; ++i)
 		{
 			RoxShaderCodeParser parser(i == 0 ? vertex : fragment);
-			//log() << "Shader " << (i == 0 ? "vertex" : "fragment") << " :" << parser.getCode() << "\n";
+			//log() << "Shader " << (i == 0 ? "vertex" : "fragment") << " :" << parser.getCode() << "\n"; // Delete
 			RoxShader::PROGRAM_TYPE type = i == 0 ? RoxShader::VERTEX : RoxShader::PIXEL;
 
 			if (i == 0 && strstr(vertex, "gl_Position") == 0)
@@ -380,9 +380,9 @@ namespace RoxRender
 		return idx;
 	}
 
-	RoxRenderOpengl::uint RoxRenderOpengl::getUniformsCount(int shader)
+	RoxRenderOpengl::uint RoxRenderOpengl::getUniformsCount(int shdr)
 	{
-		return (int)shaders.get(shader).uniforms.size();
+		return (int)shaders.get(shdr).uniforms.size();
 	}
 
 	RoxShader::Uniform RoxRenderOpengl::getUniform(int shader, int idx) { return shaders.get(shader).uniforms[idx]; }
@@ -1561,17 +1561,18 @@ namespace RoxRender
 #endif
 	}
 
-	bool RoxRenderOpengl::setProgramBinaryShader(RoxCompiledShader& prm_shdr)
+	int RoxRenderOpengl::setProgramBinaryShader(RoxCompiledShader& prm_shdr)
 	{
 		// TODO: Refactor the code
+		const int idx = shaders.add();
+		ShaderObj& shdr = shaders.get(idx);
 
-		if (applied_state.shader < 0)
+		shdr.program = glCreateProgram();
+		if (!shdr.program)
 		{
-			log() << "ERROR: No active shader program to load binary.\n";
-			return false;
+			log() << "ERROR: Unable to create shader program object.\n";
+			return -1;
 		}
-
-		ShaderObj& current_shader = shaders.get(applied_state.shader);
 
 		const void* binary_data = prm_shdr.getData();
 		size_t binary_size = prm_shdr.getSize();
@@ -1579,36 +1580,56 @@ namespace RoxRender
 		if (!binary_data || binary_size < sizeof(GLenum))
 		{
 			log() << "ERROR: Invalid shader binary data format or size.\n";
-			return false;
+			return -1;
 		}
 
 		GLenum binary_format = *reinterpret_cast<const GLenum*>(binary_data);
 		const void* program_binary = reinterpret_cast<const char*>(binary_data) + sizeof(GLenum);
 		GLint program_binary_size = static_cast<GLint>(binary_size - sizeof(GLenum));
 
-		glProgramBinary(current_shader.program, binary_format, program_binary, program_binary_size);
+		// Load Binary to Opengl
+		glProgramBinary(shdr.program, binary_format, program_binary, program_binary_size);
 
-		GLint success = 1;
-		glGetProgramiv(current_shader.program, GL_LINK_STATUS, &success);
+		glValidateProgram(shdr.program);
+		GLint validate_status;
+		glGetProgramiv(shdr.program, GL_VALIDATE_STATUS, &validate_status);
+		if (!validate_status)
+		{
+			GLint log_length = 0;
+			glGetProgramiv(shdr.program, GL_INFO_LOG_LENGTH, &log_length);
+			if (log_length > 0)
+			{
+				std::string log_info(log_length, 0);
+				glGetProgramInfoLog(shdr.program, log_length, nullptr, &log_info[0]);
+				log() << "ERROR: program validation failed: " << log_info << "\n";
+			}
+
+			return -1;
+		}
+
+		GLint success;
+		glGetProgramiv(shdr.program, GL_LINK_STATUS, &success);
 		if (!success)
 		{
 			log() << "Can't link program shader binary";
 
 			GLint log_length = 0;
-			glGetProgramiv(current_shader.program, GL_INFO_LOG_LENGTH, &log_length);
+			glGetProgramiv(shdr.program, GL_INFO_LOG_LENGTH, &log_length);
 			if (log_length> 0)
 			{
 				std::string log_info(log_length, 0);
-				glGetProgramInfoLog(current_shader.program, log_length, nullptr, &log_info[0]);
+				glGetProgramInfoLog(shdr.program, log_length, nullptr, &log_info[0]);
 				log() << "ERROR: " << log_info.c_str() << "\n";
 			}
 
-			return false;
+			return -1;
 		}
 
+
+
 		//TODO: Delete on production
-		log() << "Shader binary loaded successfully.\n";
-		return true;
+		log() << "Shader binary loaded successfully.\n"; // Delete
+		return idx;
 	}
 
 	bool RoxRenderOpengl::getProgramBinaryShader(int idx, RoxCompiledShader& compiled_shader)
