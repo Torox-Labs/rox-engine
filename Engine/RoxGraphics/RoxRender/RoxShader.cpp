@@ -20,8 +20,11 @@
 #include "RoxRender.h"
 #include "IRoxRenderApi.h"
 
+
 namespace RoxRender
 {
+	bool RoxShader::is_binary_shader_caching_enabled = false;
+	
 	bool RoxShader::addProgram(PROGRAM_TYPE type, const char* code)
 	{
 		if (type >= PROGRAM_TYPES_COUNT)
@@ -186,6 +189,15 @@ namespace RoxRender
 	{
 		return idx >= 0 && idx < (int)m_uniforms.size() ? m_uniforms[idx].array_size : 0;
 	}
+
+	void RoxShader::setBinaryShaderCachingEnabled(bool enabled) {
+		is_binary_shader_caching_enabled = enabled;
+	}
+
+	bool RoxShader::isBinaryShaderCachingEnabled() {
+		return is_binary_shader_caching_enabled;
+	}
+
 
 	bool RoxShader::setProgramBinaryShader(const char* vertex_code, const char* fragment_code, RoxCompiledShader& compiled_shader)
 	{

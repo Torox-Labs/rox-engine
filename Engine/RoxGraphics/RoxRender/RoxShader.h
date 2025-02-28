@@ -79,6 +79,10 @@ namespace RoxRender
 		void setUniform16Array(int idx, const float* f, unsigned int count) const;
 
 	public:
+		static void setBinaryShaderCachingEnabled(bool enabled);
+		static bool isBinaryShaderCachingEnabled();
+
+	public:
 		bool setProgramBinaryShader(const char* vertex_code, const char* fragment_code, RoxCompiledShader& compiled_shader);
 		bool getProgramBinaryShader(RoxCompiledShader& compiled_shader) const;
 
@@ -95,6 +99,7 @@ namespace RoxRender
 		int m_buf;
 		std::vector<Uniform> m_uniforms;
 		std::string m_code[PROGRAM_TYPES_COUNT];
+		static bool is_binary_shader_caching_enabled;
 	};
 
 	class RoxCompiledShader

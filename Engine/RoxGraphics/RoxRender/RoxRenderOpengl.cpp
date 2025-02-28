@@ -199,7 +199,8 @@ namespace RoxRender
 			return -1;
 		}
 
-		glProgramParameteri(shdr.program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
+		if(RoxShader::isBinaryShaderCachingEnabled())
+			glProgramParameteri(shdr.program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
 
 		std::vector<std::string> fragment_vars;
 
