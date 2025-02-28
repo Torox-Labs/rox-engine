@@ -26,7 +26,6 @@ namespace RoxApp
     {
     public:
         RoxWindowsAdapter();
-        ~RoxWindowsAdapter();
 
         static RoxWindowsAdapter& getInstance();
 

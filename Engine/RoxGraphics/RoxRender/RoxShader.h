@@ -79,7 +79,7 @@ namespace RoxRender
 		void setUniform16Array(int idx, const float* f, unsigned int count) const;
 
 	public:
-		bool setProgramBinaryShader(RoxCompiledShader& compiled_shader);
+		bool setProgramBinaryShader(const char* vertex_code, const char* fragment_code, RoxCompiledShader& compiled_shader);
 		bool getProgramBinaryShader(RoxCompiledShader& compiled_shader) const;
 
 	public:

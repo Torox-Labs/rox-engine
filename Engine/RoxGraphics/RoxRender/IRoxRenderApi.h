@@ -87,7 +87,7 @@ namespace RoxRender
 		};
 
 	public:
-		virtual int createShader(const char* vertex, const char* fragment) { return -1; }
+		virtual int createShader(const char* vertex_code, const char* pixel_code) { return -1; }
 		virtual uint getUniformsCount(int shader) { return 0; }
 		virtual RoxShader::Uniform getUniform(int shader, int idx) { return RoxRender::RoxShader::Uniform(); }
 
@@ -185,8 +185,8 @@ namespace RoxRender
 		virtual uint getMaxTargetMsaa() { return 0; }
 
 	public:
-		virtual int setProgramBinaryShader(RoxCompiledShader& prm_shdr) { return 0; }
-		virtual bool getProgramBinaryShader(int idx, RoxCompiledShader& compiled_shader) { return false; };
+		virtual int setProgramBinaryShader(const char* vertex_code, const char* pixel_code, RoxCompiledShader& cmp_shdr) { return -1; }
+		virtual bool getProgramBinaryShader(int idx, RoxCompiledShader& cmp_shdr) { return false; }
 
 	public:
 		virtual void setCamera(const RoxMath::Matrix4& model_view, const RoxMath::Matrix4& projection)

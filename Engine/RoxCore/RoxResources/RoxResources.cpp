@@ -36,7 +36,6 @@ namespace RoxResources
         }
     }
 
-
     void setLog(RoxLogger::RoxLoggerBase* l) { resources_log = l; }
 
     RoxLogger::RoxLoggerBase& log()

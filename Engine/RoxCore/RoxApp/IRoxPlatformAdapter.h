@@ -31,6 +31,6 @@ namespace RoxApp
         virtual void setMousePos(int x, int y) = 0;
         virtual void finish(RoxApp& app) = 0;
 
-        virtual ~IRoxPlatformAdapter() = default;
+        //virtual ~IRoxPlatformAdapter() = default;
     };
 }

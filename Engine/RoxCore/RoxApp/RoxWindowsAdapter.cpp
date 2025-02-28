@@ -84,11 +84,6 @@ namespace RoxApp
 	{
 	}
 
-	RoxWindowsAdapter::~RoxWindowsAdapter()
-	{
-		// Cleanup resources if necessary
-	}
-
 	RoxWindowsAdapter& RoxWindowsAdapter::getInstance()
 	{
 		static RoxWindowsAdapter instance;

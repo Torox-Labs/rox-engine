@@ -18,9 +18,6 @@
 #include "RoxRenderOpenglExt.h"
 #endif
 
-// TODO: Delete on production
-#include <iostream>
-
 #include "RoxMemory/RoxTmpBuffers.h"
 #include "RoxRenderObjects.h"
 #include "RoxBitmap.h"
@@ -189,12 +186,10 @@ namespace RoxRender
 
 	}
 
-	int RoxRenderOpengl::createShader(const char* vertex, const char* fragment)
+	int RoxRenderOpengl::createShader(const char* vertex_code, const char* fragment_code)
 	{
 		const int idx = shaders.add();
-		std::cout << "============= Compile Shader" << " | " << idx << "\n"; // Delete
 		ShaderObj& shdr = shaders.get(idx);
-
 
 		shdr.program = glCreateProgram();
 		if (!shdr.program)
@@ -206,18 +201,17 @@ namespace RoxRender
 
 		glProgramParameteri(shdr.program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
 
-		std::vector<std::string> ft_vars;
+		std::vector<std::string> fragment_vars;
 
 		for (int i = 0; i < 2; ++i)
 		{
-			RoxShaderCodeParser parser(i == 0 ? vertex : fragment);
-			//log() << "Shader " << (i == 0 ? "vertex" : "fragment") << " :" << parser.getCode() << "\n"; // Delete
+			RoxShaderCodeParser parser(i == 0 ? vertex_code : fragment_code);
 			RoxShader::PROGRAM_TYPE type = i == 0 ? RoxShader::VERTEX : RoxShader::PIXEL;
 
-			if (i == 0 && strstr(vertex, "gl_Position") == 0)
+			if (i == 0 && strstr(vertex_code, "gl_Position") == 0)
 			{
 				for (int i = 0; i < parser.getOutCount(); ++i)
-					ft_vars.push_back(parser.getOut(i).name);
+					fragment_vars.push_back(parser.getOut(i).name);
 			}
 
 			if (!parser.convertToGlsl3())
@@ -227,9 +221,6 @@ namespace RoxRender
 				shaders.remove(idx);
 				return -1;
 			}
-
-			//log() << "Shader: " << parser.getCode() << "\n";
-			//return 0;
 
 			GLuint object = compileShader(type, parser.getCode());
 			if (!object)
@@ -242,21 +233,19 @@ namespace RoxRender
 			shdr.objects[type] = object;
 
 			if (i == 0)
-			{
 				for (int i = 0; i < parser.getAttributesCount(); ++i)
 				{
-					const RoxShaderCodeParser::Variable a = parser.getAttribute(i);
-					if (a.name == "_rox_Vertex")
-						glBindAttribLocation(shdr.program, VERTEX_ATTRIBUTE, a.name.c_str());
-					else if (a.name == "_rox_Normal")
-						glBindAttribLocation(shdr.program, NORMAL_ATTRIBUTE, a.name.c_str());
-					else if (a.name == "_rox_Color")
-						glBindAttribLocation(shdr.program, COLOR_ATTRIBUTE, a.name.c_str());
-					else if (a.name.find("_rox_MultiTexCoord") == 0)
+					const RoxShaderCodeParser::Variable v = parser.getAttribute(i);
+					if (v.name == "_rox_Vertex")
+						glBindAttribLocation(shdr.program, VERTEX_ATTRIBUTE, v.name.c_str());
+					else if (v.name == "_rox_Normal")
+						glBindAttribLocation(shdr.program, NORMAL_ATTRIBUTE, v.name.c_str());
+					else if (v.name == "_rox_Color")
+						glBindAttribLocation(shdr.program, COLOR_ATTRIBUTE, v.name.c_str());
+					else if (v.name.find("_rox_MultiTexCoord") == 0)
 						glBindAttribLocation(
-							shdr.program, TC0_ATTRIBUTE + a.idx, a.name.c_str());
+							shdr.program, TC0_ATTRIBUTE + v.idx, v.name.c_str());
 				}
-			}
 
 			for (int j = 0; j < parser.getUniformsCount(); ++j)
 			{
@@ -266,6 +255,7 @@ namespace RoxRender
 				to.type = (RoxShader::UNIFORM_TYPE)from.type;
 				to.array_size = from.array_size;
 
+				// Check Predefined Uniforms
 				if (to.type == RoxShader::UNIFORM_MAT4)
 				{
 					if (to.name == "_rox_ModelViewProjectionMatrix")
@@ -298,11 +288,11 @@ namespace RoxRender
 			}
 		}
 
-		if (!ft_vars.empty() && isTransformFeedbackSupported())
+		if (!fragment_vars.empty() && isTransformFeedbackSupported())
 		{
 			std::vector<const GLchar*> vars;
-			for (int i = 0; i < (int)ft_vars.size(); ++i)
-				vars.push_back(ft_vars[i].c_str());
+			for (int i = 0; i < (int)fragment_vars.size(); ++i)
+				vars.push_back(fragment_vars[i].c_str());
 			glTransformFeedbackVaryings(shdr.program, (GLsizei)vars.size(), vars.data(),GL_INTERLEAVED_ATTRIBS);
 		}
 
@@ -339,13 +329,12 @@ namespace RoxRender
 			if (handler >= 0)
 				glUniform1i(handler, (int)layer);
 			else
-				log() << "Unable to set shader sampler \'" << u.name.c_str() << "\': probably not found\n";
+				log() << "ERROR: Unable to set shader sampler \'" << u.name.c_str() << "\': probably not found\n";
 
 			++layer;
 		}
 
 		// TODO: Unbind the shader setShader(-1); before bind it for ANDROID
-
 #if defined __ANDROID__ //some android and desktop vendors ignore the standard
 #endif
 
@@ -1561,9 +1550,8 @@ namespace RoxRender
 #endif
 	}
 
-	int RoxRenderOpengl::setProgramBinaryShader(RoxCompiledShader& prm_shdr)
+	int RoxRenderOpengl::setProgramBinaryShader(const char* vertex_code, const char* fragment_code, RoxCompiledShader& cmp_shdr)
 	{
-		// TODO: Refactor the code
 		const int idx = shaders.add();
 		ShaderObj& shdr = shaders.get(idx);
 
@@ -1574,8 +1562,8 @@ namespace RoxRender
 			return -1;
 		}
 
-		const void* binary_data = prm_shdr.getData();
-		size_t binary_size = prm_shdr.getSize();
+		const void* binary_data = cmp_shdr.getData();
+		size_t binary_size = cmp_shdr.getSize();
 
 		if (!binary_data || binary_size < sizeof(GLenum))
 		{
@@ -1611,7 +1599,7 @@ namespace RoxRender
 		glGetProgramiv(shdr.program, GL_LINK_STATUS, &success);
 		if (!success)
 		{
-			log() << "Can't link program shader binary";
+			log() << "ERROR: Can't link program shader binary";
 
 			GLint log_length = 0;
 			glGetProgramiv(shdr.program, GL_INFO_LOG_LENGTH, &log_length);
@@ -1625,25 +1613,118 @@ namespace RoxRender
 			return -1;
 		}
 
+		// Set Uniforms
+		for (int i = 0; i < 2; i++)
+		{
+			RoxShaderCodeParser parser(i == 0 ? vertex_code : fragment_code);
+			RoxShader::PROGRAM_TYPE type = i == 0 ? RoxShader::VERTEX : RoxShader::PIXEL;
 
+			if (!parser.convertToGlsl3())
+			{
+				log() << "Unable to add shader program: cannot convert shader code to glsl3\n";
+				log() << parser.getError() << "\n";
+				shaders.remove(idx);
+				return -1;
+			}
 
-		//TODO: Delete on production
-		log() << "Shader binary loaded successfully.\n"; // Delete
+			// Bind Uniforms
+			for (int j = 0; j < parser.getUniformsCount(); j++)
+			{
+				const RoxShaderCodeParser::Variable from = parser.getUniform(j);
+				ShaderObj::uniform to;
+				to.name = from.name;
+				to.type = (RoxShader::UNIFORM_TYPE)from.type;
+				to.array_size = from.array_size;
+
+				// Check Predefined Uniforms
+				if (to.type == RoxShader::UNIFORM_MAT4)
+				{
+					if (to.name == "_rox_ModelViewProjectionMatrix")
+					{
+						shdr.mat_mvp = 1;
+						continue;
+					}
+					if (to.name == "_rox_ModelViewMatrix")
+					{
+						shdr.mat_mv = 1;
+						continue;
+					}
+					if (to.name == "_rox_ProjectionMatrix")
+					{
+						shdr.mat_p = 1;
+						continue;
+					}
+				}
+
+				// Check if the Unifom is already in the list
+				int idx = -1;
+				for (int k = 0; k < (int)shdr.uniforms.size(); ++k)
+					if (shdr.uniforms[k].name == from.name)
+					{
+						idx = k;
+						break;
+					}
+
+				if (idx < 0) shdr.uniforms.push_back(to);
+			}
+			
+			setShader(idx);
+
+			// Bind Shader Sampler Uniforms
+			for (size_t i = 0, layer = 0; i < shdr.uniforms.size(); ++i) {
+				const ShaderObj::uniform& u = shdr.uniforms[i];
+				if (u.type != RoxShader::UNIFORM_SAMPLER2D || u.type != RoxShader::UNIFORM_SAMPLER_CUBE)
+					continue;
+
+				int handler = glGetUniformLocation(shdr.program, u.name.c_str());
+				if (handler >= 0)
+					glUniform1i(handler, (int)layer);
+				else
+					log() << "ERROR: Unable to set shader sampler \'" << u.name.c_str() << "\': probably not found\n";
+				
+				layer++;
+			}
+
+			if (shdr.mat_mvp > 0)
+				shdr.mat_mvp = glGetUniformLocation(shdr.program, "_rox_ModelViewProjectionMatrix");
+			else if (shdr.mat_mv > 0)
+				shdr.mat_mv = glGetUniformLocation(shdr.program, "_rox_ModelViewMatrix");
+			else if (shdr.mat_p > 0)
+				shdr.mat_p = glGetUniformLocation(shdr.program, "_rox_ProjectionMatrix");
+
+			for (int i = 0; i < (int)shdr.uniforms.size(); i++)
+				shdr.uniforms[i].handler = glGetUniformLocation(shdr.program, shdr.uniforms[i].name.c_str());
+
+			// Cache Uniforms 
+			// "Holds the last value we sent to the shader for each non-sampler uniform"
+			int cache_size = 0;
+			for (int i = 0; i < (int)shdr.uniforms.size(); i++)
+			{
+				ShaderObj::uniform& u = shdr.uniforms[i];
+				if (u.type == RoxShader::UNIFORM_SAMPLER2D || u.type == RoxShader::UNIFORM_SAMPLER_CUBE)
+					continue;
+				u.cache_idx = cache_size;
+				cache_size += u.array_size * (u.type == RoxShader::UNIFORM_MAT4 ? 16 : 4);
+
+				if (u.handler < 0)
+					u.type = RoxShader::UNIFORM_NOT_FOUND;
+			}
+			shdr.uniform_cache.resize(cache_size);
+
+			setShader(-1);
+		}
+
 		return idx;
 	}
 
-	bool RoxRenderOpengl::getProgramBinaryShader(int idx, RoxCompiledShader& compiled_shader)
+	bool RoxRenderOpengl::getProgramBinaryShader(int idx, RoxCompiledShader& cmp_shdr)
 	{
-		// TODO: Refactor the code
-		// TODO: Update this to work Dynamically not Manually
-
 		if (idx < 0 || idx >= shaders.getCount())
 		{
 			log() << "ERROR: Invalid shader index\n";
 			return false;
 		}
 
-		std::cout << "Index: " << idx << "\n"; // Delete
 		setShader(idx);
 
 		if (applied_state.shader < 0)
@@ -1671,7 +1752,7 @@ namespace RoxRender
 		}
 
 		size_t total_size = binary_length + sizeof(GLenum);
-		compiled_shader = RoxCompiledShader(total_size);
+		cmp_shdr = RoxCompiledShader(total_size);
 
 		GLenum binary_format;
 		glGetProgramBinary(
@@ -1679,9 +1760,9 @@ namespace RoxRender
 			binary_length, 
 			nullptr, 
 			&binary_format, 
-			static_cast<char*>(compiled_shader.getData()) + sizeof(GLenum)
+			static_cast<char*>(cmp_shdr.getData()) + sizeof(GLenum)
 		);
-		if (!compiled_shader.getData())
+		if (!cmp_shdr.getData())
 		{
 			log() << "ERROR::PROGRAM::SHADER::BINARY::FAILED\n";
 			return false;
@@ -1689,7 +1770,7 @@ namespace RoxRender
 
 		// Store the binary format at the start of the binary data
 		//memcpy(current_shader.binaryShader.getData(), &binary_format, sizeof(GLenum));
-		*reinterpret_cast<GLenum*>(compiled_shader.getData()) = binary_format;
+		*reinterpret_cast<GLenum*>(cmp_shdr.getData()) = binary_format;
 
 		return true;
 	}
