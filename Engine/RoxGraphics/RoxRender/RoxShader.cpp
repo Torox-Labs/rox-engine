@@ -205,13 +205,6 @@ namespace RoxRender
 		m_shdr = getAPIInterface().setProgramBinaryShader(vertex_code, fragment_code, compiled_shader);
 		if (m_shdr < 0)
 				return false;
-
-		/*size_t uniform_size = getAPIInterface().getUniformsCount(m_shdr);
-
-		m_uniforms.resize(uniform_size);
-		for (unsigned int i = 0; i < (int)m_uniforms.size(); i++)
-			m_uniforms[i] = getAPIInterface().getUniform(m_shdr, i);*/
-
 		return true;
 	}
 

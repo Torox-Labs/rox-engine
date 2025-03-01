@@ -27,7 +27,6 @@
 namespace RoxRender
 {
 	// TODO: Include VAO to be a default functionality
-#define USE_VAO
 
 	bool RoxRenderOpengl::isAvailable() const
 	{
@@ -469,10 +468,8 @@ namespace RoxRender
 		{
 			unsigned int id;
 
-#ifdef USE_VAO
 			unsigned int vertex_array_object;
 			unsigned int active_vao_ibuf;
-#endif
 			RoxVBO::Layout layout;
 			unsigned int stride;
 			unsigned int count;
@@ -481,11 +478,10 @@ namespace RoxRender
 		public:
 			void release()
 			{
-#ifdef USE_VAO
 				if (vertex_array_object)
 					glDeleteVertexArrays(1, &vertex_array_object);
 				vertex_array_object = 0;
-#endif
+
 				if (id)
 					glDeleteBuffers(1, &id);
 				id = 0;
@@ -505,7 +501,7 @@ namespace RoxRender
 			void release()
 			{
 				if (id)
-					::glDeleteBuffers(1, &id);
+					glDeleteBuffers(1, &id);
 				id = 0;
 			}
 		};
@@ -517,15 +513,13 @@ namespace RoxRender
 	{
 		const int idx = vert_bufs.add();
 		VertexBuffer& v = vert_bufs.get(idx);
-		::glGenBuffers(1, &v.id);
-		::glBindBuffer(GL_ARRAY_BUFFER, v.id);
-		::glBufferData(GL_ARRAY_BUFFER, count * stride, data, glUsage(usage));
+		glGenBuffers(1, &v.id);
+		glBindBuffer(GL_ARRAY_BUFFER, v.id);
+		glBufferData(GL_ARRAY_BUFFER, count * stride, data, glUsage(usage));
 		v.count = count;
 		v.stride = stride;
-#ifdef USE_VAO
 		v.vertex_array_object = 0;
 		v.active_vao_ibuf = 0;
-#endif
 		applied_state.vertex_buffer = -1;
 		return idx;
 	}
@@ -535,13 +529,11 @@ namespace RoxRender
 		VertexBuffer& v = vert_bufs.get(idx);
 		v.layout = layout;
 
-#ifdef USE_VAO
 		if (v.vertex_array_object > 0)
 		{
 			glDeleteVertexArrays(1, &v.vertex_array_object);
 			v.vertex_array_object = 0;
 		}
-#endif
 	}
 
 	void RoxRenderOpengl::updateVertexBuffer(int idx, const void* data)
@@ -549,19 +541,14 @@ namespace RoxRender
 		VertexBuffer& v = vert_bufs.get(idx);
 		//if(applied_state.vertex_buffer!=idx)
 		{
-#ifdef USE_VAO
 			glBindVertexArray(0);
-#endif
-			::glBindBuffer(GL_ARRAY_BUFFER, v.id);
+			glBindBuffer(GL_ARRAY_BUFFER, v.id);
 			applied_state.vertex_buffer = -1;
 		}
-		::glBufferData(GL_ARRAY_BUFFER, v.count * v.stride, 0, glUsage(v.usage)); //orphaning
-		::glBufferSubData(GL_ARRAY_BUFFER, 0, v.count * v.stride, data);
-
-#ifdef USE_VAO
+		glBufferData(GL_ARRAY_BUFFER, v.count * v.stride, 0, glUsage(v.usage)); //orphaning
+		glBufferSubData(GL_ARRAY_BUFFER, 0, v.count * v.stride, data);
 		//if(applied_state.vertex_buffer!=idx)
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-#endif
 	}
 
 	bool RoxRenderOpengl::getVertexData(int idx, void* data)
@@ -569,9 +556,7 @@ namespace RoxRender
 		const VertexBuffer& v = vert_bufs.get(idx);
 		//if(applied_state.vertex_buffer!=idx)
 		{
-#ifdef USE_VAO
 			glBindVertexArray(0);
-#endif
 			glBindBuffer(GL_ARRAY_BUFFER, v.id);
 			applied_state.vertex_buffer = -1;
 		}
@@ -592,10 +577,9 @@ namespace RoxRender
 		glGetBufferSubData(GL_ARRAY_BUFFER, 0, v.stride * v.count, data);
 #endif
 
-#ifdef USE_VAO
 		//if(applied_state.vertex_buffer!=idx)
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-#endif
+		
 		return true;
 	}
 
@@ -604,15 +588,13 @@ namespace RoxRender
 		if (active_transform_feedback == idx)
 		{
 			active_transform_feedback = 0;
-			::glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
+			glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 0);
 		}
 
 		if (applied_state.vertex_buffer == idx)
 		{
-#ifdef USE_VAO
 			glBindVertexArray(0);
-#endif
-			::glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			applied_state.vertex_buffer = -1;
 		}
 		vert_bufs.remove(idx);
@@ -624,12 +606,8 @@ namespace RoxRender
 		const int idx = ind_bufs.add();
 		IndexBuffer& i = ind_bufs.get(idx);
 
-#ifdef USE_VAO
 		glBindVertexArray(0);
 		applied_state.vertex_buffer = -1;
-#else
-    applied_state.index_buffer=-1;
-#endif
 
 		glGenBuffers(1, &i.id);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i.id);
@@ -637,10 +615,8 @@ namespace RoxRender
 		i.type = size;
 		i.count = indices_count;
 		i.usage = usage;
-
-#ifdef USE_VAO
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-#endif
+		
 		return idx;
 	}
 
@@ -648,31 +624,20 @@ namespace RoxRender
 	{
 		const IndexBuffer& i = ind_bufs.get(idx);
 
-#ifdef USE_VAO
 		glBindVertexArray(0);
 		applied_state.vertex_buffer = -1;
-#else
-    applied_state.index_buffer=-1;
-#endif
-
-		::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i.id);
-		::glBufferData(GL_ELEMENT_ARRAY_BUFFER, i.count * i.type, data, glUsage(i.usage));
-
-#ifdef USE_VAO
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i.id);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, i.count * i.type, data, glUsage(i.usage));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-#endif
 	}
 
 	bool RoxRenderOpengl::getIndexData(int idx, void* data)
 	{
 		const IndexBuffer& i = ind_bufs.get(idx);
 
-#ifdef USE_VAO
 		glBindVertexArray(0);
 		applied_state.vertex_buffer = -1;
-#else
-    applied_state.index_buffer=-1;
-#endif
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i.id);
 
@@ -694,9 +659,8 @@ namespace RoxRender
 		glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, i.type * i.count, data);
 #endif
 
-#ifdef USE_VAO
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-#endif
+	
 		return true;
 	}
 
@@ -1544,11 +1508,6 @@ namespace RoxRender
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 		}
-
-#ifndef USE_VAO
-    applied_layout=RoxVBO::Layout();
-    //ToDo: disable layout client states
-#endif
 	}
 
 	int RoxRenderOpengl::setProgramBinaryShader(const char* vertex_code, const char* fragment_code, RoxCompiledShader& cmp_shdr)
@@ -1903,7 +1862,6 @@ namespace RoxRender
 
 		if (s.vertex_buffer != applied_state.vertex_buffer)
 		{
-#ifdef USE_VAO
 			if (v.vertex_array_object > 0)
 			{
 				glBindVertexArray(v.vertex_array_object);
@@ -1915,7 +1873,6 @@ namespace RoxRender
 
 				applied_layout = RoxVBO::Layout();
 				v.active_vao_ibuf = 0;
-#endif
 				glad_glBindBuffer(GL_ARRAY_BUFFER, v.id);
 
 				glEnableVertexAttribArray(VERTEX_ATTRIBUTE);
@@ -1966,9 +1923,7 @@ namespace RoxRender
 				else if (applied_layout.color.dimension > 0)
 					glDisableVertexAttribArray(COLOR_ATTRIBUTE);
 				applied_layout = v.layout;
-#ifdef USE_VAO
 			}
-#endif
 			applied_state.vertex_buffer = s.vertex_buffer;
 		}
 
@@ -1977,19 +1932,12 @@ namespace RoxRender
 		{
 			IndexBuffer& i = ind_bufs.get(s.index_buffer);
 
-#ifdef USE_VAO
 			if (i.id != v.active_vao_ibuf)
 			{
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i.id);
 				v.active_vao_ibuf = i.id;
 			}
-#else
-        if(s.index_buffer!=applied_state.index_buffer)
-        {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,i.id);
-            applied_state.index_buffer=s.index_buffer;
-        }
-#endif
+
 			const unsigned int gl_elem_type = (i.type == RoxVBO::INDEX_4D ? GL_UNSIGNED_INT : GL_UNSIGNED_SHORT);
 #ifdef USE_INSTANCING
         if(s.instances_count>1 && glDrawElementsInstancedARB)
