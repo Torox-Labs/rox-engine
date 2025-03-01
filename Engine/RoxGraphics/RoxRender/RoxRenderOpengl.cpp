@@ -334,10 +334,6 @@ namespace RoxRender
 			++layer;
 		}
 
-		// TODO: Unbind the shader setShader(-1); before bind it for ANDROID
-#if defined __ANDROID__ //some android and desktop vendors ignore the standard
-#endif
-
 		setShader(idx);
 
 		if (shdr.mat_mvp > 0)
@@ -560,23 +556,7 @@ namespace RoxRender
 			glBindBuffer(GL_ARRAY_BUFFER, v.id);
 			applied_state.vertex_buffer = -1;
 		}
-
-#ifdef OPENGL_ES
-#ifdef __ANDROID__
-#else
-    //apple hasn't GL_READ_ONLY_OES
-    const GLvoid *buf=glMapBufferOES(GL_ARRAY_BUFFER,GL_WRITE_ONLY_OES);
-    if(!buf)
-        return false;
-
-    memcpy(data,buf,v.stride*v.count);
-    if(!glUnmapBufferOES(GL_ARRAY_BUFFER))
-        return false;
-#endif
-#else
 		glGetBufferSubData(GL_ARRAY_BUFFER, 0, v.stride * v.count, data);
-#endif
-
 		//if(applied_state.vertex_buffer!=idx)
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
@@ -640,25 +620,7 @@ namespace RoxRender
 		applied_state.vertex_buffer = -1;
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i.id);
-
-#ifdef OPENGL_ES
-#ifdef __ANDROID__
-    //ToDo
-    return false;
-#else
-    //no GL_READ_ONLY_OES on apple
-    const GLvoid *buf=glMapBufferOES(GL_ELEMENT_ARRAY_BUFFER,GL_WRITE_ONLY_OES);
-    if(!buf)
-        return false;
-
-    memcpy(data,buf,i.type*i.count);
-    if(!glUnmapBufferOES(GL_ELEMENT_ARRAY_BUFFER))
-        return false;
-#endif
-#else
 		glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, i.type * i.count, data);
-#endif
-
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	
 		return true;
@@ -745,24 +707,6 @@ namespace RoxRender
 #endif
 			case RoxTexture::GREYSCALE: source_format = gl_format = GL_LUMINANCE;
 				break;
-#ifdef OPENGL_ES
-            case RoxTexture::COLOR_R32F: source_format=GL_RED_EXT; gl_format=GL_RED_EXT; precision=GL_FLOAT; break;
-            case RoxTexture::COLOR_RGB32F: source_format=GL_RGB; gl_format=GL_RGB; precision=GL_FLOAT; break;
-            case RoxTexture::COLOR_RGBA32F: source_format=GL_RGBA; gl_format=GL_RGBA; precision=GL_FLOAT; break;
-
-            case RoxTexture::depth16: source_format=gl_format=GL_DEPTH_COMPONENT; precision=GL_UNSIGNED_SHORT; break;
-            case RoxTexture::depth32: source_format=gl_format=GL_DEPTH_COMPONENT; precision=GL_UNSIGNED_INT; break;
-
-            case RoxTexture::etc1: source_format=gl_format=GL_ETC1_RGB8_OES; break;
-            case RoxTexture::etc2: source_format=gl_format=GL_COMPRESSED_RGB8_ETC2; break;
-            case RoxTexture::etc2_a1: source_format=gl_format=GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2; break;
-            case RoxTexture::etc2_eac: source_format=gl_format=GL_COMPRESSED_RGBA8_ETC2_EAC; break;
-
-            case RoxTexture::PVR_RGB2B: source_format=gl_format=GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG; break;
-            case RoxTexture::PVR_RGB4B: source_format=gl_format=GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG; break;
-            case RoxTexture::PVR_RGBA2B: source_format=gl_format=GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG; break;
-            case RoxTexture::PVR_RGBA4B: source_format=gl_format=GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG; break;
-#else
 #ifdef OPENGL3
             case RoxTexture::COLOR_R32F: source_format=GL_R32F; gl_format=GL_RED; precision=GL_FLOAT; break;
             case RoxTexture::COLOR_RGB32F: source_format=GL_RGB32F; gl_format=GL_RGB; precision=GL_FLOAT; break;
@@ -790,7 +734,6 @@ namespace RoxRender
 			case RoxTexture::DEPTH32: source_format = GL_DEPTH_COMPONENT32;
 				gl_format = GL_DEPTH_COMPONENT;
 				break;
-#endif
 			case RoxTexture::DXT1: source_format = gl_format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 				break;
 			case RoxTexture::DXT3: source_format = gl_format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
@@ -861,9 +804,7 @@ namespace RoxRender
 			{
 				glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-#ifndef OPENGL_ES
 				glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
-#endif
 			}
 
 			const bool is_pvrtc = format == RoxTexture::PVR_RGB2B || format == RoxTexture::PVR_RGBA2B || format ==
@@ -880,10 +821,8 @@ namespace RoxRender
         }
 #endif
 
-#ifndef OPENGL_ES
 			if (mip_count > 1) //is_platform_restrictions_ignored() &&
 				glTexParameteri(t.gl_type,GL_TEXTURE_MAX_LEVEL, mip_count - 1);
-#endif
 
 #ifndef MANUAL_MIPMAP_GENERATION
 			if (t.has_mip && mip_count < 0)
@@ -953,11 +892,6 @@ namespace RoxRender
 			if (t.has_mip && mip_count < 0)
 				gl_generate_mips_post(t.gl_type);
 #endif
-
-#ifdef OPENGL_ES
-        if(t.gl_format==GL_RGB)
-            t.gl_format=GL_RGBA;
-#endif
 			return idx;
 		}
 	}
@@ -979,10 +913,6 @@ namespace RoxRender
 		const tex_obj& t = textures.get(idx);
 		set_texture(idx, 0);
 
-#ifdef __ANDROID__ //adreno 4xx fix
-    glFinish();
-#endif
-
 		if (t.has_mip && mip < 0)
 			gl_generate_mips_pre(t.gl_type);
 
@@ -992,9 +922,6 @@ namespace RoxRender
 		{
 			gl_generate_mips_post(t.gl_type);
 
-#if defined __APPLE__ && defined OPENGL_ES //ios devices don't wait for mip generation
-        glFinish();
-#endif
 		}
 	}
 
@@ -1048,24 +975,11 @@ namespace RoxRender
 		//compressed formats are not supported
 		switch (t.gl_format)
 		{
-#ifdef OPENGL_ES
-        case GL_ETC1_RGB8_OES:
-        case GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2:
-        case GL_COMPRESSED_RGBA8_ETC2_EAC:
-        case GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG:
-        case GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG:
-        case GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG:
-        case GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG:
-#endif
 		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
 		case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
 		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
 			return false;
 		}
-
-#ifdef __ANDROID__ //adreno 4xx fix
-    glFinish();
-#endif
 
 		glViewport(0, 0, x + w, y + h);
 
@@ -1173,10 +1087,6 @@ namespace RoxRender
 				if (w == width && h == height && s == samples && f == format)
 					return;
 
-#ifdef OPENGL_ES
-            if(f==GL_RGBA)
-                f=GL_RGB5_A1;
-#endif
 				glGenRenderbuffers(1, &buf);
 				glBindRenderbuffer(GL_RENDERBUFFER, buf);
 				glRenderbufferStorageMultisample(GL_RENDERBUFFER, s, f, w, h);
@@ -1241,19 +1151,7 @@ namespace RoxRender
 			glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0, gl_type, tex.tex_id, 0);
 			glBindFramebuffer(GL_FRAMEBUFFER, default_fbo_idx);
 
-#if defined OPENGL_ES && defined __APPLE__
-        if(attachment_idx!=0) //ToDo
-            return;
 
-        glBindFramebuffer(GL_READ_FRAMEBUFFER_APPLE,from);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER_APPLE,RoxFbo);
-        glResolveMultisampleFramebufferAPPLE();
-        glBindFramebuffer(GL_READ_FRAMEBUFFER_APPLE,default_fbo_idx);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER_APPLE,default_fbo_idx);
-#else
-#ifdef OPENGL_ES
-        if(glBindFramebuffer)
-#endif
 			{
 				glBindFramebuffer(GL_READ_FRAMEBUFFER, from);
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, RoxFbo);
@@ -1265,7 +1163,6 @@ namespace RoxRender
 			}
 
 			applied_state.target = -1;
-#endif
 		}
 	}
 
@@ -1376,13 +1273,6 @@ namespace RoxRender
 	{
 		static int max_ms = -1;
 
-#if defined OPENGL_ES && !defined __APPLE__
-    
-
-    if (!glBlitFramebuffer || !glReadBuffer || !glRenderbufferStorageMultisample)
-        return 1;
-#endif
-
 		if (max_ms < 0)
 			glGetIntegerv(GL_MAX_SAMPLES, &max_ms);
 
@@ -1401,7 +1291,6 @@ namespace RoxRender
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, s.target >= 0 ? fbos.get(s.target).id : default_fbo_idx);
 
-#ifndef OPENGL_ES
 			const bool no_color = s.target >= 0 && fbos.get(s.target).depth_only;
 			if (s.target >= 0 && (no_color != was_fbo_without_color || ignore_cache_vp))
 			{
@@ -1410,7 +1299,6 @@ namespace RoxRender
 				glReadBuffer(buffer);
 				was_fbo_without_color = no_color;
 			}
-#endif
 		}
 
 		if (applied_state.viewport != s.viewport || ignore_cache_vp)
@@ -1421,11 +1309,7 @@ namespace RoxRender
 
 		if (applied_state.clear_depth != s.clear_depth || ignore_cache_vp)
 		{
-#ifdef OPENGL_ES
-        glClearDepthf(s.clear_depth);
-#else
 			glClearDepth(s.clear_depth);
-#endif
 		}
 
 		if (s.scissor_enabled != applied_state.scissor_enabled || ignore_cache_vp)
@@ -2041,7 +1925,7 @@ namespace RoxRender
 				break;
 			case GL_INVALID_OPERATION: log() << "invalid operation";
 				break;
-#if !defined OPENGL_ES && !defined OPENGL3
+#if !defined OPENGL3
 			case GL_STACK_OVERFLOW: log() << "stack overflow";
 				break;
 			case GL_STACK_UNDERFLOW: log() << "stack underflow";
