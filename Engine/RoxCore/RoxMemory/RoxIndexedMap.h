@@ -5,7 +5,7 @@
 // 'insert' and 'getByKey' are O(log(size)) operations
 // 'getByIdx' is O(1) operation
 // 'erase', 'get_idx_for_key' and 'get_key_for_idx' are O(size) operations
-// copy construction and assigment are O(size^2) operations
+// copy construction and assignment are O(size^2) operations
 
 #include <map>
 #include <vector>
