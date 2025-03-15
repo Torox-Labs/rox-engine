@@ -17,6 +17,7 @@
 #include <vector>
 #include <string>
 #include <cstddef>
+
 #include "RoxMath/RoxVector.h"
 #include "RoxMath/RoxQuaternion.h"
 
@@ -276,4 +277,4 @@ namespace RoxFormats
     };
 
 
-} // namespace RoxFormats
+}

@@ -4,6 +4,7 @@
 #include "RoxMemory/RoxMemoryReader.h"
 #include "RoxMemory/RoxTmpBuffers.h"
 #include "RoxResources/RoxResources.h"
+
 #include <cstdint>
 #include <cstring>
 #include <algorithm>
@@ -573,4 +574,4 @@ namespace RoxFormats
             ((type == TEXTURE_CUBE) ? 6 : 1);
     }
 
-} // namespace RoxFormats
+}

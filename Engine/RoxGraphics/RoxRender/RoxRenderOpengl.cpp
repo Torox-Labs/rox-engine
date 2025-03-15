@@ -1765,7 +1765,7 @@ namespace RoxRender
 				                      v.stride, (void*)(ptrdiff_t)(v.layout.pos.offset));
 				for (unsigned int i = 0; i < RoxVBO::max_tex_coord; ++i)
 				{
-					const RoxVBO::Layout::attribute& tc = v.layout.tc[i];
+					const RoxVBO::Layout::Attribute& tc = v.layout.tc[i];
 					if (tc.dimension > 0)
 					{
 						//if(vobj.vertex_stride!=active_attributes.vertex_stride || !tc.compare(active_attributes.tcs[i]))

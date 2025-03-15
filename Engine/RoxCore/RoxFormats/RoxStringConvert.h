@@ -16,6 +16,7 @@
 
 #include "RoxRender/RoxRender.h"
 #include "RoxMath/RoxVector.h"
+
 #include <string>
 
 namespace RoxFormats

@@ -13,9 +13,10 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxStringConvert.h"
+
 #include <algorithm>
 #include <sstream>
-#include <cstring> // Replaced <string.h> with <cstring>
+#include <cstring>
 
 namespace RoxFormats
 {
@@ -116,4 +117,4 @@ namespace RoxFormats
         return false;
     }
 
-} // namespace RoxFormats
+}

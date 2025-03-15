@@ -514,4 +514,4 @@ namespace RoxFormats
         return 0;
     }
 
-} // namespace RoxFormats
+}

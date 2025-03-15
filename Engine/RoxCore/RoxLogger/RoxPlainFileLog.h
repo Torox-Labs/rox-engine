@@ -27,7 +27,7 @@ public:
     RoxPlainFileLog(const char *file_name="",bool clear=true) { open(file_name,clear); }
 
 private:
-    virtual void output(const char *string);
+    void output(const char *string) override;
 
 private:
     std::string m_file_name;

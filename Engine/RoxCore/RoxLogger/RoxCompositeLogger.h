@@ -24,7 +24,7 @@ public:
     void addLogger(RoxLoggerBase *l);
 
 private:
-    virtual void output(const char *string);
+    void output(const char *string) override;
 
 private:
     std::vector<RoxLoggerBase *> m_logs;

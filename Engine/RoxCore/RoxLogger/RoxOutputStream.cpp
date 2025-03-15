@@ -19,18 +19,18 @@ namespace RoxLogger
 
 namespace { char buf[512]; }
 
-RoxOstreamBase &RoxOstreamBase::operator << (long int a) { printf(buf,"%ld", a); output(buf); return *this; }
-RoxOstreamBase &RoxOstreamBase::operator << (unsigned long int a) { printf(buf,"%lu", a); output(buf); return *this; }
-RoxOstreamBase &RoxOstreamBase::operator << (float a) { printf(buf,"%f", a); output(buf); return *this; }
-RoxOstreamBase &RoxOstreamBase::operator << (double a) { printf(buf,"%f", a); output(buf); return *this; }
-RoxOstreamBase &RoxOstreamBase::operator << (const char *a) { output(a?a:"NULL"); return *this; }
-
-RoxOstreamBase &RoxOstreamBase::operator << (int a) { printf(buf,"%d", a); output(buf); return *this; }
-RoxOstreamBase &RoxOstreamBase::operator << (unsigned int a) { printf(buf,"%u", a); output(buf); return *this; }
-RoxOstreamBase &RoxOstreamBase::operator << (short int a) { printf(buf,"%d", a); output(buf); return *this; }
-RoxOstreamBase &RoxOstreamBase::operator << (unsigned short int a) { printf(buf,"%u", a); output(buf); return *this; }
-RoxOstreamBase &RoxOstreamBase::operator << (long long int a) { printf(buf,"%lld", a); output(buf); return *this; }
-RoxOstreamBase &RoxOstreamBase::operator << (unsigned long long int a) { printf(buf,"%llu", a); output(buf); return *this; }
-RoxOstreamBase &RoxOstreamBase::operator << (const std::string &a) { output(a.c_str()); return *this; }
+RoxOutputStreamBase &RoxOutputStreamBase::operator << (long int a) { printf(buf,"%ld", a); output(buf); return *this; }
+RoxOutputStreamBase &RoxOutputStreamBase::operator << (unsigned long int a) { printf(buf,"%lu", a); output(buf); return *this; }
+RoxOutputStreamBase &RoxOutputStreamBase::operator << (float a) { printf(buf,"%f", a); output(buf); return *this; }
+RoxOutputStreamBase &RoxOutputStreamBase::operator << (double a) { printf(buf,"%f", a); output(buf); return *this; }
+RoxOutputStreamBase &RoxOutputStreamBase::operator << (const char *a) { output(a?a:"NULL"); return *this; }
+					 
+RoxOutputStreamBase &RoxOutputStreamBase::operator << (int a) { printf(buf,"%d", a); output(buf); return *this; }
+RoxOutputStreamBase &RoxOutputStreamBase::operator << (unsigned int a) { printf(buf,"%u", a); output(buf); return *this; }
+RoxOutputStreamBase &RoxOutputStreamBase::operator << (short int a) { printf(buf,"%d", a); output(buf); return *this; }
+RoxOutputStreamBase &RoxOutputStreamBase::operator << (unsigned short int a) { printf(buf,"%u", a); output(buf); return *this; }
+RoxOutputStreamBase &RoxOutputStreamBase::operator << (long long int a) { printf(buf,"%lld", a); output(buf); return *this; }
+RoxOutputStreamBase &RoxOutputStreamBase::operator << (unsigned long long int a) { printf(buf,"%llu", a); output(buf); return *this; }
+RoxOutputStreamBase &RoxOutputStreamBase::operator << (const std::string &a) { output(a.c_str()); return *this; }
 
 }

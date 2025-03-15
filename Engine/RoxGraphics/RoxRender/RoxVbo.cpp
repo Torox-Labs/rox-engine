@@ -31,7 +31,7 @@ namespace RoxRender
 	void RoxVBO::bindVerts() const
 	{
 		getAPIState().vertex_buffer = m_verts;
-		active_ElementType = m_ElementType;
+		active_ElementType = m_element_type;
 		active_vert_count = m_vert_count;
 	}
 
@@ -204,7 +204,7 @@ namespace RoxRender
 	{
 		if (m_verts >= 0 && getAPIState().vertex_buffer == m_verts)
 			active_ElementType = type;
-		m_ElementType = type;
+		m_element_type = type;
 	}
 
 	bool RoxVBO::getVertexData(RoxMemory::RoxTmpBufferRef& data) const
@@ -245,7 +245,7 @@ namespace RoxRender
 
 	const RoxVBO::Layout& RoxVBO::getLayout() const { return m_layout; }
 	RoxVBO::INDEX_SIZE RoxVBO::getIndexSize() const { return m_ind_size; }
-	RoxVBO::ELEMENT_TYPE RoxVBO::getElementType() const { return m_ElementType; }
+	RoxVBO::ELEMENT_TYPE RoxVBO::getElementType() const { return m_element_type; }
 	uint RoxVBO::getVertStride() const { return m_stride; }
 	uint RoxVBO::getVertOffset() const { return m_layout.pos.offset; }
 	uint RoxVBO::getVertDimension() const { return m_layout.pos.dimension; }

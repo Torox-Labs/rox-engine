@@ -18,25 +18,25 @@
 namespace RoxLogger
 {
 
-class RoxOstreamBase
+class RoxOutputStreamBase
 {
 protected:
     virtual void output(const char *str) {}
 
 public:
-    RoxOstreamBase &operator << (long int);
-    RoxOstreamBase &operator << (unsigned long int);
-    RoxOstreamBase &operator << (float);
-    RoxOstreamBase &operator << (double);
-    RoxOstreamBase &operator << (const char *);
-
-    RoxOstreamBase &operator << (int a);
-    RoxOstreamBase &operator << (unsigned int a);
-    RoxOstreamBase &operator << (short int a);
-    RoxOstreamBase &operator << (unsigned short int a);
-    RoxOstreamBase &operator << (long long int a);
-    RoxOstreamBase &operator << (unsigned long long int a);
-    RoxOstreamBase &operator << (const std::string &a);
+    RoxOutputStreamBase &operator << (long int);
+    RoxOutputStreamBase &operator << (unsigned long int);
+    RoxOutputStreamBase &operator << (float);
+    RoxOutputStreamBase &operator << (double);
+    RoxOutputStreamBase &operator << (const char *);
+    
+    RoxOutputStreamBase &operator << (int a);
+    RoxOutputStreamBase &operator << (unsigned int a);
+    RoxOutputStreamBase &operator << (short int a);
+    RoxOutputStreamBase &operator << (unsigned short int a);
+    RoxOutputStreamBase &operator << (long long int a);
+    RoxOutputStreamBase &operator << (unsigned long long int a);
+    RoxOutputStreamBase &operator << (const std::string &a);
 };
 
 }

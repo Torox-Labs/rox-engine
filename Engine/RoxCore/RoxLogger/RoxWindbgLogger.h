@@ -21,7 +21,7 @@ namespace RoxLogger
 class RoxWindbgLogger: public RoxLoggerBase
 {
 private:
-    virtual void output(const char *str);
+    void output(const char *str) override;
 };
 
 }

@@ -18,7 +18,7 @@
 namespace RoxLogger
 {
 
-class RoxLoggerBase: public RoxOstreamBase
+class RoxLoggerBase: public RoxOutputStreamBase
 {
 protected:
     virtual void output(const char *string) {}
@@ -27,11 +27,11 @@ public:
     virtual ~RoxLoggerBase() {}
 };
 
-RoxLoggerBase &noLogger();
+RoxLoggerBase& noLogger();
 
 void setLogger(RoxLoggerBase *l);
 
-RoxLoggerBase &log();
-RoxLoggerBase &log(const char *fmt, ...);
+RoxLoggerBase& log();
+RoxLoggerBase& log(const char *fmt, ...);
 
 }

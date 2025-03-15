@@ -298,8 +298,6 @@ namespace RoxApp
 				0
 			};
 
-			RoxSystem::log() << "antialiasing init\n";
-
 			if (!wglChoosePixelFormatARB(m_hdc,
 				iAttributes,
 				nullptr,

@@ -117,4 +117,4 @@ namespace RoxFormats
         return reader.getOffset();
     }
 
-} // namespace RoxFormats
+}

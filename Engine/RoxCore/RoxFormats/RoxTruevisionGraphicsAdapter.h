@@ -15,6 +15,7 @@
 
 #include <vector>
 #include <cstddef>
+
 #include "RoxMath/RoxVector.h"
 #include "RoxMath/RoxQuaternion.h"
 
@@ -89,4 +90,4 @@ namespace RoxFormats
         std::vector<unsigned char> mData;
     };
 
-} // namespace RoxFormats
+}

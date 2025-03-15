@@ -41,7 +41,7 @@ private:
     bool m_ignore_warnings;
 };
 
-class RoxWarningOstream: public RoxOstreamBase
+class RoxWarningOstream: public RoxOutputStreamBase
 {
 public:
     RoxWarningOstream(RoxWarningsCounter &counter): m_counter(counter) {}
@@ -50,7 +50,7 @@ public:
     void flush();
 
 private:
-    virtual void output(const char *str);
+    void output(const char *str) override;
 
 private:
     std::string m_buf;

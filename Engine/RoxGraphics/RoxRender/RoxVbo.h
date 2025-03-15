@@ -54,23 +54,23 @@ namespace RoxRender
 		};
 
 		typedef unsigned int uint;
-
+		
 		const static uint max_tex_coord = 13;
 
 		struct Layout
 		{
-			struct attribute
+			struct Attribute
 			{
 				unsigned char offset, dimension;
 				VERTEX_ATRIB_TYPE type;
 
-				attribute(): offset(0), dimension(0), type(FLOAT_32)
+				Attribute(): offset(0), dimension(0), type(FLOAT_32)
 				{
 				}
 			};
 
-			attribute pos, normal, color;
-			attribute tc[max_tex_coord];
+			Attribute pos, normal, color;
+			Attribute tc[max_tex_coord];
 
 			Layout() { pos.dimension = 3; }
 		};
@@ -137,7 +137,7 @@ namespace RoxRender
 
 	public:
 		RoxVBO(): m_verts(-1), m_indices(-1), m_vert_count(0), m_ind_count(0),
-		          m_stride(0), m_ind_size(INDEX_2D), m_ElementType(TRIANGLES)
+		          m_stride(0), m_ind_size(INDEX_2D), m_element_type(TRIANGLES)
 		{
 		}
 
@@ -149,7 +149,7 @@ namespace RoxRender
 		Layout m_layout;
 		int m_stride;
 		INDEX_SIZE m_ind_size;
-		ELEMENT_TYPE m_ElementType;
+		ELEMENT_TYPE m_element_type;
 	};
 
 }

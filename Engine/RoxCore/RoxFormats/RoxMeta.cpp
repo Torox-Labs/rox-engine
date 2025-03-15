@@ -4,7 +4,8 @@
 #include "RoxMemory/RoxMemoryReader.h"
 #include "RoxMemory/RoxMemoryWriter.h"
 #include "RoxResources/RoxResources.h"
-#include <cstring> // Replaced <string.h> with <cstring>
+
+#include <cstring> 
 
 namespace RoxFormats
 {
@@ -64,4 +65,4 @@ namespace RoxFormats
         return writer.getOffset();
     }
 
-} // namespace RoxFormats
+}

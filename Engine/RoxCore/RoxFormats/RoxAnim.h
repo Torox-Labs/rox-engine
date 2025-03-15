@@ -16,7 +16,8 @@
 
 #include <vector>
 #include <string>
-#include <cstddef> 
+#include <cstddef>
+
 #include "RoxMath/RoxVector.h"
 #include "RoxMath/RoxQuaternion.h"
 

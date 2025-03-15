@@ -944,4 +944,4 @@ namespace RoxFormats
         m_functions.emplace_back(UserFunction{ name, static_cast<char>(argsCount), static_cast<char>(returnCount), f });
     }
 
-} // namespace RoxFormats
+}

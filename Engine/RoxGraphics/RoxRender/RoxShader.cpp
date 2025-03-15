@@ -13,9 +13,6 @@
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
 #include "RoxShader.h"
-
-#include <iostream> // Delete this on release
-
 #include "RoxShaderCodeParser.h"
 #include "RoxRender.h"
 #include "IRoxRenderApi.h"
