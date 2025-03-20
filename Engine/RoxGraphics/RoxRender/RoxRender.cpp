@@ -74,7 +74,7 @@ namespace RoxRender
 
 	void setModelViewMatrix(const RoxMath::Matrix4& mat)
 	{
-		RoxTransform::get().setModelviewMatrix(mat);
+		RoxTransform::get().setModelViewMatrix(mat);
 		getAPIInterface().setCamera(getModelViewMatrix(), getProjectionMatrix());
 	}
 
@@ -85,7 +85,7 @@ namespace RoxRender
 	}
 
 	const RoxMath::Matrix4& getProjectionMatrix() { return RoxTransform::get().getProjectionMatrix(); }
-	const RoxMath::Matrix4& getModelViewMatrix() { return RoxTransform::get().getModelviewMatrix(); }
+	const RoxMath::Matrix4& getModelViewMatrix() { return RoxTransform::get().getModelViewMatrix(); }
 	const RoxMath::Matrix4& getOrientationMatrix() { return RoxTransform::get().getOrientationMatrix(); }
 
 	void setClearColor(const RoxMath::Vector4& c) { setClearColor(c.x, c.y, c.z, c.w); }

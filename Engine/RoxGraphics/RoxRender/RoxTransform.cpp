@@ -31,9 +31,9 @@ void RoxTransform::setProjectionMatrix(const RoxMath::Matrix4 &mat)
         m_orientated_proj=m_projection*m_orientation;
 }
 
-void RoxTransform::setModelviewMatrix(const RoxMath::Matrix4 &mat) { m_modelview=mat, m_recalc_mvp=true; }
+void RoxTransform::setModelViewMatrix(const RoxMath::Matrix4 &mat) { m_modelview=mat, m_recalc_mvp=true; }
 
-const RoxMath::Matrix4 & RoxTransform::getModelviewprojectionMatrix() const
+const RoxMath::Matrix4 & RoxTransform::getModelViewProjectionMatrix() const
 {
     if(!m_recalc_mvp)
         return m_modelviewproj;

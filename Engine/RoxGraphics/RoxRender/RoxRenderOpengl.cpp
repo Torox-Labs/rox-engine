@@ -1735,12 +1735,12 @@ namespace RoxRender
 		if (shdr.mat_mvp >= 0)
 		{
 			const RoxMath::Matrix4 mvp = modelview * projection;
-			glad_glUniformMatrix4fv(shdr.mat_mvp, 1,GL_FALSE, mvp[0]);
+			glUniformMatrix4fv(shdr.mat_mvp, 1,GL_FALSE, mvp[0]);
 		}
 		if (shdr.mat_mv >= 0)
-			glad_glUniformMatrix4fv(shdr.mat_mv, 1,GL_FALSE, modelview[0]);
+			glUniformMatrix4fv(shdr.mat_mv, 1,GL_FALSE, modelview[0]);
 		if (shdr.mat_p >= 0)
-			glad_glUniformMatrix4fv(shdr.mat_p, 1,GL_FALSE, projection[0]);
+			glUniformMatrix4fv(shdr.mat_p, 1,GL_FALSE, projection[0]);
 
 		VertexBuffer& v = vert_bufs.get(s.vertex_buffer);
 
@@ -1757,7 +1757,7 @@ namespace RoxRender
 
 				applied_layout = RoxVBO::Layout();
 				v.active_vao_ibuf = 0;
-				glad_glBindBuffer(GL_ARRAY_BUFFER, v.id);
+				glBindBuffer(GL_ARRAY_BUFFER, v.id);
 
 				glEnableVertexAttribArray(VERTEX_ATTRIBUTE);
 				glVertexAttribPointer(VERTEX_ATTRIBUTE, v.layout.pos.dimension, getGLElementType(v.layout.pos.type),

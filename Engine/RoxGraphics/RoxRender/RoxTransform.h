@@ -23,13 +23,13 @@ class RoxTransform
 {
 public:
     void setProjectionMatrix(const RoxMath::Matrix4 &mat);
-    void setModelviewMatrix(const RoxMath::Matrix4 &mat);
+    void setModelViewMatrix(const RoxMath::Matrix4 &mat);
     void setOrientationMatrix(const RoxMath::Matrix4 &mat);
 
 public:
     const RoxMath::Matrix4 &getProjectionMatrix() const { return m_has_orientation?m_orientated_proj:m_projection; }
-    const RoxMath::Matrix4 &getModelviewMatrix() const { return m_modelview; }
-    const RoxMath::Matrix4 &getModelviewprojectionMatrix() const;
+    const RoxMath::Matrix4 &getModelViewMatrix() const { return m_modelview; }
+    const RoxMath::Matrix4 &getModelViewProjectionMatrix() const;
 
     const RoxMath::Matrix4 &getOrientationMatrix() const { return m_orientation; }
     bool hasOrientationMatrix() const { return m_has_orientation; }

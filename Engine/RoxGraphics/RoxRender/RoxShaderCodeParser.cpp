@@ -1,9 +1,9 @@
 // Updated By the ROX_ENGINE
-// Copyright © 2024 Torox Project
-// Portions Copyright © 2013 nyan.developer@gmail.com (nya-engine)
+// Copyright ï¿½ 2024 Torox Project
+// Portions Copyright ï¿½ 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
-// 
+//
 // This file incorporates code from the nya-engine project, which is licensed under the MIT License.
 // See the LICENSE-MIT file in the root directory for more information.
 //
@@ -22,7 +22,7 @@
 namespace RoxRender
 {
 	template <typename t>
-	static void pushUniqueToVector(std::vector<t>& v, const t& e)
+	static void pushUniqueToVector(std::vector<t> &v, const t &e)
 	{
 		for (size_t i = 0; i < v.size(); ++i)
 		{
@@ -38,9 +38,12 @@ namespace RoxRender
 
 	inline int typeRegsize(RoxShaderCodeParser::VARIABLE_TYPE type)
 	{
-		if (type == RoxShaderCodeParser::TYPE_MATRIX2) return 2;
-		if (type == RoxShaderCodeParser::TYPE_MATRIX3) return 3;
-		if (type == RoxShaderCodeParser::TYPE_MATRIX4) return 4;
+		if (type == RoxShaderCodeParser::TYPE_MATRIX2)
+			return 2;
+		if (type == RoxShaderCodeParser::TYPE_MATRIX3)
+			return 3;
+		if (type == RoxShaderCodeParser::TYPE_MATRIX4)
+			return 4;
 		return 1;
 	}
 
@@ -106,26 +109,28 @@ namespace RoxRender
 		int samplers_count = 0;
 		for (size_t i = predefined_count; i < m_uniforms.size(); ++i)
 		{
-			const Variable& v = m_uniforms[i];
+			const Variable &v = m_uniforms[i];
 			if (v.type != TYPE_SAMPLER2D && v.type != TYPE_SAMPLER_CUBE)
 				continue;
 
-			const char* types[] = {"Texture2D", "TextureCube"};
+			const char *types[] = {"Texture2D", "TextureCube"};
 
 			char buf[512];
 			// TODO: CONVERTED FROM _nya_ to _rox_
 			printf(buf, "%s %s: register(t%d); SamplerState %s_nya_st: register(s%d);\n",
-			       types[v.type - TYPE_SAMPLER2D], v.name.c_str(), samplers_count, v.name.c_str(), samplers_count);
+				   types[v.type - TYPE_SAMPLER2D], v.name.c_str(), samplers_count, v.name.c_str(), samplers_count);
 			prefix.append(buf);
 			++samplers_count;
 		}
 
 		if (samplers_count > 0)
 		{
-			if (findVariable("texture2D")) prefix.append(
-				"#define texture2D(a,b) a.Sample(a##" + m_replace_str + "st,(b))\n");
-			if (findVariable("textureCube")) prefix.append(
-				"#define textureCube(a,b) a.Sample(a##" + m_replace_str + "st,(b))\n");
+			if (findVariable("texture2D"))
+				prefix.append(
+					"#define texture2D(a,b) a.Sample(a##" + m_replace_str + "st,(b))\n");
+			if (findVariable("textureCube"))
+				prefix.append(
+					"#define textureCube(a,b) a.Sample(a##" + m_replace_str + "st,(b))\n");
 			if (findVariable("texture2DProj"))
 			{
 				prefix.append("float2 " + m_replace_str + "tc_proj(float3 tc){return tc.xy/tc.z;}\n");
@@ -137,13 +142,13 @@ namespace RoxRender
 		}
 
 		const char *gl_vs_out = "gl_Position", *gl_ps_out = "gl_FragColor";
-		const char* type_names[] = {"float", "float2", "float3", "float4", "float2x2", "float3x3", "float4x4"};
+		const char *type_names[] = {"float", "float2", "float3", "float4", "float2x2", "float3x3", "float4x4"};
 
 		std::string vs_pos_out = m_replace_str + std::string(gl_vs_out + 3);
 		prefix.append("struct " + m_replace_str + "vsout{float4 " + vs_pos_out + ":SV_POSITION;");
 		for (int i = 0, idx = 0; i < (int)m_varying.size(); ++i)
 		{
-			const Variable& v = m_varying[i];
+			const Variable &v = m_varying[i];
 			if (v.type == TYPE_INVALID)
 				return false;
 
@@ -158,7 +163,7 @@ namespace RoxRender
 		prefix.append("};\n");
 
 		const std::string input_var = m_replace_str + "in";
-		const std::string ps_out_var = m_replace_str + std::string(gl_ps_out + 3); //strlen("gl_")
+		const std::string ps_out_var = m_replace_str + std::string(gl_ps_out + 3); // strlen("gl_")
 		const bool is_fragment = replaceVariable(gl_ps_out, ps_out_var.c_str());
 		if (is_fragment)
 		{
@@ -174,7 +179,7 @@ namespace RoxRender
 			std::string in_var_assign;
 			for (int i = 0; i < (int)m_varying.size(); ++i)
 			{
-				const Variable& v = m_varying[i];
+				const Variable &v = m_varying[i];
 				if (v.type == TYPE_INVALID)
 				{
 					m_error.append("invalid variable \'" + v.name + "\' type\n");
@@ -190,7 +195,7 @@ namespace RoxRender
 			prefix.append("\n");
 
 			m_code.append("\nfloat4 main(" + m_replace_str + "vsout " + input_var + "):SV_TARGET{" + in_var_assign +
-				m_replace_str + "main();return " + ps_out_var + ";}\n");
+						  m_replace_str + "main();return " + ps_out_var + ";}\n");
 		}
 		else
 		{
@@ -205,7 +210,7 @@ namespace RoxRender
 				prefix.append("struct " + m_replace_str + "vsin{");
 				for (int i = 0, idx = 0; i < (int)m_attributes.size(); ++i)
 				{
-					Variable& a = m_attributes[i];
+					Variable &a = m_attributes[i];
 					a.name = a.name.substr(m_replace_str.size());
 					if (a.name == "Vertex")
 						prefix.append("float4 Vertex:POSITION;");
@@ -234,7 +239,7 @@ namespace RoxRender
 
 			const std::string main = std::string("void ") + m_replace_str + "main()";
 			replaceMainFunctionHeader(main.c_str());
-			const std::string vs_out_var = out_var + "." + m_replace_str + std::string(gl_vs_out + 3); //strlen("gl_")
+			const std::string vs_out_var = out_var + "." + m_replace_str + std::string(gl_vs_out + 3); // strlen("gl_")
 
 			replaceVariable(gl_vs_out, vs_pos_out.c_str());
 
@@ -243,7 +248,7 @@ namespace RoxRender
 			out_var_assign.append(out_var + "." + vs_pos_out + "=" + vs_pos_out + ";");
 			for (int i = 0; i < (int)m_varying.size(); ++i)
 			{
-				const Variable& v = m_varying[i];
+				const Variable &v = m_varying[i];
 				if (v.type == TYPE_INVALID)
 					return false;
 
@@ -272,7 +277,7 @@ namespace RoxRender
 
 			for (size_t i = predefined_count; i < m_uniforms.size(); ++i)
 			{
-				const Variable& v = m_uniforms[i];
+				const Variable &v = m_uniforms[i];
 				if (v.type == TYPE_INVALID)
 					return false;
 
@@ -297,7 +302,7 @@ namespace RoxRender
 		return true;
 	}
 
-	inline bool hasArgs(std::string& code, size_t pos)
+	inline bool hasArgs(std::string &code, size_t pos)
 	{
 		for (size_t j = pos; j < code.size(); ++j)
 		{
@@ -336,7 +341,7 @@ namespace RoxRender
 
 		std::string prefix = "#include <metal_stdlib>\n#include <simd/simd.h>\nusing namespace metal;\n";
 		const char *gl_vs_out = "gl_Position", *gl_ps_out = "gl_FragColor";
-		const char* type_names[] = {"float", "float2", "float3", "float4", "float2x2", "float3x3", "float4x4"};
+		const char *type_names[] = {"float", "float2", "float3", "float4", "float2x2", "float3x3", "float4x4"};
 
 		const std::string uniforms_type = m_replace_str + "uniforms";
 		const std::string uniforms_name = m_replace_str + "u";
@@ -345,7 +350,7 @@ namespace RoxRender
 			prefix.append("struct " + uniforms_type + '{');
 			for (size_t i = 0; i < m_uniforms.size(); ++i)
 			{
-				const Variable& v = m_uniforms[i];
+				const Variable &v = m_uniforms[i];
 				if (v.type == TYPE_INVALID)
 					return false;
 
@@ -380,7 +385,7 @@ namespace RoxRender
 
 			for (int i = 0; i < (int)m_varying.size(); ++i)
 			{
-				const Variable& v = m_varying[i];
+				const Variable &v = m_varying[i];
 				if (v.type == TYPE_INVALID)
 				{
 					m_error.append("invalid Variable \'" + v.name + "\' type\n");
@@ -419,11 +424,11 @@ namespace RoxRender
 		int samplers_count = 0;
 		for (size_t i = 0; i < m_uniforms.size(); ++i)
 		{
-			const Variable& v = m_uniforms[i];
+			const Variable &v = m_uniforms[i];
 			if (v.type != TYPE_SAMPLER2D && v.type != TYPE_SAMPLER_CUBE)
 				continue;
 
-			const char* types[] = {"texture2d<float>", "texturecube<float>"};
+			const char *types[] = {"texture2d<float>", "texturecube<float>"};
 
 			char buf[64];
 			printf(buf, "[[texture(%d)]]", samplers_count);
@@ -436,10 +441,12 @@ namespace RoxRender
 
 		if (samplers_count > 0)
 		{
-			if (findVariable("texture2D")) prefix.append(
-				"#define texture2D(a,b) a.sample(a##" + m_replace_str + "st,(b))\n");
-			if (findVariable("textureCube")) prefix.append(
-				"#define textureCube(a,b) a.sample(a##" + m_replace_str + "st,(b))\n");
+			if (findVariable("texture2D"))
+				prefix.append(
+					"#define texture2D(a,b) a.sample(a##" + m_replace_str + "st,(b))\n");
+			if (findVariable("textureCube"))
+				prefix.append(
+					"#define textureCube(a,b) a.sample(a##" + m_replace_str + "st,(b))\n");
 			if (findVariable("texture2DProj"))
 			{
 				prefix.append("float2 " + m_replace_str + "tc_proj(float3 tc){return tc.xy/tc.z;}\n");
@@ -483,7 +490,7 @@ namespace RoxRender
 			prefix.append("struct " + vertex_type + "{ ");
 			for (int i = 0; i < (int)m_attributes.size(); ++i)
 			{
-				Variable& a = m_attributes[i];
+				Variable &a = m_attributes[i];
 				a.name = a.name.substr(m_replace_str.size());
 				if (a.name == "Vertex")
 					prefix.append("float4 Vertex[[attribute(0)]];");
@@ -540,7 +547,7 @@ namespace RoxRender
 					for (int j = 0; j < (int)functions.size(); ++j)
 					{
 						for (size_t pos = m_code.find(functions[j].c_str(), func_start); pos < i; pos = m_code.find(
-							     functions[j].c_str(), pos + 1))
+																									  functions[j].c_str(), pos + 1))
 						{
 							if (isNameChar(m_code[pos - 1]) || isNameChar(m_code[pos + functions[j].length()]))
 								continue;
@@ -577,11 +584,17 @@ namespace RoxRender
 				}
 
 				size_t name_end = arg_start;
-				while (name_end > 1) if (m_code[name_end] > ' ') break;
-				else --name_end;
+				while (name_end > 1)
+					if (m_code[name_end] > ' ')
+						break;
+					else
+						--name_end;
 				size_t name_start = name_end - 1;
-				while (name_start > 0) if (m_code[name_start] <= ' ') break;
-				else --name_start;
+				while (name_start > 0)
+					if (m_code[name_start] <= ' ')
+						break;
+					else
+						--name_start;
 				++name_start;
 				const std::string name = m_code.substr(name_start, name_end - name_start);
 
@@ -678,13 +691,13 @@ namespace RoxRender
 			prefix.append(m_attributes[i].name + ";\n");
 		}
 
-		//prefix.append("precision highp float;\n");
+		// prefix.append("precision highp float;\n");
 
 		replaceVariable("texture2D", "texture");
 		replaceVariable("texture2DProj", "textureProj");
 		replaceVariable("textureCube", "texture");
 
-		const char* gl_ps_out = "gl_FragColor";
+		const char *gl_ps_out = "gl_FragColor";
 		std::string ps_out_var = m_replace_str + std::string(gl_ps_out + 3);
 		const bool is_fragment = replaceVariable(gl_ps_out, ps_out_var.c_str());
 		if (is_fragment)
@@ -694,7 +707,7 @@ namespace RoxRender
 		}
 		else
 		{
-			//replaceVariable("attribute","in");
+			// replaceVariable("attribute","in");
 			replaceVariable("varying", "out");
 		}
 
@@ -755,21 +768,21 @@ namespace RoxRender
 
 	bool RoxShaderCodeParser::fixPerComponentFunctions()
 	{
-		const char* functions[] = {"pow", "sqrt"}; //ToDo
+		const char *functions[] = {"pow", "sqrt"}; // ToDo
 		int functions_args[] = {2, 1};
 
 		std::string prefix;
 		char buf[255];
 		for (size_t i = 0; i < sizeof(functions) / sizeof(functions[0]); ++i)
 		{
-			const char* f = functions[i];
+			const char *f = functions[i];
 			if (!replaceVariable(f, (m_replace_str + f).c_str()))
 				continue;
 
-			const char* types[] = {"float", "vec2", "vec3", "vec4"};
+			const char *types[] = {"float", "vec2", "vec3", "vec4"};
 			for (int j = 0; j < 4; ++j)
 			{
-				const char* t = types[j];
+				const char *t = types[j];
 				prefix.append(t + (" " + m_replace_str) + f + "(");
 				for (int k = 0; k < functions_args[i]; ++k)
 				{
@@ -778,7 +791,7 @@ namespace RoxRender
 				}
 
 				prefix.append(std::string("){return ") + (j == 0 ? "" : t) + "(");
-				const char* components[] = {".x", ".y", ".z", ".w"};
+				const char *components[] = {".x", ".y", ".z", ".w"};
 				for (int k = 0; k < j + 1; ++k)
 				{
 					prefix.append(std::string(k == 0 ? "" : ",") + f + "(");
@@ -812,21 +825,28 @@ namespace RoxRender
 	}
 
 	template <typename t>
-	static bool parseVars(std::string& code, std::string& error, t& vars, const char* str, bool remove)
+	static bool parseVars(std::string &code, std::string &error, t &vars, const char *str, bool remove)
 	{
 		const size_t str_len = strlen(str);
 		for (size_t i = code.find(str); i != std::string::npos; i = code.find(str, i))
 		{
 			size_t type_from = i + str_len + 1;
-			while (code[type_from] <= ' ') if (++type_from >= code.length()) return false;
+			while (code[type_from] <= ' ')
+				if (++type_from >= code.length())
+					return false;
 			size_t type_to = type_from;
-			while (code[type_to] > ' ') if (++type_to >= code.length()) return false;
+			while (code[type_to] > ' ')
+				if (++type_to >= code.length())
+					return false;
 
 			size_t name_from = type_to + 1;
-			while (code[name_from] <= ' ') if (++name_from >= code.length()) return false;
+			while (code[name_from] <= ' ')
+				if (++name_from >= code.length())
+					return false;
 			size_t name_to = name_from;
-			while (code[name_to] > ' ' && code[name_to] != ';' && code[name_to] != '[') if (++name_to >= code.length())
-				return false;
+			while (code[name_to] > ' ' && code[name_to] != ';' && code[name_to] != '[')
+				if (++name_to >= code.length())
+					return false;
 
 			const std::string name = code.substr(name_from, name_to - name_from);
 			const std::string type_name = code.substr(type_from, type_to - type_from);
@@ -854,16 +874,20 @@ namespace RoxRender
 				char dim = (type_name.length() == 4) ? type_name[3] : '\0';
 				switch (dim)
 				{
-				case '2': vars.push_back(
+				case '2':
+					vars.push_back(
 						RoxShaderCodeParser::Variable(RoxShaderCodeParser::TYPE_VECTOR2, name.c_str(), count));
 					break;
-				case '3': vars.push_back(
+				case '3':
+					vars.push_back(
 						RoxShaderCodeParser::Variable(RoxShaderCodeParser::TYPE_VECTOR3, name.c_str(), count));
 					break;
-				case '4': vars.push_back(
+				case '4':
+					vars.push_back(
 						RoxShaderCodeParser::Variable(RoxShaderCodeParser::TYPE_VECTOR4, name.c_str(), count));
 					break;
-				default: return false;
+				default:
+					return false;
 				};
 			}
 			else if (type_name.compare(0, 3, "mat") == 0)
@@ -871,16 +895,20 @@ namespace RoxRender
 				char dim = (type_name.length() == 4) ? type_name[3] : '\0';
 				switch (dim)
 				{
-				case '2': vars.push_back(
+				case '2':
+					vars.push_back(
 						RoxShaderCodeParser::Variable(RoxShaderCodeParser::TYPE_MATRIX2, name.c_str(), count));
 					break;
-				case '3': vars.push_back(
+				case '3':
+					vars.push_back(
 						RoxShaderCodeParser::Variable(RoxShaderCodeParser::TYPE_MATRIX3, name.c_str(), count));
 					break;
-				case '4': vars.push_back(
+				case '4':
+					vars.push_back(
 						RoxShaderCodeParser::Variable(RoxShaderCodeParser::TYPE_MATRIX4, name.c_str(), count));
 					break;
-				default: return false;
+				default:
+					return false;
 				};
 			}
 			else if (type_name == "float")
@@ -914,16 +942,17 @@ namespace RoxRender
 
 	bool RoxShaderCodeParser::parseOut(bool remove) { return parseVars(m_code, m_error, m_out, "out", remove); }
 
-	bool RoxShaderCodeParser::parsePredefinedUniforms(const char* replace_prefix_str, bool replace)
+	bool RoxShaderCodeParser::parsePredefinedUniforms(const char *replace_prefix_str, bool replace)
 	{
 		if (!replace_prefix_str)
 			return false;
 
-		const char* gl_matrix_names[] = {"gl_ModelViewMatrix", "gl_ModelViewProjectionMatrix", "gl_ProjectionMatrix"};
+		const char *gl_matrix_names[] = {"gl_ModelViewMatrix", "gl_ModelViewProjectionMatrix", "gl_ProjectionMatrix", "rox_ModelViewMatrix", "rox_ModelViewProjectionMatrix", "rox_ProjectionMatrix"};
 
 		for (size_t i = 0; i < sizeof(gl_matrix_names) / sizeof(gl_matrix_names[0]); ++i)
 		{
-			std::string to = std::string(replace_prefix_str) + std::string(gl_matrix_names[i] + 3); //strlen("gl_")
+			int replace_end = i < 3 ? 3 : 4;
+			std::string to = std::string(replace_prefix_str) + std::string(gl_matrix_names[i] + replace_end); // strlen("gl_") / strlen("rox_")
 			if (replace)
 			{
 				if (replaceVariable(gl_matrix_names[i], to.c_str()))
@@ -939,21 +968,22 @@ namespace RoxRender
 		return true;
 	}
 
-	bool RoxShaderCodeParser::parseAttributes(const char* info_replace_str, const char* code_replace_str)
+	bool RoxShaderCodeParser::parseAttributes(const char *info_replace_str, const char *code_replace_str)
 	{
 		if (!info_replace_str)
 			return false;
 
-		const char* gl_attr_names[] = {"gl_Vertex", "gl_Normal", "gl_Color"};
-		VARIABLE_TYPE gl_attr_types[] = {TYPE_VECTOR4, TYPE_VECTOR3, TYPE_VECTOR4};
+		const char *gl_attr_names[] = {"gl_Vertex", "gl_Normal", "gl_Color", "rox_Vertex", "rox_Normal", "rox_Color"};
+		VARIABLE_TYPE gl_attr_types[] = {TYPE_VECTOR4, TYPE_VECTOR3, TYPE_VECTOR4, TYPE_VECTOR4, TYPE_VECTOR3, TYPE_VECTOR4};
 
 		for (size_t i = 0; i < sizeof(gl_attr_names) / sizeof(gl_attr_names[0]); ++i)
 		{
-			const std::string info = std::string(info_replace_str) + std::string(gl_attr_names[i] + 3); //strlen("gl_")
+			int replace_size = i < 3 ? 3 : 4;
+			const std::string info = std::string(info_replace_str) + std::string(gl_attr_names[i] + replace_size); // strlen("gl_") / strlen("rox_")
+
 			if (code_replace_str)
 			{
-				const std::string replace = std::string(code_replace_str) + std::string(gl_attr_names[i] + 3);
-				//strlen("gl_")
+				const std::string replace = std::string(code_replace_str) + std::string(gl_attr_names[i] + replace_size);
 				if (replaceVariable(gl_attr_names[i], replace.c_str()))
 					pushUniqueToVector(m_attributes, Variable(gl_attr_types[i], info.c_str(), 0));
 			}
@@ -964,27 +994,37 @@ namespace RoxRender
 			}
 		}
 
-		const char* tc_atr_name = "gl_MultiTexCoord";
+		const char *tex_coord_attr_names[] = {"gl_MultiTexCoord", "rox_MultiTexCoord"};
 
-		size_t start_pos = 0;
-		while ((start_pos = m_code.find(tc_atr_name, start_pos)) != std::string::npos)
+		for (size_t i = 0; i < sizeof(tex_coord_attr_names) / sizeof(tex_coord_attr_names[i]); i++)
 		{
-			const size_t replace_start = start_pos;
-			start_pos += strlen(tc_atr_name);
-			const int idx = atoi(&m_code[start_pos]);
+			int replace_size = i < 1 ? 3 : 4;
+			const std::string info = std::string(info_replace_str) + std::string(tex_coord_attr_names[i] + replace_size);
+			size_t start_pos = 0;
 
-			if (code_replace_str)
-				m_code.replace(replace_start, 3, code_replace_str); //strlen("gl_")
+			while ((start_pos = m_code.find(tex_coord_attr_names[i], start_pos)) != std::string::npos)
+			{
 
-			char buf[255];
-			printf(buf, "%s%s%d", info_replace_str, tc_atr_name + 3, idx);
-			pushUniqueToVector(m_attributes, Variable(TYPE_VECTOR4, buf, idx));
+				const size_t replace_start = start_pos;
+				start_pos += strlen(tex_coord_attr_names[i]);
+				const int idx = atoi(&m_code[start_pos]);
+
+				if (code_replace_str)
+				{
+					if (i > 0 && m_code.substr(replace_start - 1, strlen("_rox_")) == "_rox_")
+						continue;
+
+					m_code.replace(replace_start, replace_size, code_replace_str);
+				}
+
+				pushUniqueToVector(m_attributes, Variable(TYPE_VECTOR4, info.c_str(), idx));
+			}
 		}
 
 		return true;
 	}
 
-	//TODO: UPDATE LATER --- Verry Important
+	// TODO: UPDATE LATER --- Verry Important
 	bool RoxShaderCodeParser::replaceHlslTypes()
 	{
 		replaceVariable("vec2", "float2");
@@ -996,7 +1036,7 @@ namespace RoxRender
 		return true;
 	}
 
-	static size_t getVarPos(const std::string& code, size_t pos, int add)
+	static size_t getVarPos(const std::string &code, size_t pos, int add)
 	{
 		int brace_count = 0;
 		char lbrace = add > 0 ? '(' : ')';
@@ -1036,25 +1076,31 @@ namespace RoxRender
 		return pos;
 	}
 
-	static bool isNumericOnlyVar(const std::string& s)
+	static bool isNumericOnlyVar(const std::string &s)
 	{
-		for (size_t i = 0; i < s.size(); ++i) if (isalpha(s[i]) || s[i] == '_') return false;
+		for (size_t i = 0; i < s.size(); ++i)
+			if (isalpha(s[i]) || s[i] == '_')
+				return false;
 		return true;
 	}
 
-	static void removeVarSpaces(std::string& s)
+	static void removeVarSpaces(std::string &s)
 	{
 		if (s.empty())
 			return;
 
 		size_t f, t = 0;
-		for (f = 0; f < s.size(); ++f) if (s[f] > ' ') break;
-		for (t = s.size(); t > 0; --t) if (s[t - 1] > ' ') break;
+		for (f = 0; f < s.size(); ++f)
+			if (s[f] > ' ')
+				break;
+		for (t = s.size(); t > 0; --t)
+			if (s[t - 1] > ' ')
+				break;
 
 		s = s.substr(f, t);
 	}
 
-	bool RoxShaderCodeParser::replaceHlslMul(const char* func_name)
+	bool RoxShaderCodeParser::replaceHlslMul(const char *func_name)
 	{
 		if (!func_name)
 			return false;
@@ -1063,24 +1109,26 @@ namespace RoxRender
 		scope global_scope = scope(0, std::string::npos);
 		typedef std::map<std::string, scope> mat_map;
 		mat_map matrices;
-		for (int i = 0; i < (int)m_varying.size(); ++i) if (m_varying[i].type == TYPE_MATRIX4) matrices[m_varying[i].
-			name] = global_scope;
-		for (int i = 0; i < (int)m_uniforms.size(); ++i) if (m_uniforms[i].type == TYPE_MATRIX4) matrices[m_uniforms[i].
-			name] = global_scope;
+		for (int i = 0; i < (int)m_varying.size(); ++i)
+			if (m_varying[i].type == TYPE_MATRIX4)
+				matrices[m_varying[i].name] = global_scope;
+		for (int i = 0; i < (int)m_uniforms.size(); ++i)
+			if (m_uniforms[i].type == TYPE_MATRIX4)
+				matrices[m_uniforms[i].name] = global_scope;
 
 		size_t start_pos = 0;
 		while ((start_pos = m_code.find("mat", start_pos)) != std::string::npos)
 		{
 			if (start_pos != 0 && isNameChar(m_code[start_pos - 1]))
 			{
-				start_pos += 3; //strlen("mat")
+				start_pos += 3; // strlen("mat")
 				continue;
 			}
 
-			if (start_pos + 5 >= m_code.size()) //strlen("mat4 ")
+			if (start_pos + 5 >= m_code.size()) // strlen("mat4 ")
 				break;
 
-			start_pos += 3; //strlen("mat")
+			start_pos += 3; // strlen("mat")
 			if (!strchr("234", m_code[start_pos]))
 				continue;
 
@@ -1096,7 +1144,7 @@ namespace RoxRender
 			if (end_pos2 < end_pos)
 				var.resize(end_pos2);
 			removeVarSpaces(var);
-			matrices[var] = std::make_pair(end_pos, std::string::npos); //ToDo: find right scope border
+			matrices[var] = std::make_pair(end_pos, std::string::npos); // ToDo: find right scope border
 		}
 
 		bool result = false;
@@ -1123,7 +1171,7 @@ namespace RoxRender
 
 			removeVarSpaces(left_var);
 
-			//ToDo: not sure if matrix*scalar don't need mul, in case of fail replace || with &&
+			// ToDo: not sure if matrix*scalar don't need mul, in case of fail replace || with &&
 			if (isNumericOnlyVar(left_var) || isNumericOnlyVar(right_var))
 			{
 				++start_pos;
@@ -1132,13 +1180,11 @@ namespace RoxRender
 
 			mat_map::const_iterator left_scope = matrices.find(left_var);
 			mat_map::const_iterator right_scope = matrices.find(right_var);
-			if ((left_scope == matrices.end() || left_scope->second.first > start_pos || left_scope->second.second <
-					start_pos) &&
-				(right_scope == matrices.end() || right_scope->second.first > start_pos || right_scope->second.second <
-					start_pos))
+			if ((left_scope == matrices.end() || left_scope->second.first > start_pos || left_scope->second.second < start_pos) &&
+				(right_scope == matrices.end() || right_scope->second.first > start_pos || right_scope->second.second < start_pos))
 			{
-				//ToDo: detect mul(mat,mat) as mat
-				//ToDo: detect mat() constructors
+				// ToDo: detect mul(mat,mat) as mat
+				// ToDo: detect mat() constructors
 
 				++start_pos;
 				continue;
@@ -1152,7 +1198,7 @@ namespace RoxRender
 		return result;
 	}
 
-	bool RoxShaderCodeParser::replaceVecFromFloat(const char* func_name)
+	bool RoxShaderCodeParser::replaceVecFromFloat(const char *func_name)
 	{
 		if (!func_name)
 			return false;
@@ -1167,7 +1213,7 @@ namespace RoxRender
 				continue;
 			}
 
-			if (start_pos + 4 > m_code.size()) //strlen("vec")+1
+			if (start_pos + 4 > m_code.size()) // strlen("vec")+1
 			{
 				m_error.append("incomplete vec declaration: code end spotted\n");
 				return false;
@@ -1182,7 +1228,9 @@ namespace RoxRender
 
 			size_t brace_start = start_pos + 4;
 
-			while (m_code[brace_start] <= ' ') if (++brace_start >= m_code.length()) return false;
+			while (m_code[brace_start] <= ' ')
+				if (++brace_start >= m_code.length())
+					return false;
 			if (m_code[brace_start] != '(')
 			{
 				start_pos += 3;
@@ -1203,7 +1251,8 @@ namespace RoxRender
 
 				if (c == ')')
 				{
-					if (--brace_count < 0) break;
+					if (--brace_count < 0)
+						break;
 					continue;
 				}
 
@@ -1216,8 +1265,7 @@ namespace RoxRender
 
 			if (!has_comma)
 			{
-				std::string replace = func_name + std::string(1, dim) + "(" + m_code.substr(
-					brace_start + 1, brace_end - brace_start - 1) + ")";
+				std::string replace = func_name + std::string(1, dim) + "(" + m_code.substr(brace_start + 1, brace_end - brace_start - 1) + ")";
 				m_code.replace(start_pos, brace_end + 1 - start_pos, replace);
 				result = true;
 			}
@@ -1228,7 +1276,7 @@ namespace RoxRender
 		return result;
 	}
 
-	bool RoxShaderCodeParser::replaceMainFunctionHeader(const char* replace_str)
+	bool RoxShaderCodeParser::replaceMainFunctionHeader(const char *replace_str)
 	{
 		if (!replace_str)
 			return false;
@@ -1236,7 +1284,7 @@ namespace RoxRender
 		size_t start_pos = 0;
 		while ((start_pos = m_code.find("void", start_pos)) != std::string::npos)
 		{
-			const size_t lbrace = m_code.find('(', start_pos + 9); //strlen("void main")
+			const size_t lbrace = m_code.find('(', start_pos + 9); // strlen("void main")
 			if (lbrace == std::string::npos)
 			{
 				m_error.append("can't find '(' in void function declaration\n");
@@ -1244,7 +1292,7 @@ namespace RoxRender
 			}
 
 			std::string main;
-			for (size_t i = start_pos + 5; i < lbrace; ++i) //strlen("void ")
+			for (size_t i = start_pos + 5; i < lbrace; ++i) // strlen("void ")
 			{
 				if (m_code[i] > ' ')
 					main += m_code[i];
@@ -1252,7 +1300,7 @@ namespace RoxRender
 
 			if (main != "main")
 			{
-				start_pos += 4; //strlen("void")
+				start_pos += 4; // strlen("void")
 				continue;
 			}
 
@@ -1270,7 +1318,7 @@ namespace RoxRender
 		return false;
 	}
 
-	bool RoxShaderCodeParser::replaceVariable(const char* from, const char* to, size_t start_pos)
+	bool RoxShaderCodeParser::replaceVariable(const char *from, const char *to, size_t start_pos)
 	{
 		if (!from || !from[0] || !to)
 			return false;
@@ -1294,7 +1342,7 @@ namespace RoxRender
 		return result;
 	}
 
-	bool RoxShaderCodeParser::findVariable(const char* str, size_t start_pos)
+	bool RoxShaderCodeParser::findVariable(const char *str, size_t start_pos)
 	{
 		if (!str)
 			return false;
