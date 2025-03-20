@@ -677,7 +677,7 @@ void shared_particles::particle::init_mesh_quads(int count)
             inds[i+j]=v+quad_inds[j];
     }
 
-    mesh.setTc(0,sizeof(float)*3,2);
+    mesh.setTexCoord(0,sizeof(float)*3,2);
     mesh.setVertexData(&verts[0],sizeof(quad_vert),(unsigned int)verts.size());
     mesh.setIndexData(&inds[0],RoxRender::RoxVBO::INDEX_2D,(unsigned int)inds.size());
 }

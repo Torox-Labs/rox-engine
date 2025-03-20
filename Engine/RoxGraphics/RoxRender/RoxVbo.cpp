@@ -25,13 +25,13 @@ namespace RoxRender
 	{
 		uint active_vert_count = 0;
 		uint active_ind_count = 0;
-		RoxVBO::ELEMENT_TYPE active_ElementType = RoxVBO::TRIANGLES;
+		RoxVBO::ELEMENT_TYPE active_element_type = RoxVBO::TRIANGLES;
 	}
 
 	void RoxVBO::bindVerts() const
 	{
 		getAPIState().vertex_buffer = m_verts;
-		active_ElementType = m_element_type;
+		active_element_type = m_element_type;
 		active_vert_count = m_vert_count;
 	}
 
@@ -45,10 +45,10 @@ namespace RoxRender
 
 	void RoxVBO::draw()
 	{
-		draw(0, getAPIState().index_buffer < 0 ? active_vert_count : active_ind_count, active_ElementType);
+		draw(0, getAPIState().index_buffer < 0 ? active_vert_count : active_ind_count, active_element_type);
 	}
 
-	void RoxVBO::draw(uint count) { draw(0, count, active_ElementType); }
+	void RoxVBO::draw(uint count) { draw(0, count, active_element_type); }
 
 	void RoxVBO::draw(uint offset, uint count, ELEMENT_TYPE el_type, uint instances)
 	{
@@ -84,7 +84,7 @@ namespace RoxRender
 		IRoxRenderAPI::TfState s;
 		(IRoxRenderAPI::RenderState&)s = (IRoxRenderAPI::RenderState&)getAPIState();
 		s.vertex_buffer_out = target.m_verts;
-		s.primitive = active_ElementType;
+		s.primitive = active_element_type;
 		s.index_offset = s.out_offset = 0;
 		s.index_count = getAPIState().index_buffer < 0 ? active_vert_count : active_ind_count;
 		s.instances_count = 1;
@@ -171,14 +171,14 @@ namespace RoxRender
 		setLayout(m_layout);
 	}
 
-	void RoxVBO::setTc(uint tc_idx, uint offset, uint dimension, VERTEX_ATRIB_TYPE type)
+	void RoxVBO::setTexCoord(uint tc_idx, uint offset, uint dimension, VERTEX_ATRIB_TYPE type)
 	{
 		if (tc_idx >= max_tex_coord || dimension > 4)
 			return;
 
-		m_layout.tc[tc_idx].offset = offset;
-		m_layout.tc[tc_idx].dimension = dimension;
-		m_layout.tc[tc_idx].type = type;
+		m_layout.tex_coord[tc_idx].offset = offset;
+		m_layout.tex_coord[tc_idx].dimension = dimension;
+		m_layout.tex_coord[tc_idx].type = type;
 		setLayout(m_layout);
 	}
 
@@ -203,7 +203,7 @@ namespace RoxRender
 	void RoxVBO::setElementType(ELEMENT_TYPE type)
 	{
 		if (m_verts >= 0 && getAPIState().vertex_buffer == m_verts)
-			active_ElementType = type;
+			active_element_type = type;
 		m_element_type = type;
 	}
 
@@ -250,8 +250,8 @@ namespace RoxRender
 	uint RoxVBO::getVertOffset() const { return m_layout.pos.offset; }
 	uint RoxVBO::getVertDimension() const { return m_layout.pos.dimension; }
 	uint RoxVBO::getNormalsOffset() const { return m_layout.normal.offset; }
-	uint RoxVBO::getTcOffset(uint idx) const { return idx < max_tex_coord ? m_layout.tc[idx].offset : 0; }
-	uint RoxVBO::getTcDimension(uint idx) const { return idx < max_tex_coord ? m_layout.tc[idx].dimension : 0; }
+	uint RoxVBO::getTexCoordOffset(uint idx) const { return idx < max_tex_coord ? m_layout.tex_coord[idx].offset : 0; }
+	uint RoxVBO::getTexCoordDimension(uint idx) const { return idx < max_tex_coord ? m_layout.tex_coord[idx].dimension : 0; }
 	uint RoxVBO::getColorsOffset() const { return m_layout.color.offset; }
 	uint RoxVBO::getColorsDimension() const { return m_layout.color.dimension; }
 	uint RoxVBO::getVertsCount() const { return m_vert_count; }

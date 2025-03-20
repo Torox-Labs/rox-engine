@@ -34,7 +34,7 @@ public:
 
         m_mesh.setVertexData(verts,sizeof(verts[0]),4);
         m_mesh.setVertices(0,2);
-        m_mesh.setTc(0,2*4,2);
+        m_mesh.setTexCoord(0,2*4,2);
     }
 
     void draw(unsigned int instances_count=1) const

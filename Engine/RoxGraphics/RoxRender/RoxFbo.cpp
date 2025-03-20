@@ -18,13 +18,13 @@
 namespace RoxRender
 {
 
-void RoxFBO::setColorTarget(const RoxTexture &tex,CUBEMAP_SIDE side,unsigned int attachment_idx,unsigned int samples)
+void RoxFBO::setColorTarget(const RoxTexture &tex,CUBEMAP_SIDE side, uint attachment_idx, uint samples)
 {
     if(attachment_idx>=getMaxColorAttachments())
         return;
 
-    if(samples>getMaxMsaa())
-        samples=getMaxMsaa();
+    if(samples>getMaxMSAA())
+        samples=getMaxMSAA();
 
     if(attachment_idx>=(int)m_attachment_textures.size())
     {
@@ -40,7 +40,7 @@ void RoxFBO::setColorTarget(const RoxTexture &tex,CUBEMAP_SIDE side,unsigned int
     m_update=true;
 }
 
-void RoxFBO::setColorTarget(const RoxTexture &tex,unsigned int attachment_idx,unsigned int samples)
+void RoxFBO::setColorTarget(const RoxTexture &tex, uint attachment_idx, uint samples)
 {
     setColorTarget(tex,CUBEMAP_SIDE(-1),attachment_idx,samples);
 }
@@ -101,6 +101,6 @@ void RoxFBO::unbind()
 const RoxFBO RoxFBO::getCurrent() { RoxFBO f; f.m_fbo_idx=getAPIState().target; return f; }
 
 unsigned int RoxFBO::getMaxColorAttachments() { return getAPIInterface().getMaxTargetAttachments(); }
-unsigned int RoxFBO::getMaxMsaa() { return getAPIInterface().getMaxTargetMsaa(); }
+unsigned int RoxFBO::getMaxMSAA() { return getAPIInterface().getMaxTargetMsaa(); }
 
 }

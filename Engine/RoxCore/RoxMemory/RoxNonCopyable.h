@@ -20,11 +20,16 @@ namespace RoxMemory
 class RoxNonCopyable
 {
 protected:
-    RoxNonCopyable() {}
+    RoxNonCopyable() = default; // Explicit default constructor
 
 private:
-    RoxNonCopyable(const RoxNonCopyable& );
-    RoxNonCopyable& operator=(const RoxNonCopyable& );
+    // Explicitly delete copy operations
+    RoxNonCopyable(const RoxNonCopyable& ) = delete;
+    RoxNonCopyable& operator = (const RoxNonCopyable& ) = delete;
+
+    // Explicitly default move operations
+    RoxNonCopyable(RoxNonCopyable&&) = default;
+    RoxNonCopyable& operator = (RoxNonCopyable&&) = default;
 };
 
 }

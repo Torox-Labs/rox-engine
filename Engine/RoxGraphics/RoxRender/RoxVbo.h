@@ -70,7 +70,7 @@ namespace RoxRender
 			};
 
 			Attribute pos, normal, color;
-			Attribute tc[max_tex_coord];
+			Attribute tex_coord[max_tex_coord];
 
 			Layout() { pos.dimension = 3; }
 		};
@@ -81,7 +81,7 @@ namespace RoxRender
 		void setElementType(ELEMENT_TYPE type);
 		void setVertices(uint offset, uint dimension, VERTEX_ATRIB_TYPE = FLOAT_32);
 		void setNormals(uint offset, VERTEX_ATRIB_TYPE = FLOAT_32);
-		void setTc(uint tc_idx, uint offset, uint dimension, VERTEX_ATRIB_TYPE = FLOAT_32);
+		void setTexCoord(uint tc_idx, uint offset, uint dimension, VERTEX_ATRIB_TYPE = FLOAT_32);
 		void setColors(uint offset, uint dimension, VERTEX_ATRIB_TYPE = FLOAT_32);
 		void setLayout(const Layout& l);
 
@@ -94,8 +94,8 @@ namespace RoxRender
 		uint getVertOffset() const;
 		uint getVertDimension() const;
 		uint getNormalsOffset() const;
-		uint getTcOffset(uint idx) const;
-		uint getTcDimension(uint idx) const;
+		uint getTexCoordOffset(uint idx) const;
+		uint getTexCoordDimension(uint idx) const;
 		uint getColorsOffset() const;
 		uint getColorsDimension() const;
 		uint getIndicesCount() const;

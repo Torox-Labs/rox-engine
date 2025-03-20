@@ -54,7 +54,7 @@ bool mesh::load_nms_mesh_section(shared_mesh &res,const void *data,size_t size,i
             case RoxFormats::nms_mesh_chunk::pos: res.vbo.setVertices(e.offset,e.dimension,type); break;
             case RoxFormats::nms_mesh_chunk::normal: res.vbo.setNormals(e.offset,type); break;
             case RoxFormats::nms_mesh_chunk::color: res.vbo.setColors(e.offset,e.dimension,type); break;
-            default: res.vbo.setTc(e.type-RoxFormats::nms_mesh_chunk::tc0,e.offset,e.dimension,type); break;
+            default: res.vbo.setTexCoord(e.type-RoxFormats::nms_mesh_chunk::tc0,e.offset,e.dimension,type); break;
         };
     }
 

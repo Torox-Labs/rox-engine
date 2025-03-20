@@ -33,14 +33,16 @@ public:
         CUBE_NEGATIVE_Z
     };
 
+    typedef unsigned int uint;
+
 public:
-    void setColorTarget(const RoxTexture &tex,unsigned int attachment_idx=0,unsigned int samples=1);
-    void setColorTarget(const RoxTexture &tex,CUBEMAP_SIDE side,unsigned int attachment_idx=0,unsigned int samples=1);
+    void setColorTarget(const RoxTexture &tex,uint attachment_idx=0,uint samples=1);
+    void setColorTarget(const RoxTexture &tex,CUBEMAP_SIDE side,uint attachment_idx=0,uint samples=1);
     void setDepthTarget(const RoxTexture &tex);
 
 public:
-    static unsigned int getMaxColorAttachments();
-    static unsigned int getMaxMsaa();
+    static uint getMaxColorAttachments();
+    static uint getMaxMSAA();
 
 public:
     void release();
@@ -57,7 +59,7 @@ public:
 
 private:
     mutable int m_fbo_idx;
-    unsigned int m_width,m_height,m_samples;
+    uint m_width,m_height,m_samples;
     std::vector<int> m_attachment_textures;
     std::vector<int> m_attachment_sides;
     int m_depth_texture;

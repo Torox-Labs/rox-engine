@@ -1765,18 +1765,18 @@ namespace RoxRender
 				                      v.stride, (void*)(ptrdiff_t)(v.layout.pos.offset));
 				for (unsigned int i = 0; i < RoxVBO::max_tex_coord; ++i)
 				{
-					const RoxVBO::Layout::Attribute& tc = v.layout.tc[i];
-					if (tc.dimension > 0)
+					const RoxVBO::Layout::Attribute& tex_coord = v.layout.tex_coord[i];
+					if (tex_coord.dimension > 0)
 					{
 						//if(vobj.vertex_stride!=active_attributes.vertex_stride || !tc.compare(active_attributes.tcs[i]))
 						{
-							if (!applied_layout.tc[i].dimension)
+							if (!applied_layout.tex_coord[i].dimension)
 								glEnableVertexAttribArray(TC0_ATTRIBUTE + i);
-							glVertexAttribPointer(TC0_ATTRIBUTE + i, tc.dimension, getGLElementType(tc.type), true,
-							                      v.stride, (void*)(ptrdiff_t)(tc.offset));
+							glVertexAttribPointer(TC0_ATTRIBUTE + i, tex_coord.dimension, getGLElementType(tex_coord.type), true,
+							                      v.stride, (void*)(ptrdiff_t)(tex_coord.offset));
 						}
 					}
-					else if (applied_layout.tc[i].dimension > 0)
+					else if (applied_layout.tex_coord[i].dimension > 0)
 						glDisableVertexAttribArray(TC0_ATTRIBUTE + i);
 				}
 
