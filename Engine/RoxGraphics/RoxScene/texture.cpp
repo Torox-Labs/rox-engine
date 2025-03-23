@@ -107,7 +107,7 @@ bool texture::load_dds(shared_texture &res,resource_data &data,const char* name)
         return false;
     }
 
-    if(dds.pf!=RoxFormats::DirectDrawSurface::PALETTE8_RGBA && dds.pf!=RoxFormats::DirectDrawSurface::PALETTE4_RGBA) //ToDo
+    if(dds.pixel_format != RoxFormats::DirectDrawSurface::PALETTE8_RGBA && dds.pixel_format != RoxFormats::DirectDrawSurface::PALETTE4_RGBA) //ToDo
     {
         for(int i=0;i<m_load_dds_mip_offset && dds.mipmap_count > 1;++i)
         {
@@ -124,7 +124,7 @@ bool texture::load_dds(shared_texture &res,resource_data &data,const char* name)
 
     int mipmap_count=dds.need_generate_mipmaps?-1:dds.mipmap_count;
     RoxRender::RoxTexture::COLOR_FORMAT cf;
-    switch(dds.pf)
+    switch(dds.pixel_format)
     {
         case RoxFormats::DirectDrawSurface::DXT1: cf=RoxRender::RoxTexture::DXT1; break;
         case RoxFormats::DirectDrawSurface::DXT2:
@@ -155,9 +155,9 @@ bool texture::load_dds(shared_texture &res,resource_data &data,const char* name)
             cf=RoxRender::RoxTexture::COLOR_RGBA;
             dds.data_size=dds.width*dds.height*4;
             tmp_buf.allocate(dds.data_size);
-            dds.decodePalette8Rgba(tmp_buf.getData());
+            dds.decodePalette8RGBA(tmp_buf.getData());
             dds.data=tmp_buf.getData();
-            dds.pf=RoxFormats::DirectDrawSurface::BGRA;
+            dds.pixel_format = RoxFormats::DirectDrawSurface::BGRA;
         }
         break;
 
@@ -179,7 +179,7 @@ bool texture::load_dds(shared_texture &res,resource_data &data,const char* name)
                 dds.data_size=tmp_buf.getSize();
                 dds.data=tmp_buf.getData();
                 cf=RoxRender::RoxTexture::COLOR_RGBA;
-                dds.pf=RoxFormats::DirectDrawSurface::BGRA;
+                dds.pixel_format = RoxFormats::DirectDrawSurface::BGRA;
                 if(mipmap_count>1)
                     mipmap_count= -1;
             }
@@ -204,7 +204,7 @@ bool texture::load_dds(shared_texture &res,resource_data &data,const char* name)
                 dds.data_size=tmp_buf.getSize();
                 dds.data=tmp_buf.getData();
                 cf=RoxRender::RoxTexture::COLOR_RGBA;
-                dds.pf=RoxFormats::DirectDrawSurface::BGRA;
+                dds.pixel_format = RoxFormats::DirectDrawSurface::BGRA;
                 if(mipmap_count>1)
                     mipmap_count= -1;
             }
@@ -234,7 +234,7 @@ bool texture::load_tga(shared_texture &res,resource_data &data,const char* name)
     if(!data.getSize())
         return false;
 
-    RoxFormats::RTga tga;
+    RoxFormats::TGA tga;
     const size_t header_size=tga.decodeHeader(data.getData(),data.getSize());
     if(!header_size)
         return false;
@@ -254,8 +254,8 @@ bool texture::load_tga(shared_texture &res,resource_data &data,const char* name)
     const void *color_data=tga.data;
     if(tga.rle)
     {
-        tmp_data.allocate(tga.uncompressedSize);
-        if(!tga.decodeRle(tmp_data.getData()))
+        tmp_data.allocate(tga.uncompressed_size);
+        if(!tga.decodeRLE(tmp_data.getData()))
         {
             tmp_data.free();
             log()<<"unable to load tga: unable to decode rle in file "<<name<<"\n";
@@ -264,37 +264,37 @@ bool texture::load_tga(shared_texture &res,resource_data &data,const char* name)
 
         color_data=tmp_data.getData();
     }
-    else if(header_size+tga.uncompressedSize>data.getSize())
+    else if(header_size+tga.uncompressed_size>data.getSize())
     {
         log()<<"unable to load tga: lack of data, probably corrupted file "<<name<<"\n";
         return false;
     }
 
-    if(tga.channels==3 || tga.horisontalFlip || tga.verticalFlip)
+    if(tga.channels==3 || tga.horisontal_flip || tga.vertical_flip)
     {
         if(!tmp_data.getData())
         {
-            tmp_data.allocate(tga.uncompressedSize);
+            tmp_data.allocate(tga.uncompressed_size);
 
-            if(tga.horisontalFlip || tga.verticalFlip)
+            if(tga.horisontal_flip || tga.vertical_flip)
             {
-                if(tga.horisontalFlip)
+                if(tga.horisontal_flip)
                     tga.flipHorisontal(color_data,tmp_data.getData());
 
-                if(tga.verticalFlip)
+                if(tga.vertical_flip)
                     tga.flipVertical(color_data,tmp_data.getData());
             }
             else
-                tmp_data.copyFrom(color_data,tga.uncompressedSize);
+                tmp_data.copyFrom(color_data,tga.uncompressed_size);
 
             color_data=tmp_data.getData();
         }
         else
         {
-            if(tga.horisontalFlip)
+            if(tga.horisontal_flip)
                 tga.flipHorisontal(tmp_data.getData(),tmp_data.getData());
 
-            if(tga.verticalFlip)
+            if(tga.vertical_flip)
                 tga.flipVertical(tmp_data.getData(),tmp_data.getData());
         }
 

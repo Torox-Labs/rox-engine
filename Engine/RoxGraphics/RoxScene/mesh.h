@@ -17,7 +17,6 @@ namespace RoxScene
 struct shared_mesh
 {
     RoxRender::RoxVBO vbo;  // Vertex Buffer Object containing vertex data
-
     RoxMath::Aabb aabb;  // Axis-Aligned Bounding Box of the mesh
 
     struct aabb_bone_extend

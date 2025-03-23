@@ -222,6 +222,8 @@ namespace RoxRender
 				return -1;
 			}
 
+			log() << "shader: \n" << parser.getCode() << "\n";
+
 			GLuint object = compileShader(type, parser.getCode());
 			if (!object)
 			{
@@ -1100,8 +1102,8 @@ namespace RoxRender
 
 			void release()
 			{
-				if (buf) ::glDeleteRenderbuffers(1, &buf);
-				if (RoxFbo) ::glDeleteFramebuffers(1, &RoxFbo);
+				if (buf) glDeleteRenderbuffers(1, &buf);
+				if (RoxFbo) glDeleteFramebuffers(1, &RoxFbo);
 				*this = ms_buffer();
 			}
 

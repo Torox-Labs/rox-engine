@@ -6,13 +6,14 @@
 
 namespace RoxFormats
 {
+    typedef unsigned int uint;
 
     struct DirectDrawSurface
     {
-        unsigned int width;
-        unsigned int height;
-
-        unsigned int mipmap_count;
+        uint width;
+        uint height;
+        
+        uint mipmap_count;
         bool need_generate_mipmaps;
 
         enum TEXTURE_TYPE
@@ -39,7 +40,7 @@ namespace RoxFormats
             GREYSCALE
         };
 
-        PIXEL_FORMAT pf;
+        PIXEL_FORMAT pixel_format;
 
         const void* data;
         std::size_t data_size;
@@ -53,7 +54,7 @@ namespace RoxFormats
         std::size_t getMipSize(int mip_idx) const;
 
         std::size_t getDecodedSize() const;
-        void decodePalette8Rgba(void* decoded_data) const; // Requires width*height*4 buffer
+        void decodePalette8RGBA(void* decoded_data) const; // Requires width*height*4 buffer
         void decodeDxt(void* decoded_data) const; // Requires allocation with getDecodedSize()
     };
 

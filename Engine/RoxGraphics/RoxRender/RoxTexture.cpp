@@ -394,14 +394,14 @@ unsigned int RoxTexture::getFormatBpp(RoxTexture::COLOR_FORMAT format)
     return 0;
 }
 
-ID3D11Texture2D *RoxTexture::getDx11TexId() const
+ID3D11Texture2D *RoxTexture::getDx11TexID() const
 {
     //renderapi
 
     return 0;
 }
 
-unsigned int RoxTexture::getGlTexId() const
+unsigned int RoxTexture::getGlTexID() const
 {
     if(m_tex<0)
         return 0;

@@ -171,14 +171,14 @@ namespace RoxRender
 		setLayout(m_layout);
 	}
 
-	void RoxVBO::setTexCoord(uint tc_idx, uint offset, uint dimension, VERTEX_ATRIB_TYPE type)
+	void RoxVBO::setTexCoord(uint tex_coord_idx, uint offset, uint dimension, VERTEX_ATRIB_TYPE type)
 	{
-		if (tc_idx >= max_tex_coord || dimension > 4)
+		if (tex_coord_idx >= max_tex_coord || dimension > 4)
 			return;
 
-		m_layout.tex_coord[tc_idx].offset = offset;
-		m_layout.tex_coord[tc_idx].dimension = dimension;
-		m_layout.tex_coord[tc_idx].type = type;
+		m_layout.tex_coord[tex_coord_idx].offset = offset;
+		m_layout.tex_coord[tex_coord_idx].dimension = dimension;
+		m_layout.tex_coord[tex_coord_idx].type = type;
 		setLayout(m_layout);
 	}
 

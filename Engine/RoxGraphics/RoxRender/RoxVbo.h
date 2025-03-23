@@ -81,7 +81,7 @@ namespace RoxRender
 		void setElementType(ELEMENT_TYPE type);
 		void setVertices(uint offset, uint dimension, VERTEX_ATRIB_TYPE = FLOAT_32);
 		void setNormals(uint offset, VERTEX_ATRIB_TYPE = FLOAT_32);
-		void setTexCoord(uint tc_idx, uint offset, uint dimension, VERTEX_ATRIB_TYPE = FLOAT_32);
+		void setTexCoord(uint tex_coord_idx, uint offset, uint dimension, VERTEX_ATRIB_TYPE = FLOAT_32);
 		void setColors(uint offset, uint dimension, VERTEX_ATRIB_TYPE = FLOAT_32);
 		void setLayout(const Layout& l);
 

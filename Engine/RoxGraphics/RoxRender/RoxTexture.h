@@ -122,9 +122,9 @@ namespace RoxRender
 		static void getDefaultFilter(FILTER& minification, FILTER& magnification, FILTER& mipmap);
 		static uint getDefaultAniso();
 
-		static unsigned int getMaxDimension();
+		static uint getMaxDimension();
 
-		static unsigned int getFormatBpp(COLOR_FORMAT f);
+		static uint getFormatBpp(COLOR_FORMAT f);
 
 	public:
 		void release();
@@ -133,8 +133,8 @@ namespace RoxRender
 		static uint getUsedVmemSize();
 
 	public:
-		unsigned int getGlTexId() const;
-		ID3D11Texture2D* getDx11TexId() const;
+		uint getGlTexID() const;
+		ID3D11Texture2D* getDx11TexID() const;
 
 	public:
 		RoxTexture(): m_tex(-1), m_width(0), m_height(0), m_is_cubemap(false), m_filter_set(false), m_aniso_set(false),
@@ -153,7 +153,7 @@ namespace RoxRender
 		bool m_is_cubemap;
 		bool m_filter_set;
 		bool m_aniso_set;
-		unsigned int m_aniso;
+		uint m_aniso;
 		FILTER m_filter_min, m_filter_mag, m_filter_mip;
 	};
 }

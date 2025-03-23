@@ -22,9 +22,9 @@
 namespace RoxFormats
 {
 
-    struct RTga
+    struct TGA
     {
-        enum COLORMODE
+        enum COLOR_MODE
         {
             GREYSCALE = 1,
             BGR = 3,
@@ -33,61 +33,63 @@ namespace RoxFormats
 
         int width;
         int height;
-        COLORMODE channels;
+        COLOR_MODE channels;
         bool rle;
-        bool horisontalFlip;
-        bool verticalFlip;
+        bool horisontal_flip;
+        bool vertical_flip;
 
         const void* data;
-        std::size_t compressedSize;
-        std::size_t uncompressedSize;
+        std::size_t compressed_size;
+        std::size_t uncompressed_size;
 
     public:
         std::size_t decodeHeader(const void* data, std::size_t size); // Returns 0 if invalid
-        bool decodeRle(void* decodedData) const; // decodedData must be allocated with uncompressedSize
-        void flipHorisontal(const void* fromData, void* toData); // toData must be allocated; can be equal to fromData
-        void flipVertical(const void* fromData, void* toData);
+        bool decodeRLE(void* decoded_data) const; // decoded_data must be allocated with uncompressedSize
+        void flipHorisontal(const void* from_data, void* to_data); // to_data must be allocated; can be equal to from_data
+        void flipVertical(const void* from_data, void* to_data);
 
     public:
-        std::size_t encodeHeader(void* toData, std::size_t toSize = RTga::headerSize);
-        std::size_t encodeRle(void* toData, std::size_t toSize); // toData size should be allocated with enough size
+        std::size_t encodeHeader(void* to_data, std::size_t to_size = TGA::header_size);
+        std::size_t encodeRLE(void* to_data, std::size_t to_size); // to_data size should be allocated with enough size
 
     public:
-        static const std::size_t headerSize = 18;
-        static const std::size_t minimumHeaderSize = headerSize; // ToDo: remove legacy
+        static const std::size_t header_size = 18;
+        
+        // TODO: remove legacy
+        static const std::size_t minimum_header_size = header_size; 
 
     public:
-        RTga()
-            : width(0), height(0), rle(false), horisontalFlip(false),
-            verticalFlip(false), data(nullptr), compressedSize(0), uncompressedSize(0) {}
+        TGA()
+            : width(0), height(0), rle(false), horisontal_flip(false),
+            vertical_flip(false), data(nullptr), compressed_size(0), uncompressed_size(0) {}
     };
 
-    class RTgaFile
+    class TgaFile
     {
     public:
-        bool load(const char* fileName);
-        bool create(int width, int height, RTga::COLORMODE channels, const void* data);
-        bool decodeRle();
-        bool encodeRle(std::size_t maxCompressedSize);
-        bool save(const char* fileName);
+        bool load(const char* file_name);
+        bool create(int width, int height, TGA::COLOR_MODE channels, const void* data);
+        bool decodeRLE();
+        bool encodeRLE(std::size_t max_compressed_size);
+        bool save(const char* file_name);
         bool flipHorizontal();
         bool flipVertical();
-        void release() { mHeader = RTga(); mData.clear(); }
+        void release() { m_header = TGA(); m_data.clear(); }
 
     public:
-        bool isRle() const { return mHeader.rle; }
-        bool isFlippedVertical() const { return mHeader.verticalFlip; }
-        bool isFlippedHorizontal() const { return mHeader.horisontalFlip; }
-        int getWidth() const { return mHeader.width; }
-        int getHeight() const { return mHeader.height; }
-        RTga::COLORMODE getChannels() const { return mHeader.channels; }
-        const unsigned char* getData() const { return mData.empty() ? nullptr : &mData[0]; }
-        unsigned char* getData() { return mData.empty() ? nullptr : &mData[0]; }
-        std::size_t getDataSize() const { return mData.size(); }
+        bool isRLE() const { return m_header.rle; }
+        bool isFlippedVertical() const { return m_header.vertical_flip; }
+        bool isFlippedHorizontal() const { return m_header.horisontal_flip; }
+        int getWidth() const { return m_header.width; }
+        int getHeight() const { return m_header.height; }
+        TGA::COLOR_MODE getChannels() const { return m_header.channels; }
+        const unsigned char* getData() const { return m_data.empty() ? nullptr : &m_data[0]; }
+        unsigned char* getData() { return m_data.empty() ? nullptr : &m_data[0]; }
+        std::size_t getDataSize() const { return m_data.size(); }
 
     private:
-        RTga mHeader;
-        std::vector<unsigned char> mData;
+        TGA m_header;
+        std::vector<unsigned char> m_data;
     };
 
 }

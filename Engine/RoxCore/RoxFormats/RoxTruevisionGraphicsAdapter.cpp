@@ -21,16 +21,14 @@
 #include <cstdint>
 #include <cstring>
 
-namespace { const char roxt_sign[] = { 'r','o','x','t','_','t','g','a' }; } // Updated signature
-
 namespace RoxFormats
 {
 
-    std::size_t RTga::decodeHeader(const void* data, std::size_t size)
+    std::size_t TGA::decodeHeader(const void* data, std::size_t size)
     {
-        *this = RTga();
+        *this = TGA();
 
-        if (!data || size < RTga::headerSize)
+        if (!data || size < TGA::header_size)
             return 0;
 
         RoxMemory::RoxMemoryReader reader(data, size);
@@ -66,34 +64,34 @@ namespace RoxFormats
         const char bitsPerPixel = reader.read<char>();
         const unsigned char imageDescriptor = reader.read<char>();
 
-        COLORMODE channels;
+        COLOR_MODE channels;
         bool rle = false;
 
         switch (bitsPerPixel)
         {
         case 32:
             if (dataTypeCode == 10)
-                channels = COLORMODE::BGRA, rle = true;
+                channels = COLOR_MODE::BGRA, rle = true;
             else if (dataTypeCode == 2)
-                channels = COLORMODE::BGRA;
+                channels = COLOR_MODE::BGRA;
             else
                 return 0;
             break;
 
         case 24:
             if (dataTypeCode == 10)
-                channels = COLORMODE::BGR, rle = true;
+                channels = COLOR_MODE::BGR, rle = true;
             else if (dataTypeCode == 2)
-                channels = COLORMODE::BGR;
+                channels = COLOR_MODE::BGR;
             else
                 return 0;
             break;
 
         case 8:
             if (dataTypeCode == 11)
-                channels = COLORMODE::GREYSCALE, rle = true;
+                channels = COLOR_MODE::GREYSCALE, rle = true;
             else if (dataTypeCode == 3)
-                channels = COLORMODE::GREYSCALE;
+                channels = COLOR_MODE::GREYSCALE;
             else
                 return 0;
             break;
@@ -110,58 +108,58 @@ namespace RoxFormats
         this->height = height;
         this->channels = channels;
         this->rle = rle;
-        this->horisontalFlip = (imageDescriptor & 0x10) != 0;
-        this->verticalFlip = (imageDescriptor & 0x20) != 0;
+        this->horisontal_flip = (imageDescriptor & 0x10) != 0;
+        this->vertical_flip = (imageDescriptor & 0x20) != 0;
         this->data = reader.getData();
-        this->compressedSize = reader.getRemained();
-        this->uncompressedSize = colorDataSize;
+        this->compressed_size = reader.getRemained();
+        this->uncompressed_size = colorDataSize;
 
         return reader.getOffset();
     }
 
-    std::size_t RTga::encodeHeader(void* toData, std::size_t toSize)
+    std::size_t TGA::encodeHeader(void* to_data, std::size_t to_size)
     {
-        if (toSize < RTga::headerSize)
+        if (to_size < TGA::header_size)
             return 0;
 
         char dataTypeCode = 0;
         char bpp = static_cast<char>(static_cast<int>(channels) * 8);
 
         dataTypeCode = rle ? 10 : 2;
-        if (channels == COLORMODE::GREYSCALE)
+        if (channels == COLOR_MODE::GREYSCALE)
             ++dataTypeCode;
 
         if (!dataTypeCode)
             return 0;
 
         unsigned char imageDescriptor = 0;
-        if (horisontalFlip)
+        if (horisontal_flip)
             imageDescriptor |= 0x10;
-        if (verticalFlip)
+        if (vertical_flip)
             imageDescriptor |= 0x20;
 
         unsigned short w = static_cast<unsigned short>(width), h = static_cast<unsigned short>(height);
-        char* out = static_cast<char*>(toData);
-        std::memset(out, 0, RTga::headerSize);
+        char* out = static_cast<char*>(to_data);
+        std::memset(out, 0, TGA::header_size);
         std::memcpy(out + 2, &dataTypeCode, 1);
         std::memcpy(out + 12, &w, 2);
         std::memcpy(out + 14, &h, 2);
         std::memcpy(out + 16, &bpp, 1);
         std::memcpy(out + 17, &imageDescriptor, 1);
 
-        return RTga::headerSize;
+        return TGA::header_size;
     }
 
-    bool RTga::decodeRle(void* decodedData) const
+    bool TGA::decodeRLE(void* decoded_data) const
     {
-        if (!decodedData || !rle)
+        if (!decoded_data || !rle)
             return false;
 
         using uchar = unsigned char;
         const uchar* cur = static_cast<const uchar*>(data);
-        const uchar* const last = cur + compressedSize;
-        uchar* out = static_cast<uchar*>(decodedData);
-        const uchar* const outLast = out + uncompressedSize;
+        const uchar* const last = cur + compressed_size;
+        uchar* out = static_cast<uchar*>(decoded_data);
+        const uchar* const outLast = out + uncompressed_size;
 
         while (out < outLast)
         {
@@ -196,14 +194,14 @@ namespace RoxFormats
         return true;
     }
 
-    std::size_t RTga::encodeRle(void* toData, std::size_t toSize)
+    std::size_t TGA::encodeRLE(void* to_data, std::size_t to_size)
     {
         using uchar = unsigned char;
 
         const uchar* from = static_cast<const uchar*>(data);
-        const uchar* fromLast = from + uncompressedSize;
-        uchar* to = static_cast<uchar*>(toData);
-        uchar* toLast = to + toSize;
+        const uchar* fromLast = from + uncompressed_size;
+        uchar* to = static_cast<uchar*>(to_data);
+        uchar* toLast = to + to_size;
 
         uchar raw[128 * 4];
         std::memset(raw, 0, sizeof(raw));
@@ -272,12 +270,12 @@ namespace RoxFormats
             to += rawSize;
         }
 
-        return to - static_cast<uchar*>(toData);
+        return to - static_cast<uchar*>(to_data);
     }
 
-    void RTga::flipVertical(const void* fromData, void* toData)
+    void TGA::flipVertical(const void* from_data, void* to_data)
     {
-        if (!fromData || !toData || height == 0)
+        if (!from_data || !to_data || height == 0)
             return;
 
         const int lineSize = width * static_cast<int>(channels);
@@ -285,9 +283,9 @@ namespace RoxFormats
 
         using uchar = unsigned char;
 
-        uchar* to = static_cast<uchar*>(toData);
+        uchar* to = static_cast<uchar*>(to_data);
 
-        if (fromData == toData)
+        if (from_data == to_data)
         {
             if (!lineSize)
                 return;
@@ -309,16 +307,16 @@ namespace RoxFormats
         }
         else
         {
-            const uchar* from = static_cast<const uchar*>(fromData);
+            const uchar* from = static_cast<const uchar*>(from_data);
             to += top;
-            for (std::size_t offset = 0; offset < uncompressedSize; offset += lineSize)
+            for (std::size_t offset = 0; offset < uncompressed_size; offset += lineSize)
                 std::memcpy(to - offset, from + offset, lineSize);
         }
     }
 
-    void RTga::flipHorisontal(const void* fromData, void* toData)
+    void TGA::flipHorisontal(const void* from_data, void* to_data)
     {
-        if (!fromData || !toData)
+        if (!from_data || !to_data)
             return;
 
         const int lineSize = width * static_cast<int>(channels);
@@ -326,13 +324,13 @@ namespace RoxFormats
 
         using uchar = unsigned char;
 
-        uchar* to = static_cast<uchar*>(toData);
+        uchar* to = static_cast<uchar*>(to_data);
 
-        if (fromData == toData)
+        if (from_data == to_data)
         {
             uchar tmp[4]; // Assuming maximum channels = 4
 
-            for (std::size_t offset = 0; offset < uncompressedSize; offset += lineSize)
+            for (std::size_t offset = 0; offset < uncompressed_size; offset += lineSize)
             {
                 uchar* ha = to + offset;
                 uchar* hb = ha + lineSize - static_cast<int>(channels);
@@ -349,9 +347,9 @@ namespace RoxFormats
         }
         else
         {
-            const uchar* from = static_cast<const uchar*>(fromData);
+            const uchar* from = static_cast<const uchar*>(from_data);
 
-            for (std::size_t offset = 0; offset < uncompressedSize; offset += lineSize)
+            for (std::size_t offset = 0; offset < uncompressed_size; offset += lineSize)
             {
                 const uchar* ha = from + offset;
                 uchar* hb = to + offset + lineSize - static_cast<int>(channels);
@@ -366,143 +364,143 @@ namespace RoxFormats
         }
     }
 
-    bool RTgaFile::load(const char* fileName)
+    bool TgaFile::load(const char* file_name)
     {
         release();
 
-        RoxResources::IRoxResourceData* inData = RoxResources::getResourcesProvider().access(fileName);
+        RoxResources::IRoxResourceData* inData = RoxResources::getResourcesProvider().access(file_name);
         if (!inData)
         {
-            std::printf("Unable to open texture %s\n", fileName);
+            std::printf("Unable to open texture %s\n", file_name);
             return false;
         }
 
         RoxMemory::RoxTmpBufferScoped inBuf(inData->getSize());
         inData->readAll(inBuf.getData());
-        const bool headerDecoded = mHeader.decodeHeader(inBuf.getData(), inData->getSize()) > 0;
+        const bool headerDecoded = m_header.decodeHeader(inBuf.getData(), inData->getSize()) > 0;
         inData->release();
         if (!headerDecoded)
             return false;
 
-        if (mHeader.rle)
+        if (m_header.rle)
         {
-            mData.resize(mHeader.compressedSize);
-            std::memcpy(&mData[0], mHeader.data, mHeader.compressedSize);
+            m_data.resize(m_header.compressed_size);
+            std::memcpy(&m_data[0], m_header.data, m_header.compressed_size);
         }
         else
         {
-            mData.resize(mHeader.uncompressedSize);
-            std::memcpy(&mData[0], mHeader.data, mHeader.uncompressedSize);
+            m_data.resize(m_header.uncompressed_size);
+            std::memcpy(&m_data[0], m_header.data, m_header.uncompressed_size);
         }
 
         return true;
     }
 
-    bool RTgaFile::create(int width, int height, RTga::COLORMODE channels, const void* data)
+    bool TgaFile::create(int width, int height, TGA::COLOR_MODE channels, const void* data)
     {
         release();
 
         if (width <= 0 || height <= 0)
             return false;
 
-        mHeader.width = width;
-        mHeader.height = height;
-        mHeader.channels = channels;
+        m_header.width = width;
+        m_header.height = height;
+        m_header.channels = channels;
 
-        mData.resize(width * height * static_cast<int>(channels), 0);
+        m_data.resize(width * height * static_cast<int>(channels), 0);
         if (data)
-            std::memcpy(&mData[0], data, mData.size());
+            std::memcpy(&m_data[0], data, m_data.size());
 
         return true;
     }
 
-    bool RTgaFile::decodeRle()
+    bool TgaFile::decodeRLE()
     {
-        if (mData.empty())
+        if (m_data.empty())
             return false;
 
-        if (!mHeader.rle)
+        if (!m_header.rle)
             return false;
 
-        mHeader.data = &mData[0];
-        RoxMemory::RoxTmpBufferScoped buf(mHeader.uncompressedSize);
-        if (!mHeader.decodeRle(buf.getData()))
+        m_header.data = &m_data[0];
+        RoxMemory::RoxTmpBufferScoped buf(m_header.uncompressed_size);
+        if (!m_header.decodeRLE(buf.getData()))
             return false;
 
-        mHeader.rle = false;
-        mData.resize(mHeader.uncompressedSize);
-        std::memcpy(&mData[0], buf.getData(), mHeader.uncompressedSize);
+        m_header.rle = false;
+        m_data.resize(m_header.uncompressed_size);
+        std::memcpy(&m_data[0], buf.getData(), m_header.uncompressed_size);
 
         return true;
     }
 
-    bool RTgaFile::encodeRle(std::size_t maxCompressedSize)
+    bool TgaFile::encodeRLE(std::size_t max_compressed_size)
     {
-        if (mData.empty())
+        if (m_data.empty())
             return false;
 
-        if (mHeader.rle)
+        if (m_header.rle)
             return false;
 
-        mHeader.data = &mData[0];
-        RoxMemory::RoxTmpBufferScoped buf(maxCompressedSize);
-        std::size_t encodedSize = mHeader.encodeRle(buf.getData(), maxCompressedSize);
+        m_header.data = &m_data[0];
+        RoxMemory::RoxTmpBufferScoped buf(max_compressed_size);
+        std::size_t encodedSize = m_header.encodeRLE(buf.getData(), max_compressed_size);
         if (!encodedSize)
             return false;
 
-        mHeader.rle = true;
-        mHeader.compressedSize = encodedSize;
-        mData.resize(encodedSize);
-        std::memcpy(&mData[0], buf.getData(), encodedSize);
+        m_header.rle = true;
+        m_header.compressed_size = encodedSize;
+        m_data.resize(encodedSize);
+        std::memcpy(&m_data[0], buf.getData(), encodedSize);
 
         return true;
     }
 
-    bool RTgaFile::save(const char* fileName)
+    bool TgaFile::save(const char* file_name)
     {
-        if (mData.empty())
+        if (m_data.empty())
             return false;
 
-        FILE* outFile = std::fopen(fileName, "wb");
+        FILE* outFile = std::fopen(file_name, "wb");
         if (!outFile)
         {
-            std::printf("Unable to save texture %s\n", fileName);
+            std::printf("Unable to save texture %s\n", file_name);
             return false;
         }
 
-        char headerBuf[mHeader.headerSize];
-        std::size_t headerSize = mHeader.encodeHeader(headerBuf, sizeof(headerBuf));
-        std::fwrite(headerBuf, 1, headerSize, outFile);
-        std::fwrite(&mData[0], 1, mData.size(), outFile);
+        char headerBuf[m_header.header_size];
+        std::size_t header_size = m_header.encodeHeader(headerBuf, sizeof(headerBuf));
+        std::fwrite(headerBuf, 1, header_size, outFile);
+        std::fwrite(&m_data[0], 1, m_data.size(), outFile);
 
         std::fclose(outFile);
         return true;
     }
 
-    bool RTgaFile::flipHorizontal()
+    bool TgaFile::flipHorizontal()
     {
-        if (mData.empty())
+        if (m_data.empty())
             return false;
 
-        if (mHeader.rle && !decodeRle())
+        if (m_header.rle && !decodeRLE())
             return false;
 
-        mHeader.flipHorisontal(&mData[0], &mData[0]);
-        mHeader.horisontalFlip = !mHeader.horisontalFlip;
+        m_header.flipHorisontal(&m_data[0], &m_data[0]);
+        m_header.horisontal_flip = !m_header.horisontal_flip;
 
         return true;
     }
 
-    bool RTgaFile::flipVertical()
+    bool TgaFile::flipVertical()
     {
-        if (mData.empty())
+        if (m_data.empty())
             return false;
 
-        if (mHeader.rle && !decodeRle())
+        if (m_header.rle && !decodeRLE())
             return false;
 
-        mHeader.flipVertical(&mData[0], &mData[0]);
-        mHeader.verticalFlip = !mHeader.verticalFlip;
+        m_header.flipVertical(&m_data[0], &m_data[0]);
+        m_header.vertical_flip = !m_header.vertical_flip;
 
         return true;
     }

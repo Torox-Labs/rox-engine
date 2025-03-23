@@ -151,7 +151,7 @@ namespace RoxFormats
             const void* src_mip = static_cast<const char*>(from_data) + offset;
             void* dest_mip = static_cast<char*>(to_data) + offset;
 
-            switch (pf)
+            switch (pixel_format)
             {
             case RGB:
             case BGR:
@@ -159,8 +159,8 @@ namespace RoxFormats
             case BGRA:
             case GREYSCALE:
             {
-                int channels = (pf == BGRA || pf == RGBA) ? 4 :
-                    (pf == BGR || pf == RGB) ? 3 : 1;
+                int channels = (pixel_format == BGRA || pixel_format == RGBA) ? 4 :
+                    (pixel_format == BGR || pixel_format == RGB) ? 3 : 1;
                 flipRaw(current_width, current_height, channels, src_mip, dest_mip);
                 offset += current_width * current_height * channels;
                 break;
@@ -170,7 +170,7 @@ namespace RoxFormats
             {
                 unsigned int size = ((current_width > 4 ? current_width : 4) / 4) *
                     ((current_height > 4 ? current_height : 4) / 4) * 8;
-                flipDxt(current_width, current_height, pf, src_mip, dest_mip);
+                flipDxt(current_width, current_height, pixel_format, src_mip, dest_mip);
                 offset += size;
                 break;
             }
@@ -182,7 +182,7 @@ namespace RoxFormats
             {
                 unsigned int size = ((current_width > 4 ? current_width : 4) / 4) *
                     ((current_height > 4 ? current_height : 4) / 4) * 16;
-                flipDxt(current_width, current_height, pf, src_mip, dest_mip);
+                flipDxt(current_width, current_height, pixel_format, src_mip, dest_mip);
                 offset += size;
                 break;
             }
@@ -193,7 +193,7 @@ namespace RoxFormats
                 // ToDo: Not tested
                 return;
 
-                int palette_offset = (pf == PALETTE8_RGBA) ? 256 * 4 : 16 * 4;
+                int palette_offset = (pixel_format == PALETTE8_RGBA) ? 256 * 4 : 16 * 4;
                 flipRaw(current_width, current_height, 1,
                     static_cast<const char*>(src_mip) + palette_offset,
                     static_cast<char*>(dest_mip) + palette_offset);
@@ -225,9 +225,9 @@ namespace RoxFormats
         return (type == TEXTURE_CUBE) ? size * 6 : size;
     }
 
-    void DirectDrawSurface::decodePalette8Rgba(void* decoded_data) const
+    void DirectDrawSurface::decodePalette8RGBA(void* decoded_data) const
     {
-        if (pf != PALETTE8_RGBA)
+        if (pixel_format != PALETTE8_RGBA)
             return;
 
         // Use memcpy instead of cast to avoid misalignment
@@ -373,7 +373,7 @@ namespace RoxFormats
     {
         using uint = unsigned int;
         const char* src_buf = static_cast<const char*>(data);
-        const uint bytes_per_block = (pf == DXT1) ? 8 : 16;
+        const uint bytes_per_block = (pixel_format == DXT1) ? 8 : 16;
 
         for (int f = 0; f < ((type == TEXTURE_CUBE) ? 6 : 1); ++f)
         {
@@ -388,7 +388,7 @@ namespace RoxFormats
                     {
                         uint rgba[16];
 
-                        switch (pf)
+                        switch (pixel_format)
                         {
                         case DXT1:
                             decompressColor(src_buf, rgba, true);
@@ -476,19 +476,19 @@ namespace RoxFormats
             switch (pf_format.four_cc)
             {
             case 0x31545844: // '1TXD'
-                this->pf = DXT1;
+                this->pixel_format = DXT1;
                 break;
             case 0x32545844: // '2TXD'
-                this->pf = DXT2;
+                this->pixel_format = DXT2;
                 break;
             case 0x33545844: // '3TXD'
-                this->pf = DXT3;
+                this->pixel_format = DXT3;
                 break;
             case 0x34545844: // '4TXD'
-                this->pf = DXT4;
+                this->pixel_format = DXT4;
                 break;
             case 0x35545844: // '5TXD'
-                this->pf = DXT5;
+                this->pixel_format = DXT5;
                 break;
             default:
                 return 0;
@@ -496,7 +496,7 @@ namespace RoxFormats
 
             for (uint i = 0, w = width, h = height; i < mipmap_count; ++i, w /= 2, h /= 2)
             {
-                uint size = ((w > 4 ? w : 4) / 4) * ((h > 4 ? h : 4) / 4) * ((this->pf == DXT1) ? 8 : 16);
+                uint size = ((w > 4 ? w : 4) / 4) * ((h > 4 ? h : 4) / 4) * ((this->pixel_format == DXT1) ? 8 : 16);
                 this->data_size += size;
             }
         }
@@ -504,20 +504,20 @@ namespace RoxFormats
         {
             if (pf_format.bpp == 32)
             {
-                this->pf = (pf_format.bit_mask[0] == 255) ? RGBA : BGRA;
+                this->pixel_format = (pf_format.bit_mask[0] == 255) ? RGBA : BGRA;
             }
             else if (pf_format.bpp == 24)
             {
-                this->pf = (pf_format.bit_mask[0] == 255) ? RGB : BGR;
+                this->pixel_format = (pf_format.bit_mask[0] == 255) ? RGB : BGR;
             }
             else if (pf_format.bpp == 8)
             {
                 if (pf_format.flags & DDS_PALETTE8)
-                    this->pf = PALETTE8_RGBA;
+                    this->pixel_format = PALETTE8_RGBA;
                 else if (pf_format.flags & DDS_PALETTE4)
-                    this->pf = PALETTE4_RGBA;
+                    this->pixel_format = PALETTE4_RGBA;
                 else
-                    this->pf = GREYSCALE;
+                    this->pixel_format = GREYSCALE;
             }
             else
             {
@@ -562,15 +562,15 @@ namespace RoxFormats
         w1 = (w1 > 1) ? w1 : 1;
         h1 = (h1 > 1) ? h1 : 1;
 
-        if (pf <= DXT5)
+        if (pixel_format <= DXT5)
         {
             return ((w1 > 4 ? w1 : 4) / 4) * ((h1 > 4 ? h1 : 4) / 4) *
-                ((pf == DXT1) ? 8 : 16) *
+                ((pixel_format == DXT1) ? 8 : 16) *
                 ((type == TEXTURE_CUBE) ? 6 : 1);
         }
 
         return (w1) * (h1) *
-            ((pf == BGRA) ? 4 : ((pf == BGR) ? 3 : 1)) *
+            ((pixel_format == BGRA) ? 4 : ((pixel_format == BGR) ? 3 : 1)) *
             ((type == TEXTURE_CUBE) ? 6 : 1);
     }
 
