@@ -25,26 +25,26 @@ class RoxScreenQuad
 public:
     void init()
     {
-        struct { float x,y,s,t; } verts[4];
-        for(int i=0;i<4;++i)
+        struct { float x, y, s, t; } verts[4];
+        for (int i = 0; i < 4; ++i)
         {
-            verts[i].x=i>1?-1.0f:1.0f,verts[i].y=i%2?1.0f:-1.0f;
-            verts[i].s=i>1? 0.0f:1.0f,verts[i].t=i%2?1.0f:0.0f;
+            verts[i].x = i > 1 ? -1.0f : 1.0f, verts[i].y = i % 2 ? 1.0f : -1.0f;
+            verts[i].s = i > 1 ? 0.0f : 1.0f, verts[i].t = i % 2 ? 1.0f : 0.0f;
         }
 
-        m_mesh.setVertexData(verts,sizeof(verts[0]),4);
-        m_mesh.setVertices(0,2);
-        m_mesh.setTexCoord(0,2*4,2);
+        m_mesh.setVertexData(verts, sizeof(verts[0]), 4);
+        m_mesh.setVertices(0, 2);
+        m_mesh.setTexCoord(0, 2 * 4, 2);
     }
 
-    void draw(unsigned int instances_count=1) const
+    void draw(unsigned int instances_count = 1) const
     {
         m_mesh.bind();
-        RoxVBO::draw(0,m_mesh.getVertsCount(), RoxVBO::TRIANGLE_STRIP,instances_count);
+        RoxVBO::draw(0, m_mesh.getVertsCount(), RoxVBO::TRIANGLE_STRIP, instances_count);
         m_mesh.unbind();
     }
 
-    bool isValid() const { return m_mesh.getVertsCount()>0; }
+    bool isValid() const { return m_mesh.getVertsCount() > 0; }
 
     void release() { m_mesh.release(); }
 

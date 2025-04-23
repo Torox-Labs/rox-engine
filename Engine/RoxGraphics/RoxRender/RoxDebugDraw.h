@@ -26,9 +26,9 @@ namespace RoxRender
 class RoxDebugDraw
 {
 public:
-    void clear() { m_line_verts.clear(); m_point_verts.clear(); m_tri_verts.clear(); }
+    void clear() { m_line_vertices.clear(); m_point_vertices.clear(); m_tri_vertices.clear(); }
     void addPoint(const RoxMath::Vector3 &pos,
-                   const RoxMath::Vector4 &color=RoxMath::Vector4(1.0f,1.0f,1.0f,1.0f));
+                   const RoxMath::Vector4 &color = RoxMath::Vector4(1.0f,1.0f,1.0f,1.0f));
     void addLine(const RoxMath::Vector3 &pos,const RoxMath::Vector3 &pos2,
                   const RoxMath::Vector4 &color=RoxMath::Vector4(1.0f,1.0f,1.0f,1.0f));
     void addLine(const RoxMath::Vector3 &pos,const RoxMath::Vector3 &pos2,
@@ -59,10 +59,10 @@ private:
     mutable RoxVBO m_vbo;
     mutable RoxShader m_shader;
 
-    struct vert { RoxMath::Vector3 pos; RoxMath::Vector4 color; };
-    std::vector<vert> m_line_verts;
-    std::vector<vert> m_point_verts;
-    std::vector<vert> m_tri_verts;
+    struct Vertex { RoxMath::Vector3 pos; RoxMath::Vector4 color; };
+    std::vector<Vertex> m_point_vertices;
+    std::vector<Vertex> m_line_vertices;
+    std::vector<Vertex> m_tri_vertices;
 
     mutable bool m_initialised;
     float m_point_size;

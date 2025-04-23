@@ -19,7 +19,7 @@ namespace RoxRender
 
 void RoxDebugDraw::addPoint(const RoxMath::Vector3 &pos,const RoxMath::Vector4 &color)
 {
-    vert v; v.pos=pos; v.color=color; m_point_verts.push_back(v);
+    Vertex v; v.pos=pos; v.color=color; m_point_vertices.push_back(v);
 }
 
 void RoxDebugDraw::addLine(const RoxMath::Vector3 &pos,const RoxMath::Vector3 &pos2,const RoxMath::Vector4 &color)
@@ -30,19 +30,19 @@ void RoxDebugDraw::addLine(const RoxMath::Vector3 &pos,const RoxMath::Vector3 &p
 void RoxDebugDraw::addLine(const RoxMath::Vector3 &pos,const RoxMath::Vector3 &pos2,
                           const RoxMath::Vector4 &color,const RoxMath::Vector4 &color2)
 {
-    vert v;
-    v.pos=pos, v.color=color; m_line_verts.push_back(v);
-    v.pos=pos2, v.color=color2; m_line_verts.push_back(v);
+    Vertex v;
+    v.pos=pos, v.color=color; m_line_vertices.push_back(v);
+    v.pos=pos2, v.color=color2; m_line_vertices.push_back(v);
 }
 
 void RoxDebugDraw::addTri(const RoxMath::Vector3 &pos,const RoxMath::Vector3 &pos2,
                          const RoxMath::Vector3 &pos3,const RoxMath::Vector4 &color)
 {
-    vert v;
+    Vertex v;
     v.color=color;
-    v.pos=pos; m_tri_verts.push_back(v);
-    v.pos=pos2; m_tri_verts.push_back(v);
-    v.pos=pos3; m_tri_verts.push_back(v);
+    v.pos=pos; m_tri_vertices.push_back(v);
+    v.pos=pos2; m_tri_vertices.push_back(v);
+    v.pos=pos3; m_tri_vertices.push_back(v);
 }
 
 void RoxDebugDraw::addQuad(const RoxMath::Vector3 &pos,const RoxMath::Vector3 &pos2,const RoxMath::Vector3 &pos3,
@@ -104,41 +104,41 @@ void RoxDebugDraw::draw() const
     if(!m_initialised)
     {
         m_vbo.setColors(sizeof(float)*3,4);
-        m_shader.addProgram(RoxShader::VERTEX,"varying Vector4 color; void main() { color=gl_Color;"
+        m_shader.addProgram(RoxShader::VERTEX,"varying vec4 color; void main() { color=gl_Color;"
                                            "gl_Position=gl_ModelViewProjectionMatrix*gl_Vertex; }");
-        m_shader.addProgram(RoxShader::PIXEL,"varying Vector4 color; void main() { gl_FragColor=color; }");
+        m_shader.addProgram(RoxShader::PIXEL,"varying vec4 color; void main() { gl_FragColor=color; }");
 
         m_initialised=true;
     }
 
     m_shader.bind();
 
-    if(!m_point_verts.empty())
+    if(!m_point_vertices.empty())
     {
 //#ifndef OPENGL_ES
         //glPointSize(m_point_size);
 //#endif
         m_vbo.setElementType(RoxVBO::POINTS);
-        m_vbo.setVertexData(&m_point_verts[0],sizeof(vert),int(m_point_verts.size()));
+        m_vbo.setVertexData(&m_point_vertices[0],sizeof(Vertex),int(m_point_vertices.size()));
         m_vbo.bind();
         m_vbo.draw();
         m_vbo.unbind();
     }
 
-    if(!m_line_verts.empty())
+    if(!m_line_vertices.empty())
     {
         //glLineWidth(m_line_width);
         m_vbo.setElementType(RoxVBO::LINES);
-        m_vbo.setVertexData(&m_line_verts[0],sizeof(vert),int(m_line_verts.size()));
+        m_vbo.setVertexData(&m_line_vertices[0],sizeof(Vertex),int(m_line_vertices.size()));
         m_vbo.bind();
         m_vbo.draw();
         m_vbo.unbind();
     }
 
-    if(!m_tri_verts.empty())
+    if(!m_tri_vertices.empty())
     {
         m_vbo.setElementType(RoxVBO::TRIANGLES);
-        m_vbo.setVertexData(&m_tri_verts[0],sizeof(vert),int(m_tri_verts.size()));
+        m_vbo.setVertexData(&m_tri_vertices[0],sizeof(Vertex),int(m_tri_vertices.size()));
         m_vbo.bind();
         m_vbo.draw();
         m_vbo.unbind();
