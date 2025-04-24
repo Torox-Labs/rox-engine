@@ -26,9 +26,9 @@ namespace { const char rms_sign[] = { 'n','y','a',' ','m','e','s','h' }; } // Up
 namespace RoxFormats
 {
 
-    bool RMesh::readChunksInfo(const void* data, std::size_t size)
+    bool Mesh::readChunksInfo(const void* data, std::size_t size)
     {
-        *this = RMesh();
+        *this = Mesh();
 
         if (!data || !size)
             return false;
@@ -48,7 +48,7 @@ namespace RoxFormats
             cdata += chunks[i].size;
             if (cdata > data_end)
             {
-                *this = RMesh();
+                *this = Mesh();
                 return false;
             }
         }
@@ -56,7 +56,7 @@ namespace RoxFormats
         return true;
     }
 
-    std::size_t RMesh::readHeader(Header& outHeader, const void* data, std::size_t size)
+    std::size_t Mesh::readHeader(Header& outHeader, const void* data, std::size_t size)
     {
         outHeader.version = outHeader.chunksCount = 0;
         if (size < header_size)
@@ -75,7 +75,7 @@ namespace RoxFormats
         return reader.getOffset();
     }
 
-    std::size_t RMesh::readChunkInfo(ChunkInfo& outChunkInfo, const void* data, std::size_t size)
+    std::size_t Mesh::readChunkInfo(ChunkInfo& outChunkInfo, const void* data, std::size_t size)
     {
         if (size < sizeof(uint32_t) * 2)
             return 0;
@@ -89,7 +89,7 @@ namespace RoxFormats
         return reader.getOffset();
     }
 
-    std::size_t RMesh::getRMeshSize() const
+    std::size_t Mesh::getMeshSize() const
     {
         std::size_t size = header_size;
         for (size_t i = 0; i < chunks.size(); ++i)
@@ -98,7 +98,7 @@ namespace RoxFormats
         return size;
     }
 
-    std::size_t RMesh::writeToBuffer(void* data, std::size_t size) const
+    std::size_t Mesh::writeToBuffer(void* data, std::size_t size) const
     {
         if (!data)
             return 0;
@@ -119,7 +119,7 @@ namespace RoxFormats
         return cdata - static_cast<char*>(data);
     }
 
-    std::size_t RMesh::writeHeaderToBuffer(const Header& h, void* toData, std::size_t toSize)
+    std::size_t Mesh::writeHeaderToBuffer(const Header& h, void* toData, std::size_t toSize)
     {
         if (!toData || toSize < header_size)
             return 0;
@@ -132,7 +132,7 @@ namespace RoxFormats
         return writer.getOffset();
     }
 
-    std::size_t RMesh::writeHeaderToBuffer(unsigned int chunksCount, void* toData, std::size_t toSize)
+    std::size_t Mesh::writeHeaderToBuffer(unsigned int chunksCount, void* toData, std::size_t toSize)
     {
         Header h;
         h.version = latest_version;
@@ -140,12 +140,12 @@ namespace RoxFormats
         return writeHeaderToBuffer(h, toData, toSize);
     }
 
-    std::size_t RMesh::getChunkWriteSize(std::size_t chunkDataSize)
+    std::size_t Mesh::getChunkWriteSize(std::size_t chunkDataSize)
     {
         return chunkDataSize + sizeof(uint32_t) * 2;
     }
 
-    std::size_t RMesh::writeChunkToBuffer(const ChunkInfo& chunk, void* toData, std::size_t toSize)
+    std::size_t Mesh::writeChunkToBuffer(const ChunkInfo& chunk, void* toData, std::size_t toSize)
     {
         if (!toData || toSize < getChunkWriteSize(chunk.size))
             return 0;

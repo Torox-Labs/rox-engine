@@ -215,21 +215,21 @@ public:
     void set_bone_rot(int bone_idx,const RoxMath::Quaternion &rot,bool additive);
 
     // animation
-    void set_anim(const animation & anim,int layer=0,bool lerp=false) { set_anim(animation_proxy(anim),layer,lerp); }
-    void set_anim(const animation_proxy & anim,int layer=0,bool lerp=false);
-    void remove_anim(int layer=0) { set_anim(animation_proxy(),layer); }
-    const animation_proxy & get_anim(int layer=0) const;
-    unsigned int get_anim_time(int layer=0) const;
-    bool is_anim_finished(int layer=0) const;
-    void set_anim_time(unsigned int time,int layer=0);
+    void set_anim(const animation& anim, int layer = 0, bool lerp = false) { set_anim(animation_proxy(anim), layer, lerp); }
+    void set_anim(const animation_proxy& anim, int layer = 0, bool lerp = false);
+    void remove_anim(int layer = 0) { set_anim(animation_proxy(), layer); }
+    const animation_proxy& get_anim(int layer = 0) const;
+    unsigned int get_anim_time(int layer = 0) const;
+    bool is_anim_finished(int layer = 0) const;
+    void set_anim_time(unsigned int time, int layer = 0);
 
 public:
     mesh() {}
-    mesh(const char *name) { *this=mesh(); load(name); }
+    mesh(const char* name) { *this = mesh(); load(name); }
 
 public:
-    static void set_resources_prefix(const char *prefix) { mesh_internal::set_resources_prefix(prefix); }
-    static void register_load_function(mesh_internal::load_function function,bool clear_default=true) { mesh_internal::register_load_function(function,clear_default); }
+    static void set_resources_prefix(const char* prefix) { mesh_internal::set_resources_prefix(prefix); }
+    static void register_load_function(mesh_internal::load_function function, bool clear_default = true) { mesh_internal::register_load_function(function, clear_default); }
 public:
     static bool is_frustrum_cull_enabled();
     static void set_frustum_cull(bool enable);

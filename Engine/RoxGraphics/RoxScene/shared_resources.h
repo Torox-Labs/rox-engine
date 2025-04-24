@@ -22,17 +22,17 @@ public:
             return false;
         }
 
-        const std::string final_name=get_resources_prefix_str()+name;
+        const std::string final_name = get_resources_prefix_str() + name;
         if(m_shared.isValid())
         {
-            const char *res_name=m_shared.getName();
-            if(res_name && final_name==res_name)
+            const char* res_name = m_shared.getName();
+            if (res_name && final_name == res_name)
                 return true;
         }
 
         unload();
 
-        m_shared=get_shared_resources().access(final_name.c_str());
+        m_shared = get_shared_resources().access(final_name.c_str());
 
         return m_shared.isValid();
     }

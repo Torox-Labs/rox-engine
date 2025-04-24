@@ -219,7 +219,7 @@ bool mesh::load_nms(shared_mesh &res,resource_data &data,const char* name)
     if(!data.getSize() || data.getSize()<8 || memcmp(data.getData(),"nya mesh",8)!=0)
         return false;
 
-    RoxFormats::RMesh m;
+    RoxFormats::Mesh m;
     if(!m.readChunksInfo(data.getData(),data.getSize()))
     {
         log()<<"nms load error: invalid nms\n";
@@ -234,13 +234,13 @@ bool mesh::load_nms(shared_mesh &res,resource_data &data,const char* name)
 
     for(size_t i=0;i<m.chunks.size();++i)
     {
-        const RoxFormats::RMesh::ChunkInfo c=m.chunks[i];
+        const RoxFormats::Mesh::ChunkInfo c=m.chunks[i];
         switch(c.type)
         {
-        case RoxFormats::RMesh::MESH_DATA: if(!load_nms_mesh_section(res,c.data,c.size,m.version)) return false; break;
-            case RoxFormats::RMesh::SKELETON: if(!load_nms_skeleton_section(res,c.data,c.size,m.version)) return false; break;
-            case RoxFormats::RMesh::MATERIALS: if(!load_nms_material_section(res,c.data,c.size,m.version)) return false; break;
-            case RoxFormats::RMesh::GENERAL: if(!load_nms_general_section(res,c.data,c.size,m.version)) return false; break;
+        case RoxFormats::Mesh::MESH_DATA: if(!load_nms_mesh_section(res,c.data,c.size,m.version)) return false; break;
+            case RoxFormats::Mesh::SKELETON: if(!load_nms_skeleton_section(res,c.data,c.size,m.version)) return false; break;
+            case RoxFormats::Mesh::MATERIALS: if(!load_nms_material_section(res,c.data,c.size,m.version)) return false; break;
+            case RoxFormats::Mesh::GENERAL: if(!load_nms_general_section(res,c.data,c.size,m.version)) return false; break;
             //default: log()<<"nms load warning: unknown chunk type\n"; //not an error
         };
     }

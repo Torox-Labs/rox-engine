@@ -47,7 +47,7 @@ public:
             return false;
         }
 
-        if(memcmp(m_data+m_offset,data,size)!=0)
+        if (memcmp(m_data + m_offset, data, size) != 0)
         {
             //m_offset+=size;
             return false;

@@ -17,10 +17,14 @@
 namespace RoxRender
 {
 
-namespace { Statistics stats; bool stats_enabled=false; }
+namespace { Statistics stats; bool stats_enabled = false; }
 
-void Statistics::beginFrame() { stats=Statistics(); stats_enabled=true; }
-Statistics &Statistics::get() { return stats; }
+void Statistics::beginFrame() {
+	stats = Statistics();
+	stats_enabled = true; 
+}
+
+Statistics& Statistics::get() { return stats; }
 bool Statistics::enabled() { return stats_enabled; }
 
 }
