@@ -18,6 +18,7 @@
 #include "RoxMath/RoxQuaternion.h"
 #include "RoxMath/RoxBezier.h"
 #include "RoxMemory/RoxSharedPtr.h"
+
 #include <vector>
 #include <map>
 #include <string>

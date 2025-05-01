@@ -1,54 +1,40 @@
-// Updated By the ROX_ENGINE
-// Copyright (C) 2024 Torox Project
-// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
-//
-// This file was modified by the Torox Project.
-// 
-// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
-// See the LICENSE-MIT file in the root directory for more information.
-//
-// This file is also part of the Rox-engine, which is licensed under a dual-license system:
-// 1. Free Use License (for non-commercial and commercial use under specific conditions)
-// 2. Commercial License (for use on proprietary platforms)
-// See the LICENSE file in the root directory for the full Rox-engine license terms.
+//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
 #include "RoxMesh.h"
 #include "RoxMemory/RoxMemoryReader.h"
 #include "RoxMemory/RoxMemoryWriter.h"
 #include "RoxMemory/RoxInvalidObject.h"
+#include <stdio.h>
+#include <stdint.h>
 
-#include <cstdio> 
-#include <cstdint>
-#include <cstring>
-
-namespace { const char rms_sign[] = { 'n','y','a',' ','m','e','s','h' }; } // Updated signature
+namespace { const char nms_sign[] = { 'n','y','a',' ','m','e','s','h' }; }
 
 namespace RoxFormats
 {
 
-    bool Mesh::readChunksInfo(const void* data, std::size_t size)
+    bool nms::read_chunks_info(const void* data, size_t size)
     {
-        *this = Mesh();
+        *this = nms();
 
         if (!data || !size)
             return false;
 
-        const char* cdata = static_cast<const char*>(data);
+        const char* cdata = (const char*)data;
         const char* const data_end = cdata + size;
-        Header h;
-        cdata += readHeader(h, data, size);
+        header h;
+        cdata += read_header(h, data, size);
         if (cdata == data)
             return false;
 
         version = h.version;
-        chunks.resize(h.chunksCount);
+        chunks.resize(h.chunks_count);
         for (size_t i = 0; i < chunks.size(); ++i)
         {
-            cdata += readChunkInfo(chunks[i], cdata, data_end - cdata);
+            cdata += read_chunk_info(chunks[i], cdata, data_end - cdata);
             cdata += chunks[i].size;
             if (cdata > data_end)
             {
-                *this = Mesh();
+                *this = nms();
                 return false;
             }
         }
@@ -56,101 +42,90 @@ namespace RoxFormats
         return true;
     }
 
-    std::size_t Mesh::readHeader(Header& outHeader, const void* data, std::size_t size)
+    size_t nms::read_header(header& out_header, const void* data, size_t size)
     {
-        outHeader.version = outHeader.chunksCount = 0;
-        if (size < header_size)
+        out_header.version = out_header.chunks_count = 0;
+        if (size < nms_header_size)
             return 0;
 
         RoxMemory::RoxMemoryReader reader(data, size);
-        if (!reader.test(rms_sign, std::strlen(rms_sign)))
+        if (!reader.test(nms_sign, sizeof(nms_sign)))
             return 0;
 
-        outHeader.version = reader.read<uint32_t>();
-        if (!outHeader.version)
+        out_header.version = reader.read<uint32_t>();
+        if (!out_header.version)
             return 0;
 
-        outHeader.chunksCount = reader.read<uint32_t>();
+        out_header.chunks_count = reader.read<uint32_t>();
 
         return reader.getOffset();
     }
 
-    std::size_t Mesh::readChunkInfo(ChunkInfo& outChunkInfo, const void* data, std::size_t size)
+    size_t nms::read_chunk_info(chunk_info& out_chunk_info, const void* data, size_t size)
     {
         if (size < sizeof(uint32_t) * 2)
             return 0;
 
-        outChunkInfo.type = outChunkInfo.size = 0;
+        out_chunk_info.type = out_chunk_info.size = 0;
         RoxMemory::RoxMemoryReader reader(data, size);
-        outChunkInfo.type = reader.read<uint32_t>();
-        outChunkInfo.size = reader.read<uint32_t>();
-        outChunkInfo.data = reader.getData();
+        out_chunk_info.type = reader.read<uint32_t>();
+        out_chunk_info.size = reader.read<uint32_t>();
+        out_chunk_info.data = reader.getData();
 
         return reader.getOffset();
     }
 
-    std::size_t Mesh::getMeshSize() const
+    size_t nms::get_nms_size()
     {
-        std::size_t size = header_size;
+        size_t size = nms_header_size;
         for (size_t i = 0; i < chunks.size(); ++i)
-            size += getChunkWriteSize(chunks[i].size);
+            size += get_chunk_write_size(chunks[i].size);
 
         return size;
     }
 
-    std::size_t Mesh::writeToBuffer(void* data, std::size_t size) const
+    size_t nms::write_to_buf(void* data, size_t size)
     {
         if (!data)
             return 0;
 
-        char* cdata = static_cast<char*>(data);
+        char* cdata = (char*)data;
         const char* const data_end = cdata + size;
 
-        Header h;
+        header h;
         h.version = version;
-        h.chunksCount = static_cast<unsigned int>(chunks.size());
-        cdata += writeHeaderToBuffer(h, data, size);
+        h.chunks_count = (unsigned int)chunks.size();
+        cdata += write_header_to_buf(h, data, size);
         if (data == cdata)
             return 0;
 
         for (size_t i = 0; i < chunks.size(); ++i)
-            cdata += writeChunkToBuffer(chunks[i], cdata, data_end - cdata);
+            cdata += write_chunk_to_buf(chunks[i], cdata, data_end - cdata);
 
-        return cdata - static_cast<char*>(data);
+        return cdata - (char*)data;
     }
 
-    std::size_t Mesh::writeHeaderToBuffer(const Header& h, void* toData, std::size_t toSize)
+    size_t nms::write_header_to_buf(const header& h, void* to_data, size_t to_size)
     {
-        if (!toData || toSize < header_size)
+        if (!to_data || to_size < nms_header_size)
             return 0;
 
-        RoxMemory::RoxMemoryWriter writer(toData, toSize);
-        writer.write(rms_sign, std::strlen(rms_sign));
+        RoxMemory::RoxMemoryWriter writer(to_data, to_size);
+        writer.write(nms_sign, sizeof(nms_sign));
         writer.writeUint(h.version);
-        writer.writeUint(h.chunksCount);
+        writer.writeUint(h.chunks_count);
 
         return writer.getOffset();
     }
 
-    std::size_t Mesh::writeHeaderToBuffer(unsigned int chunksCount, void* toData, std::size_t toSize)
-    {
-        Header h;
-        h.version = latest_version;
-        h.chunksCount = chunksCount;
-        return writeHeaderToBuffer(h, toData, toSize);
-    }
+    size_t nms::get_chunk_write_size(size_t chunk_data_size) { return chunk_data_size + sizeof(uint32_t) * 2; }
 
-    std::size_t Mesh::getChunkWriteSize(std::size_t chunkDataSize)
+    size_t nms::write_chunk_to_buf(const chunk_info& chunk, void* to_data, size_t to_size)
     {
-        return chunkDataSize + sizeof(uint32_t) * 2;
-    }
-
-    std::size_t Mesh::writeChunkToBuffer(const ChunkInfo& chunk, void* toData, std::size_t toSize)
-    {
-        if (!toData || toSize < getChunkWriteSize(chunk.size))
+        if (!to_data || to_size < get_chunk_write_size(chunk.size))
             return 0;
 
-        RoxMemory::RoxMemoryWriter writer(toData, toSize);
+        RoxMemory::RoxMemoryWriter writer(to_data, to_size);
         writer.writeUint(chunk.type);
         writer.writeUint(chunk.size);
         if (!chunk.size)
@@ -620,4 +595,4 @@ namespace RoxFormats
         return writer.getOffset();
     }
 
-} // namespace RoxFormats
+}

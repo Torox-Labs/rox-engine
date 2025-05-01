@@ -47,6 +47,7 @@ void bitmapRgbToBgr(const uint8_t *data,int width,int height,int channels,uint8_
 
 void bitmapRgbaToRgb(uint8_t *data,int width,int height);
 void bitmapRgbaToRgb(const uint8_t *data,int width,int height,uint8_t *out);
+
 void bitmapRgraToRgb(uint8_t *data,int width,int height);
 void bitmapRgraToRgb(const uint8_t *data,int width,int height,uint8_t *out);
 
@@ -55,6 +56,7 @@ void bitmapRgbToBgra(const uint8_t *data,int width,int height,uint8_t alpha,uint
 
 void bitmapArgbToRgba(uint8_t *data,int width,int height);
 void bitmapArgbToRgba(const uint8_t *data,int width,int height,uint8_t *out);
+
 void bitmapArgbToBgra(uint8_t *data,int width,int height);
 void bitmapArgbToBgra(const uint8_t *data,int width,int height,uint8_t *out);
 

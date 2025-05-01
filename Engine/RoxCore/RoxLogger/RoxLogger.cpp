@@ -20,31 +20,31 @@
 namespace RoxLogger
 {
 
-namespace { RoxLoggerBase* current_log = new RoxStdoutLog(); }
+    namespace { RoxLoggerBase* current_log = new RoxStdoutLog(); }
 
-RoxLoggerBase& noLogger()
-{
-    static RoxLoggerBase* l = new RoxLoggerBase();
-    return* l;
-}
+    RoxLoggerBase& noLogger()
+    {
+        static RoxLoggerBase* l = new RoxLoggerBase();
+        return*l;
+    }
 
-void setLogger(RoxLoggerBase* l) { current_log = current_log ? l : &noLogger(); }
-RoxLoggerBase& log() { return* current_log; }
+    void setLogger(RoxLoggerBase* l) { current_log = current_log ? l : &noLogger(); }
+    RoxLoggerBase& log() { return*current_log; };
 
-RoxLoggerBase& log(const char* fmt, ...)
-{
-    va_list args,args_copy;
-    va_start(args,fmt);
+    RoxLoggerBase& log(const char* fmt, ...)
+    {
+        va_list args, args_copy;
+        va_start(args, fmt);
 #ifdef _WIN32
-    args_copy=args;
-	va_copy(args_copy, args);
-    const int len=_vscprintf(fmt,args)+1;
+        args_copy = args;
+        //va_copy(args_copy, args);
+        const int len = _vscprintf(fmt, args) + 1;
 #endif
-    std::string buf;
-    buf.resize(len);
-    printf(&buf[0],fmt,args_copy);
-    *current_log<<buf;
-    return *current_log;
-}
+        std::string buf;
+        buf.resize(len);
+        vsprintf(&buf[0], fmt, args_copy);
+        *current_log << buf;
+        return *current_log;
+    }
 
 }

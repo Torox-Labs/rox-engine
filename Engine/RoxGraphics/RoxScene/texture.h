@@ -58,7 +58,7 @@ public:
 public:
     typedef RoxRender::RoxTexture::COLOR_FORMAT color_format;
 
-    const char *get_name() const { return internal().get_name(); }
+    const char *get_name() const { return internal().getName(); }
     unsigned int get_width() const;
     unsigned int get_height() const;
     color_format get_format() const;

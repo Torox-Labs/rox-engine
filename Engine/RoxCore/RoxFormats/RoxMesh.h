@@ -1,22 +1,10 @@
-// Updated By the ROX_ENGINE
-// Copyright (C) 2024 Torox Project
-// Portions Copyright (C) 2013 nyan.developer@gmail.com (nya-engine)
-//
-// This file was modified by the Torox Project.
-// 
-// This file incorporates code from the nya-engine project, which is licensed under the MIT License.
-// See the LICENSE-MIT file in the root directory for more information.
-//
-// This file is also part of the Rox-engine, which is licensed under a dual-license system:
-// 1. Free Use License (for non-commercial and commercial use under specific conditions)
-// 2. Commercial License (for use on proprietary platforms)
-// See the LICENSE file in the root directory for the full Rox-engine license terms.
+//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
 #pragma once
 
 #include <vector>
 #include <string>
-#include <cstddef>
+#include <stddef.h>
 
 #include "RoxMath/RoxVector.h"
 #include "RoxMath/RoxQuaternion.h"
@@ -24,55 +12,60 @@
 namespace RoxFormats
 {
 
-    struct Mesh
+    struct nms
     {
         unsigned int version;
 
-        struct ChunkInfo
+        struct chunk_info
         {
             unsigned int type;
             unsigned int size;
             const void* data;
         };
 
-        enum SectionType
+        enum section_type
         {
-            MESH_DATA,
-            SKELETON,
-            MATERIALS,
-            GENERAL
+            mesh_data,
+            skeleton,
+            materials,
+            general
         };
 
-        std::vector<ChunkInfo> chunks;
+        std::vector<chunk_info> chunks;
 
-        Mesh() : version(0) {}
-
-    public:
-        bool readChunksInfo(const void* data, std::size_t size);
+        nms() : version(0) {}
 
     public:
-        struct Header
+        bool read_chunks_info(const void* data, size_t size);
+
+    public:
+        struct header
         {
             unsigned int version;
-            unsigned int chunksCount;
+            unsigned int chunks_count;
         };
 
-        static std::size_t readHeader(Header& outHeader, const void* data, std::size_t size = Mesh::header_size);
-        static std::size_t readChunkInfo(ChunkInfo& outChunkInfo, const void* data, std::size_t size);
+        static size_t read_header(header& out_header, const void* data, size_t size = nms_header_size);
+        static size_t read_chunk_info(chunk_info& out_chunk_info, const void* data, size_t size);
 
     public:
-        std::size_t getMeshSize() const;
-        std::size_t writeToBuffer(void* toData, std::size_t toSize) const; // toSize = getMeshSize()
+        size_t get_nms_size();
+        size_t write_to_buf(void* to_data, size_t to_size); //to_size=get_nms_size()
 
     public:
-        static std::size_t writeHeaderToBuffer(const Header& h, void* toData, std::size_t toSize = Mesh::header_size);
-        static std::size_t writeHeaderToBuffer(unsigned int chunksCount, void* toData, std::size_t toSize = Mesh::header_size);
+        static size_t write_header_to_buf(unsigned int chunks_count, void* to_data, size_t to_size = nms_header_size)
+        {
+            header h; h.version = latest_version, h.chunks_count = chunks_count;
+            return write_header_to_buf(h, to_data, to_size);
+        }
 
-        static std::size_t getChunkWriteSize(std::size_t chunkDataSize);
-        static std::size_t writeChunkToBuffer(const ChunkInfo& chunk, void* toData, std::size_t toSize); // toSize = getChunkWriteSize()
+        static size_t write_header_to_buf(const header& h, void* to_data, size_t to_size = nms_header_size);
+
+        static size_t get_chunk_write_size(size_t chunk_data_size);
+        static size_t write_chunk_to_buf(const chunk_info& chunk, void* to_data, size_t to_size); //to_size=get_chunk_size()
 
     public:
-        const static std::size_t header_size = 16;
+        const static size_t nms_header_size = 16;
         const static unsigned int latest_version = 2;
     };
 
@@ -152,7 +145,8 @@ namespace RoxFormats
 
     public:
         nms_mesh_chunk() : verts_count(0), vertex_stride(0), vertices_data(0),
-            index_size(no_indices), indices_count(0), indices_data(0) {}
+            index_size(no_indices), indices_count(0), indices_data(0) {
+        }
     public:
         size_t read_header(const void* data, size_t size, int version); //0 if invalid
 
@@ -275,6 +269,5 @@ namespace RoxFormats
         size_t get_chunk_size() const { return write_to_buf(0, 0); }
         size_t write_to_buf(void* to_data, size_t to_size) const;
     };
-
 
 }

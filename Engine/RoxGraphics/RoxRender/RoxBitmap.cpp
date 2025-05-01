@@ -15,6 +15,7 @@
 #include "RoxBitmap.h"
 #include "RoxMemory/RoxAlignAlloc.h"
 #include "RoxMemory/RoxTmpBuffers.h"
+
 #include <cstring>
 #include <vector>
 
