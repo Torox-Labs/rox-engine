@@ -697,9 +697,14 @@ namespace RoxRender
 		replaceVariable("texture2DProj", "textureProj");
 		replaceVariable("textureCube", "texture");
 
-		const char *gl_ps_out = "gl_FragColor";
-		std::string ps_out_var = m_replace_str + std::string(gl_ps_out + 3);
-		const bool is_fragment = replaceVariable(gl_ps_out, ps_out_var.c_str());
+		std::string ps_out_var = "";
+		bool is_fragment = false;
+
+		isFragment("gl_FragColor", ps_out_var, is_fragment);
+
+		if (!is_fragment)
+			isFragment("rox_FragColor", ps_out_var, is_fragment);
+
 		if (is_fragment)
 		{
 			prefix.append("layout(location=0) out vec4 " + ps_out_var + ";\n");
@@ -713,6 +718,22 @@ namespace RoxRender
 
 		m_code.insert(0, prefix);
 		return true;
+	}
+
+	void RoxShaderCodeParser::isFragment(const char* ps_out, std::string& ps_out_var, bool &is_fragment) 
+	{
+		if (ps_out == nullptr) {
+			is_fragment = false;
+			return;
+		}
+
+		ps_out_var = m_replace_str + std::string(ps_out + (std::strcmp("gl_FragColor", ps_out) == 1 ? 3 : 4));
+		if (ps_out_var.empty()) {
+			is_fragment = false;
+			return;
+		}
+
+		is_fragment = replaceVariable(ps_out, ps_out_var.c_str());
 	}
 
 	int RoxShaderCodeParser::getUniformsCount()

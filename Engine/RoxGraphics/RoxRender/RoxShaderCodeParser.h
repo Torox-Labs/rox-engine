@@ -70,6 +70,8 @@ namespace RoxRender
 			bool operator <(const Variable& v) const { return name < v.name; }
 		};
 
+		void isFragment(const char* ps_out, std::string &ps_out_var, bool& is_fragment);
+
 		int getUniformsCount();
 		Variable getUniform(int idx) const;
 

@@ -118,7 +118,7 @@ public:
 
     static void set_skeleton(const RoxRender::RoxSkeleton *RoxSkeleton) { m_skeleton=RoxSkeleton; }
     void reset_skeleton() { if(!m_shared.isValid()) return; m_shared->last_skeleton_pos=0; m_shared->last_skeleton_rot=0; }
-    void skeleton_changed(const RoxRender::RoxSkeleton *RoxSkeleton) const;
+    void skeleton_changed (const RoxRender::RoxSkeleton *RoxSkeleton) const;
 
 public:
     int get_texture_slot(const char *semantic) const;

@@ -28,6 +28,7 @@ class skeleton_blit_class
 public:
     void init()
     {
+        // TODO: This my future problems needed to be fix 
         if(isValid())
             return;
 
@@ -35,8 +36,8 @@ public:
 
         sprintf(text,R"(varying float idx;
                      void main(){
-                     idx=gl_MultiTexCoord0.x*%d.0;
-                     gl_Position=gl_Vertex;})",array_size);
+                     idx=rox_MultiTexCoord0.x*%d.0;
+                     gl_Position=rox_Vertex;})",array_size);
 
         m_sh3.addProgram(RoxRender::RoxShader::VERTEX,text);
         m_sh4.addProgram(RoxRender::RoxShader::VERTEX,text);
@@ -159,265 +160,262 @@ shared_shader::transform_type transform_from_string(const char *str)
 
 }
 
-bool load_nya_shader_internal(shared_shader &res, shader_description &desc, resource_data &data, const char* name, bool include)
+bool load_nya_shader_internal(shared_shader& res, shader_description& desc, resource_data& data, const char* name, bool include)
 {
     RoxFormats::RTextParser parser;
-    parser.loadFromData((const char *)data.getData(),data.getSize());
-    for(int section_idx=0;section_idx<parser.getSectionsCount();++section_idx)
+    parser.loadFromData((const char*)data.getData(), data.getSize());
+    for (int section_idx = 0; section_idx < parser.getSectionsCount(); ++section_idx)
     {
-        if(parser.isSectionType(section_idx,"include"))
+        if (parser.isSectionType(section_idx, "include"))
         {
-            const char *file=parser.getSectionName(section_idx);
-            if(!file || !file[0])
+            const char* file = parser.getSectionName(section_idx);
+            if (!file || !file[0])
             {
-                log()<<"unable to load include in shader "<<name<<": invalid filename\n";
+                log() << "unable to load include in shader " << name << ": invalid filename\n";
                 return false;
             }
 
-            std::string path(name?name:"");
-            size_t p=path.rfind("/");
-            if(p==std::string::npos)
-                p=path.rfind("\\");
+            std::string path(name ? name : "");
+            size_t p = path.rfind("/");
+            if (p == std::string::npos)
+                p = path.rfind("\\");
 
-            if(p==std::string::npos)
+            if (p == std::string::npos)
                 path.clear();
             else
-                path.resize(p+1);
+                path.resize(p + 1);
 
             path.append(file);
 
-            RoxResources::IRoxResourceData *file_data=RoxResources::getResourcesProvider().access(path.c_str());
-            if(!file_data)
+            RoxResources::IRoxResourceData* file_data = RoxResources::getResourcesProvider().access(path.c_str());
+            if (!file_data)
             {
-                log()<<"unable to load include resource in shader "<<name<<": unable to access resource "<<path.c_str()<<"\n";
+                log() << "unable to load include resource in shader " << name << ": unable to access resource " << path.c_str() << "\n";
                 return false;
             }
 
-            const size_t data_size=file_data->getSize();
+            const size_t data_size = file_data->getSize();
             RoxMemory::RoxTmpBufferRef include_data(data_size);
             file_data->readAll(include_data.getData());
             file_data->release();
 
-            if(!load_nya_shader_internal(res,desc,include_data,path.c_str(),true))
+            if (!load_nya_shader_internal(res, desc, include_data, path.c_str(), true))
             {
-                log()<<"unable to load include in shader "<<name<<": unknown format or invalid data in "<<path.c_str()<<"\n";
+                log() << "unable to load include in shader " << name << ": unknown format or invalid data in " << path.c_str() << "\n";
                 include_data.free();
                 return false;
             }
 
             include_data.free();
         }
-        else if(parser.isSectionType(section_idx,"all"))
+        else if (parser.isSectionType(section_idx, "all"))
         {
-            const char *text=parser.getSectionValue(section_idx);
-            if(text)
+            const char* text = parser.getSectionValue(section_idx);
+            if (text)
             {
                 desc.VERTEX.append(text);
                 desc.PIXEL.append(text);
             }
         }
-        else if(parser.isSectionType(section_idx,"sampler"))
+        else if (parser.isSectionType(section_idx, "sampler"))
         {
-            const char *name=parser.getSectionName(section_idx,0);
-            const char *semantics=parser.getSectionName(section_idx,1);
-            if(!name || !semantics)
+            const char* name = parser.getSectionName(section_idx, 0);
+            const char* semantics = parser.getSectionName(section_idx, 1);
+            if (!name || !semantics)
             {
-                log()<<"unable to load shader "<<name<<": invalid sampler syntax\n";
+                log() << "unable to load shader " << name << ": invalid sampler syntax\n";
                 return false;
             }
 
-            desc.samplers[semantics]=name;
+            desc.samplers[semantics] = name;
         }
-        else if(parser.isSectionType(section_idx,"VERTEX"))
+        else if (parser.isSectionType(section_idx, "vertex"))
         {
-            const char *text=parser.getSectionValue(section_idx);
-            if(text)
+            const char* text = parser.getSectionValue(section_idx);
+            if (text)
                 desc.VERTEX.append(text);
         }
-        else if(parser.isSectionType(section_idx,"fragment"))
+        else if (parser.isSectionType(section_idx, "fragment"))
         {
-            const char *text=parser.getSectionValue(section_idx);
-            if(text)
+            const char* text = parser.getSectionValue(section_idx);
+            if (text)
                 desc.PIXEL.append(text);
         }
-        else if(parser.isSectionType(section_idx,"predefined"))
+        else if (parser.isSectionType(section_idx, "predefined"))
         {
-            const char *name=parser.getSectionName(section_idx,0);
-            const char *semantics=parser.getSectionName(section_idx,1);
-            if(!name || !semantics)
+            const char* name = parser.getSectionName(section_idx, 0);
+            const char* semantics = parser.getSectionName(section_idx, 1);
+            if (!name || !semantics)
             {
-                log()<<"unable to load shader "<<name<<": invalid predefined syntax\n";
+                log() << "unable to load shader " << name << ": invalid predefined syntax\n";
                 return false;
             }
 
             //compatibility crutch, will be removed
-            if(strcmp(semantics,"nya camera position")==0)
+            if (strcmp(semantics, "nya camera position") == 0)
                 semantics = "nya camera pos";
-            else if(strcmp(semantics,"nya camera rotation")==0)
+            else if (strcmp(semantics, "nya camera rotation") == 0)
                 semantics = "nya camera rot";
 
-            const char *predefined_semantics[]={"nya camera pos","nya camera rot","nya camera dir",
+            const char* predefined_semantics[] = { "nya camera pos","nya camera rot","nya camera dir",
                                                 "nya bones pos","nya bones pos transform","nya bones rot","nya bones rot transform",
-                                                "nya bones pos RoxTexture","nya bones pos transform RoxTexture","nya bones rot RoxTexture",
-                                                "nya viewport","nya model pos","nya model rot","nya model scale"};
+                                                "nya bones pos texture","nya bones pos transform texture","nya bones rot texture",
+                                                "nya viewport","nya model pos","nya model rot","nya model scale" };
 
-            char predefined_count_static_assert[sizeof(predefined_semantics)/sizeof(predefined_semantics[0])
-                                                ==shared_shader::predefines_count?1:-1];
-            predefined_count_static_assert[0]=0;
-            for(int i=0;i<shared_shader::predefines_count;++i)
+            char predefined_count_static_assert[sizeof(predefined_semantics) / sizeof(predefined_semantics[0])
+                == shared_shader::predefines_count ? 1 : -1];
+            predefined_count_static_assert[0] = 0;
+            for (int i = 0; i < shared_shader::predefines_count; ++i)
             {
-                if(strcmp(semantics,predefined_semantics[i])==0)
+                if (strcmp(semantics, predefined_semantics[i]) == 0)
                 {
-                    desc.predefines[i].name=name;
-                    desc.predefines[i].transform=transform_from_string(parser.getSectionOption(section_idx));
+                    desc.predefines[i].name = name;
+                    desc.predefines[i].transform = transform_from_string(parser.getSectionOption(section_idx));
 
-                    if(i==shared_shader::bones_pos_tex || i==shared_shader::bones_pos_tr_tex)
+                    if (i == shared_shader::bones_pos_tex || i == shared_shader::bones_pos_tr_tex)
                     {
                         skeleton_blit.init();
                         res.texture_buffers.allocate();
-                        res.texture_buffers->skeleton_pos_max_count=int(parser.getSectionValueVec4(section_idx).x);
-                        res.texture_buffers->skeleton_pos_texture.buildTexture(0,res.texture_buffers->skeleton_pos_max_count,1,RoxRender::RoxTexture::COLOR_RGB32F,1);
+                        res.texture_buffers->skeleton_pos_max_count = int(parser.getSectionValueVec4(section_idx).x);
+                        res.texture_buffers->skeleton_pos_texture.buildTexture(0, res.texture_buffers->skeleton_pos_max_count, 1, RoxRender::RoxTexture::COLOR_RGB32F, 1);
                         res.texture_buffers->skeleton_pos_texture.setFilter(RoxRender::RoxTexture::FILTER_NEAREST,
-                                                                             RoxRender::RoxTexture::FILTER_NEAREST,RoxRender::RoxTexture::FILTER_NEAREST);
+                            RoxRender::RoxTexture::FILTER_NEAREST, RoxRender::RoxTexture::FILTER_NEAREST);
                     }
-                    else if(i==shared_shader::bones_rot_tex)
+                    else if (i == shared_shader::bones_rot_tex)
                     {
                         skeleton_blit.init();
                         res.texture_buffers.allocate();
-                        res.texture_buffers->skeleton_rot_max_count=int(parser.getSectionValueVec4(section_idx).x);
-                        res.texture_buffers->skeleton_rot_texture.buildTexture(0,res.texture_buffers->skeleton_rot_max_count,1,RoxRender::RoxTexture::COLOR_RGBA32F,1);
+                        res.texture_buffers->skeleton_rot_max_count = int(parser.getSectionValueVec4(section_idx).x);
+                        res.texture_buffers->skeleton_rot_texture.buildTexture(0, res.texture_buffers->skeleton_rot_max_count, 1, RoxRender::RoxTexture::COLOR_RGBA32F, 1);
                         res.texture_buffers->skeleton_rot_texture.setFilter(RoxRender::RoxTexture::FILTER_NEAREST,
-                                                                             RoxRender::RoxTexture::FILTER_NEAREST,RoxRender::RoxTexture::FILTER_NEAREST);
+                            RoxRender::RoxTexture::FILTER_NEAREST, RoxRender::RoxTexture::FILTER_NEAREST);
                     }
                     break;
                 }
             }
         }
-        else if(parser.isSectionType(section_idx,"uniform"))
+        else if (parser.isSectionType(section_idx, "uniform"))
         {
-            const char *name=parser.getSectionName(section_idx,0);
-            const char *semantics=parser.getSectionName(section_idx,1);
-            if(!name || !semantics)
+            const char* name = parser.getSectionName(section_idx, 0);
+            const char* semantics = parser.getSectionName(section_idx, 1);
+            if (!name || !semantics)
             {
-                log()<<"unable to load shader "<<name<<": invalid uniform syntax\n";
+                log() << "unable to load shader " << name << ": invalid uniform syntax\n";
                 return false;
             }
 
-            desc.uniforms[semantics]=name;
-            res.uniforms.resize(res.uniforms.size()+1);
-            res.uniforms.back().name=semantics;
-            res.uniforms.back().transform=transform_from_string(parser.getSectionOption(section_idx));
-            res.uniforms.back().default_value=parser.getSectionValueVec4(section_idx);
+            desc.uniforms[semantics] = name;
+            res.uniforms.resize(res.uniforms.size() + 1);
+            res.uniforms.back().name = semantics;
+            res.uniforms.back().transform = transform_from_string(parser.getSectionOption(section_idx));
+            res.uniforms.back().default_value = parser.getSectionValueVec4(section_idx);
         }
-        else if(parser.isSectionType(section_idx,"procedural"))
+        else if (parser.isSectionType(section_idx, "procedural"))
         {
-            const char *name=parser.getSectionName(section_idx,0);
+            const char* name = parser.getSectionName(section_idx, 0);
             RoxFormats::RoxMathExprParser p;
-            if(!name || !name[0] || !p.parse(parser.getSectionValue(section_idx)))
+            if (!name || !name[0] || !p.parse(parser.getSectionValue(section_idx)))
             {
-                log()<<"unable to load shader "<<name<<": invalid procedural\n";
+                log() << "unable to load shader " << name << ": invalid procedural\n";
                 return false;
             }
 
-            desc.procedural.push_back(std::make_pair(name,p));
+            desc.procedural.push_back(std::make_pair(name, p));
         }
         else
-            log()<<"scene shader load warning: unsupported shader tag "<<parser.getSectionType(section_idx)<<" in "<<name<<"\n";
+            log() << "scene shader load warning: unsupported shader tag " << parser.getSectionType(section_idx) << " in " << name << "\n";
     }
 
-    if(include)
+    if (include)
         return true;
 
-    if(desc.VERTEX.empty())
+    if (desc.VERTEX.empty())
     {
-        log()<<"scene shader load error: empty vertex shader in "<<name<<"\n";
+        log() << "scene shader load error: empty vertex shader in " << name << "\n";
         return false;
     }
 
-    if(desc.PIXEL.empty())
+    if (desc.PIXEL.empty())
     {
-        log()<<"scene shader load error: empty pixel shader in "<<name<<"\n";
+        log() << "scene shader load error: empty pixel shader in " << name << "\n";
         return false;
     }
 
-    //log()<<"VERTEX <"<<res.VERTEX.c_str()<<">\n";
-    //log()<<"PIXEL <"<<res.PIXEL.c_str()<<">\n";
-
-    if(!res.shdr.addProgram(RoxRender::RoxShader::VERTEX,desc.VERTEX.c_str()))
+    if (!res.shdr.addProgram(RoxRender::RoxShader::VERTEX, desc.VERTEX.c_str()))
         return false;
 
-    if(!res.shdr.addProgram(RoxRender::RoxShader::PIXEL,desc.PIXEL.c_str()))
+    if (!res.shdr.addProgram(RoxRender::RoxShader::PIXEL, desc.PIXEL.c_str()))
         return false;
 
-    for(int i=0;i<shared_shader::predefines_count;++i)
+    for (int i = 0; i < shared_shader::predefines_count; ++i)
     {
-        const shader_description::predefined &p=desc.predefines[i];
-        if(p.name.empty())
+        const shader_description::predefined& p = desc.predefines[i];
+        if (p.name.empty())
             continue;
 
-        res.predefines.resize(res.predefines.size()+1);
-        res.predefines.back().type=(shared_shader::predefined_values)i;
-        if(i==shared_shader::bones_pos_tex || i==shared_shader::bones_pos_tr_tex || i==shared_shader::bones_rot_tex)
+        res.predefines.resize(res.predefines.size() + 1);
+        res.predefines.back().type = (shared_shader::predefined_values)i;
+        if (i == shared_shader::bones_pos_tex || i == shared_shader::bones_pos_tr_tex || i == shared_shader::bones_rot_tex)
         {
-            res.predefines.back().location=res.shdr.getSamplerLayer(p.name.c_str());
+            res.predefines.back().location = res.shdr.getSamplerLayer(p.name.c_str());
             continue;
         }
 
-        res.predefines.back().transform=p.transform;
-        res.predefines.back().location=res.shdr.findUniform(p.name.c_str());
+        res.predefines.back().transform = p.transform;
+        res.predefines.back().location = res.shdr.findUniform(p.name.c_str());
     }
 
-    for(int i=0;i<(int)res.uniforms.size();++i)
+    for (int i = 0; i < (int)res.uniforms.size(); ++i)
     {
-        const int l=res.uniforms[i].location=res.shdr.findUniform(desc.uniforms[res.uniforms[i].name].c_str());
-        const RoxMath::Vector4 &v=res.uniforms[i].default_value;
-        res.shdr.setUniform(l,v.x,v.y,v.z,v.w);
+        const int l = res.uniforms[i].location = res.shdr.findUniform(desc.uniforms[res.uniforms[i].name].c_str());
+        const RoxMath::Vector4& v = res.uniforms[i].default_value;
+        res.shdr.setUniform(l, v.x, v.y, v.z, v.w);
     }
 
-    for(shader_description::strings_map::const_iterator it=desc.samplers.begin();
-        it!=desc.samplers.end();++it)
+    for (shader_description::strings_map::const_iterator it = desc.samplers.begin();
+        it != desc.samplers.end(); ++it)
     {
-        int layer=res.shdr.getSamplerLayer(it->second.c_str());
-        if(layer<0)
+        int layer = res.shdr.getSamplerLayer(it->second.c_str());
+        if (layer < 0)
             continue;
 
-        if(layer>=(int)res.samplers.size())
-            res.samplers.resize(layer+1);
+        if (layer >= (int)res.samplers.size())
+            res.samplers.resize(layer + 1);
 
-        res.samplers[layer]=it->first;
+        res.samplers[layer] = it->first;
     }
 
-    for(int i=0;i<(int)desc.procedural.size();++i)
+    for (int i = 0; i < (int)desc.procedural.size(); ++i)
     {
-        const int idx=res.shdr.findUniform(desc.procedural[i].first.c_str());
-        if(idx<0)
+        const int idx = res.shdr.findUniform(desc.procedural[i].first.c_str());
+        if (idx < 0)
             continue;
 
-        const int count=(int)res.shdr.getUniformArraySize(idx);
-        RoxFormats::RoxMathExprParser &p=desc.procedural[i].second;
-        p.setVar("count",(float)count);
+        const int count = (int)res.shdr.getUniformArraySize(idx);
+        RoxFormats::RoxMathExprParser& p = desc.procedural[i].second;
+        p.setVar("count", (float)count);
 
         std::vector<RoxMath::Vector4> values(count);
-        for(int j=0;j<count;++j)
+        for (int j = 0; j < count; ++j)
         {
-            p.setVar("i",(float)j);
-            values[j]=p.calculateVec4();
+            p.setVar("i", (float)j);
+            values[j] = p.calculateVec4();
         }
 
-        res.shdr.setUniform4Array(idx,&values[0].x,count);
+        res.shdr.setUniform4Array(idx, &values[0].x, count);
     }
 
     return true;
 }
 
-bool RoxShader::load_nya_shader(shared_shader &res,resource_data &data,const char* name)
+bool RoxShader::load_nya_shader(shared_shader& res, resource_data& data, const char* name)
 {
     shader_description desc;
-    return load_nya_shader_internal(res,desc,data,name,false);
+    return load_nya_shader_internal(res, desc, data, name, false);
     return false;
 }
 
-bool RoxShader::load(const char *name)
+bool RoxShader::load(const char* name)
 {
     shader_internal::default_load_function(load_nya_shader);
     m_internal.reset_skeleton();
@@ -427,25 +425,25 @@ bool RoxShader::load(const char *name)
 void RoxScene::RoxShader::unload()
 {
     m_internal.unload();
-    if(skeleton_blit.isValid() && !m_internal.get_shared_resources().getFirstResource().isValid())
+    if (skeleton_blit.isValid() && !m_internal.get_shared_resources().getFirstResource().isValid())
         skeleton_blit.release();
 }
 
-void RoxShader::create(const shared_shader &res)
+void RoxShader::create(const shared_shader& res)
 {
     m_internal.reset_skeleton();
     m_internal.create(res);
 }
 
-bool RoxShader::build(const char *code_text)
+bool RoxShader::build(const char* code_text)
 {
-    if(!code_text)
+    if (!code_text)
         return false;
 
     shared_shader s;
     RoxMemory::RoxTmpBufferRef data(strlen(code_text));
-    data.copyFrom(code_text,data.getSize());
-    const bool result=load_nya_shader(s,data,"");
+    data.copyFrom(code_text, data.getSize());
+    const bool result = load_nya_shader(s, data, "");
     data.free();
     create(s);
     return result;
@@ -453,218 +451,218 @@ bool RoxShader::build(const char *code_text)
 
 void shader_internal::set() const
 {
-    if(!m_shared.isValid())
+    if (!m_shared.isValid())
         return;
 
     m_shared->shdr.bind();
 
-    for(size_t i=0;i<m_shared->predefines.size();++i)
+    for (size_t i = 0; i < m_shared->predefines.size(); ++i)
     {
-        const shared_shader::predefined &p=m_shared->predefines[i];
-        switch(p.type)
+        const shared_shader::predefined& p = m_shared->predefines[i];
+        switch (p.type)
         {
-            case shared_shader::camera_pos:
+        case shared_shader::camera_pos:
+        {
+            if (p.transform == shared_shader::local)
             {
-                if(p.transform==shared_shader::local)
-                {
-                    const RoxMath::Vector3 v=transform::get().inverse_transform(get_camera().get_pos());
-                    m_shared->shdr.setUniform(p.location,v.x,v.y,v.z);
-                }
-                else if(p.transform==shared_shader::local_rot)
-                {
-                    const RoxMath::Vector3 v=transform::get().inverse_rot(get_camera().get_pos());
-                    m_shared->shdr.setUniform(p.location,v.x,v.y,v.z);
-                }
-                else if(p.transform==shared_shader::local_rot_scale)
-                {
-                    const RoxMath::Vector3 v=transform::get().inverse_rot_scale(get_camera().get_pos());
-                    m_shared->shdr.setUniform(p.location,v.x,v.y,v.z);
-                }
-                else
-                {
-                    const RoxMath::Vector3 v=get_camera().get_pos();
-                    m_shared->shdr.setUniform(p.location,v.x,v.y,v.z);
-                }
+                const RoxMath::Vector3 v = transform::get().inverse_transform(get_camera().get_pos());
+                m_shared->shdr.setUniform(p.location, v.x, v.y, v.z);
             }
-            break;
-
-            case shared_shader::camera_dir:
+            else if (p.transform == shared_shader::local_rot)
             {
-                if(p.transform==shared_shader::local_rot || p.transform==shared_shader::local)
-                {
-                    const RoxMath::Vector3 v=transform::get().inverse_rot(get_camera().get_dir());
-                    m_shared->shdr.setUniform(p.location,v.x,v.y,v.z);
-                }
-                else
-                {
-                    const RoxMath::Vector3 v=get_camera().get_dir();
-                    m_shared->shdr.setUniform(p.location,v.x,v.y,v.z);
-                }
+                const RoxMath::Vector3 v = transform::get().inverse_rot(get_camera().get_pos());
+                m_shared->shdr.setUniform(p.location, v.x, v.y, v.z);
             }
-            break;
-
-            case shared_shader::camera_rot:
+            else if (p.transform == shared_shader::local_rot_scale)
             {
-                if(p.transform==shared_shader::local_rot || p.transform==shared_shader::local)
-                {
-                    const RoxMath::Quaternion v=transform::get().inverse_transform(get_camera().get_rot());
-                    m_shared->shdr.setUniform(p.location,v.v.x,v.v.y,v.v.z,v.w);
-                }
-                else
-                {
-                    const RoxMath::Quaternion v=get_camera().get_rot();
-                    m_shared->shdr.setUniform(p.location,v.v.x,v.v.y,v.v.z,v.w);
-                }
+                const RoxMath::Vector3 v = transform::get().inverse_rot_scale(get_camera().get_pos());
+                m_shared->shdr.setUniform(p.location, v.x, v.y, v.z);
             }
-            break;
-
-            case shared_shader::bones_pos:
+            else
             {
-                if(m_skeleton && m_shared->last_skeleton_pos!=m_skeleton)
-                {
-                    m_shared->shdr.setUniform3Array(p.location,m_skeleton->getPosBuffer(),m_skeleton->getBonesCount());
-                    m_shared->last_skeleton_pos=m_skeleton;
-                }
+                const RoxMath::Vector3 v = get_camera().get_pos();
+                m_shared->shdr.setUniform(p.location, v.x, v.y, v.z);
             }
-            break;
+        }
+        break;
 
-            case shared_shader::bones_pos_tr:
+        case shared_shader::camera_dir:
+        {
+            if (p.transform == shared_shader::local_rot || p.transform == shared_shader::local)
             {
-                if(m_skeleton && m_shared->last_skeleton_pos!=m_skeleton)
-                {
-                    RoxMemory::RoxTmpBufferScoped tmp(m_skeleton->getBonesCount()*3*4);
-                    RoxMath::Vector3 *pos=(RoxMath::Vector3 *)tmp.getData();
+                const RoxMath::Vector3 v = transform::get().inverse_rot(get_camera().get_dir());
+                m_shared->shdr.setUniform(p.location, v.x, v.y, v.z);
+            }
+            else
+            {
+                const RoxMath::Vector3 v = get_camera().get_dir();
+                m_shared->shdr.setUniform(p.location, v.x, v.y, v.z);
+            }
+        }
+        break;
 
-                    if(m_skeleton->hasOriginalRot())
+        case shared_shader::camera_rot:
+        {
+            if (p.transform == shared_shader::local_rot || p.transform == shared_shader::local)
+            {
+                const RoxMath::Quaternion v = transform::get().inverse_transform(get_camera().get_rot());
+                m_shared->shdr.setUniform(p.location, v.v.x, v.v.y, v.v.z, v.w);
+            }
+            else
+            {
+                const RoxMath::Quaternion v = get_camera().get_rot();
+                m_shared->shdr.setUniform(p.location, v.v.x, v.v.y, v.v.z, v.w);
+            }
+        }
+        break;
+
+        case shared_shader::bones_pos:
+        {
+            if (m_skeleton && m_shared->last_skeleton_pos != m_skeleton)
+            {
+                m_shared->shdr.setUniform3Array(p.location, m_skeleton->getPosBuffer(), m_skeleton->getBonesCount());
+                m_shared->last_skeleton_pos = m_skeleton;
+            }
+        }
+        break;
+
+        case shared_shader::bones_pos_tr:
+        {
+            if (m_skeleton && m_shared->last_skeleton_pos != m_skeleton)
+            {
+                RoxMemory::RoxTmpBufferScoped tmp(m_skeleton->getBonesCount() * 3 * 4);
+                RoxMath::Vector3* pos = (RoxMath::Vector3*)tmp.getData();
+
+                if (m_skeleton->hasOriginalRot())
+                {
+                    for (int i = 0; i < m_skeleton->getBonesCount(); ++i)
                     {
-                        for(int i=0;i<m_skeleton->getBonesCount();++i)
-                        {
-                            pos[i]=m_skeleton->getBonePos(i)
-                                  +(m_skeleton->getBoneRot(i)*RoxMath::Quaternion::invert(m_skeleton->getBoneOriginalRot(i)))
-                                  .rotate(-m_skeleton->getBoneOriginalPos(i));
-                        }
+                        pos[i] = m_skeleton->getBonePos(i)
+                            + (m_skeleton->getBoneRot(i) * RoxMath::Quaternion::invert(m_skeleton->getBoneOriginalRot(i)))
+                            .rotate(-m_skeleton->getBoneOriginalPos(i));
                     }
-                    else
+                }
+                else
+                {
+                    for (int i = 0; i < m_skeleton->getBonesCount(); ++i)
                     {
-                        for(int i=0;i<m_skeleton->getBonesCount();++i)
-                        {
-                            pos[i]=m_skeleton->getBonePos(i)
-                                  +m_skeleton->getBoneRot(i).rotate(-m_skeleton->getBoneOriginalPos(i));
-                        }
+                        pos[i] = m_skeleton->getBonePos(i)
+                            + m_skeleton->getBoneRot(i).rotate(-m_skeleton->getBoneOriginalPos(i));
                     }
-
-                    m_shared->shdr.setUniform3Array(p.location,(float *)tmp.getData(),m_skeleton->getBonesCount());
-                    m_shared->last_skeleton_pos=m_skeleton;
-                }
-            }
-            break;
-
-            case shared_shader::bones_rot:
-            {
-                if(m_skeleton && m_shared->last_skeleton_rot!=m_skeleton)
-                {
-                    m_shared->shdr.setUniform4Array(p.location,m_skeleton->getRotBuffer(),m_skeleton->getBonesCount());
-                    m_shared->last_skeleton_rot=m_skeleton;
-                }
-            }
-            break;
-
-            case shared_shader::bones_rot_tr:
-            {
-                if(m_skeleton && m_shared->last_skeleton_rot!=m_skeleton)
-                {
-                    RoxMemory::RoxTmpBufferScoped  tmp(m_skeleton->getBonesCount()*4*4);
-                    RoxMath::Quaternion *rot=(RoxMath::Quaternion *)tmp.getData();
-                    for(int i=0;i<m_skeleton->getBonesCount();++i)
-                        rot[i]=m_skeleton->getBoneRot(i)*RoxMath::Quaternion::invert(m_skeleton->getBoneOriginalRot(i));
-
-                    m_shared->shdr.setUniform4Array(p.location,(float *)tmp.getData(),m_skeleton->getBonesCount());
-                    m_shared->last_skeleton_rot=m_skeleton;
-                }
-            }
-            break;
-
-            case shared_shader::bones_pos_tex:
-            {
-                if(!m_shared->texture_buffers.isValid())
-                    m_shared->texture_buffers.allocate();
-
-                if(m_skeleton && m_shared->texture_buffers->last_skeleton_pos_texture!=m_skeleton && m_skeleton->getBonesCount()>0)
-                {
-                    skeleton_blit.blit(m_shared->texture_buffers->skeleton_pos_texture,m_skeleton->getPosBuffer(),m_skeleton->getBonesCount(),3);
-                    m_shared->texture_buffers->last_skeleton_pos_texture=m_skeleton;
                 }
 
-                m_shared->texture_buffers->skeleton_pos_texture.bind(p.location);
+                m_shared->shdr.setUniform3Array(p.location, (float*)tmp.getData(), m_skeleton->getBonesCount());
+                m_shared->last_skeleton_pos = m_skeleton;
             }
-            break;
+        }
+        break;
 
-            case shared_shader::bones_pos_tr_tex:
+        case shared_shader::bones_rot:
+        {
+            if (m_skeleton && m_shared->last_skeleton_rot != m_skeleton)
             {
-                if(!m_shared->texture_buffers.isValid())
-                    m_shared->texture_buffers.allocate();
-
-                //ToDo: if(m_skeleton->has_original_rot())
-
-                if(m_skeleton && m_shared->texture_buffers->last_skeleton_pos_texture!=m_skeleton && m_skeleton->getBonesCount()>0)
-                {
-                    RoxMemory::RoxTmpBufferScoped  tmp(m_skeleton->getBonesCount()*3*4);
-                    RoxMath::Vector3 *pos=(RoxMath::Vector3 *)tmp.getData();
-                    for(int i=0;i<m_skeleton->getBonesCount();++i)
-                        pos[i]=m_skeleton->getBonePos(i)+m_skeleton->getBoneRot(i).rotate(-m_skeleton->getBoneOriginalPos(i));
-
-                    skeleton_blit.blit(m_shared->texture_buffers->skeleton_pos_texture,(float *)tmp.getData(),m_skeleton->getBonesCount(),3);
-                    m_shared->texture_buffers->last_skeleton_pos_texture=m_skeleton;
-                }
-
-                m_shared->texture_buffers->skeleton_pos_texture.bind(p.location);
+                m_shared->shdr.setUniform4Array(p.location, m_skeleton->getRotBuffer(), m_skeleton->getBonesCount());
+                m_shared->last_skeleton_rot = m_skeleton;
             }
-            break;
+        }
+        break;
 
-            case shared_shader::bones_rot_tex:
+        case shared_shader::bones_rot_tr:
+        {
+            if (m_skeleton && m_shared->last_skeleton_rot != m_skeleton)
             {
-                if(!m_shared->texture_buffers.isValid())
-                    m_shared->texture_buffers.allocate();
+                RoxMemory::RoxTmpBufferScoped  tmp(m_skeleton->getBonesCount() * 4 * 4);
+                RoxMath::Quaternion* rot = (RoxMath::Quaternion*)tmp.getData();
+                for (int i = 0; i < m_skeleton->getBonesCount(); ++i)
+                    rot[i] = m_skeleton->getBoneRot(i) * RoxMath::Quaternion::invert(m_skeleton->getBoneOriginalRot(i));
 
-                if(m_skeleton && m_shared->texture_buffers->last_skeleton_rot_texture!=m_skeleton && m_skeleton->getBonesCount()>0)
-                {
-                    skeleton_blit.blit(m_shared->texture_buffers->skeleton_rot_texture,m_skeleton->getRotBuffer(),m_skeleton->getBonesCount(),4);
-                    m_shared->texture_buffers->last_skeleton_rot_texture=m_skeleton;
-                }
-
-                m_shared->texture_buffers->skeleton_rot_texture.bind(p.location);
+                m_shared->shdr.setUniform4Array(p.location, (float*)tmp.getData(), m_skeleton->getBonesCount());
+                m_shared->last_skeleton_rot = m_skeleton;
             }
-            break;
+        }
+        break;
 
-            case shared_shader::viewport:
+        case shared_shader::bones_pos_tex:
+        {
+            if (!m_shared->texture_buffers.isValid())
+                m_shared->texture_buffers.allocate();
+
+            if (m_skeleton && m_shared->texture_buffers->last_skeleton_pos_texture != m_skeleton && m_skeleton->getBonesCount() > 0)
             {
-                RoxRender::Rectangle r=RoxRender::getViewport();
-                m_shared->shdr.setUniform(p.location,float(r.x),float(r.y),float(r.width),float(r.height));
+                skeleton_blit.blit(m_shared->texture_buffers->skeleton_pos_texture, m_skeleton->getPosBuffer(), m_skeleton->getBonesCount(), 3);
+                m_shared->texture_buffers->last_skeleton_pos_texture = m_skeleton;
             }
-            break;
 
-            case shared_shader::model_pos:
+            m_shared->texture_buffers->skeleton_pos_texture.bind(p.location);
+        }
+        break;
+
+        case shared_shader::bones_pos_tr_tex:
+        {
+            if (!m_shared->texture_buffers.isValid())
+                m_shared->texture_buffers.allocate();
+
+            //ToDo: if(m_skeleton->has_original_rot())
+
+            if (m_skeleton && m_shared->texture_buffers->last_skeleton_pos_texture != m_skeleton && m_skeleton->getBonesCount() > 0)
             {
-                const RoxMath::Vector3 v=transform::get().get_pos();
-                m_shared->shdr.setUniform(p.location,v.x,v.y,v.z);
-            }
-            break;
+                RoxMemory::RoxTmpBufferScoped  tmp(m_skeleton->getBonesCount() * 3 * 4);
+                RoxMath::Vector3* pos = (RoxMath::Vector3*)tmp.getData();
+                for (int i = 0; i < m_skeleton->getBonesCount(); ++i)
+                    pos[i] = m_skeleton->getBonePos(i) + m_skeleton->getBoneRot(i).rotate(-m_skeleton->getBoneOriginalPos(i));
 
-            case shared_shader::model_rot:
+                skeleton_blit.blit(m_shared->texture_buffers->skeleton_pos_texture, (float*)tmp.getData(), m_skeleton->getBonesCount(), 3);
+                m_shared->texture_buffers->last_skeleton_pos_texture = m_skeleton;
+            }
+
+            m_shared->texture_buffers->skeleton_pos_texture.bind(p.location);
+        }
+        break;
+
+        case shared_shader::bones_rot_tex:
+        {
+            if (!m_shared->texture_buffers.isValid())
+                m_shared->texture_buffers.allocate();
+
+            if (m_skeleton && m_shared->texture_buffers->last_skeleton_rot_texture != m_skeleton && m_skeleton->getBonesCount() > 0)
             {
-                const RoxMath::Quaternion v=transform::get().get_rot();
-                m_shared->shdr.setUniform(p.location,v.v.x,v.v.y,v.v.z,v.w);
+                skeleton_blit.blit(m_shared->texture_buffers->skeleton_rot_texture, m_skeleton->getRotBuffer(), m_skeleton->getBonesCount(), 4);
+                m_shared->texture_buffers->last_skeleton_rot_texture = m_skeleton;
             }
-            break;
 
-            case shared_shader::model_scale:
-            {
-                const RoxMath::Vector3 v=transform::get().get_scale();
-                m_shared->shdr.setUniform(p.location,v.x,v.y,v.z);
-            }
-            break;
+            m_shared->texture_buffers->skeleton_rot_texture.bind(p.location);
+        }
+        break;
 
-            case shared_shader::predefines_count: break;
+        case shared_shader::viewport:
+        {
+            RoxRender::Rectangle r = RoxRender::getViewport();
+            m_shared->shdr.setUniform(p.location, float(r.x), float(r.y), float(r.width), float(r.height));
+        }
+        break;
+
+        case shared_shader::model_pos:
+        {
+            const RoxMath::Vector3 v = transform::get().get_pos();
+            m_shared->shdr.setUniform(p.location, v.x, v.y, v.z);
+        }
+        break;
+
+        case shared_shader::model_rot:
+        {
+            const RoxMath::Quaternion v = transform::get().get_rot();
+            m_shared->shdr.setUniform(p.location, v.v.x, v.v.y, v.v.z, v.w);
+        }
+        break;
+
+        case shared_shader::model_scale:
+        {
+            const RoxMath::Vector3 v = transform::get().get_scale();
+            m_shared->shdr.setUniform(p.location, v.x, v.y, v.z);
+        }
+        break;
+
+        case shared_shader::predefines_count: break;
         }
     }
 
