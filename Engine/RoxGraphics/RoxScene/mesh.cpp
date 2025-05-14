@@ -44,11 +44,11 @@ namespace RoxScene
         }
 
         res.aabb = RoxMath::Aabb(c.aabb_min, c.aabb_max);
-
         for (size_t i = 0; i < c.elements.size(); ++i)
         {
             const RoxFormats::nms_mesh_chunk::element& e = c.elements[i];
-            const RoxRender::RoxVBO::VERTEX_ATRIB_TYPE type = RoxRender::RoxVBO::VERTEX_ATRIB_TYPE(e.data_type);
+			RoxLogger::log() << "nms mesh elements " << e.type << " :\noffset: " << e.offset << "\ndimension: " << e.dimension << "\ntype: " << e.type << "\ndata_type: " << e.data_type << "\nsemantics: " << e.semantics << "\n";
+                const RoxRender::RoxVBO::VERTEX_ATRIB_TYPE type = RoxRender::RoxVBO::VERTEX_ATRIB_TYPE(e.data_type);
             switch (e.type)
             {
             case RoxFormats::nms_mesh_chunk::pos: res.vbo.setVertices(e.offset, e.dimension, type); break;

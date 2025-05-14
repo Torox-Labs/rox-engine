@@ -344,7 +344,7 @@ namespace RoxFormats
                         subsectionEmpty = false;
                 }
                 else if (!l.empty)
-                    RoxLogger::log() << "RTextParser: subsection found before any section declaration at lines " << l.lineNumber << "-" << l.nextLineNumber << "\n";
+                    RoxLogger::log() << "Text Parser: subsection found before any section declaration at lines " << l.lineNumber << "-" << l.nextLineNumber << "\n";
             }
         }
 
@@ -396,7 +396,7 @@ namespace RoxFormats
             }
             else
             {
-                RoxLogger::log() << "RTextParser: unexpected token at lines " << l.lineNumber << "-" << l.nextLineNumber << "\n";
+                RoxLogger::log() << "Text Parser: unexpected token at lines " << l.lineNumber << "-" << l.nextLineNumber << "\n";
                 break;
             }
 
