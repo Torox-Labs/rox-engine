@@ -65,7 +65,7 @@ Contributions from the community are highly encouraged!
 - **Anti-Cheating Measures:** Verifies player actions and transactions without exposing underlying data, reducing fraud and cheating.
 - **Cryptographic Innovations:** Explores cutting-edge cryptographic techniques to enhance game security and integrity.
 
-  *Note:* ZKPs are advanced cryptographic protocols that enable one party (the prover) to prove to another (the verifier) that a statement is true without revealing any information beyond the validity of the statement itself.
+  _Note:_ ZKPs are advanced cryptographic protocols that enable one party (the prover) to prove to another (the verifier) that a statement is true without revealing any information beyond the validity of the statement itself.
 
 ### Distributed Ledger Technology
 
@@ -86,9 +86,32 @@ Contributions from the community are highly encouraged!
 - **Security and Privacy:** Ensures secure handling of wallet data and transactions through encrypted communication channels.
 - **Cross-Platform Compatibility:** Supports major wallet providers and browsers, ensuring broad accessibility for players.
 
----
+## Sandbox UI
+
+The Rox Engine includes a **Sandbox UI** for visually designing and testing your Web3-native games.
+
+![Sandbox UI Demo](docs/sandbox-ui.png)
 
 ## Architecture Overview
+
+### Mermaid Diagram (Live, editable)
+
+```mermaid
+graph LR
+  Editor["Rox Editor"] -->|Exports| BuildPipeline["Build & Deployment Pipeline"]
+  BuildPipeline -->|Smart Contract ABI| BAL["Blockchain Abstraction Layer"]
+  BAL -->|RPC| Blockchain["Ethereum / Polygon / ..."]
+  Editor -->|Game Assets| Runtime["Rox Runtime (C++ / WASM)"]
+  Runtime -->|Rendering| GPU["Graphics API"]
+  Runtime -->|Networking| P2P["Libp2p / Custom P2P"]
+  Runtime -->|On-Chain Calls| BAL
+```
+
+### PNG/SVG Image
+
+![Rox Engine Architecture Overview](docs/architecture-overview.png)
+
+[Mermaid Live Editor](https://mermaid.live/view#pako:eNptkm1r2zAQx7_KcS_GRh3XifOw-MXAdUMouJ1JGIPOe6HaWiJiSUaWWdIk331nxdlWqF7pHn7_053uiIUuOUa4MazeQrrKFcCiFFabHzmu9L43cvwJg8GX02Jfa2ObE9y1oiozUfNKKE6pzoYPcM_rSh8kVxauUWI71TeEE1tLZiwkWlnDCgvx3QPpxmmnVuliV2yZUBC_NC4stIKUHbi5ysWpE1llCVF_8wle2C03vJVwC5muDhsCb8H3_R68NOTYJZMc4qbhXUerVlkhed92b8HH5OaG8O_x-vFTL3ANuepcldwItTnBMvtG7LKboygaiLOHd_KfuP2tzc4B2SgjIBUv9aimEknbWC077zvcVzVI3DgSVlWNGxN69GmixMialnsouZGsM_HYwTnSFCTNPqJrycwux1ydiamZetZaXjGj280Wo1-sashq65JZfi8YrcO_FNdjouk5GE2cAkZH3GMUjvxxOJsMp_NwHEznwczDA3nHgf85DMLhJBzOhpNgfvbw1ZUk_2w8__94yN13PF620C3j-Q8qGNUg) | [Kroki](https://kroki.io/mermaid/svg/eNplkE1qwzAQRvc9xaBFaQl2IAcoKI4xAbcVDqULk4ViD7aIfowk0xh8-CpyUijZaTTfe8NMZ_nQQ1k9AeSt8MbWpDKX25scIUne5vwyGOvdDNtRyJaJAaXQWJNYwjPscJBmUqg93JvkGIT_4tF0UNx6yIz2ljce6HYfpLQMKmmac9NzoYGeXOwKo6HkE9rFRctoqFgWkL90TXLfo8VRwRqYkVMXqDWkaRqpZY0IFlwhUOfwukg1ai8ULrveCnjJVqvAftPD-2uk7404F3WLVuhuhoJ91aS43k00DijbP4Q_0P8Ye45ptmE1KcVp2AxBno3OG3X9fIA-dZLFA2RcShfv8gv9g4bn).
 
 Rox-Engine's architecture is modular and extensible, consisting of the following core components:
 
@@ -99,21 +122,20 @@ Rox-Engine's architecture is modular and extensible, consisting of the following
 - **Wallet Integration Module:** Facilitates secure connections between the game engine and players crypto wallets via web browsers.
 - **SDK and APIs:** Offers a set of tools and interfaces for developers to build and customize their games efficiently.
 
-*Visual representation coming soon.*
-
----
-
 ## Getting Started
 
 ### Prerequisites
 
 - **Operating System:**
+
   - Windows 10 or higher
 
 - **Compiler:**
+
   - A modern C++ compiler (e.g., MSVC 2015+)
 
 - **Build System:**
+
   - CMake 3.21 or higher
 
 - **Dependencies:**
@@ -123,7 +145,7 @@ Rox-Engine's architecture is modular and extensible, consisting of the following
   - **[Torox-Math Library](https://github.com/Torox-Lab/torox-math):** For advanced mathematical functions.
   - **[Orox-Token Library](https://github.com/Torox-Lab/orox-token):** For token and blockchain interactions.
 
-*Note:* Torox-Math, Torox-Token are under consideration for future integration and are not required at this stage.
+_Note:_ Torox-Math, Torox-Token are under consideration for future integration and are not required at this stage.
 
 ### Installation
 
@@ -173,39 +195,39 @@ After building the engine, you can start creating your game project:
    #include <RoxApp/RoxApp.h>
    ```
 
-   *Note:* Currently, to use the engine, you need to include `RoxApp/RoxApp.h`. We plan to update this to `Rox/Rox.h` in future releases for consistency.
+   _Note:_ Currently, to use the engine, you need to include `RoxApp/RoxApp.h`. We plan to update this to `Rox/Rox.h` in future releases for consistency.
 
 3. **Initialize the Engine**
 
-  ```cpp 
-  class MyGame : public RoxApp::RoxApp
-  {
-   // Your game logic here
-  
-  private:
-    bool onSplash() override
-    {
-      ...
-    }
-    bool onInit() override
-    {
-      ...
-    }
-    void onFrame(unsigned int dt) override
-    {
-      ...
-    }
+```cpp
+class MyGame : public RoxApp::RoxApp
+{
+ // Your game logic here
 
+private:
+  bool onSplash() override
+  {
     ...
-  };
-   
-  int main() {
-       MyGame my_game;
-       RoxLogger::log() << "My Game\n";
-       app.startWindow(100, 100, 640, 480, 0);
-       return 0;
-   };
-   ```
+  }
+  bool onInit() override
+  {
+    ...
+  }
+  void onFrame(unsigned int dt) override
+  {
+    ...
+  }
+
+  ...
+};
+
+int main() {
+     MyGame my_game;
+     RoxLogger::log() << "My Game\n";
+     app.startWindow(100, 100, 640, 480, 0);
+     return 0;
+ };
+```
 
 4. **Build and Run Your Game**
 
@@ -222,7 +244,7 @@ Comprehensive documentation is being developed and will include:
 - **Sample Projects:** Example game projects demonstrating various engine capabilities.
 - **Integration Guides:** Instructions on integrating with different blockchain networks, anonymity services, and wallet providers.
 
-Documentation will be available in the `/docs` directory and online at [docs.torox.org](https://docs.torox.org) *(coming soon)*.
+Documentation will be available in the `/docs` directory and online at [docs.torox.org](https://docs.torox.org) _(coming soon)_.
 
 ---
 
@@ -269,10 +291,12 @@ Our roadmap outlines the planned development stages of Rox-Engine:
 - [ ] Continuously update and improve the engine based on feedback.
 - [ ] Develop a marketplace for Web3 assets and plugins.
 
-## 
+##
+
 - [ ] Incomplete Task
 - In progress
 - [x] Completed Task
+
 ---
 
 ## Contributing
@@ -327,13 +351,13 @@ For inquiries, support, or feedback:
 
 ## Important Notice
 
-*Rox-Engine is currently in active development and certain features are in the conceptual or experimental stages. We are committed to transparency and will keep the community updated on our progress through regular commits and roadmap adjustments.*
+_Rox-Engine is currently in active development and certain features are in the conceptual or experimental stages. We are committed to transparency and will keep the community updated on our progress through regular commits and roadmap adjustments._
 
-*We invite you to join us on this exciting journey to pioneer the future of decentralized, community-driven gaming.*
+_We invite you to join us on this exciting journey to pioneer the future of decentralized, community-driven gaming._
 
 ---
 
-*By focusing on creating a robust and decentralized game engine, we believe that Rox-Engine embodies the spirit of community-driven development where games are truly built by developers, run by players, and owned by communities.*
+_By focusing on creating a robust and decentralized game engine, we believe that Rox-Engine embodies the spirit of community-driven development where games are truly built by developers, run by players, and owned by communities._
 
 ---
 
@@ -347,4 +371,4 @@ We would like to thank all contributors, supporters, and the open-source communi
 
 ---
 
-*Last updated on, December 01, 2024*
+_Last updated on, December 01, 2024_
