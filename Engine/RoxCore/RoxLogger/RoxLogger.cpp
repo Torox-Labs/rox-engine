@@ -43,7 +43,7 @@ namespace RoxLogger
         int len = 0;
 #ifdef _WIN32
         len = _vscprintf(fmt, args_copy) + 1;
-#elif define(__linux__)
+#elif defined(__linux__)
         len = vsnprintf(nullptr, 0, fmt, args_copy) + 1;
 #endif
         va_end(args_copy);

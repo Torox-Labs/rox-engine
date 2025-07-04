@@ -1,8 +1,8 @@
 # ====== Define Sources ======
-if(WIN32)
-file(GLOB_RECURSE APP_SRC "*.cpp" "*.h")
-elseif(APPLE)
+if(APPLE)
 file(GLOB_RECURSE APP_SRC "*.cpp" "*.mm" "*.h")
+else()
+file(GLOB_RECURSE APP_SRC "*.cpp" "*.h")
 endif()
 
 # ====== Add Library ======
