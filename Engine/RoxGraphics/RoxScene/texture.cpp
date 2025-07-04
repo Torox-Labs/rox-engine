@@ -8,7 +8,7 @@
 #include "RoxFormats/RoxDirectDrawSurface.h"
 #include "RoxFormats/RoxKhronosTexture.h"
 #include "RoxFormats/RoxMeta.h"
-#include "RoxRender/RoxFbo.h"
+#include "RoxRender/RoxFBO.h"
 #include "RoxRender/RoxShader.h"
 #include "RoxRender/RoxScreenQuad.h"
 #include "RoxRender/RoxBitmap.h"

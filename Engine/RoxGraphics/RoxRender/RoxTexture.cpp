@@ -17,6 +17,8 @@
 #include "RoxRenderOpengl.h"
 #include "RoxMemory/RoxTmpBuffers.h"
 
+#include <cstring>
+
 namespace RoxRender
 {
 

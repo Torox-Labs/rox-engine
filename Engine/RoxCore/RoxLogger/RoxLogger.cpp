@@ -33,16 +33,28 @@ namespace RoxLogger
 
     RoxLoggerBase& log(const char* fmt, ...)
     {
-        va_list args, args_copy;
+        va_list args;
         va_start(args, fmt);
+
+        // Calculate required buffer size - cross platform
+        va_list args_copy;
+        va_copy(args_copy, args);
+
+        int len = 0;
 #ifdef _WIN32
-        args_copy = args;
-        //va_copy(args_copy, args);
-        const int len = _vscprintf(fmt, args) + 1;
+        len = _vscprintf(fmt, args_copy) + 1;
+#elifdef __linux__
+        len = vsnprintf(nullptr, 0, fmt, args_copy) + 1;
 #endif
-        std::string buf;
-        buf.resize(len);
-        vsprintf(&buf[0], fmt, args_copy);
+        va_end(args_copy);
+
+        // Allocate and format string
+        std::string buf(len, '\0');
+        vsnprintf(&buf[0], len, fmt, args);
+        buf.resize(len); // Remove null terminator if it was added
+
+        va_end(args);
+
         *current_log << buf;
         return *current_log;
     }

@@ -32,6 +32,14 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Engine")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Engine/RoxCore")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Engine/RoxGraphics")
 
+# Set default build type if not specified
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build." FORCE)
+endif()
+
+# Set configuration types
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Available configurations" FORCE)
+
 # ====== Add Subdirectories ======
 add_subdirectory(Dependencies)
 
@@ -90,9 +98,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # ====== Set Output Directories ======
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>
+        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>
 )
 
 # ====== Organize Folders in IDE ======

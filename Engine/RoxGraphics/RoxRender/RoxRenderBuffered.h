@@ -16,7 +16,9 @@
 #pragma once
 
 #include "IRoxRenderAPI.h"
+
 #include <queue>
+#include <cstring>
 
 namespace RoxRender
 {

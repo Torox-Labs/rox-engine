@@ -152,7 +152,7 @@ namespace RoxResources
 
 				std::string nameStr(name);
 				if (m_force_lowercase)
-					std::transform(nameStr.begin(), nameStr.end(), nameStr.begin(), std::tolower);
+					std::transform(nameStr.begin(), nameStr.end(), nameStr.begin(), [](char c) { return std::tolower(c); });
 
 				std::pair<resources_map_iterator, bool> ir = m_res_map.insert(std::make_pair(nameStr, (ResHolder*)0));
 				if (ir.second)
@@ -253,7 +253,7 @@ namespace RoxResources
 				if (it == m_res_map.end() || !it->second)
 					return false;
 
-				m_base->reload_resource(it->second->res);
+				m_base->reloadResource(it->second->res);
 				return m_base->fillResource(it->first.c_str(), it->second->res);
 			}
 

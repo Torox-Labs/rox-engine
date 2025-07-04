@@ -1,6 +1,6 @@
 // Updated By the ROX_ENGINE
-// Copyright © 2024 Torox Project
-// Portions Copyright © 2013 nyan.developer@gmail.com (nya-engine)
+// Copyright ï¿½ 2024 Torox Project
+// Portions Copyright ï¿½ 2013 nyan.developer@gmail.com (nya-engine)
 //
 // This file was modified by the Torox Project.
 //
@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "IRoxRenderApi.h"
+#include "IRoxRenderAPI.h"
 
 namespace RoxRender
 {

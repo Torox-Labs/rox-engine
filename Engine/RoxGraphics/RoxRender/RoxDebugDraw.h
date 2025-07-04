@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "RoxVbo.h"
+#include "RoxVBO.h"
 #include "RoxShader.h"
 #include "RoxSkeleton.h"
 #include "RoxMath/RoxFrustum.h"

@@ -14,11 +14,11 @@
 
 
 #pragma once
+#include <glad/glad.h>
 
 #ifdef _WIN32
 #define NOMINMAX
 #include <windows.h>
-#include <glad/glad.h>
 
 // wglExt
 #pragma region From <wglext.h>
@@ -85,5 +85,42 @@ typedef int (WINAPI* PFNWGLGETSWAPINTERVALEXTPROC) (void);
 
 #pragma endregion
 
+#elif defined(__linux__)
+
+// ==== GLX Extensions (From <GL/glxext.h>) ====
+#define GLX_CONTEXT_MAJOR_VERSION_ARB       0x2091
+#define GLX_CONTEXT_MINOR_VERSION_ARB       0x2092
+#define GLX_CONTEXT_FLAGS_ARB               0x2094
+#define GLX_CONTEXT_CORE_PROFILE_BIT_ARB    0x00000001
+#define GLX_CONTEXT_PROFILE_MASK_ARB        0x9126
+
+// Manually declare required types without including <GL/glx.h>
+typedef struct _XDisplay Display;
+typedef unsigned long XID;
+typedef XID GLXDrawable;
+typedef struct __GLXcontextRec* GLXContext;
+typedef int Bool;
+
+typedef GLXContext (*PFNGLXCREATECONTEXTATTRIBSARBPROC)(Display*, void* /*GLXFBConfig*/, GLXContext, Bool, const int*);
+typedef void (*PFNGLXSWAPINTERVALEXTPROC)(Display*, GLXDrawable, int);
+typedef int (*PFNGLXGETSWAPINTERVALEXTPROC)(Display*, GLXDrawable);
+
+// ==== GL Constants Compatibility ====
+
+#ifndef GL_LUMINANCE
+#define GL_LUMINANCE                        0x1909
+#endif
+
+#ifndef GL_LUMINANCE_ALPHA
+#define GL_LUMINANCE_ALPHA                  0x190A
+#endif
+
+#ifndef GL_STACK_OVERFLOW
+#define GL_STACK_OVERFLOW                   0x0503
+#endif
+
+#ifndef GL_STACK_UNDERFLOW
+#define GL_STACK_UNDERFLOW                  0x0504
+#endif
 #endif
 

@@ -1,8 +1,8 @@
 # ====== Define Sources ======
-if(WIN32)
-file(GLOB_RECURSE SYSTEM_SRC "*.cpp" "*.h")
-elseif(APPLE)
+if(APPLE)
 file(GLOB_RECURSE SYSTEM_SRC "*.cpp" "*.mm" "*.h")
+else()
+file(GLOB_RECURSE SYSTEM_SRC "*.cpp" "*.h")
 endif()
 
 # ====== Add Library ======
@@ -15,9 +15,9 @@ target_include_directories(RoxSystem
 )
 
 set_target_properties(RoxSystem PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>
 )
 
 # ====== Set Folder Properties for Visual Studio ======

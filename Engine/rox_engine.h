@@ -7,7 +7,7 @@
 #else
 #define ROX_ENGINE_API __declspec(dllimport)
 #endif
-#elif defined(__GNU__)
+#elif defined(__linux__)
 #ifdef ROX_ENGINE_EXPORTS
 #define ROX_ENGINE_API __attribute__((visibility("default")))
 #else

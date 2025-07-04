@@ -15,7 +15,7 @@
 #include "RoxShader.h"
 #include "RoxShaderCodeParser.h"
 #include "RoxRender.h"
-#include "IRoxRenderApi.h"
+#include "IRoxRenderAPI.h"
 
 
 namespace RoxRender

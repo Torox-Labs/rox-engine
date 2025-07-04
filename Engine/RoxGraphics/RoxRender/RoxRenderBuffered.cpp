@@ -15,6 +15,8 @@
 
 #include "RoxRenderBuffered.h"
 
+#include <string>
+
 namespace RoxRender
 {
 

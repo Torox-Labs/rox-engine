@@ -7,7 +7,7 @@
 #include "RoxFormats/RoxMathExprParser.h"
 #include "material.h"
 #include "transform.h"
-#include "RoxRender/RoxVbo.h"
+#include "RoxRender/RoxVBO.h"
 
 namespace RoxScene
 {

@@ -14,6 +14,8 @@ CMakeUserPresets.json
 
 
 #CMake user build folder
+/cmake-build-debug
+cmake-build-debug/
 /build
 build/
 out/

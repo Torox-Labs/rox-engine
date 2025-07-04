@@ -12,7 +12,7 @@
 // 2. Commercial License (for use on proprietary platforms)
 // See the LICENSE file in the root directory for the full Rox-engine license terms.
 
-#include "RoxShadersCacheProvider.h"
+#include "RoxShadersCacheprovider.h"
 #include "RoxResources/RoxResources.h"
 
 #include <cstring>
