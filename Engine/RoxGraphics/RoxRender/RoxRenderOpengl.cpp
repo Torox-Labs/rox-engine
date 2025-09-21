@@ -27,7 +27,8 @@ namespace RoxRender
 	bool RoxRenderOpengl::isAvailable() const
 	{
 		// TODO: Will need more work on cross-platform support
-		RoxLogger::log() << "OpenGL Active";
+		// Note: Removed logging here to prevent static initialization order issues
+		// The logger may not be initialized when this is called during global variable initialization
 		return true;
 	}
 
@@ -1849,7 +1850,7 @@ namespace RoxRender
 				glEndTransformFeedback();
 			}
 			else
-				glDrawArrays(gl_elem, s.index_offset, s.index_count);
+			 glDrawArrays(gl_elem, s.index_offset, s.index_count);
 		}
 	}
 

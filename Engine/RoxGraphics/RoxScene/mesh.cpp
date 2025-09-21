@@ -1,4 +1,4 @@
-//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
+﻿//nya-engine (C) nyan.developer@gmail.com released under the MIT license (see LICENSE)
 
 #include "camera.h"
 #include "RoxMath/RoxConstants.h"
@@ -36,61 +36,71 @@ namespace RoxScene
 
     bool mesh::load_nms_mesh_section(shared_mesh& res, const void* data, size_t size, int version)
     {
-        RoxFormats::nms_mesh_chunk c;
-        if (!c.read_header(data, size, version))
-        {
-            log() << "nms load warning: invalid mesh chunk\n";
-            return false;
-        }
+	    RoxFormats::nms_mesh_chunk c;
+	    if (!c.read_header(data, size, version))
+	    {
+		    log() << "nms load warning: invalid mesh chunk\n";
+		    return false;
+	    }
 
-        res.aabb = RoxMath::Aabb(c.aabb_min, c.aabb_max);
-        for (size_t i = 0; i < c.elements.size(); ++i)
-        {
-            const RoxFormats::nms_mesh_chunk::element& e = c.elements[i];
-			RoxLogger::log() << "nms mesh elements " << e.type << " :\noffset: " << e.offset << "\ndimension: " << e.dimension << "\ntype: " << e.type << "\ndata_type: " << e.data_type << "\nsemantics: " << e.semantics << "\n";
-                const RoxRender::RoxVBO::VERTEX_ATRIB_TYPE type = RoxRender::RoxVBO::VERTEX_ATRIB_TYPE(e.data_type);
-            switch (e.type)
-            {
-            case RoxFormats::nms_mesh_chunk::pos: res.vbo.setVertices(e.offset, e.dimension, type); break;
-            case RoxFormats::nms_mesh_chunk::normal: res.vbo.setNormals(e.offset, type); break;
-            case RoxFormats::nms_mesh_chunk::color: res.vbo.setColors(e.offset, e.dimension, type); break;
-            default: res.vbo.setTexCoord(e.type - RoxFormats::nms_mesh_chunk::tc0, e.offset, e.dimension, type); break;
-            };
-        }
+	    res.aabb = RoxMath::Aabb(c.aabb_min, c.aabb_max);
+	    for (size_t i = 0; i < c.elements.size(); ++i)
+	    {
+		    const RoxFormats::nms_mesh_chunk::element& e = c.elements[i];
+			RoxLogger::log() << "=========================\n";
+		    RoxLogger::log() << "nms mesh elements :\n" << "offset: " << e.offset << "\ndimension: " << e.
+			    dimension << "\ntype: " << e.type << "\ndata_type: " << e.data_type << "\nsemantics: " << e.semantics <<
+			    "\n";
+		    const RoxRender::RoxVBO::VERTEX_ATRIB_TYPE type = RoxRender::RoxVBO::VERTEX_ATRIB_TYPE(e.data_type);
+		    switch (e.type)
+		    {
+		    case RoxFormats::nms_mesh_chunk::pos: res.vbo.setVertices(e.offset, e.dimension, type);
+			    break;
+		    case RoxFormats::nms_mesh_chunk::normal: res.vbo.setNormals(e.offset, type);
+			    break;
+		    case RoxFormats::nms_mesh_chunk::color: res.vbo.setColors(e.offset, e.dimension, type);
+			    break;
+		    default: res.vbo.setTexCoord(e.type - RoxFormats::nms_mesh_chunk::tc0, e.offset, e.dimension, type);
+			    break;
+		    };
+	    }
 
-        res.vbo.setVertexData(c.vertices_data, c.vertex_stride, c.verts_count);
+	    res.vbo.setVertexData(c.vertices_data, c.vertex_stride, c.verts_count);
 
-        switch (c.index_size)
-        {
-        case 0: break; //to indices
-        case 2: res.vbo.setIndexData(c.indices_data, RoxRender::RoxVBO::INDEX_2D, c.indices_count); break;
-        case 4: res.vbo.setIndexData(c.indices_data, RoxRender::RoxVBO::INDEX_4D, c.indices_count); break;
-        default: log() << "nms load warning: invalid index size\n"; return false;
-        }
+	    switch (c.index_size)
+	    {
+	    case 0: break; //to indices
+	    case 2: res.vbo.setIndexData(c.indices_data, RoxRender::RoxVBO::INDEX_2D, c.indices_count);
+		    break;
+	    case 4: res.vbo.setIndexData(c.indices_data, RoxRender::RoxVBO::INDEX_4D, c.indices_count);
+		    break;
+	    default: log() << "nms load warning: invalid index size\n";
+		    return false;
+	    }
 
-        for (size_t i = 0; i < c.lods.size(); ++i)
-        {
-            res.groups.resize(c.lods[i].groups.size());
-            for (size_t j = 0; j < res.groups.size(); ++j)
-            {
-                const RoxFormats::nms_mesh_chunk::group& from = c.lods[i].groups[j];
-                shared_mesh::group& to = res.groups[j];
+	    for (size_t i = 0; i < c.lods.size(); ++i)
+	    {
+		    res.groups.resize(c.lods[i].groups.size());
+		    for (size_t j = 0; j < res.groups.size(); ++j)
+		    {
+			    const RoxFormats::nms_mesh_chunk::group& from = c.lods[i].groups[j];
+			    shared_mesh::group& to = res.groups[j];
 
-                to.name = from.name;
+			    to.name = from.name;
 
-                to.aabb = RoxMath::Aabb(from.aabb_min, from.aabb_max);
+			    to.aabb = RoxMath::Aabb(from.aabb_min, from.aabb_max);
 
-                to.material_idx = from.material_idx;
-                to.offset = from.offset;
-                to.count = from.count;
+			    to.material_idx = from.material_idx;
+			    to.offset = from.offset;
+			    to.count = from.count;
 
-                to.elem_type = RoxRender::RoxVBO::ELEMENT_TYPE(from.element_type);
-            }
+			    to.elem_type = RoxRender::RoxVBO::ELEMENT_TYPE(from.element_type);
+		    }
 
-            break; //ToDo: load all lods
-        }
+		    break; //ToDo: load all lods
+	    }
 
-        return true;
+	    return true;
     }
 
     bool mesh::load_nms_skeleton_section(shared_mesh& res, const void* data, size_t size, int version)
@@ -113,6 +123,7 @@ namespace RoxScene
 
     bool mesh::load_nms_material_section(shared_mesh& res, const void* data, size_t size, int version)
     {
+		RoxLogger::log() << "nms load: materials section\n";
         RoxFormats::nms_material_chunk c;
         if (!c.read(data, size, version))
         {
@@ -120,8 +131,10 @@ namespace RoxScene
             return false;
         }
 
+
         size_t mat_idx_off = res.materials.size();
         res.materials.resize(mat_idx_off + c.materials.size());
+
         for (size_t i = 0; i < c.materials.size(); ++i)
         {
             const RoxFormats::nms_material_chunk::material_info& from = c.materials[i];
@@ -132,12 +145,16 @@ namespace RoxScene
                 const std::string& name = from.strings[j].name;
                 const std::string& value = from.strings[j].value;
 
+                RoxLogger::log() << name << "\n";
+                RoxLogger::log() << value << "\n";
+
                 if (name == "nya_material")
                 {
                     to.load(value.c_str());
                 }
                 else if (name == "nya_shader")
                 {
+					RoxLogger::log() << "nms load: nya_shader: " << value << "\n";
                     RoxShader sh;
                     sh.load(value.c_str());
                     material_default_pass(to).set_shader(sh);
