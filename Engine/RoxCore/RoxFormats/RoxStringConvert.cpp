@@ -56,8 +56,12 @@ namespace RoxFormats
 
     RoxRender::Blend::MODE blendModeFromString(const char* s)
     {
-        if (!s)
+		RoxLogger::log() << "blendModeFromString: " << (s ? s : "null") << "\n";
+
+    	if (!s)
             return RoxRender::Blend::ONE;
+
+		RoxLogger::log() << "blendModeFromString after null check\n";
 
         const std::string ss = fixString(s);
         if (ss == "SRC_ALPHA") return RoxRender::Blend::SRC_ALPHA;
@@ -76,8 +80,13 @@ namespace RoxFormats
 
     bool blendModeFromString(const char* s, RoxRender::Blend::MODE& srcOut, RoxRender::Blend::MODE& dstOut)
     {
+        RoxLogger::log() << "blendModeFromString two strings: " << (s ? s : "null") << "\n";
+
         if (!s)
             return false;
+
+        RoxLogger::log() << "blendModeFromString after null check\n";
+
 
         std::string str = s;
 
@@ -86,12 +95,14 @@ namespace RoxFormats
         {
             srcOut = RoxRender::Blend::ONE;
             dstOut = RoxRender::Blend::ZERO;
+			RoxLogger::log() << "blendModeFromString no ':' found, using default ONE:ZERO\n";
             return false;
         }
 
         dstOut = blendModeFromString(str.substr(divIdx + 1).c_str());
         str.resize(divIdx);
         srcOut = blendModeFromString(str.c_str());
+		RoxLogger::log() << "blendModeFromString parsed successfully\n";
         return true;
     }
 

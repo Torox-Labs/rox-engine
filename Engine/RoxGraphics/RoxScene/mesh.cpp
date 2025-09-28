@@ -154,7 +154,7 @@ namespace RoxScene
                 }
                 else if (name == "nya_shader")
                 {
-					RoxLogger::log() << "nms load: nya_shader: " << value << "\n";
+					RoxLogger::log() << "nms load: shader: " << value << "\n";
                     RoxShader sh;
                     sh.load(value.c_str());
                     material_default_pass(to).set_shader(sh);
